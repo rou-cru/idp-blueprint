@@ -24,3 +24,6 @@ jobs:
 
       - name: Run Security Scans
         run: devbox run -- task security
+
+      - name: Run validations
+        run: devbox run -- task validate
