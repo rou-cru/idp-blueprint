@@ -1,0 +1,11 @@
+## @section Trivy Operator
+## @description Resource definitions for the trivy-operator.
+operator:
+  # -- Resource requests and limits for the operator.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

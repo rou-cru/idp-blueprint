@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: security
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/rou-cru/idp-blueprint.git
+        revision: HEAD
+        directories:
+          - path: K8s/security/*
+  template:
+    metadata:
+      name: 'security-{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/rou-cru/idp-blueprint.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: security
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

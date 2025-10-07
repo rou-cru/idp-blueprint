@@ -1,0 +1,134 @@
+## @section High Availability
+## @description Configuration for ArgoCD's High Availability mode.
+# -- Disable High Availability mode to keep the deployment lightweight for the demo.
+ha:
+  enabled: false
+
+## @section Resource Optimization
+## @description Set low resource requests and limits for the main components to optimize for a demo environment.
+# -- Controller resource settings
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+# -- Server (UI/API) resource settings
+server:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# -- Repo Server resource settings
+repoServer:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+## @section Redis Configuration
+## @description Resource settings for the bundled Redis cache.
+redis:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+## @section Feature Flags
+## @description Toggles for core ArgoCD features.
+# -- Enable the ApplicationSet controller, which is key to our GitOps strategy.
+applicationSet:
+  enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# -- Let Helm manage the CRDs for simplicity in this demo environment.
+crds:
+  install: true
+
+## @section Repository Configuration
+## @description Configure Helm repositories for ArgoCD
+configs:
+  repositories:
+    argo:
+      name: argo
+      url: https://argoproj.github.io/argo-helm
+      type: helm
+    prometheus-community:
+      name: prometheus-community
+      url: https://prometheus-community.github.io/helm-charts
+      type: helm
+    grafana:
+      name: grafana
+      url: https://grafana.github.io/helm-charts
+      type: helm
+    open-telemetry:
+      name: open-telemetry
+      url: https://open-telemetry.github.io/opentelemetry-helm-charts
+      type: helm
+    sonarsource:
+      name: sonarsource
+      url: https://SonarSource.github.io/helm-chart-sonarqube
+      type: helm
+    external-secrets:
+      name: external-secrets
+      url: https://charts.external-secrets.io
+      type: helm
+    jetstack:
+      name: jetstack
+      url: https://charts.jetstack.io/
+      type: helm
+    kyverno:
+      name: kyverno
+      url: https://kyverno.github.io/kyverno/
+      type: helm
+    aqua:
+      name: aqua
+      url: https://aquasecurity.github.io/helm-charts/
+      type: helm
+    policy-reporter:
+      name: policy-reporter
+      url: https://kyverno.github.io/policy-reporter
+      type: helm
+    jenkins:
+      name: jenkins
+      url: https://charts.jenkins.io
+      type: helm
+    bitnami:
+      name: bitnami
+      url: https://charts.bitnami.com/bitnami
+      type: helm
+    fluent:
+      name: fluent
+      url: https://fluent.github.io/helm-charts
+      type: helm
+    pixie-operator:
+      name: pixie-operator
+      url: https://artifacts.px.dev/helm_charts/operator
+      type: helm
+    hashicorp:
+      name: hashicorp
+      url: https://helm.releases.hashicorp.com
+      type: helm
+    cilium:
+      name: cilium
+      url: https://helm.cilium.io/
+      type: helm

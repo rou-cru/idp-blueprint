@@ -1,0 +1,25 @@
+## @section Policy Reporter Core
+## @description Resource definitions for the main Policy Reporter component.
+policyReporter:
+  # -- Resource requests and limits for the core engine.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+## @section Policy Reporter UI
+## @description Resource definitions for the UI component.
+ui:
+  # -- We want to deploy the UI.
+  enabled: true
+  # -- Resource requests and limits for the UI.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

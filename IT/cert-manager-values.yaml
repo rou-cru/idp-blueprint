@@ -1,0 +1,24 @@
+## @section Custom Resource Definitions
+## @description Enable the installation of cert-manager CRDs.
+crds:
+  enabled: true
+
+## @section Resource Optimization
+## @description Set low resource requests and limits for the main components to optimize for a demo environment.
+webhook:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+cainjector:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

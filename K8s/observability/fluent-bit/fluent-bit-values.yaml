@@ -1,0 +1,36 @@
+## @section Resource Management
+## @description Defines resource requests and limits for the Fluent-bit pod.
+# -- Resource requests for the pod.
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  # -- Resource limits for the pod.
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+## @section Fluent-bit Configuration
+## @description Defines the core behavior, including filters and outputs.
+config:
+  # -- Filter configuration to enrich logs with Kubernetes metadata.
+  filters: |
+    [FILTER]
+        Name                kubernetes
+        Match               *
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_CA_File        /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        Kube_Token_File     /var/run/secrets/kubernetes.io/serviceaccount/token
+        Kube_Tag_Prefix     kube.var.log.containers.
+        Merge_Log           On
+        Merge_Log_Key       log
+
+  # -- Output configuration to forward logs to Loki.
+  outputs: |
+    [OUTPUT]
+        Name loki
+        Match *
+        Host loki.observability.svc.cluster.local
+        Port 3100
+        # Use Kubernetes metadata for rich labels in Loki
+        Labels job=fluent-bit, namespace=$kubernetes['namespace_name'], pod_name=$kubernetes['pod_name']

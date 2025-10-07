@@ -1,0 +1,11 @@
+## @section Controller Configuration
+## @description Defines settings for the Jenkins controller pod.
+controller:
+  # -- Resource requests and limits for the controller.
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: '1'
+      memory: 2Gi

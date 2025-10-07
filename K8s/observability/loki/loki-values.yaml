@@ -1,0 +1,97 @@
+# -- Deploys Loki in microservices mode (simple-scalable)
+deploymentMode: simple-scalable
+
+## @section Gateway
+## @description NGINX gateway as a single entry point for all Loki services.
+# -- Habilita el gateway (nginx) como punto de entrada único
+gateway:
+  enabled: true
+  replicas: 1
+  # -- Resource requests and limits for the gateway.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 80
+
+## @section Backend
+## @description Configuration for the backend components (compactor, ruler).
+# -- Configura el backend (compactor, ruler)
+backend:
+  replicas: 1
+  # -- Resource requests and limits for the backend.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  # -- Persistence is disabled for the demo.
+  persistence:
+    enabled: false # Sin persistencia real
+
+## @section Read
+## @description Configuration for the read path components (querier, query-frontend).
+# -- Configura los readers (querier, query-frontend)
+read:
+  replicas: 1
+  # -- Resource requests and limits for the read path.
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  # -- Persistence is disabled for the demo.
+  persistence:
+    enabled: false # Sin persistencia real
+
+## @section Write
+## @description Configuration for the write path components (distributor, ingester).
+# -- Configura los writers (distributor, ingester)
+write:
+  replicas: 1
+  # -- Resource requests and limits for the write path.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  # -- Persistence is disabled for the demo.
+  persistence:
+    enabled: false # Sin persistencia real
+
+## @section Global Configuration
+## @description Global Loki settings for auth, retention, and storage.
+# -- Configuración global de Loki
+loki:
+  config: |
+    auth_enabled: false
+    limits_config:
+      retention_period: 6h
+    schema_config:
+      configs:
+        - from: '2024-01-01'
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+    storage_config:
+      tsdb_shipper:
+        active_index_directory: /data/loki/tsdb-index
+      filesystem:
+        directory: /data/loki/chunks
+    compactor:
+      working_directory: /data/loki/compactor
+      retention_enabled: true
