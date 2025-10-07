@@ -1,0 +1,16 @@
+{
+  "name": "Devbox Remote Container",
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": ".."
+  },
+  "postCreateCommand": ".devcontainer/handle-env-vars.sh",
+  "mounts": ["source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"],
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": ["jetpack-io.devbox"]
+    }
+  },
+  "remoteUser": "devbox"
+}

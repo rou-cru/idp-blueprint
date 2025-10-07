@@ -1,0 +1,10 @@
+# .prettierrc.yaml
+
+# Set the line length to 88 characters
+printWidth: 88
+
+# Use single quotes for strings globally
+singleQuote: true
+
+# Wrap markdown text to the print width
+proseWrap: 'always'

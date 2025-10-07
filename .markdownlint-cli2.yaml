@@ -1,0 +1,10 @@
+# .markdownlint-cli2.yaml
+
+# Use the default configuration as a base
+config:
+  # Allow longer lines to match Prettier's configuration
+  MD013:
+    line_length: 88
+  # Allow the use of inline HTML like <details> and <summary>
+  MD033:
+    allowed_elements: ["details", "summary", "strong", "em", "br", "img", "a", "p", "h1", "h2", "picture", "source", "table", "tr", "td", "sup"]
