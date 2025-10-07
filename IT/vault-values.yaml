@@ -1,0 +1,26 @@
+## @section Vault Server Configuration
+## Deploys Vault in a single-node, development-friendly mode.
+server:
+  # -- Run Vault in dev mode. Not for production. No persistence, auto-unsealed.
+  dev:
+    enabled: true
+
+  # -- Defines resource requests and limits for the Vault pod.
+  resources:
+    requests:
+      memory: '256Mi'
+      cpu: '250m'
+    limits:
+      memory: '512Mi'
+      cpu: '500m'
+  extraLabels:
+    app.kubernetes.io/version: '1.20.4'
+
+## @section Vault UI Configuration
+## Manages the Vault UI service.
+ui:
+  # -- Enable the Vault UI.
+  enabled: true
+  service:
+    # -- Service type for the UI.
+    type: 'ClusterIP'

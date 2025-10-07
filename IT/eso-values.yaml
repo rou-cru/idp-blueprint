@@ -1,0 +1,17 @@
+## @section External Secrets Operator Configuration
+# -- Install CRDs. Should be true for the initial installation.
+installCRDs: true
+# -- Number of replicas for the operator.
+replicas: 1
+# -- Defines resource requests and limits for the operator pod.
+resources:
+  requests:
+    memory: '64Mi'
+    cpu: '100m'
+  limits:
+    memory: '128Mi'
+    cpu: '200m'
+
+serviceAccount:
+  create: true
+  name: 'cluster-secrets'

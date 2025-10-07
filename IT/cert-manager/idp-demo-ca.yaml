@@ -1,0 +1,20 @@
+# Defines the self-signed root CA Certificate for the IDP.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: idp-demo-ca
+  namespace: cert-manager
+  annotations:
+    contact: 'None'
+    documentation: 'None'
+    description: 'Defines the self-signed root CA Certificate for the IDP.'
+spec:
+  isCA: true
+  commonName: idp-demo-ca
+  secretName: idp-demo-ca-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: self-signed-issuer
+    kind: ClusterIssuer

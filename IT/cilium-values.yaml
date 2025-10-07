@@ -1,0 +1,144 @@
+## @section IPAM Configuration
+## Defines how pod IP addresses are managed.
+## `cluster-pool` is the recommended mode for efficient IP allocation.
+ipam:
+  # -- IPAM mode.
+  mode: 'cluster-pool'
+  operator:
+    # -- The pod CIDR for the cluster. Must match k3d's default.
+    clusterPoolIPv4PodCIDRList: ['10.42.0.0/16']
+
+## @section Kube-proxy Replacement
+## Replaces kube-proxy with Cilium's eBPF implementation for higher performance.
+kubeProxyReplacement: true
+
+## @section Hubble Observability
+## Enables Hubble for network flow visibility.
+hubble:
+  # -- Toggles Hubble on or off.
+  enabled: true
+  # -- The Hubble Relay component aggregates data from all Hubble instances.
+  relay:
+    enabled: true
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+  # -- The Hubble UI provides a graphical interface to explore network data.
+  ui:
+    enabled: true
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+    # -- The Ingress for the Hubble UI. Disabled for now, to be managed by ArgoCD.
+    ingress:
+      enabled: false
+    # -- Service type for the UI. `ClusterIP` is used to avoid exposing it directly.
+    service:
+      type: ClusterIP
+  # -- Enables specific metrics for Hubble to collect.
+  metrics:
+    enabled:
+      - dns:query;ignoreAAAA
+      - drop
+      - tcp
+      - flow
+      - port-distribution
+      - icmp
+      - http
+
+## @section Cilium Ingress Controller
+## Use Cilium's native, eBPF-powered Ingress Controller.
+ingressController:
+  # -- Enable the Ingress Controller.
+  enabled: true
+  # -- Make this the default IngressClass for all Ingress resources.
+  default: true
+  # -- Use a shared service for all Ingresses.
+  loadbalancerMode: shared
+  service:
+    # -- Expose the Ingress Controller via a LoadBalancer service.
+    # k3d's built-in load balancer will automatically pick this up.
+    type: LoadBalancer
+
+## @section Gateway API
+## Enables support for the modern Gateway API standard for traffic routing.
+gatewayAPI:
+  enabled: true
+
+## @section Cilium Operator Configuration
+operator:
+  # -- Number of replicas for the Cilium operator.
+  replicas: 1
+  prometheus:
+    # -- Expose Prometheus metrics from the operator.
+    enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+## @section Prometheus Metrics
+## Configures how Cilium exposes metrics for Prometheus.
+prometheus:
+  # -- Enable metrics exposition.
+  enabled: true
+  # -- If a ServiceMonitor CRD should be created. Disabled as Prometheus is not yet installed.
+  serviceMonitor:
+    enabled: false
+  dashboards:
+    # -- Creates a ConfigMap with the official Cilium dashboard for Grafana.
+    enabled: true
+    # -- Namespace where the dashboard ConfigMap will be created.
+    namespace: default
+
+## @section Network Policy
+## Sets the default enforcement mode for CiliumNetworkPolicy.
+policyEnforcementMode: 'default'
+
+## @section BGP Control Plane
+## Disabled for this demo. Used for announcing routes in on-prem environments.
+bgpControlPlane:
+  enabled: false
+
+## @section Encryption
+## Disabled for this local demo. Can be enabled for production environments.
+encryption:
+  enabled: false
+  type: wireguard
+
+## @section Cluster Identification
+## Basic information about the cluster for multi-cluster scenarios.
+cluster:
+  name: idp-demo
+  id: 1
+
+## @section Performance Tuning
+## BPF-related performance settings for a local development environment.
+bpf:
+  monitorAggregation: maximum
+  monitorInterval: '5s'
+  monitorFlags: 'all'
+
+## @section Custom Labels
+## Adds labels to all resources to comply with the tagging policy.
+commonLabels:
+  app.kubernetes.io/instance: cilium-demo
+  app.kubernetes.io/version: '1.18.2'
+  app.kubernetes.io/component: cni
+  app.kubernetes.io/part-of: idp
+  owner: platform-engineer
+  business-unit: engineering
+  environment: demo

@@ -1,0 +1,37 @@
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: idp-demo
+servers: 1
+agents: 2
+image: rancher/k3s:v1.34.1-k3s1
+ports:
+  - port: 80:80
+    nodeFilters:
+      - loadbalancer
+  - port: 443:443
+    nodeFilters:
+      - loadbalancer
+options:
+  k3d:
+    disableLoadbalancer: false
+    wait: false
+    timeout: 0s
+  k3s:
+    extraArgs:
+      - arg: --flannel-backend=none
+        nodeFilters:
+          - server:*
+      - arg: --disable=traefik
+        nodeFilters:
+          - server:*
+      - arg: --disable-network-policy
+        nodeFilters:
+          - server:*
+    nodeLabels:
+      - label: role=infra
+        nodeFilters:
+          - agent:0
+      - label: role=apps
+        nodeFilters:
+          - agent:1

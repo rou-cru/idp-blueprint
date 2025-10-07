@@ -1,0 +1,42 @@
+## @section Resource Management
+## @description Defines resource requests and limits for the Kyverno controller pods.
+
+# -- Resources for the main admission controller.
+admissionController:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# -- Resources for the background controller (generate rules, etc.).
+backgroundController:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# -- Resources for the cleanup controller (ttl, etc.).
+cleanupController:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# -- Resources for the reports controller.
+reportsController:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

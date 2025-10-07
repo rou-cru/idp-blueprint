@@ -1,0 +1,20 @@
+# Defines a self-signed issuer, used only to bootstrap the root CA certificate.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: self-signed-issuer
+  labels:
+    app.kubernetes.io/name: self-signed-issuer
+    app.kubernetes.io/instance: self-signed-issuer-demo
+    app.kubernetes.io/component: certificate-authority
+    app.kubernetes.io/part-of: idp
+    owner: platform-engineer
+    business-unit: engineering
+    environment: demo
+  annotations:
+    contact: 'None'
+    documentation: 'None'
+    description:
+      'Defines a self-signed issuer, used only to bootstrap the root CA certificate.'
+spec:
+  selfSigned: {}

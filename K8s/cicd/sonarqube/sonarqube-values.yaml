@@ -1,0 +1,25 @@
+## @section SonarQube Server
+## @description Resource definitions for the main SonarQube application.
+sonarqube:
+  # -- Resource requests and limits for the SonarQube server.
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: '2'
+      memory: 3Gi
+
+## @section PostgreSQL Database
+## @description Resource definitions for the bundled PostgreSQL database.
+# -- By default, the chart deploys a PostgreSQL database.
+# -- We will define resources for it as well.
+postgresql:
+  # -- Resource requests and limits for the PostgreSQL pod.
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
