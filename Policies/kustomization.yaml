@@ -6,6 +6,8 @@ resources:
   - namespace.yaml
   - rules/enforce-namespace-labels.yaml
   - rules/require-component-labels.yaml
+  - rules/audit-business-labels.yaml
+  - rules/audit-namespace-resource-governance.yaml
 
 # 2. Define the Helm charts to be deployed
 helmCharts:
