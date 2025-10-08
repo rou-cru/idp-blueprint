@@ -1,11 +1,18 @@
 ## @section Controller Configuration
 ## @description Defines settings for the Jenkins controller pod.
 controller:
-  # -- Resource requests and limits for the controller.
+  ## @subsection Resource Optimization
+  ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
   resources:
+    # -- The minimum resources required for the Jenkins controller.
     requests:
+      # -- The amount of CPU to request.
       cpu: 250m
+      # -- The amount of memory to request.
       memory: 512Mi
+    # -- The maximum resources the Jenkins controller can consume.
     limits:
-      cpu: '1'
+      # -- The maximum amount of CPU to allow.
+      cpu: 1000m
+      # -- The maximum amount of memory to allow.
       memory: 2Gi

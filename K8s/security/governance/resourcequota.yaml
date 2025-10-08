@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: security-quota
+  namespace: security
+spec:
+  hard:
+    requests.cpu: "250m"
+    requests.memory: "1Gi"
+    limits.cpu: "750m"
+    limits.memory: "1Gi"
