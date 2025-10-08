@@ -8,14 +8,8 @@ metadata:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/instance: cert-manager-demo
     app.kubernetes.io/component: certificate-authority
-    app.kubernetes.io/part-of: idp
     app.kubernetes.io/managed-by: kubectl
-    owner: platform-engineer
-    business-unit: engineering
-    environment: demo
   annotations:
-    contact: 'None'
-    documentation: 'None'
     description:
       'Namespace for all cert-manager components, including the controller and related
       resources.'

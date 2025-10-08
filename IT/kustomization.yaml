@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Define metadata to be applied to ALL resources managed by this Kustomization.
+commonAnnotations:
+  contact: None
+  documentation: None
+
+# List of resources to be included in the kustomization.
+# Kustomize will automatically look for .yaml files in these directories.
+resources:
+  - cert-manager/
+  - external-secrets/
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/part-of: idp
+      business-unit: engineering
+      environment: demo
+      owner: platform-engineer

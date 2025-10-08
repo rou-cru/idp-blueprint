@@ -5,6 +5,15 @@ crds:
 
 ## @section Resource Optimization
 ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
 webhook:
   resources:
     requests:
