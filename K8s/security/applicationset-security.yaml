@@ -19,6 +19,8 @@ spec:
         repoURL: https://github.com/rou-cru/idp-blueprint.git
         targetRevision: HEAD
         path: '{{path}}'
+        kustomize:
+          buildOptions: "--enable-helm"
       destination:
         server: https://kubernetes.default.svc
         namespace: security
