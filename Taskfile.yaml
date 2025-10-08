@@ -207,12 +207,14 @@ tasks:
   validate:kustomize:
     desc: 'Validate all Kustomize overlays by building them'
     cmds:
+      - defer: find . -type d -name charts -exec rm -rf {} +
       - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
         kustomize build $dir --enable-helm; done
 
   validate:kubeval:
     desc: 'Validate Kubernetes manifests against their schemas'
     cmds:
+      - defer: find . -type d -name charts -exec rm -rf {} +
       - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do kustomize build $dir --enable-helm; done | kubeval --ignore-missing-schemas -
 
   # SECURITY
@@ -226,7 +228,7 @@ tasks:
   security:iac:
     desc: 'Scan Infrastructure as Code for misconfigurations'
     cmds:
-      - checkov --directory .
+      - checkov --directory . --quiet
 
   security:secrets:
     desc: 'Scan for hardcoded secrets'
