@@ -5,8 +5,6 @@ metadata:
   name: idp-demo-ca
   namespace: cert-manager
   annotations:
-    contact: 'None'
-    documentation: 'None'
     description: 'Defines the self-signed root CA Certificate for the IDP.'
 spec:
   isCA: true
