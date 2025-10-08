@@ -43,28 +43,70 @@ Perfect for learning, experimentation, or as a foundation for your own IDP.
 ## Deploy
 
 ```mermaid
-flowchart TD
-    Start([task deploy]) --> K3d[Create k3d Cluster]
-    K3d --> NS[Apply Namespaces]
-    
-    NS --> Static[Deploy Static Infrastructure via Helm]
-    Static --> Cilium[Cilium CNI]
-    Static --> CertMgr[Cert-Manager]
-    Static --> Vault[Vault]
-    Static --> ESO[External Secrets Operator]
-    Static --> ArgoCD[ArgoCD]
-    
-    ArgoCD --> GitOps[GitOps Takes Over]
-    GitOps --> Policies[Deploy Policies First]
-    Policies --> Kyverno[Kyverno]
-    Policies --> Reporter[Policy Reporter]
-    
-    Kyverno --> Apps[Deploy Application Stacks]
-    Apps --> Obs[Observability Stack]
-    Apps --> CICD[CI/CD Stack]
-    Apps --> Sec[Security Stack]
-    
-    Sec --> Done([IDP Ready])
+---
+config:
+  layout: dagre
+  look: neo
+---
+flowchart LR
+ subgraph Bootstrap["Bootstrap"]
+        StaticPhase["Static Infrastructure Phase"]
+        Cilium["Cilium CNI"]
+        CertMgr["Cert-Manager"]
+        Vault["Vault"]
+        ESO["External Secrets Operator"]
+        ArgoCD["ArgoCD"]
+  end
+ subgraph GitOps["GitOps"]
+        GitOpsPhase["GitOpsPhase"]
+        PolicyStack["Policy Stack"]
+        Kyverno["Kyverno"]
+        Reporter["Policy Reporter"]
+        Obs["Observability Stack"]
+        CICD["CI/CD Stack"]
+        Sec["Security Stack"]
+        Prom["Prometheus"]
+        Loki["Loki"]
+        Grafana["Grafana"]
+        Fluent["Fluent-bit"]
+        Jenkins["Jenkins"]
+        Sonarqube["Sonarqube"]
+        Trivy["Trivy"]
+  end
+    PolicyStack -.-> Kyverno & Reporter
+    Obs -.-> Prom & Grafana & Fluent & Loki
+    Start["task deploy"] ==> K3d["Create K3d Cluster"]
+    K3d ==> NS["Create Bootstrap Namespaces"]
+    NS ==> StaticPhase
+    StaticPhase -.-> Cilium & ESO & ArgoCD & CertMgr & Vault
+    GitOps --> PolicyStack
+    CICD -.-> Jenkins & Sonarqube
+    Sec -.-> Trivy
+    ArgoCD ==> GitOpsPhase
+    GitOpsPhase -.-> PolicyStack & Obs & CICD & Sec
+    StaticPhase@{ shape: div-proc}
+    Cilium@{ shape: h-cyl}
+    CertMgr@{ shape: h-cyl}
+    Vault@{ shape: h-cyl}
+    ESO@{ shape: h-cyl}
+    ArgoCD@{ shape: h-cyl}
+    GitOpsPhase@{ shape: div-proc}
+    PolicyStack@{ shape: procs}
+    Kyverno@{ shape: h-cyl}
+    Reporter@{ shape: h-cyl}
+    Obs@{ shape: procs}
+    CICD@{ shape: procs}
+    Sec@{ shape: procs}
+    Prom@{ shape: h-cyl}
+    Loki@{ shape: h-cyl}
+    Grafana@{ shape: h-cyl}
+    Fluent@{ shape: h-cyl}
+    Jenkins@{ shape: h-cyl}
+    Sonarqube@{ shape: h-cyl}
+    Trivy@{ shape: h-cyl}
+    Start@{ shape: braces}
+    K3d@{ shape: disk}
+    NS@{ shape: card}
 ```
 
 > **Deployment time:** ~5-10 minutes | **Command:** `task deploy`
@@ -72,50 +114,114 @@ flowchart TD
 ## 🗃️ Architecture
 
 ```mermaid
-graph LR
-    Git[(Git Repository)]
+---
+config:
+  look: handDrawn
+  theme: redux
+  layout: elk
+---
+flowchart TB
+ subgraph Node1["Control Plane Node"]
+        K3sAPI["K3s API Server"]
+        K3sCtrl["K3s Controller Manager"]
+        K3sSched["K3s Scheduler"]
+  end
+ subgraph Node2["Static Infrastructure Node"]
+        CertMgr["Cert-Manager"]
+        Vault["Vault"]
+        ESO["External Secrets"]
+        ArgoCD["ArgoCD"]
+  end
+ subgraph Node3["GitOps Workloads Node"]
+        Kyverno["Kyverno"]
+        PolicyReporter["Policy Reporter"]
+        Prometheus["Prometheus"]
+        AlertMgr["Alertmanager"]
+        KSM["Kube State Metrics"]
+        Grafana["Grafana"]
+        Loki["Loki"]
+        Jenkins["Jenkins"]
+        Sonar["SonarQube"]
+        Trivy["Trivy"]
+  end
+ subgraph K3s["k3d Cluster"]
+        Cilium["Cilium CNI"]
+        FluentBit["Fluent-bit"]
+        NodeExporter["Node Exporter"]
+        Node1
+        Node2
+        Node3
+  end
+    Jenkins == Provide Images &amp; Manifest ==> ArgoCD
+    Git[("Git Repository")] -- policies as code --> ArgoCD
+    Git -- ApplicationSets --> ArgoCD
+    ESO == Deploy Secrets request by ==> ArgoCD
+    Vault == provides secrets === ESO
+    Sonar == Quality Gates === Jenkins
+    Trivy == scans images === Jenkins
+    ArgoCD == GitOps Policy ==> Kyverno
+    PolicyReporter === Kyverno
+    PolicyReporter == Policy Metrics ==> Grafana
+    Node1 -. scrapes Node metrics .-> NodeExporter
+    Node2 -. scrapes Node metrics .-> NodeExporter
+    Node3 -. scrapes Node metrics .-> NodeExporter
+    NodeExporter == Save Metrics ==> Prometheus
+    KSM == scrapes workload metrics ==> Prometheus
+    Prometheus == sends alerts ==> AlertMgr
+    Prometheus == Metrics ==> Grafana
+    Node1 -. scrapes Pods Logs .-> FluentBit
+    Node2 -. scrapes Pods Logs .-> FluentBit
+    Node3 -. scrapes Pods Logs .-> FluentBit
+    FluentBit == Save Logs ==> Loki
+    Loki == Logs ==> Grafana
+    Jenkins ==> n1[("Image Registry")]
+    style CertMgr stroke:#AA00FF
+    style Vault stroke:#AA00FF
+    style ESO stroke:#AA00FF
+    style ArgoCD stroke:#00C853
+    style Kyverno stroke:#FF6D00
+    style PolicyReporter stroke:#FF6D00
+    style Prometheus stroke:#2962FF
+    style AlertMgr stroke:#FFD600
+    style KSM stroke:#2962FF
+    style Loki stroke:#D50000
+    style Jenkins stroke:#00C853
+    style Sonar stroke:#FFD600
+    style Trivy stroke:#AA00FF
+    style Cilium stroke:#000000,fill:#757575
+    style FluentBit stroke:#D50000
+    style NodeExporter stroke:#2962FF
+    style Node1 fill:#757575,stroke:#000000
+    style Node2 stroke:#000000,fill:#757575
+    style Node3 fill:#757575,stroke:#000000
+    style Git stroke:#00C853
+    style n1 stroke:#00C853
+    style K3s stroke:#000000,fill:#424242
+    linkStyle 0 stroke:#00C853,stroke-width:2px,fill:none
+    linkStyle 1 stroke:#00C853,stroke-width:2px,fill:none
+    linkStyle 2 stroke:#00C853,fill:none
+    linkStyle 3 stroke:#AA00FF,fill:none
+    linkStyle 4 stroke:#AA00FF,fill:none
+    linkStyle 5 stroke:#FFD600,fill:none
+    linkStyle 6 stroke:#AA00FF,fill:none
+    linkStyle 7 stroke:#FB8C00,stroke-width:2px,fill:none
+    linkStyle 8 stroke:#FB8C00,stroke-width:2px,fill:none
+    linkStyle 9 stroke:#FB8C00,stroke-width:2px,fill:none
+    linkStyle 10 stroke:#2962FF,stroke-width:2px,fill:none
+    linkStyle 11 stroke:#2962FF,stroke-width:2px,fill:none
+    linkStyle 12 stroke:#2962FF,stroke-width:2px,fill:none
+    linkStyle 13 stroke:#2962FF,stroke-width:2px,fill:none
+    linkStyle 14 stroke:#2962FF,fill:none
+    linkStyle 15 stroke:#FFD600,fill:none
+    linkStyle 16 stroke:#2962FF,fill:none
+    linkStyle 17 stroke:#D50000,fill:none
+    linkStyle 18 stroke:#D50000,fill:none
+    linkStyle 19 stroke:#D50000,fill:none
+    linkStyle 20 stroke:#D50000,fill:none
+    linkStyle 21 stroke:#D50000,fill:none
+    linkStyle 22 stroke:#00C853,fill:none
 
-    subgraph K3s[k3d Cluster]
-        Cilium[Cilium CNI]
-        FluentBit[Fluent-bit]
-        NodeExporter[Node Exporter]
-        
-        subgraph Node1[Control Plane]
-            K3sAPI[K3s API Server]
-        end
-        
-        subgraph Node2[Static Infrastructure]
-            CertMgr[Cert-Manager]
-            Vault[Vault]
-            ESO[External Secrets]
-            ArgoCD[ArgoCD]
-        end
-        
-        subgraph Node3[GitOps Workloads]
-            Kyverno[Kyverno]
-            PolicyReporter[Policy Reporter]
-            Prometheus[Prometheus]
-            KSM[Kube State Metrics]
-            Grafana[Grafana]
-            Loki[Loki]
-            Jenkins[Jenkins]
-            Sonar[SonarQube]
-            Trivy[Trivy]
-        end
-    end
-    
-    Git -->|policies as code| ArgoCD
-    ArgoCD -->|deploys| Node3
-    ArgoCD -->|creates resources| K3sAPI
-    K3sAPI -->|validates| Kyverno
-    Kyverno -->|enforces policies| K3sAPI
-    Vault -->|provides secrets| ESO
-    ESO -->|syncs to K8s| K3sAPI
-    NodeExporter -->|scrapes Node metrics| Prometheus  
-    KSM -->|scrapes workload metrics| Prometheus 
-    Prometheus -->|queries| Grafana
-    FluentBit -->|forwards logs| Loki
-    Loki -->|queries| Grafana
+
 ```
 
 **Why this architecture?**
