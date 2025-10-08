@@ -99,15 +99,74 @@ graph TD
 ## Application Manifests & Kustomize
 
 To manage the complexity of modern applications, we use **Kustomize** as the standard
-for defining application manifests.
+for defining and composing application manifests. Our philosophy is based on
+**resource composition** over complex inheritance via `overlays`.
 
-- **Composition:** The `kustomization.yaml` file for an application lists all the
-  individual Kubernetes resources (`deployment.yaml`, `service.yaml`,
-  `servicemonitor.yaml`, etc.) that make up the application.
-- **Shared Resources:** Kustomize allows applications to inherit from common "bases"
-  (e.g., for shared labels or NetworkPolicies), promoting DRY (Don't Repeat Yourself)
-  principles. This is useful for applying consistent settings across multiple
-  applications within a stack.
+Two primary patterns for Kustomize are established in this project.
+
+```mermaid
+graph TD
+    subgraph Pattern 1: Local Resource Aggregation
+        Kustomization_P1["kustomization.yaml"] -- "resources:" --> Resource1["resource-a.yaml"];
+        Kustomization_P1 -- "resources:" --> Resource2["resource-b.yaml"];
+    end
+
+    subgraph Pattern 2: Helm Chart Orchestration
+        Kustomization_P2["kustomization.yaml"] -- "valuesFile:" --> Values["values.yaml"];
+        Kustomization_P2 -- "repo:" --> HelmRepo["Remote Helm Repo"];
+    end
+
+    style Kustomization_P1 fill:#cde4ff
+    style Kustomization_P2 fill:#cde4ff
+    style HelmRepo fill:#d5f0d5
+```
+
+### Pattern 1: Local Resource Aggregation
+
+This is the standard approach for **in-house applications** or for grouping a set of
+related Kubernetes manifests.
+
+-   **When to Use It:** For internally developed microservices, governance policies
+    (`ResourceQuota`, `LimitRange`), or any set of YAML manifests you manage directly.
+-   **Structure:**
+    -   A directory is created for the component (e.g., `governance/`).
+    -   YAML files (`limitrange.yaml`, `resourcequota.yaml`) are placed inside.
+    -   The `kustomization.yaml` file lists them in the `resources` section.
+
+-   **Example (`K8s/cicd/governance/kustomization.yaml`):**
+    ```yaml
+    apiVersion: kustomize.config.k8s.io/v1beta1
+    kind: Kustomization
+    resources:
+      - limitrange.yaml
+      - resourcequota.yaml
+    ```
+
+### Pattern 2: Helm Chart Orchestration
+
+This is the **preferred, standard method** for deploying **third-party applications**
+or any software available as a Helm chart. It allows us to version and manage the
+configuration of these tools declaratively.
+
+-   **When to Use It:** For tools like Jenkins, Loki, Prometheus, Trivy, etc.
+-   **Structure:**
+    -   A directory is created for the application (e.g., `jenkins/`).
+    -   A `kustomization.yaml` file defines the Helm chart in the `helmCharts` section.
+    -   A `values.yaml` file (e.g. `jenkins-values.yaml`) contains all custom
+        configuration for that chart.
+
+-   **Example (`K8s/cicd/jenkins/kustomization.yaml`):**
+    ```yaml
+    apiVersion: kustomize.config.k8s.io/v1beta1
+    kind: Kustomization
+    helmCharts:
+      - name: jenkins
+        repo: https://charts.jenkins.io
+        version: 4.9.2
+        releaseName: jenkins
+        namespace: cicd
+        valuesFile: jenkins-values.yaml
+    ```
 
 ## Workflow for Deploying a New Application
 
