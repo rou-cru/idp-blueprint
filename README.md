@@ -244,6 +244,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 - [ ] Crossplane for infrastructure as code
 - [ ] OpenTelemetry Collector + Tempo for distributed tracing
 - [ ] Cost optimization dashboard
+- [ ] Implement NetworkPolicies for enhanced security and namespace isolation
 
 ## 📄 License
 
