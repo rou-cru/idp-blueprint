@@ -2,6 +2,10 @@
 
 # Use the default configuration as a base
 config:
+  gitignore: true
+  # Enforce dashes for unordered lists
+  MD004:
+    style: dash
   # Allow longer lines to match Prettier's configuration
   MD013:
     line_length: 88
