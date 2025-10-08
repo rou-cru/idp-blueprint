@@ -10,11 +10,11 @@
     "cilium-cli@0.18.7",
     "argocd@3.1.6",
     "bpytop@1.0.68",
-    "kubectl-doctor@latest",
-    "kubectl-convert@latest",
-    "kubectl-graph@latest",
-    "kubectl-ktop@latest",
-    "kubectl-klock@latest",
+    "kubectl-doctor@0.3.1",
+    "kubectl-convert@1.33.4",
+    "kubectl-graph@0.7.0",
+    "kubectl-ktop@0.4.1",
+    "kubectl-klock@0.8.2",
     "yamllint@1.37.1",
     "shellcheck@0.10.0",
     "hadolint@2.12.0",
@@ -29,9 +29,6 @@
     "prettier@3.6.2"
   ],
   "shell": {
-    "init_hook": ["echo 'Preparing Env...'", ". .devcontainer/init.sh"],
-    "scripts": {
-      "test": ["echo \"Error: no test specified\" && exit 1"]
-    }
+    "init_hook": ["echo 'Preparing Env...'", ". .devcontainer/init.sh"]
   }
 }

@@ -5,7 +5,9 @@ execution environment through diagrams.
 
 ## 1. General Architecture and GitOps Flow
 
-This diagram shows the high-level view of the workflow, from the definition in a Git repository to the deployment and operation of the components within the Kubernetes cluster.
+This diagram shows the high-level view of the workflow, from the definition in a Git
+repository to the deployment and operation of the components within the Kubernetes
+cluster.
 
 ```mermaid
 graph TD
@@ -165,7 +167,8 @@ sequenceDiagram
 
 ## 5. Observability Data Flow
 
-This diagram details how metrics and logs are collected, processed, and visualized on the platform.
+This diagram details how metrics and logs are collected, processed, and visualized on
+the platform.
 
 ```mermaid
 graph TD
@@ -202,7 +205,8 @@ graph TD
 
 ## 6. Security Scanning Flow with Trivy
 
-This diagram illustrates how the Trivy operator scans cluster workloads for vulnerabilities.
+This diagram illustrates how the Trivy operator scans cluster workloads for
+vulnerabilities.
 
 ```mermaid
 sequenceDiagram
@@ -222,7 +226,10 @@ sequenceDiagram
 
 ## 7. GitOps Structure with ApplicationSets
 
-This diagram explains the "App of Apps" pattern. The `ApplicationSet` resources in ArgoCD monitor directories in Git. When they find subdirectories that match their generator, they automatically create child `Application` resources, one for each stack component.
+This diagram explains the "App of Apps" pattern. The `ApplicationSet` resources in
+ArgoCD monitor directories in Git. When they find subdirectories that match their
+generator, they automatically create child `Application` resources, one for each
+stack component.
 
 ```mermaid
 graph LR
@@ -254,4 +261,33 @@ graph LR
     AppSetObs -->|Generates| AppGrafana
     AppSetObs -->|Generates| AppLoki
     AppSetSec -->|Generates| AppTrivy
+```
+
+## 8. Control Loop Overview
+
+This diagram illustrates the continuous, cross-reconciling control loops between
+the core GitOps components, forming the heart of the "Platform as a System."
+Each component watches the Kubernetes API server for changes and acts to align the
+cluster's actual state with the desired state defined in Git, policies, or
+external secret stores.
+
+```mermaid
+graph LR
+    K8sApi[Kubernetes API Server]
+
+    subgraph GitOps
+        ArgoCD[ArgoCD]
+    end
+
+    subgraph Policy
+        Kyverno[Kyverno]
+    end
+
+    subgraph Secrets
+        ESO[External Secrets Operator]
+    end
+
+    ArgoCD <-->|Reconciles Git State| K8sApi
+    Kyverno <-->|Validates & Mutates Resources| K8sApi
+    ESO <-->|Syncs External Secrets| K8sApi
 ```
