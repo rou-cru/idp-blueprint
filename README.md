@@ -1,0 +1,348 @@
+# IDP-blueprint
+
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?style=flat-square&logo=kubernetes)](https://k3d.io/)
+[![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?style=flat-square&logo=docker)](https://containers.dev/)
+[![Task](https://img.shields.io/badge/Automation-Task-violet?style=flat-square&logo=task)](https://taskfile.dev/)
+![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange?style=flat-square)
+![Cilium](https://img.shields.io/badge/CNI-Cilium-yellow?style=flat-square)
+![Vault](https://img.shields.io/badge/Vault-Secrets-black?style=flat-square&logo=vault)
+![Kyverno](https://img.shields.io/badge/Kyverno-Policies-blue?style=flat-square)
+![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-orange?style=flat-square&logo=prometheus)
+![Grafana](https://img.shields.io/badge/Grafana-Dashboards-orange?style=flat-square&logo=grafana)
+![Jenkins](https://img.shields.io/badge/Jenkins-CI/CD-red?style=flat-square&logo=jenkins)
+![Trivy](https://img.shields.io/badge/Trivy-Security-blue?style=flat-square)
+
+> **An Internal Developer Platform (IDP) Blueprint** - Deploy a complete platform engineering stack (GitOps, Observability, Security & Policy Enforcement) with a single command on your laptop!
+
+## 🎯 What is this?
+
+An **opinionated, resource-optimized IDP** running on [K3d](https://k3d.io/stable) that demonstrates modern Platform Engineering practices:
+
+- ✅ **GitOps-first** with [ArgoCD](https://argo-cd.readthedocs.io/en/stable)
+- ✅ **Policy-as-Code** with [Kyverno](https://kyverno.io)
+- ✅ **Observability** with [Prometheus](https://prometheus.io), [Grafana](https://grafana.com/grafana/?plcmt=products-nav) and [Loki](https://grafana.com/docs/loki/latest/?pg=oss-loki&plcmt=quick-links) + [Fluent-bit](https://fluentbit.io)
+- ✅ **Security scanning** with [Trivy](https://trivy.dev/latest)
+- ✅ **CI/CD** with [Jenkins](https://www.jenkins.io) and [SonarQube](https://www.sonarsource.com/)
+- ✅ **eBPF Service Mesh** with [Cilium](https://cilium.io)
+- ✅ **Secrets management** with [Vault](https://www.hashicorp.com/en/products/vault) + [External Secrets](https://external-secrets.io/latest)
+- ✅ **Certificate management** with [cert-manager](https://cert-manager.io)
+- ✅ **Single command deployment** by [Task](https://taskfile.dev) so just `task deploy`
+
+Perfect for learning, experimentation, or as a foundation for your own IDP.
+
+## Deploy
+
+```mermaid
+flowchart TD
+    Start([task deploy]) --> K3d[Create k3d Cluster]
+    K3d --> NS[Apply Namespaces]
+    
+    NS --> Static[Deploy Static Infrastructure via Helm]
+    Static --> Cilium[Cilium CNI]
+    Static --> CertMgr[Cert-Manager]
+    Static --> Vault[Vault]
+    Static --> ESO[External Secrets Operator]
+    Static --> ArgoCD[ArgoCD]
+    
+    ArgoCD --> GitOps[GitOps Takes Over]
+    GitOps --> Policies[Deploy Policies First]
+    Policies --> Kyverno[Kyverno]
+    Policies --> Reporter[Policy Reporter]
+    
+    Kyverno --> Apps[Deploy Application Stacks]
+    Apps --> Obs[Observability Stack]
+    Apps --> CICD[CI/CD Stack]
+    Apps --> Sec[Security Stack]
+    
+    Sec --> Done([IDP Ready])
+```
+
+> **Deployment time:** ~5-10 minutes | **Command:** `task deploy`
+
+## 🗃️ Architecture
+
+```mermaid
+graph LR
+    Git[(Git Repository)]
+
+    subgraph K3s[k3d Cluster]
+        Cilium[Cilium CNI]
+        FluentBit[Fluent-bit]
+        NodeExporter[Node Exporter]
+        
+        subgraph Node1[Control Plane]
+            K3sAPI[K3s API Server]
+        end
+        
+        subgraph Node2[Static Infrastructure]
+            CertMgr[Cert-Manager]
+            Vault[Vault]
+            ESO[External Secrets]
+            ArgoCD[ArgoCD]
+        end
+        
+        subgraph Node3[GitOps Workloads]
+            Kyverno[Kyverno]
+            PolicyReporter[Policy Reporter]
+            Prometheus[Prometheus]
+            KSM[Kube State Metrics]
+            Grafana[Grafana]
+            Loki[Loki]
+            Jenkins[Jenkins]
+            Sonar[SonarQube]
+            Trivy[Trivy]
+        end
+    end
+    
+    Git -->|policies as code| ArgoCD
+    ArgoCD -->|deploys| Node3
+    ArgoCD -->|creates resources| K3sAPI
+    K3sAPI -->|validates| Kyverno
+    Kyverno -->|enforces policies| K3sAPI
+    Vault -->|provides secrets| ESO
+    ESO -->|syncs to K8s| K3sAPI
+    NodeExporter -->|scrapes Node metrics| Prometheus  
+    KSM -->|scrapes workload metrics| Prometheus 
+    Prometheus -->|queries| Grafana
+    FluentBit -->|forwards logs| Loki
+    Loki -->|queries| Grafana
+```
+
+**Why this architecture?**
+- **Node separation** ensures resource isolation and easier troubleshooting
+- **Static infrastructure** (Node 2) deployed via Helm for bootstrap reliability - these components don't change frequently
+- **GitOps workloads** (Node 3) managed by ArgoCD for declarative operations and easy rollbacks - everything defined as code in Git
+- **DaemonSets run on all nodes** (Cilium for networking, Fluent-bit for log collection, Node Exporter for metrics)
+- **Policies-first approach** ensures all workloads are compliant from deployment - policies themselves are GitOps managed
+- **Vault as source of truth** for secrets, synced to Kubernetes via External Secrets Operator
+
+📖 For detailed architecture documentation, see [ARCHITECTURE_VISUAL.md](./ARCHITECTURE_VISUAL.md)
+
+## 📊 Resource Requirements
+
+Optimized for local development environments:
+
+### Minimum Theoretical Footprint (Total Requests)
+
+| Resource   | Total Requested |
+| ---------- | --------------- |
+| **CPU**    | **~1.9 cores**  |
+| **Memory** | **~3.2 GiB**    |
+
+### Maximum Theoretical Footprint (Total Limits)
+
+| Resource   | Total Limited  |
+| ---------- | -------------- |
+| **CPU**    | **~5.3 cores** |
+| **Memory** | **~7.6 GiB**   |
+
+**💡 Recommendation:** 
+- Minimum: 4 CPU cores, 8GB RAM
+- Comfortable: 6 CPU cores, 12GB RAM
+- Disk: ~20GB available
+
+> **Note:** These numbers exclude k3d control plane and OS overhead. Real-world usage may vary based on workload.
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker Desktop
+- Visual Studio Code with [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+- Git
+
+> **Important:** This project uses VS Code Dev Containers to provide a pre-configured environment with all required tools (kubectl, helm, k3d, task, etc.). Running `task deploy` outside the Dev Container will fail unless you manually install all dependencies.
+
+### Deploy the Platform
+
+```bash
+# Clone and open in VS Code
+git clone https://github.com/rou-cru/idp-blueprint && cd idp-blueprint
+code .
+
+# When prompted, click "Reopen in Container"
+# Once inside the Dev Container, deploy everything:
+task deploy
+
+# ☕ Grab a coffee - deployment takes ~5-10 minutes
+```
+
+That's it! Your IDP is ready.
+
+## 📚 What's Included
+
+### Core Infrastructure (`IT/`) 
+Deployed via Helm on Node 2 (static workloads):
+- **Cilium** - eBPF-based CNI and network policies
+- **Cert-Manager** - TLS certificate automation
+- **Vault** - Secret storage backend
+- **External Secrets** - Vault-to-Kubernetes secret sync
+- **ArgoCD** - GitOps engine
+
+### Policy Layer (`Policies/`)
+First GitOps deployment to ensure compliance from the start - **policies as code**:
+- **Kyverno** - Policy enforcement engine (GitOps managed)
+- **Policy Reporter** - Compliance monitoring dashboard (GitOps managed)
+- **Pre-configured policies**: Namespace labels, component labels, best practices (all in Git)
+
+### Application Stacks (`K8s/`)
+Deployed via ArgoCD ApplicationSets on Node 3:
+- **Observability**: Prometheus, Grafana, Loki, Fluent-bit
+- **CI/CD**: Jenkins, SonarQube
+- **Security**: Trivy Operator
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+- 🐛 Report bugs via [Issues](https://github.com/rou-cru/idp-blueprint/issues)
+- 💡 Suggest features or improvements
+- 📖 Improve documentation
+- 🔧 Submit pull requests for:
+  - Additional Kyverno policies
+  - Resource optimization improvements
+  - Integration with other tools
+  - Translations
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+## 🗺️ Roadmap
+
+- [ ] Add Backstage as developer portal
+- [ ] Crossplane for infrastructure as code
+- [ ] OpenTelemetry integration
+- [ ] Cost optimization dashboard
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE) file for details.
+
+Feel free to use this as a reference or foundation for your own IDP implementations.
+
+## 🙏 Acknowledgments
+
+This project integrates and builds upon excellent open-source tools from the Cloud Native ecosystem:
+- ArgoCD by Argo Project
+- Cilium by Isovalent
+- Kyverno by Kyverno Project
+- And many others listed in the tech stack
+
+---
+
+## Host Setup
+
+### macOS / Linux Users
+
+Choose one of the following methods to install everything you need.
+
+<details>
+<summary><strong>Option 1: Using Homebrew (Recommended)</strong></summary>
+
+Open your terminal and run this command block to install Git, Docker, VS Code, and the
+required extension:
+
+```bash
+brew install git && \
+brew install --cask visual-studio-code docker && \
+code --install-extension ms-vscode-remote.remote-containers --force
+```
+
+</details>
+
+<details>
+<summary><strong>Option 2: Manual Installation</strong></summary>
+
+Install each of the following manually from their official sources:
+
+- [Git](https://git-scm.com/downloads)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Dev Containers extension for VS Code](vscode:extension/ms-vscode-remote.remote-containers)
+
+</details>
+
+### Windows Users
+
+#### Step 1: Install WSL
+
+**This is a mandatory first step**. Open **PowerShell as an Administrator** and run this
+command. A **PC reboot** will likely be required.
+
+```powershell
+wsl --install --distro Ubuntu
+```
+
+> After completing the install, open "Ubuntu" from programs and setup a user in the
+> console.
+
+#### Step 2: Install Host Software
+
+Choose one of the following methods:
+
+<details>
+<summary><strong>Option 1: Using Chocolatey (Recommended)</strong></summary>
+
+From an **Administrator PowerShell**, run this command block:
+
+```powershell
+choco install git vscode docker-desktop -y
+
+. $profile
+
+code --install-extension ms-vscode-remote.remote-containers
+```
+
+Now you can close the PowerShell console.
+
+</details>
+
+<details>
+<summary><strong>Option 2: Manual Installation</strong></summary>
+
+Install each of the following manually from their official sources:
+
+- [Git](https://git-scm.com/downloads)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Dev Containers extension for VS Code](vscode:extension/ms-vscode-remote.remote-containers)
+
+</details>
+
+#### Step 3: Configure Docker
+
+Open **Docker Desktop** and go to `Settings > Resources > WSL Integration`, **enable**
+the integration for your `Ubuntu` distribution.
+
+#### Step 4: Launch the Project
+
+1. Open your **`Ubuntu`** terminal from the Start Menu.
+2. In the Ubuntu terminal, run:
+
+   ```bash
+   git clone https://github.com/rou-cru/idp-blueprint
+
+   cd idp-blueprint
+   code .
+   ```
+
+3. When VS Code opens, click **"Reopen in Container"**.
+
+### How the Dev Environment Works
+
+This development environment is designed to be "smart". The environment performs an
+automatic initialization step:
+
+1. The `devbox.json` file contains a `"shell"` section with an `"init_hook"`.
+2. This hook is configured to run the `.devcontainer/init.sh` script every time a new
+   terminal is opened in VS Code.
+3. The `init.sh` script adds and updates all the Helm repositories that the project
+   needs (ArgoCD, Prometheus, Grafana, etc.).
+
+**In short:** Thanks to this mechanism, you never need to manage Helm repositories
+manually and can add other env setup steps without caring how the environment itself is
+generated. They will always be ready for you to deploy the project.
+
+---
+
+**⭐ If you find this project useful, please consider starring it on GitHub!**
