@@ -2,7 +2,14 @@ version: '3'
 
 vars:
   DOCKER_IMAGE_NAME: '{{.DOCKER_IMAGE_NAME | default "idp-blueprint"}}'
-  DOCKER_IMAGE_TAG: '{{.DOCKER_IMAGE_NAME | default "latest"}}'
+  DOCKER_IMAGE_TAG: '{{.DOCKER_IMAGE_TAG | default "latest"}}'
+
+  # Helm Chart Versions
+  CILIUM_VERSION: '{{.CILIUM_VERSION | default "1.18.2"}}'
+  CERT_MANAGER_VERSION: '{{.CERT_MANAGER_VERSION | default "v1.18.2"}}'
+  EXTERNAL_SECRETS_VERSION: '{{.EXTERNAL_SECRETS_VERSION | default "0.20.2"}}'
+  VAULT_VERSION: '{{.VAULT_VERSION | default "0.31.0"}}'
+  ARGOCD_VERSION: '{{.ARGOCD_VERSION | default "8.5.8"}}'
 
 tasks:
   deploy:
@@ -10,7 +17,8 @@ tasks:
     cmds:
       # 1. Bootstrap Cluster & Core Services
       - task: k3d:create
-      - task: namespaces:apply
+      - task: it:apply-namespaces
+      - task: it:apply-resources
       - task: cilium:deploy
       - task: cert-manager:deploy
       - task: vault:deploy
@@ -54,10 +62,15 @@ tasks:
     cmds:
       - kubectl apply -f K8s/security/applicationset-security.yaml
 
-  namespaces:apply:
-    desc: 'Apply all namespace manifests'
+  it:apply-namespaces:
+    desc: 'Apply all IT bootstrap namespaces via Kustomize'
     cmds:
-      - kubectl apply -f IT/namespaces/
+      - kustomize build IT/namespaces/ | kubectl apply -f -
+
+  it:apply-resources:
+    desc: 'Apply all IT bootstrap resources via Kustomize'
+    cmds:
+      - kustomize build IT/ | kubectl apply -f -
 
   k3d:create:
     desc: 'Create a k3d cluster with 3 nodes'
@@ -67,34 +80,33 @@ tasks:
   cilium:deploy:
     desc: 'Install Cilium as CNI'
     cmds:
-      - helm upgrade --install cilium cilium/cilium --version 1.18.2 --namespace
-        kube-system --values IT/cilium-values.yaml
+      - helm upgrade --install cilium cilium/cilium --version {{.CILIUM_VERSION}}
+        --namespace kube-system --values IT/cilium-values.yaml
 
   cert-manager:deploy:
     desc: 'Deploy Cert-Manager to handle CA'
     cmds:
-      - helm upgrade --install cert-manager jetstack/cert-manager --version v1.18.2
+      - helm upgrade --install cert-manager jetstack/cert-manager --version {{.CERT_MANAGER_VERSION}}
         --namespace cert-manager --values IT/cert-manager-values.yaml
-      - kubectl apply -f IT/cert-manager/ -n cert-manager
 
   external-secrets:deploy:
     desc: 'Install External Secrets Operator'
     cmds:
       - helm upgrade --install external-secrets external-secrets/external-secrets
-        --version 0.20.2 --namespace external-secrets-system --values IT/eso-values.yaml
+        --version {{.EXTERNAL_SECRETS_VERSION}} --namespace external-secrets-system
+        --values IT/eso-values.yaml
       - kubectl wait --for=condition=Ready pods -l
         app.kubernetes.io/name=external-secrets -n external-secrets-system
         --timeout=120s
       # Wait for webhook endpoints to be available
       - kubectl wait --for=jsonpath='{.subsets[*].addresses[*].ip}'
         endpoints/external-secrets-webhook -n external-secrets-system --timeout=60s
-      - kubectl apply -f IT/external-secrets/vault-secretstore.yaml
 
   vault:deploy:
     desc: 'Deploy HashiCorp Vault as Secret Backend'
     cmds:
-      - helm upgrade --install vault hashicorp/vault --version 0.31.0 --namespace
-        vault-system --values IT/vault-values.yaml
+      - helm upgrade --install vault hashicorp/vault --version {{.VAULT_VERSION}}
+        --namespace vault-system --values IT/vault-values.yaml
       - kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault -n
         vault-system --timeout=120s
       - task: vault:setup
@@ -102,8 +114,8 @@ tasks:
   argocd:deploy:
     desc: 'Deploy ArgoCD GitOps Engine'
     cmds:
-      - helm upgrade --install argocd argo/argo-cd --version 8.5.8 --namespace argocd
-        --values IT/argocd-values.yaml
+      - helm upgrade --install argocd argo/argo-cd --version {{.ARGOCD_VERSION}}
+        --namespace argocd --values IT/argocd-values.yaml
 
   vault:setup:
     desc: 'Configure Vault for use by External Secrets'
@@ -215,7 +227,7 @@ tasks:
     desc: 'Validate Kubernetes manifests against their schemas'
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
-      - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do kustomize build $dir --enable-helm; done | kubeval --ignore-missing-schemas -
+      - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -; done
 
   # SECURITY
   # ------------------------------------------------------------------------------
