@@ -4,48 +4,69 @@
 ha:
   enabled: false
 
+## @section Dex Configuration
+## @description Dex is a federated OpenID Connect provider.
+# -- Disable Dex to save resources as it's not needed for this demo.
+dex:
+  enabled: false
+
 ## @section Resource Optimization
 ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
 # -- Controller resource settings
 controller:
   resources:
     requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
       cpu: 500m
-      memory: 256Mi
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s
 
 # -- Server (UI/API) resource settings
 server:
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: 250m
+      memory: 512Mi
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 500m
+      memory: 768Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s
 
 # -- Repo Server resource settings
 repoServer:
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: 500m
+      memory: 512Mi
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 1000m
+      memory: 1Gi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s
 
 ## @section Redis Configuration
 ## @description Resource settings for the bundled Redis cache.
 redis:
   resources:
     requests:
-      cpu: 50m
-      memory: 64Mi
+      cpu: 250m
+      memory: 256Mi
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 500m
+      memory: 512Mi
 
 ## @section Feature Flags
 ## @description Toggles for core ArgoCD features.
@@ -54,19 +75,51 @@ applicationSet:
   enabled: true
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: 250m
+      memory: 512Mi
     limits:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 500m
+      memory: 768Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      interval: 30s
 
 # -- Let Helm manage the CRDs for simplicity in this demo environment.
 crds:
   install: true
 
-## @section Repository Configuration
-## @description Configure Helm repositories for ArgoCD
+## @section Secret Management
+## @description ArgoCD admin password from Vault-generated Secret
 configs:
+  secret:
+    # -- Disable Secret creation because VSO creates it from Vault
+    createSecret: false
+
+  ## @section Kustomize Configuration
+  ## @description Enable Helm support in Kustomize globally
+  cm:
+    # -- Enable Helm charts in Kustomize builds
+    kustomize.buildOptions: "--enable-helm"
+
+    # -- Use annotation-based tracking for better performance
+    application.resourceTrackingMethod: annotation
+
+    # -- Enable status badge for applications
+    statusbadge.enabled: true
+
+    # -- Exclude high-frequency resources from reconciliation
+    resource.exclusions: |
+      - apiGroups:
+        - cilium.io
+        kinds:
+        - CiliumIdentity
+        clusters:
+        - "*"
+
+  ## @section Repository Configuration
+  ## @description Configure Helm repositories for ArgoCD
   repositories:
     argo:
       name: argo
