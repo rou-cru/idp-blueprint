@@ -1,0 +1,54 @@
+## @section Vault Server
+## @description Vault server configuration.
+# -- Vault server configuration in standalone mode.
+server:
+  standalone:
+    # -- Enables standalone server configuration.
+    enabled: true
+    # -- HCL configuration for the Raft storage backend.
+    config: |
+      storage "raft" {
+        path    = "/vault/data"
+        node_id = "vault-0"
+      }
+      listener "tcp" {
+        address         = "0.0.0.0:8200"
+        tls_disable     = "true"
+        telemetry {
+          unauthenticated_metrics_access = true
+        }
+      }
+      telemetry {
+        prometheus_retention_time = "30s"
+        disable_hostname          = true
+      }
+      # -- Enables a file audit device.
+      audit "file" {
+        path = "/vault/logs/audit.log"
+      }
+
+  # Note: Vault data is persisted in PVC 'data-vault-0' (auto-created by Helm chart)
+  # The PVC uses local-path storage class and is mounted at /vault/data
+
+  # -- Resource configuration for the Vault pod.
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  # -- Enables the metrics endpoint for Prometheus.
+  serviceMonitor:
+    enabled: true
+
+## @section Vault UI
+## @description Vault UI configuration.
+# -- Vault UI configuration.
+ui:
+  # -- Enables the Vault UI.
+  enabled: true
+  # -- Service type for the UI.
+  service:
+    type: 'ClusterIP'

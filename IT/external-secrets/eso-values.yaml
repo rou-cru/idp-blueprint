@@ -6,12 +6,18 @@ replicas: 1
 # -- Defines resource requests and limits for the operator pod.
 resources:
   requests:
-    memory: 64Mi
-    cpu: 100m
+    cpu: 250m
+    memory: 256Mi
   limits:
-    memory: 128Mi
-    cpu: 200m
+    cpu: 500m
+    memory: 512Mi
 
 serviceAccount:
   create: true
   name: 'cluster-secrets'
+
+## @section Prometheus Metrics
+## @description Enable Prometheus ServiceMonitor for External Secrets Operator.
+serviceMonitor:
+  enabled: true
+  interval: 30s

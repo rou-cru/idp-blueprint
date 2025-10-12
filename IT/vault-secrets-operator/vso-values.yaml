@@ -1,0 +1,81 @@
+## @section Vault Secrets Operator Configuration
+## Configuration for HashiCorp Vault Secrets Operator
+
+controller:
+  # -- Number of replicas for the operator
+  replicas: 1
+
+  manager:
+    image:
+      repository: hashicorp/vault-secrets-operator
+      tag: 1.0.1
+      pullPolicy: IfNotPresent
+
+    # -- Configuración de recursos para el operador
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+
+    # -- Configuración de logging
+    logging:
+      level: info
+      timeEncoding: rfc3339
+      stacktraceLevel: panic
+
+    # -- Global transformation options
+    globalTransformationOptions:
+      excludeRaw: false
+
+    # -- Global Vault auth options
+    globalVaultAuthOptions:
+      allowDefaultGlobals: true
+
+  # -- kube-rbac-proxy configuration
+  kubeRbacProxy:
+    image:
+      repository: quay.io/brancz/kube-rbac-proxy
+      tag: v0.18.1
+      pullPolicy: IfNotPresent
+
+    resources:
+      requests:
+        cpu: 5m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 128Mi
+
+# -- Default Vault connection (optional, can be overridden per VaultAuth)
+defaultVaultConnection:
+  enabled: true
+  address: "http://vault.vault-system.svc.cluster.local:8200"
+  skipTLSVerify: true  # ONLY for demo/dev environments
+
+# -- Default authentication method (optional, can be overridden)
+defaultAuthMethod:
+  enabled: true
+  kubernetes:
+    role: "vso-role"
+    serviceAccount: "vault-secrets-operator"
+    audiences:
+      - vault
+
+# -- Metrics service configuration
+metricsService:
+  enabled: true
+  type: ClusterIP
+  ports:
+    - name: https
+      port: 8443
+      targetPort: https
+      protocol: TCP
+
+# -- Prometheus ServiceMonitor configuration
+telemetry:
+  serviceMonitor:
+    enabled: true
+    interval: 30s

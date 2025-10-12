@@ -3,31 +3,38 @@
 crds:
   enabled: true
 
+## @section Prometheus Metrics
+## @description Enable Prometheus ServiceMonitor for cert-manager components.
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: true
+    interval: 30s
+
 ## @section Resource Optimization
 ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
-controller:
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 256Mi
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 webhook:
   resources:
     requests:
-      cpu: 50m
-      memory: 64Mi
-    limits:
       cpu: 100m
       memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
 
 cainjector:
   resources:
     requests:
-      cpu: 50m
-      memory: 64Mi
-    limits:
       cpu: 100m
       memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
