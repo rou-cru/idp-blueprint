@@ -1,60 +1,48 @@
-## @section Alertmanager
-## @description Configuration for Alertmanager. Disabled for the demo.
-# -- Alertmanager está deshabilitado, pero se configura por completitud.
-alertmanager:
+## @section CRDs
+## @description CRD installation configuration.
+# -- Disables the installation of CRDs, as they are managed separately.
+crds:
   enabled: false
-  alertmanagerSpec:
-    # -- Log retention for Alertmanager.
-    retention: 6h
-    # -- Storage configuration for Alertmanager.
-    storage:
-      volumeClaimTemplate:
-        spec:
-          accessModes: ['ReadWriteOnce']
-          resources:
-            requests:
-              storage: 1Gi # No se usará, pero es requerido por la plantilla
-  # -- Resource requests and limits for Alertmanager.
-  resources:
-    requests:
-      cpu: 50m
-      memory: 64Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
+
+## @section Alertmanager
+## @description Alertmanager configuration.
+# -- Alertmanager configuration.
+alertmanager:
+  # -- Disables Alertmanager for this demo environment.
+  enabled: false
 
 ## @section Prometheus
-## @description Configuration for the Prometheus instance.
-# -- Configuración de la instancia de Prometheus
+## @description Prometheus instance configuration.
+# -- Prometheus instance configuration.
 prometheus:
   prometheusSpec:
-    # -- Data retention for Prometheus.
+    # -- Metrics retention time.
     retention: 6h
-    # -- Al no definir storageSpec, usará un emptyDir (sin persistencia real)
-    # -- Resource requests and limits for Prometheus.
+    # -- By not defining storageSpec, it will use an emptyDir (no real persistence).
+    # -- Resource limits and requests for Prometheus.
     resources:
       requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        cpu: 200m
+        cpu: 250m
         memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
 
 ## @section Grafana
-## @description Configuration for the Grafana instance.
-# -- Configuración de Grafana
+## @description Grafana instance configuration.
+# -- Grafana instance configuration.
 grafana:
-  # -- Persistence is disabled for the demo.
+  # -- Disables persistence for this demo environment.
   persistence:
     enabled: false
-  # -- Resource requests and limits for Grafana.
+  # -- Resource limits and requests for Grafana.
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
-    limits:
       cpu: 100m
       memory: 256Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
   # -- Additional datasources for Grafana.
   additionalDataSources:
     - name: Loki
@@ -63,10 +51,9 @@ grafana:
       access: proxy
       isDefault: false
 
-## @section Other Components
-## @description Resource configuration for other components in the stack.
-
-# -- Resources for the Prometheus Operator.
+## @section Prometheus Operator
+## @description Prometheus Operator configuration.
+# -- Resource limits and requests for the Prometheus Operator.
 prometheusOperator:
   resources:
     requests:
@@ -76,7 +63,9 @@ prometheusOperator:
       cpu: 100m
       memory: 128Mi
 
-# -- Resources for kube-state-metrics.
+## @section Kube State Metrics
+## @description Kube State Metrics configuration.
+# -- Resource limits and requests for kube-state-metrics.
 kube-state-metrics:
   resources:
     requests:
@@ -86,19 +75,20 @@ kube-state-metrics:
       cpu: 100m
       memory: 256Mi
 
-# -- Resources for the node-exporter daemonset.
-node-exporter:
+## @section Prometheus Node Exporter
+## @description Prometheus Node Exporter configuration.
+# -- Resource limits and requests for the node-exporter.
+prometheus-node-exporter:
   resources:
     requests:
-      cpu: 20m
+      cpu: 50m
       memory: 64Mi
     limits:
-      cpu: 50m
+      cpu: 100m
       memory: 128Mi
 
-## @section Disabled Components
-## @description Components that are not needed for this demo.
-
-# -- No usaremos componentes de Windows
+## @section Windows Exporter
+## @description Windows Exporter configuration.
+# -- Disables unnecessary components.
 windows-exporter:
   enabled: false

@@ -1,5 +1,7 @@
 ## @section SonarQube Server
 ## @description Resource definitions for the main SonarQube application.
+community:
+  enabled: true
 sonarqube:
   # -- Resource requests and limits for the SonarQube server.
   resources:
