@@ -14,8 +14,8 @@
 ![Trivy](https://img.shields.io/badge/Trivy-Security-blue?style=flat-square)
 
 > **An Internal Developer Platform (IDP) Blueprint** - Deploy a complete platform
-> engineering stack (GitOps, Observability, Security & Policy Enforcement) with a
-> single command on your laptop!
+> engineering stack (GitOps, Observability, Security & Policy Enforcement) with
+> a single command on your laptop!
 
 ## 🎯 What is this?
 
@@ -25,11 +25,11 @@ that demonstrates modern Platform Engineering practices:
 - ✅ **GitOps-first** with [ArgoCD](https://argo-cd.readthedocs.io/en/stable)
 - ✅ **Policy-as-Code** with [Kyverno](https://kyverno.io)
 - ✅ **Observability** with [Prometheus](https://prometheus.io),
-  [Grafana](https://grafana.com/grafana/?plcmt=products-nav)
+  [Grafana](https://grafana.com/grafana/?plcmt=products-nav),
   [Loki](https://grafana.com/docs/loki/latest/?pg=oss-loki&plcmt=quick-links) +
   [Fluent-bit](https://fluentbit.io)
 - ✅ **Security scanning** with [Trivy](https://trivy.dev/latest)
-- ✅ **CI/CD** with [Jenkins](https://www.jenkins.io)
+- ✅ **CI/CD** with [Jenkins](https://www.jenkins.io),
   [SonarQube](https://www.sonarsource.com/)
 - ✅ **eBPF Service Mesh** with [Cilium](https://cilium.io)
 - ✅ **Secrets management** with
@@ -42,17 +42,30 @@ that demonstrates modern Platform Engineering practices:
 
 ### For Platform Engineers
 
-> **Prototype and validate infrastructure changes risk-free.** Test Kyverno policies, Vault configurations, or GitOps workflows locally before proposing them to production. Experiment with eBPF networking, policy enforcement, or observability patterns without waiting for cloud resources or breaking shared environments.
+> **Prototype and validate infrastructure changes risk-free.** Test Kyverno
+> policies, Vault configs, or GitOps workflows locally before proposing to
+> production. Experiment with eBPF networking, policy enforcement, or
+> observability patterns without waiting for cloud resources or breaking shared
+> environments.
 
 ### For DevOps/SRE Teams
 
-> **Learning lab for modern cloud-native tools.** Understand how ArgoCD ApplicationSets work, debug Cilium network policies, or explore Prometheus metrics—all in a realistic multi-node cluster on your laptop. Perfect for training new team members or evaluating tools before adoption.
+> **Learning lab for modern cloud-native tools.** Understand how ArgoCD
+> ApplicationSets work, debug Cilium network policies, or explore Prometheus
+> metrics—all in a realistic multi-node cluster on your laptop. Perfect for
+> training new team members or evaluating tools before adoption.
 
 ### For Security Engineers
 
-> **Validate compliance controls in minutes.** Draft security policies as code (Kyverno), test them against real workloads, and generate compliance reports (Policy Reporter) without provisioning infrastructure. Demonstrate "block root containers" or "enforce image signing" policies with concrete evidence.
+> **Validate compliance controls in minutes.** Draft security policies as code
+> (Kyverno), test them against real workloads, and generate compliance reports
+> (Policy Reporter) without provisioning infrastructure. Demonstrate "block root
+> containers" or "enforce image signing" policies with concrete evidence.
 
-From idea to validated prototype in minutes, now you only need one command: `task deploy`. Whether you're evaluating new tools, preparing demonstrations or conferences, writing a technical article, or onboarding a junior engineer, you can have your own IDP wherever and whenever you need it.
+From idea to validated prototype in minutes, now you only need one command:
+`task deploy`. Whether you're evaluating new tools, preparing demonstrations or
+conferences, writing a technical article, or onboarding a junior engineer, you
+can have your own IDP wherever and whenever you need it.
 
 ## Deploy
 
@@ -239,14 +252,14 @@ flowchart TB
 **Why this architecture?**
 
 - **Node separation** ensures resource isolation and easier troubleshooting
-- **Static infrastructure** (Node 2) deployed via Helm for bootstrap reliability -
-  these components don't change frequently
+- **Static infrastructure** (Node 2) deployed via Helm for bootstrap reliability
+  - these components don't change frequently
 - **GitOps workloads** (Node 3) managed by ArgoCD for declarative operations and
   easy rollbacks - everything defined as code in Git
 - **DaemonSets run on all nodes** (Cilium for networking, Fluent-bit for log
   collection, Node Exporter for metrics)
-- **Policies-first approach** ensures all workloads are compliant from deployment -
-  policies themselves are GitOps managed
+- **Policies-first approach** ensures all workloads are compliant from
+  deployment - policies themselves are GitOps managed
 - **Vault as source of truth** for secrets, synced to Kubernetes via External
   Secrets Operator
 
@@ -303,7 +316,7 @@ code .
 
 # When prompted, click "Reopen in Container"
 # Once inside the Dev Container, deploy everything:
- task deploy
+task deploy
 
 # ☕ Grab a coffee - deployment takes ~5-10 minutes
 ```
@@ -329,8 +342,8 @@ code**:
 
 - **Kyverno** - Policy enforcement engine (GitOps managed)
 - **Policy Reporter** - Compliance monitoring dashboard (GitOps managed)
-- **Pre-configured policies**: Namespace labels, component labels, best practices
-  (all in Git)
+- **Pre-configured policies**: Namespace labels, component labels, best
+  practices (all in Git)
 
 ### Application Stacks (`K8s/`)
 
@@ -374,9 +387,8 @@ implementations.
 
 ## 🙏 Acknowledgments
 
-This project integrates and builds upon excellent open-source tools from the Cloud
-
-Native ecosystem:
+This project integrates and builds upon excellent open-source tools from the
+Cloud Native ecosystem:
 
 - ArgoCD by Argo Project
 - Cilium by Isovalent
@@ -394,8 +406,8 @@ Choose one of the following methods to install everything you need.
 <details>
 <summary><strong>Option 1: Using Homebrew (Recommended)</strong></summary>
 
-Open your terminal and run this command block to install Git, Docker, VS Code, and
-the required extension:
+Open your terminal and run this command block to install Git, Docker, VS Code,
+and the required extension:
 
 ```bash
 brew install git && \
@@ -422,15 +434,15 @@ Install each of the following manually from their official sources:
 
 #### Step 1: Install WSL
 
-**This is a mandatory first step**. Open **PowerShell as an Administrator** and run
-this command. A **PC reboot** will likely be required.
+**This is a mandatory first step**. Open **PowerShell as an Administrator** and
+run this command. A **PC reboot** will likely be required.
 
 ```powershell
 wsl --install --distro Ubuntu
 ```
 
-> After completing the install, open "Ubuntu" from programs and setup a user in the
-> console.
+> After completing the install, open "Ubuntu" from programs and setup a user in
+> the console.
 
 #### Step 2: Install Host Software
 
@@ -487,19 +499,19 @@ Open **Docker Desktop** and go to `Settings > Resources > WSL Integration`,
 
 ### How the Dev Environment Works
 
-This development environment is designed to be "smart". The environment performs an
-automatic initialization step:
+This development environment is designed to be "smart". The environment
+performs an automatic initialization step:
 
 1. The `devbox.json` file contains a `"shell"` section with an `"init_hook"`.
-2. This hook is configured to run the `.devcontainer/init.sh` script every time a
-   new terminal is opened in VS Code.
+2. This hook is configured to run the `.devcontainer/init.sh` script every time
+   a new terminal is opened in VS Code.
 3. The `init.sh` script adds and updates all the Helm repositories that the
    project needs (ArgoCD, Prometheus, Grafana, etc.).
 
 **In short:** Thanks to this mechanism, you never need to manage Helm
 repositories manually and can add other env setup steps without caring how the
-environment itself is generated. They will always be ready for you to deploy the
-project.
+environment itself is generated. They will always be ready for you to deploy
+the project.
 
 ---
 

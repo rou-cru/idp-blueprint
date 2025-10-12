@@ -49,24 +49,24 @@ propagate these to all resources within that namespace.
 
 ### Label Details
 
-1.  **`app.kubernetes.io/name`**: The application's name (e.g., `vault`).
-2.  **`app.kubernetes.io/instance`**: A unique name for the instance, often combining
+1. **`app.kubernetes.io/name`**: The application's name (e.g., `vault`).
+2. **`app.kubernetes.io/instance`**: A unique name for the instance, often combining
     name and environment (e.g., `vault-demo`).
-3.  **`app.kubernetes.io/version`**: The deployed version. **Must not** be used in
+3. **`app.kubernetes.io/version`**: The deployed version. **Must not** be used in
     `spec.selector.matchLabels`.
-4.  **`app.kubernetes.io/component`**: The role this application plays (e.g., `cni`,
+4. **`app.kubernetes.io/component`**: The role this application plays (e.g., `cni`,
     `secret-manager`).
-5.  **`app.kubernetes.io/part-of`**: The parent application. For this project, the value
+5. **`app.kubernetes.io/part-of`**: The parent application. For this project, the value
     is `idp`.
-6.  **`owner`**: The team responsible. Must be a team name, not an individual.
-7.  **`business-unit`**: The organizational department for FinOps.
-8.  **`environment`**: The environment type. This project uses `demo` to signify its
+6. **`owner`**: The team responsible. Must be a team name, not an individual.
+7. **`business-unit`**: The organizational department for FinOps.
+8. **`environment`**: The environment type. This project uses `demo` to signify its
     ephemeral and testing nature, distinct from permanent environments like `dev` or
     `prod`.
 
 ### Annotation Details
 
-9.  **`description`**: A human-readable explanation of the resource. This will be used
+9. **`description`**: A human-readable explanation of the resource. This will be used
     by `yq` to auto-generate documentation.
 10. **`contact`**: A stable contact point for alerts, preferably a team channel.
 11. **`documentation`**: A direct URL to relevant technical documentation.

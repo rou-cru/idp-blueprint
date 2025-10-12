@@ -102,20 +102,20 @@ graph TD
 
 The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 
-1.  **Create k3d cluster** (`k3d-cluster.yaml`).
-2.  **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
-3.  **Deploy Cilium CNI** via Helm (`cilium-values.yaml`).
-4.  **Deploy Prometheus CRDs** via a dedicated Helm chart install.
-5.  **Deploy Cert-Manager** via Helm (`cert-manager-values.yaml`).
+1. **Create k3d cluster** (`k3d-cluster.yaml`).
+2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
+3. **Deploy Cilium CNI** via Helm (`cilium-values.yaml`).
+4. **Deploy Prometheus CRDs** via a dedicated Helm chart install.
+5. **Deploy Cert-Manager** via Helm (`cert-manager-values.yaml`).
     - Then apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
-6.  **Deploy Vault Stack**:
+6. **Deploy Vault Stack**:
     - Deploy Vault via Helm (`vault-values.yaml`).
     - Execute the manual initialization script (`vault-manual-init.sh`) to initialize and unseal Vault.
     - Deploy Vault Secrets Operator (VSO) via Helm (`vso-values.yaml`).
     - Apply VSO resources (`VaultAuth`, `VaultConnection`) via Kustomize.
     - Apply the `VaultStaticSecret` to provision the ArgoCD admin password.
-7.  **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
-8.  **Deploy External Secrets Operator** via Helm (`eso-values.yaml`).
+7. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
+8. **Deploy External Secrets Operator** via Helm (`eso-values.yaml`).
     - Then apply ESO resources: `kustomize build external-secrets/ | kubectl apply -f -`.
 
 **Key Insight:** The bootstrap process is a carefully orchestrated sequence of Helm deployments and Kustomize applications, managed entirely by `Taskfile.yaml`.

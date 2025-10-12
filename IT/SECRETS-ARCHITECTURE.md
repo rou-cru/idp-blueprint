@@ -70,6 +70,7 @@ graph TB
 5. **Application Pods** mount these secrets as volumes or environment variables
 
 **Example:**
+
 ```yaml
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
@@ -94,6 +95,7 @@ spec:
 4. **External workloads** (Lambda, Cloud Run, etc.) consume from their native secret manager
 
 **Example - Push to AWS:**
+
 ```yaml
 apiVersion: external-secrets.io/v1alpha1
 kind: PushSecret
@@ -120,10 +122,12 @@ spec:
 ### 1. Single Source of Truth
 
 **Vault is authoritative** for all secrets. No secrets are created directly in:
+
 - Kubernetes Secrets (VSO creates them from Vault)
 - AWS/GCP/Azure Secret Managers (ESO pushes from Vault)
 
 **Benefits:**
+
 - Centralized audit trail (all access logged in Vault)
 - Consistent rotation (rotate in Vault → propagates everywhere)
 - No vendor lock-in (switch cloud providers without changing Vault)
@@ -137,6 +141,7 @@ spec:
 | **ESO** | Push Vault → Cloud providers | External workloads only |
 
 **Why not use ESO for in-cluster?**
+
 - VSO is official HashiCorp operator (better Vault integration)
 - VSO supports dynamic secrets (DB credentials rotation)
 - ESO is for external/legacy systems that can't call Vault directly
@@ -146,6 +151,7 @@ spec:
 **Developers never see raw secrets:**
 
 1. Request secret via YAML manifest:
+
    ```yaml
    apiVersion: secrets.hashicorp.com/v1beta1
    kind: VaultStaticSecret
@@ -162,11 +168,13 @@ spec:
 ### In-Cluster Workloads (VSO)
 
 ✅ **Use VSO when:**
+
 - Workload runs inside Kubernetes
 - Needs secrets as K8s Secret (volume mount, env var)
 - Requires dynamic secrets (DB credentials with TTL)
 
 **Examples:**
+
 - Microservices needing database passwords
 - CI/CD pipelines in Jenkins pods
 - Applications using API keys
@@ -174,11 +182,13 @@ spec:
 ### External Workloads (ESO PushSecret)
 
 ✅ **Use ESO PushSecret when:**
+
 - Workload runs **outside** Kubernetes (serverless, VMs)
 - Workload **cannot** call Vault API directly (legacy apps)
 - Cloud provider **requires** secrets in their native manager (compliance)
 
 **Examples:**
+
 - **AWS Lambda** functions (read from AWS Secrets Manager)
 - **Crossplane** provisioning RDS (needs AWS credentials in Parameter Store)
 - **GCP Cloud Run** services (read from GCP Secret Manager)
@@ -189,6 +199,7 @@ spec:
 ### Demo Environment (Current)
 
 ⚠️ **NOT for production:**
+
 - TLS disabled (`skipTLSVerify: true`)
 - Single unseal key (1-of-1 Shamir)
 - Root token logged during init
@@ -199,6 +210,7 @@ spec:
 **Must implement:**
 
 1. **TLS Everywhere:**
+
    ```yaml
    # Vault with Cert-Manager
    tls_cert_file = "/vault/tls/tls.crt"
@@ -206,6 +218,7 @@ spec:
    ```
 
 2. **Auto-Unseal with Cloud KMS:**
+
    ```hcl
    seal "awskms" {
      kms_key_id = "arn:aws:kms:..."
@@ -213,6 +226,7 @@ spec:
    ```
 
 3. **Multi-Share Unseal Keys:**
+
    ```bash
    vault operator init -key-shares=5 -key-threshold=3
    ```
@@ -255,6 +269,7 @@ task it:external-secrets:apply-resources
 ### Day-2 Operations
 
 **Add new secret to Vault:**
+
 ```bash
 kubectl exec -n vault-system vault-0 -- \
   vault kv put secret/prod/app-credentials \
@@ -263,6 +278,7 @@ kubectl exec -n vault-system vault-0 -- \
 ```
 
 **Consume in-cluster (VSO):**
+
 ```yaml
 apiVersion: secrets.hashicorp.com/v1beta1
 kind: VaultStaticSecret
@@ -279,6 +295,7 @@ spec:
 ```
 
 **Push to AWS (ESO):**
+
 ```yaml
 apiVersion: external-secrets.io/v1alpha1
 kind: PushSecret
@@ -303,16 +320,19 @@ spec:
 ### Metrics
 
 **Vault:**
+
 - `vault_core_unsealed` - Seal status (0=sealed, 1=unsealed)
 - `vault_token_count_by_policy` - Active tokens per policy
 - Prometheus ServiceMonitor enabled in `vault-values.yaml`
 
 **VSO:**
+
 - `vso_secret_sync_total` - Successful syncs
 - `vso_secret_sync_errors_total` - Sync failures
 - Available at `:8443/metrics`
 
 **ESO:**
+
 - `externalsecret_sync_calls_total` - Sync operations
 - `externalsecret_sync_calls_error` - Failures
 - Available via ServiceMonitor
@@ -320,17 +340,20 @@ spec:
 ### Alerts
 
 **Critical:**
+
 - Vault sealed unexpectedly
 - VSO/ESO sync failures > 5 in 10min
 - Vault token expiration approaching
 
 **Warning:**
+
 - Secret rotation delay > 1 hour
 - High Vault API latency (>500ms)
 
 ## Migration Path from Current State
 
 ### From: Custom Init Sidecar (Old)
+
 ```yaml
 extraContainers:
 - name: vault-init-sidecar
@@ -339,6 +362,7 @@ extraContainers:
 ```
 
 ### To: VSO + Manual Init (Current)
+
 ```bash
 # One-time manual initialization
 task vault:init
@@ -347,6 +371,7 @@ task vault:init
 ```
 
 ### Future: Vault Operator (Bank-Vaults)
+
 ```yaml
 apiVersion: vault.banzaicloud.com/v1alpha1
 kind: Vault
@@ -355,6 +380,7 @@ spec:
 ```
 
 **When to migrate:**
+
 - Need HA (3+ replicas with Raft)
 - Auto-unseal with cloud KMS
 - Zero manual intervention
