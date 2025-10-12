@@ -1,9 +1,11 @@
+## @section Deployment Mode
+## @description Defines the deployment mode for Loki.
 # -- Deploys Loki in microservices mode (simple-scalable)
 deploymentMode: simple-scalable
 
 ## @section Gateway
 ## @description NGINX gateway as a single entry point for all Loki services.
-# -- Habilita el gateway (nginx) como punto de entrada único
+# -- Enables the gateway (nginx) as a single entry point
 gateway:
   enabled: true
   replicas: 1
@@ -21,7 +23,7 @@ gateway:
 
 ## @section Backend
 ## @description Configuration for the backend components (compactor, ruler).
-# -- Configura el backend (compactor, ruler)
+# -- Configures the backend (compactor, ruler)
 backend:
   replicas: 1
   # -- Resource requests and limits for the backend.
@@ -34,11 +36,11 @@ backend:
       memory: 256Mi
   # -- Persistence is disabled for the demo.
   persistence:
-    enabled: false # Sin persistencia real
+    enabled: false # No real persistence
 
 ## @section Read
 ## @description Configuration for the read path components (querier, query-frontend).
-# -- Configura los readers (querier, query-frontend)
+# -- Configures the readers (querier, query-frontend)
 read:
   replicas: 1
   # -- Resource requests and limits for the read path.
@@ -51,11 +53,11 @@ read:
       memory: 256Mi
   # -- Persistence is disabled for the demo.
   persistence:
-    enabled: false # Sin persistencia real
+    enabled: false # No real persistence
 
 ## @section Write
 ## @description Configuration for the write path components (distributor, ingester).
-# -- Configura los writers (distributor, ingester)
+# -- Configures the writers (distributor, ingester)
 write:
   replicas: 1
   # -- Resource requests and limits for the write path.
@@ -68,30 +70,29 @@ write:
       memory: 256Mi
   # -- Persistence is disabled for the demo.
   persistence:
-    enabled: false # Sin persistencia real
+    enabled: false # No real persistence
 
 ## @section Global Configuration
 ## @description Global Loki settings for auth, retention, and storage.
-# -- Configuración global de Loki
+# -- Global Loki configuration
 loki:
-  config: |
-    auth_enabled: false
-    limits_config:
-      retention_period: 6h
-    schema_config:
-      configs:
-        - from: '2024-01-01'
-          store: tsdb
-          object_store: filesystem
-          schema: v13
-          index:
-            prefix: index_
-            period: 24h
-    storage_config:
-      tsdb_shipper:
-        active_index_directory: /data/loki/tsdb-index
-      filesystem:
-        directory: /data/loki/chunks
-    compactor:
-      working_directory: /data/loki/compactor
-      retention_enabled: true
+  auth_enabled: false
+  limits_config:
+    retention_period: 6h
+  schemaConfig:
+    configs:
+      - from: "2024-01-01"
+        store: tsdb
+        object_store: filesystem
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+  storage:
+    type: filesystem
+    filesystem:
+      chunks_directory: /var/loki/chunks
+      rules_directory: /var/loki/rules
+  compactor:
+    working_directory: /var/loki/compactor
+    retention_enabled: true

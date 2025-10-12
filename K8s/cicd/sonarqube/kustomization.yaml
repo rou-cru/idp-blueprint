@@ -3,7 +3,7 @@ kind: Kustomization
 helmCharts:
   - name: sonarqube
     repo: https://SonarSource.github.io/helm-chart-sonarqube
-    version: 10.5.1 # Using a recent stable version
+    version: 2025.5.0
     releaseName: sonarqube
     namespace: cicd
     valuesFile: sonarqube-values.yaml

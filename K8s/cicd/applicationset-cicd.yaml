@@ -19,8 +19,7 @@ spec:
         repoURL: https://github.com/rou-cru/idp-blueprint.git
         targetRevision: HEAD
         path: '{{path}}'
-        kustomize:
-          buildOptions: "--enable-helm"
+        kustomize: {}
       destination:
         server: https://kubernetes.default.svc
         namespace: cicd

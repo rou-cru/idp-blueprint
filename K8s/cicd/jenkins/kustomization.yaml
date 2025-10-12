@@ -3,7 +3,7 @@ kind: Kustomization
 helmCharts:
   - name: jenkins
     repo: https://charts.jenkins.io
-    version: 4.9.2 # Using a recent stable version
+    version: 5.8.101
     releaseName: jenkins
     namespace: cicd
     valuesFile: jenkins-values.yaml
