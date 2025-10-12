@@ -1,0 +1,22 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: vault-auth
+  namespace: vault-system
+  labels:
+    app.kubernetes.io/name: vaultauth
+    app.kubernetes.io/instance: vault-auth
+    app.kubernetes.io/component: secret-synchronizer
+  annotations:
+    description: 'Kubernetes auth configuration for VSO to authenticate with Vault'
+spec:
+  allowedNamespaces:
+    - "*"
+  vaultConnectionRef: vault-connection
+  method: kubernetes
+  mount: kubernetes
+  kubernetes:
+    role: vso-role
+    serviceAccount: vault-secrets-operator-controller-manager
+    audiences:
+      - vault

@@ -1,0 +1,14 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultConnection
+metadata:
+  name: vault-connection
+  namespace: vault-system
+  labels:
+    app.kubernetes.io/name: vaultconnection
+    app.kubernetes.io/instance: vault-connection
+    app.kubernetes.io/component: secret-synchronizer
+  annotations:
+    description: 'Connection configuration to Vault server for VSO'
+spec:
+  address: http://vault.vault-system.svc.cluster.local:8200
+  skipTLSVerify: true

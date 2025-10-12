@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-secrets-operator-controller-manager
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: serviceaccount
+    app.kubernetes.io/instance: vso-argocd
+    app.kubernetes.io/component: secret-sync
+    app.kubernetes.io/part-of: idp
+  annotations:
+    description: 'VSO ServiceAccount for secret synchronization'
+    contact: platform-team
+    documentation: https://github.com/hashicorp/vault-secrets-operator
