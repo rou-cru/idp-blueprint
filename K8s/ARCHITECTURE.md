@@ -126,14 +126,15 @@ graph TD
 This is the standard approach for **in-house applications** or for grouping a set of
 related Kubernetes manifests.
 
--   **When to Use It:** For internally developed microservices, governance policies
+- **When to Use It:** For internally developed microservices, governance policies
     (`ResourceQuota`, `LimitRange`), or any set of YAML manifests you manage directly.
--   **Structure:**
-    -   A directory is created for the component (e.g., `governance/`).
-    -   YAML files (`limitrange.yaml`, `resourcequota.yaml`) are placed inside.
-    -   The `kustomization.yaml` file lists them in the `resources` section.
+- **Structure:**
+  - A directory is created for the component (e.g., `governance/`).
+  - YAML files (`limitrange.yaml`, `resourcequota.yaml`) are placed inside.
+  - The `kustomization.yaml` file lists them in the `resources` section.
 
--   **Example (`K8s/cicd/governance/kustomization.yaml`):**
+- **Example (`K8s/cicd/governance/kustomization.yaml`):**
+
     ```yaml
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
@@ -148,14 +149,15 @@ This is the **preferred, standard method** for deploying **third-party applicati
 or any software available as a Helm chart. It allows us to version and manage the
 configuration of these tools declaratively.
 
--   **When to Use It:** For tools like Jenkins, Loki, Prometheus, Trivy, etc.
--   **Structure:**
-    -   A directory is created for the application (e.g., `jenkins/`).
-    -   A `kustomization.yaml` file defines the Helm chart in the `helmCharts` section.
-    -   A `values.yaml` file (e.g. `jenkins-values.yaml`) contains all custom
+- **When to Use It:** For tools like Jenkins, Loki, Prometheus, Trivy, etc.
+- **Structure:**
+  - A directory is created for the application (e.g., `jenkins/`).
+  - A `kustomization.yaml` file defines the Helm chart in the `helmCharts` section.
+  - A `values.yaml` file (e.g. `jenkins-values.yaml`) contains all custom
         configuration for that chart.
 
--   **Example (`K8s/cicd/jenkins/kustomization.yaml`):**
+- **Example (`K8s/cicd/jenkins/kustomization.yaml`):**
+
     ```yaml
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
@@ -170,14 +172,14 @@ configuration of these tools declaratively.
 
 ## Workflow for Deploying a New Application
 
-1.  **Choose the Stack:** Identify which stack the new application belongs to (e.g.,
+1. **Choose the Stack:** Identify which stack the new application belongs to (e.g.,
     `observability`).
-2.  **Create a Directory:** Create a new subdirectory for your application (e.g.,
+2. **Create a Directory:** Create a new subdirectory for your application (e.g.,
     `K8s/observability/my-new-app/`).
-3.  **Add Manifests:** Add all Kubernetes manifest files for your application to this
+3. **Add Manifests:** Add all Kubernetes manifest files for your application to this
     new directory.
-4.  **Create `kustomization.yaml`:** Add a `kustomization.yaml` file that lists all the
+4. **Create `kustomization.yaml`:** Add a `kustomization.yaml` file that lists all the
     manifest files you just created.
-5.  **Commit & Push:** Commit your changes to Git. The corresponding `ApplicationSet`
+5. **Commit & Push:** Commit your changes to Git. The corresponding `ApplicationSet`
     will automatically detect the new directory and deploy your application into the
     correct namespace.

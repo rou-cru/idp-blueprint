@@ -278,7 +278,7 @@ tasks:
   check:
     desc: 'Run all checks (lint, validation, security)'
     cmds:
-#      - task: lint
+      - task: lint
       - task: validate
       - task: security
 
