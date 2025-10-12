@@ -1,4 +1,3 @@
-# This App is intended to be deployed manually via Taskfile to bootstrap the policy engine.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -12,14 +11,10 @@ spec:
     repoURL: https://github.com/rou-cru/idp-blueprint.git
     targetRevision: HEAD
     path: Policies/
-    # Kustomize source type
     kustomize:
       namePrefix: 'platform-'
-      buildOptions: "--enable-helm"
   destination:
     server: https://kubernetes.default.svc
-    # The namespace here is a default, but Kustomize will deploy resources
-    # to their specified namespaces (e.g., kyverno).
     namespace: argocd
   syncPolicy:
     automated:
