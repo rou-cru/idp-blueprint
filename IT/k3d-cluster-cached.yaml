@@ -12,6 +12,28 @@ ports:
   - port: 443:443
     nodeFilters:
       - loadbalancer
+registries:
+  create:
+    name: registry.localhost
+    host: "0.0.0.0"
+    hostPort: "5000"
+    proxy:
+      remoteURL: https://registry-1.docker.io
+      username: ""
+      password: ""
+    volumes:
+      - /tmp/k3d-registry:/var/lib/registry
+  config: |
+    mirrors:
+      "docker.io":
+        endpoint:
+          - http://registry.localhost:5000
+      "quay.io":
+        endpoint:
+          - http://registry.localhost:5000
+      "ghcr.io":
+        endpoint:
+          - http://registry.localhost:5000
 options:
   k3d:
     disableLoadbalancer: false
