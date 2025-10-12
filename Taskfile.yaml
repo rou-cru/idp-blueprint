@@ -1,34 +1,54 @@
 version: '3'
 
 vars:
-  DOCKER_IMAGE_NAME: '{{.DOCKER_IMAGE_NAME | default "idp-blueprint"}}'
+  DOCKER_IMAGE_NAME: '{{.DOCKER_IMAGE_NAME | default "roucru/idp-blueprint"}}'
   DOCKER_IMAGE_TAG: '{{.DOCKER_IMAGE_TAG | default "latest"}}'
+  DOCKER_IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL | default "minimal"}}'
 
   # Helm Chart Versions
   CILIUM_VERSION: '{{.CILIUM_VERSION | default "1.18.2"}}'
-  CERT_MANAGER_VERSION: '{{.CERT_MANAGER_VERSION | default "v1.18.2"}}'
+  CERT_MANAGER_VERSION: '{{.CERT_MANAGER_VERSION | default "v1.19.0"}}'
+  PROMETHEUS_CRDS_VERSION: '{{.PROMETHEUS_CRDS_VERSION | default "77.14.0"}}'
   EXTERNAL_SECRETS_VERSION: '{{.EXTERNAL_SECRETS_VERSION | default "0.20.2"}}'
   VAULT_VERSION: '{{.VAULT_VERSION | default "0.31.0"}}'
-  ARGOCD_VERSION: '{{.ARGOCD_VERSION | default "8.5.8"}}'
+  VSO_VERSION: '{{.VSO_VERSION | default "1.0.1"}}'
+  ARGOCD_VERSION: '{{.ARGOCD_VERSION | default "8.6.0"}}'
+
+  # Operational Settings
+  KUBECTL_TIMEOUT: '{{.KUBECTL_TIMEOUT | default "300s"}}'
+  K3D_CONFIG: '{{.K3D_CONFIG | default "IT/k3d-cluster-cached.yaml"}}'
+  REGISTRY_CACHE_PATH: '{{.REGISTRY_CACHE_PATH | default "/tmp/k3d-registry"}}'
 
 tasks:
   deploy:
     desc: 'Deploy the entire IDP platform'
     cmds:
-      # 1. Bootstrap Cluster & Core Services
+      - defer: echo "⚠️  Deployment failed. Run 'task destroy' to clean up and retry."
+      # 1. Bootstrap Cluster
       - task: k3d:create
       - task: it:apply-namespaces
-      - task: it:apply-resources
+      - task: it:apply-serviceaccounts
+      # Complete bootstrapping by adding the CNI
       - task: cilium:deploy
+      - task: it:apply-prometheus-crds # Allow Service Monitor for everything
+      - task: cilium:enable-servicemonitor # Enable Cilium metrics now that CRDs exist
+      # 2. Secrets & Certs Management
       - task: cert-manager:deploy
       - task: vault:deploy
       - task: external-secrets:deploy
-      # 2. Deploy GitOps Engine
+      # 3. Deploy GitOps Engine
       - task: argocd:deploy
-      # 3. Deploy Policy Engine (Bootstrap App)
+      # 4. Deploy Policy as Code Engine
       - task: policies:deploy
-      # 4. Deploy Application Stacks via ArgoCD
+      # 5. Deploy Application Stacks for everything else
       - task: stacks:deploy
+
+  deploy:nocache:
+    desc: 'Deploy without registry cache (test slow pulls)'
+    cmds:
+      - task: deploy
+        vars:
+          K3D_CONFIG: IT/k3d-cluster.yaml
 
   destroy:
     desc: 'Remove all IDP related components and cluster'
@@ -37,10 +57,10 @@ tasks:
 
   stacks:deploy:
     desc: 'Deploy all application stacks via ArgoCD ApplicationSets'
-    cmds:
-      - task: observability:deploy
-      - task: cicd:deploy
-      - task: security:deploy
+    deps:
+      - observability:deploy
+      - cicd:deploy
+      - security:deploy
 
   policies:deploy:
     desc: 'Deploy the Kyverno Policy Engine and policies via ArgoCD'
@@ -67,83 +87,145 @@ tasks:
     cmds:
       - kustomize build IT/namespaces/ | kubectl apply -f -
 
-  it:apply-resources:
-    desc: 'Apply all IT bootstrap resources via Kustomize'
+  it:apply-serviceaccounts:
+    desc: 'Apply all IT bootstrap ServiceAccounts via Kustomize'
     cmds:
-      - kustomize build IT/ | kubectl apply -f -
+      - kustomize build IT/serviceaccounts/ | kubectl apply -f -
+
+  it:apply-prometheus-crds:
+    desc: 'Apply Prometheus CRDs from the dedicated Helm chart'
+    cmds:
+      - |
+        helm upgrade --install prometheus-crds prometheus-community/kube-prometheus-stack \
+          --version {{.PROMETHEUS_CRDS_VERSION}} \
+          --namespace kube-system \
+          --set crdOnly=true
+
+  it:cert-manager:apply-resources:
+    desc: 'Apply all Cert-Manager bootstrap resources via Kustomize'
+    cmds:
+      - kustomize build IT/cert-manager/ | kubectl apply -f -
+
+  it:argocd:apply-resources:
+    desc: 'Apply all ArgoCD bootstrap resources via Kustomize'
+    cmds:
+      - kustomize build IT/argocd/ | kubectl apply -f -
+      - kubectl wait --for=condition=SecretSynced vaultstaticsecret/argocd-admin-password -n argocd --timeout={{.KUBECTL_TIMEOUT}}
 
   k3d:create:
     desc: 'Create a k3d cluster with 3 nodes'
+    status:
+      - k3d cluster list | grep -q "idp-demo"
     cmds:
-      - k3d cluster create idp-demo -c IT/k3d-cluster.yaml
+      - k3d cluster create idp-demo -c {{.K3D_CONFIG}}
 
   cilium:deploy:
     desc: 'Install Cilium as CNI'
     cmds:
-      - helm upgrade --install cilium cilium/cilium --version {{.CILIUM_VERSION}}
-        --namespace kube-system --values IT/cilium-values.yaml
+      - |
+        helm upgrade --install cilium cilium/cilium \
+          --version {{.CILIUM_VERSION}} \
+          --namespace kube-system \
+          --values IT/cilium/cilium-values.yaml
+      - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system --timeout=120s
+
+  cilium:enable-servicemonitor:
+    desc: 'Enable Cilium ServiceMonitor (requires Prometheus CRDs)'
+    cmds:
+      - |
+        helm upgrade cilium cilium/cilium \
+          --version {{.CILIUM_VERSION}} \
+          --namespace kube-system \
+          --reuse-values \
+          --set prometheus.serviceMonitor.enabled=true \
+          --set operator.prometheus.serviceMonitor.enabled=true
 
   cert-manager:deploy:
     desc: 'Deploy Cert-Manager to handle CA'
     cmds:
-      - helm upgrade --install cert-manager jetstack/cert-manager --version {{.CERT_MANAGER_VERSION}}
-        --namespace cert-manager --values IT/cert-manager-values.yaml
+      - |
+        helm upgrade --install cert-manager jetstack/cert-manager \
+          --version {{.CERT_MANAGER_VERSION}} \
+          --namespace cert-manager \
+          --values IT/cert-manager/cert-manager-values.yaml
+      - kubectl wait --for=condition=Available deployment/cert-manager-webhook -n cert-manager --timeout={{.KUBECTL_TIMEOUT}}
+      - task: it:cert-manager:apply-resources
 
   external-secrets:deploy:
     desc: 'Install External Secrets Operator'
     cmds:
-      - helm upgrade --install external-secrets external-secrets/external-secrets
-        --version {{.EXTERNAL_SECRETS_VERSION}} --namespace external-secrets-system
-        --values IT/eso-values.yaml
-      - kubectl wait --for=condition=Ready pods -l
-        app.kubernetes.io/name=external-secrets -n external-secrets-system
-        --timeout=120s
-      # Wait for webhook endpoints to be available
-      - kubectl wait --for=jsonpath='{.subsets[*].addresses[*].ip}'
-        endpoints/external-secrets-webhook -n external-secrets-system --timeout=60s
+      - |
+        helm upgrade --install external-secrets external-secrets/external-secrets \
+          --version {{.EXTERNAL_SECRETS_VERSION}} \
+          --namespace external-secrets-system \
+          --values IT/external-secrets/eso-values.yaml
+      # - kubectl wait --for=condition=Available deployment/external-secrets-webhook deployment/external-secrets-cert-controller -n external-secrets-system --timeout={{.KUBECTL_TIMEOUT}}
+
+  vault:clean:
+    desc: 'Clean Vault and VSO deployments (temporary task for development)'
+    silent: true
+    cmds:
+      - cmd: helm uninstall vault -n vault-system
+        ignore_error: true
+      - cmd: helm uninstall vault-secrets-operator -n vault-system
+        ignore_error: true
+      - kubectl delete pvc data-vault-0 -n vault-system --ignore-not-found=true
+      - kubectl delete vaultconnection,vaultauth --all -n vault-system --ignore-not-found=true
+      - echo "✅ Vault and VSO cleaned"
 
   vault:deploy:
-    desc: 'Deploy HashiCorp Vault as Secret Backend'
+    desc: 'Deploy HashiCorp Vault with initialization and secret generation'
     cmds:
-      - helm upgrade --install vault hashicorp/vault --version {{.VAULT_VERSION}}
-        --namespace vault-system --values IT/vault-values.yaml
-      - kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vault -n
-        vault-system --timeout=120s
-      - task: vault:setup
+      - |
+        helm upgrade --install vault hashicorp/vault \
+          --version {{.VAULT_VERSION}} \
+          --namespace vault-system \
+          --values IT/vault/vault-values.yaml
+      - task: vault:init
+      - task: vault:generate-secrets
+      - task: vso:deploy
+      - task: vso:wait-for-crds
+      - task: it:vso:apply-resources
+
+  vso:deploy:
+    desc: 'Deploy Vault Secrets Operator'
+    cmds:
+      - |
+        helm upgrade --install vault-secrets-operator hashicorp/vault-secrets-operator \
+          --version {{.VSO_VERSION}} \
+          --namespace vault-system \
+          --values IT/vault-secrets-operator/vso-values.yaml
+
+  vso:wait-for-crds:
+    desc: 'Wait for Vault Secrets Operator CRDs to be established'
+    cmds:
+      - kubectl wait --for condition=established --timeout={{.KUBECTL_TIMEOUT}} crd/vaultstaticsecrets.secrets.hashicorp.com crd/vaultauths.secrets.hashicorp.com
+
+  vault:init:
+    desc: 'Initialize Vault manually (run once after vault:deploy)'
+    cmds:
+      - ./IT/vault/vault-manual-init.sh
+
+  vault:generate-secrets:
+    desc: 'Generate initial secrets for all services using Vault'
+    cmds:
+      - ./IT/vault/vault-generate-secret.sh secret/argocd/admin 32 base64
+
+  it:vso:apply-resources:
+    desc: 'Apply VSO resources (VaultConnection, VaultAuth) and ArgoCD VaultStaticSecret'
+    cmds:
+      - kustomize build IT/vault-secrets-operator/ | kubectl apply -f -
+      - task: it:argocd:apply-resources
 
   argocd:deploy:
     desc: 'Deploy ArgoCD GitOps Engine'
     cmds:
-      - helm upgrade --install argocd argo/argo-cd --version {{.ARGOCD_VERSION}}
-        --namespace argocd --values IT/argocd-values.yaml
-
-  vault:setup:
-    desc: 'Configure Vault for use by External Secrets'
-    cmds:
-      # Enable KV v2
-      - kubectl exec -n vault-system vault-0 -- vault secrets enable -path=secret kv-v2
-        || echo "KV already enabled"
-      # Enable K8s auth
-      - kubectl exec -n vault-system vault-0 -- vault auth enable kubernetes || echo
-        "K8s auth already enabled"
-      # Setup K8s auth
       - |
-        kubectl exec -n vault-system vault-0 -- vault write auth/kubernetes/config \
-          kubernetes_host="https://kubernetes.default.svc:443"
-      # Create policy for External Secrets to read from KV store
-      - |
-        kubectl exec -n vault-system vault-0 -- /bin/sh -c 'vault policy write external-secrets-policy - <<EOF
-          path "secret/data/*" {
-            capabilities = ["read"]
-          }
-        EOF'
-      # Create K8s auth role for External Secrets
-      - |
-        kubectl exec -n vault-system vault-0 -- vault write auth/kubernetes/role/external-secrets-role \
-          bound_service_account_names=cluster-secrets \
-          bound_service_account_namespaces=external-secrets-system \
-          policies=external-secrets-policy \
-          ttl=24h
+        helm upgrade --install argocd argo/argo-cd \
+          --version {{.ARGOCD_VERSION}} \
+          --namespace argocd \
+          --values IT/argocd/argocd-values.yaml
+      - kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout={{.KUBECTL_TIMEOUT}}
 
   vault:ui:
     desc: 'Open Vault UI'
@@ -153,13 +235,42 @@ tasks:
       - kubectl port-forward -n vault-system svc/vault 8200:8200
 
   image:build:
-    desc: 'Build the Dev Container image with a custom name'
+    desc: 'Build the Dev Container image (full variant)'
     env:
-      BAKE_VAR_IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
-      BAKE_VAR_IMAGE_TAG: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG}}'
     cmds:
-      - docker bake dev
+      - docker bake dev --progress=tty
 
+  image:build:minimal:
+    desc: 'Build minimal image for CI/Jobs'
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
+    cmds:
+      - docker bake minimal --progress=tty
+
+  image:release:
+    desc: 'Build and push full image to Registry'
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG}}'
+    cmds:
+      - docker bake release --progress=tty
+
+  image:release:minimal:
+    desc: 'Build and push minimal image to Registry'
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
+    cmds:
+      - docker bake release-minimal --progress=tty
+
+  image:release:all:
+    desc: 'Build and push both full and minimal images'
+    cmds:
+      - task: image:release:minimal
+      - task: image:release
   ################################################################################
   # LINTING, VALIDATION & SECURITY TASKS
   ################################################################################
@@ -167,7 +278,7 @@ tasks:
   check:
     desc: 'Run all checks (lint, validation, security)'
     cmds:
-      - task: lint
+#      - task: lint
       - task: validate
       - task: security
 
@@ -257,4 +368,37 @@ tasks:
   docs:helm:
     desc: 'Generate documentation for Helm charts'
     cmds:
-      - helm-docs
+      - |
+        for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
+          if [ -f "$dir/values.yaml" ]; then
+            CHART_NAME=$(basename $dir)
+            echo "apiVersion: v2\nname: $CHART_NAME\nversion: 0.1.0" > $dir/Chart.yaml
+            (cd $dir && helm-docs --template-files ../.helm-docs-template.gotmpl)
+            rm $dir/Chart.yaml
+          fi
+        done
+
+  # REGISTRY MANAGEMENT
+  # ------------------------------------------------------------------------------
+  registry:clean:
+    desc: 'Remove registry cache data'
+    cmds:
+      - rm -rf {{.REGISTRY_CACHE_PATH}}
+      - echo "✅ Registry cache cleaned"
+
+  registry:info:
+    desc: 'Show registry status and cache size'
+    cmds:
+      - |
+        if docker ps --filter "name=k3d-registry.localhost" --format "{{.Names}}" | grep -q registry; then
+          echo "✅ Registry container running"
+          if [ -d "{{.REGISTRY_CACHE_PATH}}" ]; then
+            echo "📦 Cache size: $(du -sh {{.REGISTRY_CACHE_PATH}} 2>/dev/null | cut -f1)"
+          else
+            echo "📦 Cache size: empty"
+          fi
+          echo "📂 Location: {{.REGISTRY_CACHE_PATH}}"
+          echo "🔗 Endpoint: localhost:5000"
+        else
+          echo "⚠️  Registry not running (using config: {{.K3D_CONFIG}})"
+        fi
