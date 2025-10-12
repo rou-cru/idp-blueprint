@@ -1,7 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# 1. Include the namespace and policy rule files as resources
 resources:
   - namespace.yaml
   - rules/enforce-namespace-labels.yaml
@@ -9,20 +8,17 @@ resources:
   - rules/audit-business-labels.yaml
   - rules/audit-namespace-resource-governance.yaml
 
-# 2. Define the Helm charts to be deployed
 helmCharts:
-  # Deploy Kyverno itself
   - name: kyverno
     repo: https://kyverno.github.io/kyverno/
-    version: 3.2.4
+    version: 3.5.2
     releaseName: kyverno
-    namespace: kyverno # Deploy into the new, protected namespace
-    valuesFile: kyverno-values.yaml
+    namespace: kyverno
+    valuesFile: kyverno/kyverno-values.yaml
 
-  # Deploy Policy Reporter
   - name: policy-reporter
     repo: https://kyverno.github.io/policy-reporter
-    version: 2.20.1
+    version: 3.5.0
     releaseName: policy-reporter
-    namespace: kyverno # Deploy alongside Kyverno
-    valuesFile: policy-reporter-values.yaml
+    namespace: kyverno
+    valuesFile: policy-reporter/policy-reporter-values.yaml
