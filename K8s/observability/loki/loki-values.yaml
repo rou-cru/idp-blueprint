@@ -1,6 +1,7 @@
 ## @section Deployment Mode
 ## @description Defines the deployment mode for Loki.
 # -- Deploys Loki in microservices mode (simple-scalable)
+# -- Check https://grafana.com/docs/loki/latest/get-started/deployment-modes
 deploymentMode: simple-scalable
 
 ## @section Gateway

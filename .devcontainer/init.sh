@@ -8,6 +8,10 @@ if [ -f ".env" ]; then
     set +a
 fi
 
+
+# Add Bcrypt
+go install github.com/shoenig/bcrypt-tool@latest
+
 # -- CNI
 helm repo add cilium https://helm.cilium.io/
 # -- GitOps & Event-Driven Automation

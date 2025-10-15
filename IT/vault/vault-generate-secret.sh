@@ -5,14 +5,13 @@ set -euo pipefail
 # Generates random passwords using Vault and stores them in KV engine
 #
 # Usage:
-#   ./vault-generate-secret.sh <vault-path> [length] [format]
+#   ./vault-generate-secret.sh <vault-path> [length] [format] [hashing] [key_name]
 #
 # Examples:
-#   ./vault-generate-secret.sh secret/argocd/admin 32 base64
-#   ./vault-generate-secret.sh secret/jenkins/admin 24 hex
+#   ./vault-generate-secret.sh secret/argocd/admin 32 base64 bcrypt admin.password
+#   ./vault-generate-secret.sh secret/jenkins/admin 24 hex none password
 
-readonly SCRIPT_NAME
-SCRIPT_NAME=$(basename "$0")
+readonly SCRIPT_NAME=$(basename "$0")
 
 log() {
   echo "[$(date -u '+%Y-%m-%d %H:%M:%S UTC')] $*" >&2
@@ -25,12 +24,14 @@ error() {
 
 usage() {
   cat <<EOF
-Usage: $SCRIPT_NAME <vault-path> [length] [format]
+Usage: $SCRIPT_NAME <vault-path> [length] [format] [hashing] [key_name]
 
 Arguments:
   vault-path    Vault KV path where secret will be stored (e.g., secret/argocd/admin)
   length        Password length in bytes (default: 32)
   format        Output format: base64 or hex (default: base64)
+  hashing       Hashing method: bcrypt or none (default: none)
+  key_name      The key name to store the secret under in Vault (default: password)
 
 Environment Variables:
   VAULT_NAMESPACE     Kubernetes namespace where Vault runs (default: auto-detect)
@@ -41,7 +42,7 @@ Note:
   Ensure Vault has been initialized before running this script.
 
 Examples:
-  $SCRIPT_NAME secret/argocd/admin 32 base64
+  $SCRIPT_NAME secret/argocd/admin 32 base64 bcrypt admin.password
   $SCRIPT_NAME secret/jenkins/admin 24 hex
 
 EOF
@@ -155,18 +156,38 @@ generate_random_password() {
   echo "$password"
 }
 
+hash_password() {
+    local password=$1
+    local hashing_method=$2
+    
+    if [[ "$hashing_method" == "bcrypt" ]]; then
+        log "Hashing password with bcrypt..."
+        if ! command -v bcrypt-tool &> /dev/null; then
+            error "bcrypt-tool could not be found. Please ensure it is installed and in the PATH."
+        fi
+        local hashed_password
+        hashed_password=$(bcrypt-tool hash "$password")
+        log "✅ Password hashed successfully"
+        log "[DEBUG] Hashed password: ${hashed_password}"
+        echo "$hashed_password"
+    else
+        echo "$password"
+    fi
+}
+
 store_password_in_vault() {
   local namespace=$1
   local pod=$2
   local token=$3
   local vault_path=$4
-  local password=$5
+  local key_name=$5
+  local password_to_store=$6
 
-  log "Storing password in Vault at path: ${vault_path}..."
+  log "Storing password in Vault at path: ${vault_path} with key: ${key_name}..."
 
   if ! kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
-    vault kv put "$vault_path" password="$password" &>/dev/null; then
+    vault kv put "$vault_path" "${key_name}=${password_to_store}" &>/dev/null; then
     error "Failed to store password in Vault at path: ${vault_path}"
   fi
 
@@ -178,13 +199,14 @@ verify_storage() {
   local pod=$2
   local token=$3
   local vault_path=$4
+  local key_name=$5
 
   log "Verifying storage..."
 
   local retrieved_password
   retrieved_password=$(kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
-    vault kv get -field=password "$vault_path" 2>/dev/null | tr -d '\n\r')
+    vault kv get -field="$key_name" "$vault_path" 2>/dev/null | tr -d '\n\r')
 
   if [[ -z "$retrieved_password" ]]; then
     error "Failed to verify password storage at path: ${vault_path}"
@@ -203,10 +225,17 @@ main() {
   local vault_path=$1
   local length=${2:-32}
   local format=${3:-base64}
+  local hashing=${4:-none}
+  local key_name=${5:-password}
 
   # Validate format
   if [[ "$format" != "base64" && "$format" != "hex" ]]; then
     error "Invalid format: ${format}. Must be 'base64' or 'hex'"
+  fi
+
+  # Validate hashing
+  if [[ "$hashing" != "bcrypt" && "$hashing" != "none" ]]; then
+    error "Invalid hashing method: ${hashing}. Must be 'bcrypt' or 'none'"
   fi
 
   # Validate length
@@ -226,14 +255,16 @@ main() {
     vault_pod=$(detect_vault_pod "$vault_namespace")
   fi
 
-  log "==================================================="
+  log "===================================================="
   log "Vault Secret Generator"
-  log "==================================================="
+  log "===================================================="
   log "Vault path:   ${vault_path}"
   log "Length:       ${length} bytes"
   log "Format:       ${format}"
+  log "Hashing:      ${hashing}"
+  log "Key Name:     ${key_name}"
   log "Vault pod:    ${vault_namespace}/${vault_pod}"
-  log "==================================================="
+  log "===================================================="
 
   # Preflight checks
   validate_vault_connection "$vault_namespace" "$vault_pod"
@@ -248,18 +279,22 @@ main() {
   # Generate password
   local password
   password=$(generate_random_password "$vault_namespace" "$vault_pod" "$vault_token" "$length" "$format")
+  
+  # Hash password if requested
+  local final_password
+  final_password=$(hash_password "$password" "$hashing")
 
   # Store in Vault
-  store_password_in_vault "$vault_namespace" "$vault_pod" "$vault_token" "$vault_path" "$password"
+  store_password_in_vault "$vault_namespace" "$vault_pod" "$vault_token" "$vault_path" "$key_name" "$final_password"
 
   # Verify
-  verify_storage "$vault_namespace" "$vault_pod" "$vault_token" "$vault_path"
+  verify_storage "$vault_namespace" "$vault_pod" "$vault_token" "$vault_path" "$key_name"
 
   log ""
-  log "==================================================="
+  log "===================================================="
   log "✅ Secret generation complete!"
   log "Path: ${vault_path}"
-  log "==================================================="
+  log "===================================================="
 }
 
 main "$@"

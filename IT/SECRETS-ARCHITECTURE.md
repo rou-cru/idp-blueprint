@@ -287,11 +287,72 @@ metadata:
   namespace: production
 spec:
   vaultAuthRef: vault-auth
+  type: kv-v2
   mount: secret
   path: prod/app-credentials
   destination:
     create: true
     name: app-secret
+```
+
+**Advanced: Selective field mapping with transformations:**
+
+When you need to map specific fields from Vault to different keys in the Kubernetes Secret:
+
+```yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: app-credentials
+  namespace: production
+spec:
+  vaultAuthRef: vault-auth
+  type: kv-v2
+  mount: secret
+  path: prod/app-credentials
+  destination:
+    create: true
+    name: app-secret
+    transformation:
+      templates:
+        # Map Vault key to K8s Secret key
+        username:
+          text: '{{ get .Secrets "username" }}'
+        password:
+          text: '{{ get .Secrets "password" }}'
+```
+
+**Important:** For KV-v2 secrets, VSO exposes data through `.Secrets` object. The correct template syntax is:
+
+- ✅ **Correct:** `{{ get .Secrets "key-name" }}`
+- ❌ **Incorrect:** `{{ index .Data "key-name" }}`
+- ❌ **Incorrect:** `{{ .Secrets.Data.data.key }}`
+
+**Real-world example:** ArgoCD admin password management (see `IT/argocd/argocd-admin-secret.yaml`):
+
+```yaml
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: argocd-admin-password
+  namespace: argocd
+spec:
+  vaultAuthRef: vault-system/vault-auth
+  type: kv-v2
+  mount: secret
+  path: argocd/admin
+  hmacSecretData: true  # Detect drift
+  rolloutRestartTargets:  # Auto-restart on password change
+  - kind: Deployment
+    name: argocd-server
+  destination:
+    name: argocd-secret
+    create: false  # Helm creates it
+    overwrite: true  # VSO overwrites
+    transformation:
+      templates:
+        admin.password:
+          text: '{{ get .Secrets "admin.password" }}'
 ```
 
 **Push to AWS (ESO):**

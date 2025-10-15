@@ -10,6 +10,16 @@ ha:
 dex:
   enabled: false
 
+createClusterRoles: true
+certificate:
+  enabled: false
+# Default logging options used by all components
+logging:
+  # -- Set the global logging format. Either: `text` or `json`
+  format: json
+  # -- Set the global logging level. One of: `debug`, `info`, `warn` or `error`
+  level: warn
+
 ## @section Resource Optimization
 ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
 # -- Controller resource settings
@@ -41,6 +51,9 @@ server:
     serviceMonitor:
       enabled: true
       interval: 30s
+  ingress:
+    enabled: false
+    tls: false
 
 # -- Repo Server resource settings
 repoServer:
@@ -86,38 +99,91 @@ applicationSet:
       enabled: true
       interval: 30s
 
-# -- Let Helm manage the CRDs for simplicity in this demo environment.
+# -- Custom resource configuration
 crds:
   install: true
+  # -- Keep CRDs on chart uninstall
+  keep: true
 
 ## @section Secret Management
 ## @description ArgoCD admin password from Vault-generated Secret
 configs:
   secret:
-    # -- Disable Secret creation because VSO creates it from Vault
-    createSecret: false
-
+    createSecret: true
+    # Admin pass -> bcrypt-tool hash uKsm/+TISeAUKQ5NfcAKviBAH7UafnhIcIYHe8PyDFU=
+    # However, is just a placeholder because Vault is the real source of truth
+    argocdServerAdminPassword: '$2a$10$tYFiS1qMKY8rUMgc/a31TO19Rhg7auvSye9Vx8opYY/8rnUwfTaSO'
   ## @section Kustomize Configuration
   ## @description Enable Helm support in Kustomize globally
   cm:
     # -- Enable Helm charts in Kustomize builds
     kustomize.buildOptions: "--enable-helm"
-
     # -- Use annotation-based tracking for better performance
     application.resourceTrackingMethod: annotation
-
     # -- Enable status badge for applications
     statusbadge.enabled: true
-
     # -- Exclude high-frequency resources from reconciliation
     resource.exclusions: |
+      ### Network resources created by the Kubernetes control plane and excluded to reduce the number of watched events and UI clutter
+      - apiGroups:
+        - ''
+        - discovery.k8s.io
+        kinds:
+        - Endpoints
+        - EndpointSlice
+      ### Internal Kubernetes resources excluded reduce the number of watched events
+      - apiGroups:
+        - coordination.k8s.io
+        kinds:
+        - Lease
+      ### Internal Kubernetes Authz/Authn resources excluded reduce the number of watched events
+      - apiGroups:
+        - authentication.k8s.io
+        - authorization.k8s.io
+        kinds:
+        - SelfSubjectReview
+        - TokenReview
+        - LocalSubjectAccessReview
+        - SelfSubjectAccessReview
+        - SelfSubjectRulesReview
+        - SubjectAccessReview
+      ### Intermediate Certificate Request excluded reduce the number of watched events
+      - apiGroups:
+        - certificates.k8s.io
+        kinds:
+        - CertificateSigningRequest
+      - apiGroups:
+        - cert-manager.io
+        kinds:
+        - CertificateRequest
+      ### Cilium internal resources excluded reduce the number of watched events and UI Clutter
       - apiGroups:
         - cilium.io
         kinds:
         - CiliumIdentity
-        clusters:
-        - "*"
-
+        - CiliumEndpoint
+        - CiliumEndpointSlice
+      ### Kyverno intermediate and reporting resources excluded reduce the number of watched events and improve performance
+      - apiGroups:
+        - kyverno.io
+        - reports.kyverno.io
+        - wgpolicyk8s.io
+        kinds:
+        - PolicyReport
+        - ClusterPolicyReport
+        - EphemeralReport
+        - ClusterEphemeralReport
+        - AdmissionReport
+        - ClusterAdmissionReport
+        - BackgroundScanReport
+        - ClusterBackgroundScanReport
+        - UpdateRequest
+    # -- Enable exec feature in Argo UI
+    exec.enabled: true
+    # -- Enable local admin user
+    admin.enabled: true
+    # -- Timeout to discover if a new manifests version got published to the repository
+    timeout.reconciliation: 180s
   ## @section Repository Configuration
   ## @description Configure Helm repositories for ArgoCD
   repositories:
@@ -185,3 +251,5 @@ configs:
       name: cilium
       url: https://helm.cilium.io/
       type: helm
+
+
