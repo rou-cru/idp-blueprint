@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-secrets
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: serviceaccount
+    app.kubernetes.io/instance: eso-argocd
+    app.kubernetes.io/component: secret-sync
+    app.kubernetes.io/part-of: idp
+  annotations:
+    description: 'ESO ServiceAccount for secret synchronization from Vault'
+    contact: platform-team
+    documentation: https://external-secrets.io

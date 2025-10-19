@@ -216,6 +216,27 @@ verify_storage() {
   log "[DEBUG] Retrieved password: ${retrieved_password}"
 }
 
+save_plaintext_to_k8s_secret() {
+  local vault_path=$1
+  local plaintext_password=$2
+  local vault_namespace=$3
+
+  # Extract service name from vault path (e.g., secret/argocd/admin -> argocd)
+  local service_name
+  service_name=$(echo "$vault_path" | cut -d'/' -f2)
+
+  local secret_name="${service_name}-admin-plaintext"
+
+  log "Saving plaintext password to Kubernetes secret '${secret_name}' in namespace '${vault_namespace}'..."
+
+  if kubectl delete secret "$secret_name" -n "$vault_namespace" --ignore-not-found=true &>/dev/null && \
+     kubectl create secret generic "$secret_name" -n "$vault_namespace" --from-literal=password="$plaintext_password" &>/dev/null; then
+    log "✅ Plaintext password saved to secret: ${vault_namespace}/${secret_name}"
+  else
+    log "⚠️  Warning: Failed to save plaintext password to Kubernetes secret (non-critical)"
+  fi
+}
+
 main() {
   # Parse arguments
   if [[ $# -lt 1 ]]; then
@@ -279,7 +300,10 @@ main() {
   # Generate password
   local password
   password=$(generate_random_password "$vault_namespace" "$vault_pod" "$vault_token" "$length" "$format")
-  
+
+  # Save plaintext password to K8s secret for debug/testing (before hashing)
+  save_plaintext_to_k8s_secret "$vault_path" "$password" "$vault_namespace"
+
   # Hash password if requested
   local final_password
   final_password=$(hash_password "$password" "$hashing")

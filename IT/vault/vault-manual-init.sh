@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Manual Vault initialization script for VSO integration
+# Manual Vault initialization script
 # This script must be run ONCE after Vault is deployed
 
 readonly NAMESPACE="vault-system"
@@ -119,8 +119,8 @@ main() {
     --dry-run=client -o yaml | kubectl apply -f -
   log "✅ Keys saved to secret"
 
-  # 5. Configure Vault for VSO
-  log "Configuring Vault for VSO..."
+  # 5. Configure Vault for ESO (External Secrets Operator)
+  log "Configuring Vault for ESO..."
   export ROOT_TOKEN
 
   # Enable Kubernetes auth
@@ -149,35 +149,31 @@ main() {
 
   log "✅ Secrets engines enabled (kv-v2, database, transit)"
 
-  # Create policy for VSO
-  POLICY='path "secret/data/*" {
+  # Create policy for ESO
+  ESO_POLICY='path "secret/data/*" {
   capabilities = ["create", "read", "update", "delete", "list"]
 }
 path "secret/metadata/*" {
   capabilities = ["list", "read"]
-}
-path "sys/tools/random/*" {
-  capabilities = ["read", "update"]
 }'
 
-  echo "$POLICY" | kubectl exec -n "$NAMESPACE" -i vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
-    vault policy write vso-policy -
+  echo "$ESO_POLICY" | kubectl exec -n "$NAMESPACE" -i vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
+    vault policy write eso-policy -
 
-  # Create role for VSO
+  # Create a namespace-specific role for ArgoCD with ESO
   kubectl exec -n "$NAMESPACE" vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
-    vault write auth/kubernetes/role/vso-role \
-    bound_service_account_names=vault-secrets-operator-controller-manager \
-    bound_service_account_namespaces="*" \
-    policies=vso-policy \
+    vault write auth/kubernetes/role/eso-argocd-role \
+    bound_service_account_names=external-secrets \
+    bound_service_account_namespaces=argocd \
+    policies=eso-policy \
     ttl=24h
 
-  log "✅ Vault configured for VSO"
+  log "✅ Vault configured for ESO (ArgoCD namespace)"
   log ""
   log "=================================================="
   log "Vault initialization complete!"
   log "Root token: $ROOT_TOKEN"
   log "Unseal key saved in secret: $SECRET_NAME"
-  log "VSO role created: vso-role"
   log "=================================================="
 }
 

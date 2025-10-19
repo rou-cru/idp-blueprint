@@ -2,16 +2,15 @@
 
 ## Overview
 
-This IDP implements a **centralized, cloud-agnostic secrets management strategy** where HashiCorp Vault serves as the **single source of truth** for all sensitive data. The architecture elegantly handles both in-cluster and external workload secrets through complementary operators.
+This IDP implements a **centralized, cloud-agnostic secrets management strategy** where HashiCorp Vault serves as the **single source of truth** for all sensitive data. The architecture uses **External Secrets Operator (ESO)** as the unified tool to synchronize secrets both within the Kubernetes cluster and to external cloud providers.
 
 ## Architecture Diagram
 
 ```mermaid
 graph TB
     subgraph "Kubernetes Cluster"
-        subgraph "vault-system namespace"
+        subgraph "external-secrets-system namespace"
             Vault[("HashiCorp Vault<br/>(Single Source of Truth)")]
-            VSO["Vault Secrets Operator<br/>(VSO)"]
             ESO["External Secrets Operator<br/>(ESO)"]
         end
 
@@ -20,11 +19,9 @@ graph TB
             Pods["Application Pods"]
         end
 
-        Vault -->|"sync"| VSO
-        VSO -->|"create/update"| K8sSecrets
-        K8sSecrets -->|"mount"| Pods
-
         Vault -->|"read"| ESO
+        ESO -->|"create/update"| K8sSecrets
+        K8sSecrets -->|"mount"| Pods
     end
 
     subgraph "External Cloud Providers"
@@ -50,7 +47,6 @@ graph TB
     Azure -.->|"consume"| AzureFunc
 
     style Vault fill:#6366f1,stroke:#4338ca,stroke-width:3px,color:#fff
-    style VSO fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff
     style ESO fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff
     style AWS fill:#ff9900,stroke:#ff6600,color:#000
     style GCP fill:#4285f4,stroke:#1a73e8,color:#fff
@@ -59,40 +55,42 @@ graph TB
 
 ## Flow Explanation
 
-### Inside Cluster (VSO Path)
+### Inside Cluster (ESO `ExternalSecret`)
 
-**Vault → VSO → Kubernetes Secrets → Pods**
+**Vault → ESO → Kubernetes Secrets → Pods**
 
-1. **Vault** stores secrets in KV v2 engine at `secret/data/*`
-2. **VSO** watches for `VaultStaticSecret` or `VaultDynamicSecret` CRDs
-3. **VSO** authenticates to Vault using Kubernetes auth (ServiceAccount token)
-4. **VSO** fetches secrets from Vault and creates native **Kubernetes Secrets**
-5. **Application Pods** mount these secrets as volumes or environment variables
+1.  **Vault** stores secrets in its KV v2 engine at paths like `secret/data/*`.
+2.  **ESO** watches for `ExternalSecret` custom resources in application namespaces.
+3.  **ESO** authenticates to Vault using a configured `ClusterSecretStore` which leverages Kubernetes service account authentication.
+4.  **ESO** fetches the specified secrets from Vault and creates or updates native **Kubernetes Secrets**.
+5.  **Application Pods** mount these Kubernetes Secrets as volumes or environment variables, completely unaware of Vault.
 
 **Example:**
 
 ```yaml
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
   name: db-credentials
 spec:
-  vaultAuthRef: vault-auth
-  mount: secret
-  path: prod/database
-  destination:
-    create: true
-    name: db-secret  # ← Creates this K8s Secret
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: db-secret # ← Creates or updates this K8s Secret
+  dataFrom:
+  - extract:
+      key: secret/prod/database
 ```
 
-### Outside Cluster (ESO PushSecret Path)
+### Outside Cluster (ESO `PushSecret`)
 
 **Vault → ESO → Cloud Secret Managers → External Workloads**
 
-1. **Vault** stores secrets (same source as in-cluster)
-2. **ESO** uses `PushSecret` CRD to read from Vault
-3. **ESO** propagates secrets to **AWS/GCP/Azure** secret managers
-4. **External workloads** (Lambda, Cloud Run, etc.) consume from their native secret manager
+1.  **Vault** stores secrets (same source of truth).
+2.  **ESO** uses a `PushSecret` custom resource to read secrets from Vault.
+3.  **ESO** propagates/pushes these secrets to external providers like **AWS Secrets Manager, GCP Secret Manager, or Azure Key Vault**.
+4.  **External workloads** (e.g., AWS Lambda, GCP Cloud Run) consume secrets from their native cloud secret manager.
 
 **Example - Push to AWS:**
 
@@ -103,18 +101,18 @@ metadata:
   name: push-to-aws
 spec:
   secretStoreRefs:
-  - name: vault-secretstore        # Source: Vault
-    kind: ClusterSecretStore
-  - name: aws-secrets-manager      # Destination: AWS
-    kind: SecretStore
+    - name: vault-secretstore # Source: Vault
+      kind: ClusterSecretStore
+    - name: aws-secrets-manager # Destination: AWS
+      kind: SecretStore
   selector:
     secret:
-      name: lambda-db-password     # Secret from Vault
+      name: lambda-db-password # Secret from Vault
   data:
-  - match:
-      secretKey: password
-      remoteRef:
-        remoteKey: /prod/lambda/db-password  # AWS SM path
+    - match:
+        secretKey: password
+        remoteRef:
+          remoteKey: /prod/lambda/db-password # AWS SM path
 ```
 
 ## Key Principles
@@ -123,76 +121,61 @@ spec:
 
 **Vault is authoritative** for all secrets. No secrets are created directly in:
 
-- Kubernetes Secrets (VSO creates them from Vault)
-- AWS/GCP/Azure Secret Managers (ESO pushes from Vault)
+-   Kubernetes Secrets (ESO creates them from Vault).
+-   AWS/GCP/Azure Secret Managers (ESO pushes them from Vault).
 
 **Benefits:**
 
-- Centralized audit trail (all access logged in Vault)
-- Consistent rotation (rotate in Vault → propagates everywhere)
-- No vendor lock-in (switch cloud providers without changing Vault)
+-   **Centralized Audit Trail:** All secret access is logged in Vault.
+-   **Consistent Rotation:** Rotate a secret in Vault, and ESO propagates the change everywhere.
+-   **No Vendor Lock-in:** The core secret store remains vendor-neutral.
 
-### 2. Separation of Concerns
+### 2. Unified Operator
 
 | Component | Responsibility | Scope |
-|-----------|---------------|-------|
-| **Vault** | Store, rotate, audit secrets | Everything |
-| **VSO** | Sync Vault → K8s Secrets | In-cluster only |
-| **ESO** | Push Vault → Cloud providers | External workloads only |
+|-----------|----------------|-------|
+| **Vault** | Store, rotate, and audit secrets | Everything |
+| **ESO**   | Sync Vault to K8s & push to Cloud | In-cluster & External |
 
-**Why not use ESO for in-cluster?**
-
-- VSO is official HashiCorp operator (better Vault integration)
-- VSO supports dynamic secrets (DB credentials rotation)
-- ESO is for external/legacy systems that can't call Vault directly
+**External Secrets Operator (ESO)** is used for all secret synchronization tasks. It provides a robust and consistent mechanism for both pulling secrets into the cluster and pushing them to external systems.
 
 ### 3. Zero-Touch Secret Consumption
 
-**Developers never see raw secrets:**
+**Developers never handle raw secrets.** The process is declarative:
 
-1. Request secret via YAML manifest:
-
-   ```yaml
-   apiVersion: secrets.hashicorp.com/v1beta1
-   kind: VaultStaticSecret
-   metadata:
-     name: my-app-secret
-   ```
-
-2. VSO/ESO fetches from Vault automatically
-3. Application consumes from K8s Secret or Cloud Secret Manager
-4. Rotation happens transparently (VSO/ESO update secrets)
+1.  A developer defines an `ExternalSecret` or `PushSecret` manifest in their application's Git repository.
+2.  The GitOps controller (ArgoCD) applies the manifest.
+3.  ESO automatically fetches the secret from Vault and makes it available to the application.
+4.  Rotation is transparent: when the secret is updated in Vault, ESO updates the corresponding Kubernetes Secret or pushes the change to the cloud provider.
 
 ## Use Cases
 
-### In-Cluster Workloads (VSO)
+### In-Cluster Workloads (ESO `ExternalSecret`)
 
-✅ **Use VSO when:**
+✅ **Use `ExternalSecret` when:**
 
-- Workload runs inside Kubernetes
-- Needs secrets as K8s Secret (volume mount, env var)
-- Requires dynamic secrets (DB credentials with TTL)
-
-**Examples:**
-
-- Microservices needing database passwords
-- CI/CD pipelines in Jenkins pods
-- Applications using API keys
-
-### External Workloads (ESO PushSecret)
-
-✅ **Use ESO PushSecret when:**
-
-- Workload runs **outside** Kubernetes (serverless, VMs)
-- Workload **cannot** call Vault API directly (legacy apps)
-- Cloud provider **requires** secrets in their native manager (compliance)
+-   Your workload runs inside the Kubernetes cluster.
+-   You need secrets available as standard Kubernetes `Secret` objects (for volume mounts or environment variables).
 
 **Examples:**
 
-- **AWS Lambda** functions (read from AWS Secrets Manager)
-- **Crossplane** provisioning RDS (needs AWS credentials in Parameter Store)
-- **GCP Cloud Run** services (read from GCP Secret Manager)
-- **Azure Functions** (read from Azure Key Vault)
+-   Microservices needing database passwords.
+-   CI/CD pipelines running in Jenkins pods.
+-   Web applications requiring API keys.
+
+### External Workloads (ESO `PushSecret`)
+
+✅ **Use `PushSecret` when:**
+
+-   Your workload runs **outside** Kubernetes (e.g., serverless, VMs).
+-   The workload cannot call the Vault API directly (common in legacy applications).
+-   A cloud provider's service (like AWS RDS) requires credentials to be present in its native secret manager.
+
+**Examples:**
+
+-   **AWS Lambda** functions reading from AWS Secrets Manager.
+-   **Crossplane** provisioning an RDS instance, which requires credentials in AWS.
+-   **GCP Cloud Run** services reading from GCP Secret Manager.
 
 ## Security Considerations
 
@@ -200,46 +183,20 @@ spec:
 
 ⚠️ **NOT for production:**
 
-- TLS disabled (`skipTLSVerify: true`)
-- Single unseal key (1-of-1 Shamir)
-- Root token logged during init
-- Keys stored in K8s Secret
+-   TLS is disabled (`skipTLSVerify: true`).
+-   Vault is initialized with a single unseal key.
+-   The root token is logged during the init script.
+-   Unseal keys and the root token are stored in a Kubernetes Secret.
 
 ### Production Hardening
 
 **Must implement:**
 
-1. **TLS Everywhere:**
-
-   ```yaml
-   # Vault with Cert-Manager
-   tls_cert_file = "/vault/tls/tls.crt"
-   tls_key_file  = "/vault/tls/tls.key"
-   ```
-
-2. **Auto-Unseal with Cloud KMS:**
-
-   ```hcl
-   seal "awskms" {
-     kms_key_id = "arn:aws:kms:..."
-   }
-   ```
-
-3. **Multi-Share Unseal Keys:**
-
-   ```bash
-   vault operator init -key-shares=5 -key-threshold=3
-   ```
-
-4. **RBAC Policies:**
-   - Least privilege per team/namespace
-   - No wildcards in production
-   - Audit all policy changes
-
-5. **Network Policies:**
-   - Limit Vault access to VSO/ESO only
-   - Deny direct pod-to-vault traffic
-   - Use service mesh (Istio) for mTLS
+1.  **TLS Everywhere:** Enforce encrypted traffic between all components.
+2.  **Auto-Unseal with Cloud KMS:** Use a cloud provider's KMS to automatically unseal Vault.
+3.  **Multi-Share Unseal Keys:** Require a quorum of operators to unseal Vault manually if auto-unseal fails.
+4.  **RBAC Policies:** Implement least-privilege access control within Vault.
+5.  **Network Policies:** Restrict network access to the Vault service, ideally only allowing ESO to connect.
 
 ## Deployment Workflow
 
@@ -252,23 +209,16 @@ task vault:deploy
 # 2. Initialize Vault manually
 task vault:init
 # → Generates unseal keys, root token
-# → Configures Kubernetes auth
-# → Creates VSO role and policy
+# → Configures Kubernetes auth for ESO
 
-# 3. Deploy VSO
-task vso:deploy
-
-# 4. Apply VSO connection resources
-task it:vso:apply-resources
-
-# 5. Deploy ESO (for external workloads)
+# 3. Deploy ESO
 task external-secrets:deploy
 task it:external-secrets:apply-resources
 ```
 
 ### Day-2 Operations
 
-**Add new secret to Vault:**
+**Add a new secret to Vault:**
 
 ```bash
 kubectl exec -n vault-system vault-0 -- \
@@ -277,85 +227,58 @@ kubectl exec -n vault-system vault-0 -- \
   password=secure_password
 ```
 
-**Consume in-cluster (VSO):**
+**Consume in-cluster (ESO `ExternalSecret`):**
+
+This is the standard way to make secrets available to pods.
 
 ```yaml
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
   name: app-credentials
   namespace: production
 spec:
-  vaultAuthRef: vault-auth
-  type: kv-v2
-  mount: secret
-  path: prod/app-credentials
-  destination:
-    create: true
-    name: app-secret
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
+    name: app-secret # ESO creates this K8s Secret
+    creationPolicy: Owner
+  dataFrom:
+  - extract:
+      key: secret/prod/app-credentials
 ```
 
-**Advanced: Selective field mapping with transformations:**
+**Real-world example: ArgoCD admin password management** (see `IT/external-secrets/argocd-admin-externalsecret.yaml`):
 
-When you need to map specific fields from Vault to different keys in the Kubernetes Secret:
-
-```yaml
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
-metadata:
-  name: app-credentials
-  namespace: production
-spec:
-  vaultAuthRef: vault-auth
-  type: kv-v2
-  mount: secret
-  path: prod/app-credentials
-  destination:
-    create: true
-    name: app-secret
-    transformation:
-      templates:
-        # Map Vault key to K8s Secret key
-        username:
-          text: '{{ get .Secrets "username" }}'
-        password:
-          text: '{{ get .Secrets "password" }}'
-```
-
-**Important:** For KV-v2 secrets, VSO exposes data through `.Secrets` object. The correct template syntax is:
-
-- ✅ **Correct:** `{{ get .Secrets "key-name" }}`
-- ❌ **Incorrect:** `{{ index .Data "key-name" }}`
-- ❌ **Incorrect:** `{{ .Secrets.Data.data.key }}`
-
-**Real-world example:** ArgoCD admin password management (see `IT/argocd/argocd-admin-secret.yaml`):
+This `ExternalSecret` targets an existing secret managed by Helm (`argocd-secret`) and merges the password into it.
 
 ```yaml
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
   name: argocd-admin-password
   namespace: argocd
 spec:
-  vaultAuthRef: vault-system/vault-auth
-  type: kv-v2
-  mount: secret
-  path: argocd/admin
-  hmacSecretData: true  # Detect drift
-  rolloutRestartTargets:  # Auto-restart on password change
-  - kind: Deployment
-    name: argocd-server
-  destination:
+  secretStoreRef:
+    name: vault-backend
+    kind: ClusterSecretStore
+  target:
     name: argocd-secret
-    create: false  # Helm creates it
-    overwrite: true  # VSO overwrites
-    transformation:
-      templates:
-        admin.password:
-          text: '{{ get .Secrets "admin.password" }}'
+    template:
+      type: Opaque
+      engineVersion: v2
+      mergePolicy: Replace
+      data:
+        admin.password: '{{ .admin_password }}'
+  data:
+    - secretKey: admin_password
+      remoteRef:
+        key: secret/argocd/admin
+        property: admin.password
 ```
 
-**Push to AWS (ESO):**
+**Push to AWS (ESO `PushSecret`):**
 
 ```yaml
 apiVersion: external-secrets.io/v1alpha1
@@ -364,16 +287,16 @@ metadata:
   name: push-app-creds-to-aws
 spec:
   secretStoreRefs:
-  - name: vault-secretstore
-  - name: aws-secrets-manager
+    - name: vault-secretstore
+    - name: aws-secrets-manager
   selector:
     secret:
-      name: app-secret  # From VSO
+      name: app-credentials # References a K8s secret synced by another ExternalSecret
   data:
-  - match:
-      secretKey: password
-      remoteRef:
-        remoteKey: /prod/lambda/app-password
+    - match:
+        secretKey: password
+        remoteRef:
+          remoteKey: /prod/lambda/app-password
 ```
 
 ## Monitoring & Observability
@@ -382,73 +305,52 @@ spec:
 
 **Vault:**
 
-- `vault_core_unsealed` - Seal status (0=sealed, 1=unsealed)
-- `vault_token_count_by_policy` - Active tokens per policy
-- Prometheus ServiceMonitor enabled in `vault-values.yaml`
-
-**VSO:**
-
-- `vso_secret_sync_total` - Successful syncs
-- `vso_secret_sync_errors_total` - Sync failures
-- Available at `:8443/metrics`
+-   `vault_core_unsealed` - Seal status (0=sealed, 1=unsealed).
+-   `vault_token_count_by_policy` - Active tokens per policy.
+-   Prometheus ServiceMonitor is enabled in `vault-values.yaml`.
 
 **ESO:**
 
-- `externalsecret_sync_calls_total` - Sync operations
-- `externalsecret_sync_calls_error` - Failures
-- Available via ServiceMonitor
+-   `externalsecret_sync_calls_total` - Total sync operations.
+-   `externalsecret_sync_calls_error` - Total sync failures.
+-   Available via a ServiceMonitor.
 
 ### Alerts
 
 **Critical:**
 
-- Vault sealed unexpectedly
-- VSO/ESO sync failures > 5 in 10min
-- Vault token expiration approaching
+-   Vault is sealed unexpectedly.
+-   ESO sync failures > 5 in the last 10 minutes.
+-   A Vault token used by ESO is approaching its expiration.
 
 **Warning:**
 
-- Secret rotation delay > 1 hour
-- High Vault API latency (>500ms)
+-   Secret rotation delay > 1 hour.
+-   High Vault API latency (>500ms).
 
 ## Migration Path from Current State
 
 ### From: Custom Init Sidecar (Old)
 
-```yaml
-extraContainers:
-- name: vault-init-sidecar
-  image: roucru/idp-blueprint:minimal
-  # Custom bash script for init/unseal
-```
+A previous version of this blueprint used a custom sidecar container with a bash script to initialize Vault and inject secrets. This is now deprecated.
 
-### To: VSO + Manual Init (Current)
+### To: ESO + Manual Init (Current)
 
-```bash
-# One-time manual initialization
-task vault:init
-
-# VSO handles sync (no custom code)
-```
+The current, stable architecture uses a one-time manual initialization script for Vault (`task vault:init`) and relies on **External Secrets Operator** for all subsequent secret synchronization.
 
 ### Future: Vault Operator (Bank-Vaults)
 
-```yaml
-apiVersion: vault.banzaicloud.com/v1alpha1
-kind: Vault
-spec:
-  # Declarative auto-init, auto-unseal, auto-config
-```
+For environments requiring fully automated, declarative management of Vault itself (including auto-unseal, HA configuration, etc.), migrating to an operator like Bank-Vaults is the recommended next step.
 
 **When to migrate:**
 
-- Need HA (3+ replicas with Raft)
-- Auto-unseal with cloud KMS
-- Zero manual intervention
+-   When you need a High-Availability Vault cluster (e.g., 3+ replicas with Raft).
+-   When you require fully automatic unsealing using a cloud KMS.
+-   When zero manual intervention in Vault's lifecycle is a hard requirement.
 
 ## References
 
-- [Vault Secrets Operator Docs](https://developer.hashicorp.com/vault/docs/platform/k8s/vso)
-- [External Secrets PushSecret](https://external-secrets.io/latest/api/pushsecret/)
-- [Vault Production Hardening](https://developer.hashicorp.com/vault/tutorials/operations/production-hardening)
-- [Bank-Vaults Operator](https://bank-vaults.dev/docs/operator/)
+-   [External Secrets Operator Docs](https://external-secrets.io/latest/)
+-   [ESO `PushSecret`](https://external-secrets.io/latest/api/pushsecret/)
+-   [Vault Production Hardening](https://developer.hashicorp.com/vault/tutorials/operations/production-hardening)
+-   [Bank-Vaults Operator](https://bank-vaults.dev/docs/operator/)

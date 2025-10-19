@@ -6,7 +6,7 @@ commonAnnotations:
   documentation: None
 
 resources:
-  - vso-argocd.yaml
+  - eso-argocd.yaml
 
 labels:
   - includeSelectors: true

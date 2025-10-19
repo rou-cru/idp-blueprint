@@ -20,7 +20,7 @@ Configuration for a core component deployed via a Helm chart is defined in a sin
 ### 2. Raw Kubernetes Manifests
 
 Static Kubernetes resources that are not part of a Helm chart installation (e.g., a
-`ClusterIssuer` or a `VaultConnection`) are organized as raw YAML files.
+`ClusterIssuer` or a `ClusterSecretStore`) are organized as raw YAML files.
 
 - **Location**: Placed inside a subdirectory named after the parent component (e.g.,
   `cert-manager/`).
@@ -37,9 +37,8 @@ Kustomize for composition and are deployed via `kustomize build <dir>/ | kubectl
 - **Purpose**:
   - `namespaces/`: Bootstrap namespace definitions for core components.
   - `cert-manager/`: Issuers and Certificate definitions.
-  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault.
-  - `vault-secrets-operator/`: The `VaultConnection` and `VaultAuth` resources.
-  - `argocd/`: The `VaultStaticSecret` for managing the ArgoCD admin password.
+  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault and the `ExternalSecret` for ArgoCD.
+  - `argocd/`: Kustomization to support the Helm chart.
 
 ## Visual Structure
 
@@ -52,25 +51,20 @@ graph TD
     A --> AA(cert-manager-values.yaml);
     A --> AB(argocd-values.yaml);
     A --> AC(kustomization.yaml);
-    A --> AD(vso-values.yaml);
 
     A --> F[cert-manager/];
     A --> G[external-secrets/];
     A --> N[namespaces/];
     A --> V[vault/];
-    A --> W[vault-secrets-operator/];
     A --> X[argocd/];
 
     subgraph Raw Manifests & Kustomize
         F --> H(ca-issuer.yaml);
-        G --> K(vault-secretstore.yaml);
+        G --> K(argocd-secretstore.yaml);
+        G --> L(argocd-admin-externalsecret.yaml);
         N --> N1(kustomization.yaml);
         V --> V1(vault-manual-init.sh);
-        W --> W1(kustomization.yaml);
-        W --> W2(vaultauth.yaml);
-        W --> W3(vaultconnection.yaml);
         X --> X1(kustomization.yaml);
-        X --> X2(argocd-admin-secret.yaml);
     end
 
     subgraph Helm Values
@@ -80,7 +74,6 @@ graph TD
         E
         AA
         AB
-        AD
     end
 ```
 
@@ -94,9 +87,8 @@ graph TD
 | `namespaces/`                | Bootstrap namespace definitions for core components.                     | Kustomize Bootstrap |
 | `vault/`                     | Contains the manual Vault initialization script (`vault-manual-init.sh`).| Shell Script        |
 | `cert-manager/`              | Raw manifests for cert-manager (ClusterIssuers, CA certificates).        | Raw Manifests       |
-| `external-secrets/`          | Raw manifests for external-secrets (ClusterSecretStore).                 | Raw Manifests       |
-| `vault-secrets-operator/`    | Raw manifests for VSO (`VaultAuth`, `VaultConnection`).                  | Raw Manifests       |
-| `argocd/`                    | Manages the ArgoCD admin password as a `VaultStaticSecret`.              | Raw Manifests       |
+| `external-secrets/`          | Raw manifests for External Secrets Operator (SecretStore, ExternalSecret).| Raw Manifests       |
+| `argocd/`                    | Kustomization to support the ArgoCD Helm chart deployment.               | Kustomize           |
 
 ## Deployment Workflow
 
@@ -111,11 +103,8 @@ The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 6. **Deploy Vault Stack**:
     - Deploy Vault via Helm (`vault-values.yaml`).
     - Execute the manual initialization script (`vault-manual-init.sh`) to initialize and unseal Vault.
-    - Deploy Vault Secrets Operator (VSO) via Helm (`vso-values.yaml`).
-    - Apply VSO resources (`VaultAuth`, `VaultConnection`) via Kustomize.
-    - Apply the `VaultStaticSecret` to provision the ArgoCD admin password.
-7. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
-8. **Deploy External Secrets Operator** via Helm (`eso-values.yaml`).
-    - Then apply ESO resources: `kustomize build external-secrets/ | kubectl apply -f -`.
+7. **Deploy External Secrets Operator** via Helm (`eso-values.yaml`).
+    - Then apply ESO resources (`ClusterSecretStore`, `ExternalSecret` for ArgoCD) via Kustomize: `kustomize build external-secrets/ | kubectl apply -f -`.
+8. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
 
 **Key Insight:** The bootstrap process is a carefully orchestrated sequence of Helm deployments and Kustomize applications, managed entirely by `Taskfile.yaml`.

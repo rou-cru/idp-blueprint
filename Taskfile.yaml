@@ -11,7 +11,6 @@ vars:
   PROMETHEUS_CRDS_VERSION: '{{.PROMETHEUS_CRDS_VERSION | default "77.14.0"}}'
   EXTERNAL_SECRETS_VERSION: '{{.EXTERNAL_SECRETS_VERSION | default "0.20.2"}}'
   VAULT_VERSION: '{{.VAULT_VERSION | default "0.31.0"}}'
-  VSO_VERSION: '{{.VSO_VERSION | default "0.10.0"}}'
   ARGOCD_VERSION: '{{.ARGOCD_VERSION | default "8.6.0"}}'
 
   # Operational Settings
@@ -29,15 +28,15 @@ tasks:
       - task: it:apply-namespaces # Prepare all no-gitops namespaces
       - task: it:apply-serviceaccounts # Prepare all no-gitops SA
       # Complete bootstrapping by adding the CNI
-      - task: cilium:deploy # After deploy CNI finally control-plane is ready
-      - task: it:apply-prometheus-crds # Allow Service Monitor for everything
-      - task: cilium:enable-servicemonitor # Enable Cilium metrics now that CRDs exist
+      - task: cilium:deploy
+      - task: it:apply-prometheus-crds
+      - task: cilium:enable-servicemonitor
+      - task: external-secrets:deploy
       # 2. Secrets & Certs Management
-      - task: cert-manager:deploy # TLS
-      - task: vault:deploy # Hold sensible data and control in-cluster secrets
-      - task: external-secrets:deploy # Sync secrets from or to outside
+      - task: cert-manager:deploy
+      - task: vault:deploy
       # 3. Deploy GitOps Engine
-      - task: argocd:deploy # IDP Core is ready to deploy everything else by itself
+      - task: argocd:deploy
       # 4. Deploy Policy as Code Engine
       - task: policies:deploy
       # 5. Deploy Application Stacks for everything else
@@ -123,7 +122,8 @@ tasks:
         helm upgrade --install cilium cilium/cilium \
           --version {{.CILIUM_VERSION}} \
           --namespace kube-system \
-          --values IT/cilium/cilium-values.yaml
+          --values IT/cilium/cilium-values.yaml \
+          --hide-notes
       - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system --timeout=120s
 
   cilium:enable-servicemonitor:
@@ -168,23 +168,21 @@ tasks:
           --namespace external-secrets-system \
           --values IT/external-secrets/eso-values.yaml \
           --hide-notes
+      - kubectl wait --for=condition=available --timeout=300s deployment/external-secrets -n external-secrets-system
 
   # Vault
   # ------------------------------------------------------------------------------
   vault:clean:
-    desc: 'Clean Vault and VSO deployments (temporary task for development)'
+    desc: 'Clean Vault deployment'
     silent: true
     cmds:
       - cmd: helm uninstall vault -n vault-system
         ignore_error: true
-      - cmd: helm uninstall vault-secrets-operator -n vault-system
-        ignore_error: true
       - kubectl delete pvc data-vault-0 -n vault-system --ignore-not-found=true
-      - kubectl delete vaultconnection,vaultauth --all -n vault-system --ignore-not-found=true
-      - echo "✅ Vault and VSO cleaned"
+      - echo "✅ Vault cleaned"
 
   vault:deploy:
-    desc: 'Deploy HashiCorp Vault & VSO'
+    desc: 'Deploy HashiCorp Vault'
     cmds:
       - |
         helm upgrade --install vault hashicorp/vault \
@@ -194,27 +192,9 @@ tasks:
           --hide-notes
       - task: vault:init
       - task: vault:generate-secrets
-      - task: vso:deploy
-      - task: vso:wait-for-crds
-      - task: it:vso:apply-resources
-
-  vso:deploy:
-    desc: 'Deploy Vault Secrets Operator'
-    cmds:
-      - |
-        helm upgrade --install vault-secrets-operator hashicorp/vault-secrets-operator \
-          --version {{.VSO_VERSION}} \
-          --namespace vault-system \
-          --values IT/vault-secrets-operator/vso-values.yaml \
-          --hide-notes
-
-  vso:wait-for-crds:
-    desc: 'Wait for Vault Secrets Operator CRDs to be established'
-    cmds:
-      - kubectl wait --for condition=established --timeout={{.KUBECTL_TIMEOUT}} crd/vaultstaticsecrets.secrets.hashicorp.com crd/vaultauths.secrets.hashicorp.com
 
   vault:init:
-    desc: 'Initialize Vault manually (run once after vault:deploy)'
+    desc: 'Initialize Vault and configure for ESO'
     cmds:
       - ./IT/vault/vault-manual-init.sh
 
@@ -223,17 +203,11 @@ tasks:
     cmds:
       - ./IT/vault/vault-generate-secret.sh secret/argocd/admin 32 base64 bcrypt admin.password
 
-  vault:ui:
-    desc: 'Open Vault UI'
+  it:eso:apply-resources:
+    desc: 'Apply ESO SecretStores and ExternalSecrets'
     cmds:
-      - echo "🌐 Vault UI --> http://localhost:8200"
-      - echo "🔑 Token --> root"
-      - kubectl port-forward -n vault-system svc/vault 8200:8200
-
-  it:vso:apply-resources:
-    desc: 'Apply VSO resources (VaultConnection, VaultAuth) and ArgoCD VaultStaticSecret'
-    cmds:
-      - kustomize build IT/vault-secrets-operator/ | kubectl apply -f -
+      - kustomize build IT/external-secrets/ | kubectl apply -f -
+      - kubectl wait --for=condition=Ready externalsecret/argocd-admin-password -n argocd --timeout=300s
 
   # ArgoCD
   # ------------------------------------------------------------------------------
@@ -245,15 +219,9 @@ tasks:
           --version {{.ARGOCD_VERSION}} \
           --namespace argocd \
           --values IT/argocd/argocd-values.yaml \
-          --hide-notes 
+          --hide-notes
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout={{.KUBECTL_TIMEOUT}}
-      - task: it:argocd:apply-resources
-
-  it:argocd:apply-resources:
-    desc: 'Apply all ArgoCD bootstrap resources via Kustomize'
-    cmds:
-      - kustomize build IT/argocd/ | kubectl apply -f -
-      #- kubectl wait --for=condition=SecretSynced vaultstaticsecret/argocd-admin-password -n argocd --timeout={{.KUBECTL_TIMEOUT}}
+      - task: it:eso:apply-resources
 
   # Docker Image
   # ------------------------------------------------------------------------------
