@@ -1,0 +1,29 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: idp-gateway
+  namespace: kube-system
+  labels:
+    app.kubernetes.io/name: idp-gateway
+    app.kubernetes.io/instance: idp-gateway-demo
+    app.kubernetes.io/component: gateway
+    app.kubernetes.io/part-of: idp
+  annotations:
+    description: 'Main Gateway for exposing IDP services via HTTPS'
+    contact: platform-team
+    documentation: https://gateway-api.sigs.k8s.io/
+    cert-manager.io/cluster-issuer: ca-issuer
+spec:
+  gatewayClassName: cilium
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.127-0-0-1.sslip.io"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: idp-wildcard-cert

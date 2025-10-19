@@ -196,13 +196,13 @@ tasks:
   vault:init:
     desc: 'Initialize Vault and configure for ESO'
     cmds:
-      - ./IT/vault/vault-manual-init.sh
+      - ./scripts/vault-init.sh
 
   vault:generate-secrets:
     desc: 'Generate initial secrets for all services using Vault'
     cmds:
-      - ./IT/vault/vault-generate-secret.sh secret/argocd/admin 32 base64 bcrypt admin.password
-      - ./IT/vault/vault-generate-secret.sh secret/sonarqube/monitoring 16 hex none passcode
+      - ./scripts/vault-generate.sh secret/argocd/admin 32 base64 bcrypt admin.password
+      - ./scripts/vault-generate.sh secret/sonarqube/monitoring 16 hex none passcode
 
   it:eso:apply-resources:
     desc: 'Apply ESO SecretStores and ExternalSecrets'
@@ -370,6 +370,17 @@ tasks:
             rm $dir/Chart.yaml
           fi
         done
+
+  # CA CERTIFICATE
+  # ------------------------------------------------------------------------------
+  ca:export:
+    desc: 'Export CA certificate for browser import (optional)'
+    cmds:
+      - |
+        kubectl get secret idp-demo-ca-secret -n cert-manager \
+          -o jsonpath='{.data.tls\.crt}' | base64 -d > $HOME/idp-demo-ca.crt
+        echo "✅ CA exported to: $HOME/idp-demo-ca.crt"
+        echo "   Import in browser to remove security warnings"
 
   # REGISTRY MANAGEMENT
   # ------------------------------------------------------------------------------
