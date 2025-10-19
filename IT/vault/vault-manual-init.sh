@@ -169,6 +169,16 @@ path "secret/metadata/*" {
     ttl=24h
 
   log "✅ Vault configured for ESO (ArgoCD namespace)"
+
+  # Create a namespace-specific role for CICD with ESO
+  kubectl exec -n "$NAMESPACE" vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
+    vault write auth/kubernetes/role/eso-cicd-role \
+    bound_service_account_names=external-secrets \
+    bound_service_account_namespaces=cicd \
+    policies=eso-policy \
+    ttl=24h
+
+  log "✅ Vault configured for ESO (CICD namespace)"
   log ""
   log "=================================================="
   log "Vault initialization complete!"
