@@ -41,3 +41,9 @@ write:
   replicas: 0
 backend:
   replicas: 0
+
+# Disable memcached caches (not needed in SingleBinary mode)
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false
