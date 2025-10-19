@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - eso-cicd.yaml
+  - cicd-secretstore.yaml
 
 labels:
   - includeSelectors: true
