@@ -29,6 +29,9 @@ server:
 
   # Note: Vault data is persisted in PVC 'data-vault-0' (auto-created by Helm chart)
   # The PVC uses local-path storage class and is mounted at /vault/data
+  dataStorage:
+    enabled: true
+    size: 1Gi
 
   # -- Resource configuration for the Vault pod.
   resources:

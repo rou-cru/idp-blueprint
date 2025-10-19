@@ -14,7 +14,7 @@ spec:
     metadata:
       name: 'observability-{{path.basename}}'
     spec:
-      project: default
+      project: observability
       source:
         repoURL: https://github.com/rou-cru/idp-blueprint.git
         targetRevision: HEAD

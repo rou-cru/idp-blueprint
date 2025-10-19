@@ -222,6 +222,9 @@ tasks:
           --hide-notes
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout={{.KUBECTL_TIMEOUT}}
       - task: it:eso:apply-resources
+      - kubectl apply -f IT/argocd/appproject-observability.yaml
+      - kubectl apply -f IT/argocd/appproject-cicd.yaml
+      - kubectl apply -f IT/argocd/appproject-security.yaml
 
   # Docker Image
   # ------------------------------------------------------------------------------

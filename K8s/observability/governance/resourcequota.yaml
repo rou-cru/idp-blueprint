@@ -5,7 +5,7 @@ metadata:
   namespace: observability
 spec:
   hard:
-    requests.cpu: "750m"
-    requests.memory: "2Gi"
-    limits.cpu: "1250m"
-    limits.memory: "3Gi"
+    requests.cpu: "2000m"
+    requests.memory: "6Gi"
+    limits.cpu: "4000m"
+    limits.memory: "12Gi"

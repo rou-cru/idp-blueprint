@@ -30,6 +30,9 @@ loki:
 
 singleBinary:
   replicas: 1
+  persistence:
+    enabled: true
+    size: 2Gi
 
 read:
   replicas: 0
