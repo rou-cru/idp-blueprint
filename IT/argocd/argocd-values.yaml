@@ -26,11 +26,11 @@ logging:
 controller:
   resources:
     requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
       cpu: 500m
       memory: 512Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
   metrics:
     enabled: true
     serviceMonitor:
@@ -41,11 +41,11 @@ controller:
 server:
   resources:
     requests:
-      cpu: 250m
-      memory: 512Mi
+      cpu: 125m
+      memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 768Mi
+      cpu: 250m
+      memory: 256Mi
   metrics:
     enabled: true
     serviceMonitor:
@@ -59,11 +59,11 @@ server:
 repoServer:
   resources:
     requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
       cpu: 500m
       memory: 512Mi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
   metrics:
     enabled: true
     serviceMonitor:
@@ -75,11 +75,11 @@ repoServer:
 redis:
   resources:
     requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
       cpu: 250m
       memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
 
 ## @section Feature Flags
 ## @description Toggles for core ArgoCD features.
@@ -88,11 +88,11 @@ applicationSet:
   enabled: true
   resources:
     requests:
+      cpu: 125m
+      memory: 256Mi
+    limits:
       cpu: 250m
       memory: 512Mi
-    limits:
-      cpu: 500m
-      memory: 768Mi
   metrics:
     enabled: true
     serviceMonitor:
@@ -251,5 +251,3 @@ configs:
       name: cilium
       url: https://helm.cilium.io/
       type: helm
-
-

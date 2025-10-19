@@ -1,3 +1,8 @@
+## @section CRD Management
+## @description Controls the installation of Kyverno Custom Resource Definitions (CRDs).
+crds:
+  install: true
+
 ## @section Resource Management
 ## @description Defines resource requests and limits for the Kyverno controller pods.
 
@@ -8,8 +13,8 @@ admissionController:
       cpu: 100m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 250m
+      memory: 256Mi
 
 # -- Resources for the background controller (generate rules, etc.).
 backgroundController:
@@ -18,8 +23,8 @@ backgroundController:
       cpu: 100m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 250m
+      memory: 256Mi
 
 # -- Resources for the cleanup controller (ttl, etc.).
 cleanupController:
@@ -28,8 +33,8 @@ cleanupController:
       cpu: 100m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 250m
+      memory: 256Mi
 
 # -- Resources for the reports controller.
 reportsController:
@@ -38,5 +43,5 @@ reportsController:
       cpu: 100m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 250m
+      memory: 256Mi

@@ -37,7 +37,8 @@ Kustomize for composition and are deployed via `kustomize build <dir>/ | kubectl
 - **Purpose**:
   - `namespaces/`: Bootstrap namespace definitions for core components.
   - `cert-manager/`: Issuers and Certificate definitions.
-  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault and the `ExternalSecret` for ArgoCD.
+  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault and
+    the `ExternalSecret` for ArgoCD.
   - `argocd/`: Kustomization to support the Helm chart.
 
 ## Visual Structure
@@ -98,13 +99,18 @@ The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
 3. **Deploy Cilium CNI** via Helm (`cilium-values.yaml`).
 4. **Deploy Prometheus CRDs** via a dedicated Helm chart install.
+  This is done using the `kube-prometheus-stack` chart with the `crdOnly=true` flag.
+
 5. **Deploy Cert-Manager** via Helm (`cert-manager-values.yaml`).
     - Then apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
 6. **Deploy Vault Stack**:
     - Deploy Vault via Helm (`vault-values.yaml`).
-    - Execute the manual initialization script (`vault-manual-init.sh`) to initialize and unseal Vault.
+    - Execute the manual initialization script (`vault-manual-init.sh`) to
+    initialize and unseal Vault.
 7. **Deploy External Secrets Operator** via Helm (`eso-values.yaml`).
-    - Then apply ESO resources (`ClusterSecretStore`, `ExternalSecret` for ArgoCD) via Kustomize: `kustomize build external-secrets/ | kubectl apply -f -`.
-8. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
+    - Then apply ESO resources (`ClusterSecretStore`, `ExternalSecret` for ArgoCD)
+      via Kustomize: `kustomize build external-secrets/ | kubectl apply -f -`.
+2. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
 
-**Key Insight:** The bootstrap process is a carefully orchestrated sequence of Helm deployments and Kustomize applications, managed entirely by `Taskfile.yaml`.
+**Key Insight:** The bootstrap process is a carefully orchestrated sequence of Helm deployments
+ and Kustomize applications, managed entirely by `Taskfile.yaml`.

@@ -13,6 +13,6 @@ controller:
     # -- The maximum resources the Jenkins controller can consume.
     limits:
       # -- The maximum amount of CPU to allow.
-      cpu: 1000m
+      cpu: 500m
       # -- The maximum amount of memory to allow.
-      memory: 2Gi
+      memory: 1Gi

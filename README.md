@@ -274,15 +274,15 @@ Optimized for local development environments:
 
 | Resource   | Total Requested |
 | ---------- | --------------: |
-| **CPU**    | **~1.9 cores**  |
-| **Memory** | **~3.2 GiB**    |
+| **CPU**    | **~3.5 cores**  |
+| **Memory** | **~5.4 GiB**    |
 
 ### Maximum Theoretical Footprint (Total Limits)
 
 | Resource   | Total Limited  |
 | ---------- | --------------: |
-| **CPU**    | **~5.3 cores** |
-| **Memory** | **~7.6 GiB**   |
+| **CPU**    | **~8.9 cores** |
+| **Memory** | **~11 GiB**   |
 
 **💡 Recommendation:**
 

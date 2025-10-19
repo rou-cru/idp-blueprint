@@ -22,11 +22,11 @@ prometheus:
     # -- Resource limits and requests for Prometheus.
     resources:
       requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
         cpu: 250m
         memory: 512Mi
-      limits:
-        cpu: 500m
-        memory: 1Gi
 
 ## @section Grafana
 ## @description Grafana instance configuration.
@@ -38,11 +38,11 @@ grafana:
   # -- Resource limits and requests for Grafana.
   resources:
     requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
       cpu: 100m
       memory: 256Mi
-    limits:
-      cpu: 300m
-      memory: 512Mi
   # -- Additional datasources for Grafana.
   additionalDataSources:
     - name: Loki
@@ -57,11 +57,11 @@ grafana:
 prometheusOperator:
   resources:
     requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
       cpu: 50m
       memory: 64Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
 
 ## @section Kube State Metrics
 ## @description Kube State Metrics configuration.
@@ -69,11 +69,11 @@ prometheusOperator:
 kube-state-metrics:
   resources:
     requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
       cpu: 50m
       memory: 128Mi
-    limits:
-      cpu: 100m
-      memory: 256Mi
 
 ## @section Prometheus Node Exporter
 ## @description Prometheus Node Exporter configuration.
@@ -81,11 +81,11 @@ kube-state-metrics:
 prometheus-node-exporter:
   resources:
     requests:
+      cpu: 25m
+      memory: 32Mi
+    limits:
       cpu: 50m
       memory: 64Mi
-    limits:
-      cpu: 100m
-      memory: 128Mi
 
 ## @section Windows Exporter
 ## @description Windows Exporter configuration.

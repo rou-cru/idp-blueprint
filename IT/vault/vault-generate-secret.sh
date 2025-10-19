@@ -11,6 +11,7 @@ set -euo pipefail
 #   ./vault-generate-secret.sh secret/argocd/admin 32 base64 bcrypt admin.password
 #   ./vault-generate-secret.sh secret/jenkins/admin 24 hex none password
 
+# shellcheck disable=SC2155
 readonly SCRIPT_NAME=$(basename "$0")
 
 log() {
