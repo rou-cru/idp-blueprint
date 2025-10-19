@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - argocd-secretstore.yaml
   - argocd-admin-externalsecret.yaml
+  - sonarqube-monitoring-externalsecret.yaml
 
 commonAnnotations:
   contact: platform-team

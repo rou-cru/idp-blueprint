@@ -22,7 +22,7 @@ tasks:
   deploy:
     desc: 'Deploy the entire IDP platform'
     cmds:
-      - defer: echo '{{if .EXIT_CODE}}⚠️  Deployment failed! Run 'task destroy' to clean up and retry.{{else}}Success 😌{{end}}'
+      - defer: echo '{{if .EXIT_CODE}}⚠️  Deployment failed! Run "task destroy" to clean up and retry.{{else}}Success 😌{{end}}'
       # 1. Bootstrap Cluster
       - task: k3d:create # Create Nodes
       - task: it:apply-namespaces # Prepare all no-gitops namespaces
@@ -40,7 +40,7 @@ tasks:
       # 4. Deploy Policy as Code Engine
       - task: policies:deploy
       # 5. Deploy Application Stacks for everything else
-#      - task: stacks:deploy # Everything else that's part of the IDP
+      - task: stacks:deploy # Everything else that's part of the IDP
       - exit 0
 
   deploy:nocache:
@@ -202,6 +202,7 @@ tasks:
     desc: 'Generate initial secrets for all services using Vault'
     cmds:
       - ./IT/vault/vault-generate-secret.sh secret/argocd/admin 32 base64 bcrypt admin.password
+      - ./IT/vault/vault-generate-secret.sh secret/sonarqube/monitoring 16 hex none passcode
 
   it:eso:apply-resources:
     desc: 'Apply ESO SecretStores and ExternalSecrets'
@@ -262,7 +263,7 @@ tasks:
     cmds:
       - task: image:release:minimal
       - task: image:release
-  
+
   ################################################################################
   # LINTING, VALIDATION & SECURITY TASKS
   ################################################################################
@@ -382,7 +383,8 @@ tasks:
     desc: 'Show registry status and cache size'
     cmds:
       - |
-        if docker ps --filter "name=k3d-registry.localhost" --format "{{.Names}}" | grep -q registry; then
+        if docker ps --filter "name=k3d-registry.localhost" --format "{{.Names}}" | grep -q registry;
+        then
           echo "✅ Registry container running"
           if [ -d "{{.REGISTRY_CACHE_PATH}}" ]; then
             echo "📦 Cache size: $(du -sh {{.REGISTRY_CACHE_PATH}} 2>/dev/null | cut -f1)"

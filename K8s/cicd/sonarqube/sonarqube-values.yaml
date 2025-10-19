@@ -2,15 +2,16 @@
 ## @description Resource definitions for the main SonarQube application.
 community:
   enabled: true
+
 sonarqube:
   # -- Resource requests and limits for the SonarQube server.
   resources:
     requests:
-      cpu: 500m
+      cpu: 250m
       memory: 1Gi
     limits:
-      cpu: 2000m
-      memory: 3Gi
+      cpu: 1000m
+      memory: 1.5Gi
 
 ## @section PostgreSQL Database
 ## @description Resource definitions for the bundled PostgreSQL database.
@@ -20,8 +21,11 @@ postgresql:
   # -- Resource requests and limits for the PostgreSQL pod.
   resources:
     requests:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 250m
+      memory: 256Mi
+
+monitoringPasscodeSecretName: "sonarqube-monitoring-passcode"
+monitoringPasscodeSecretKey: "passcode"
