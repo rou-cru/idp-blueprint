@@ -34,3 +34,20 @@ config:
         Port 3100
         # Use Kubernetes metadata for rich labels in Loki
         Labels job=fluent-bit, namespace=$kubernetes['namespace_name'], pod_name=$kubernetes['pod_name']
+
+## @section Volume Configuration
+## @description Disable /etc/machine-id mount (not available in K3d containers)
+daemonSetVolumes:
+  - name: varlog
+    hostPath:
+      path: /var/log
+  - name: varlibdockercontainers
+    hostPath:
+      path: /var/lib/docker/containers
+
+daemonSetVolumeMounts:
+  - name: varlog
+    mountPath: /var/log
+  - name: varlibdockercontainers
+    mountPath: /var/lib/docker/containers
+    readOnly: true
