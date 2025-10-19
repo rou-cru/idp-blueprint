@@ -107,10 +107,9 @@ tasks:
     desc: 'Apply Prometheus CRDs from the dedicated Helm chart'
     cmds:
       - |
-        helm upgrade --install prometheus-crds prometheus-community/kube-prometheus-stack \
-          --version {{.PROMETHEUS_CRDS_VERSION}} \
+        helm upgrade --install prometheus-crds prometheus-community/prometheus-operator-crds \
+          --version 23.0.0 \
           --namespace kube-system \
-          --set crdOnly=true \
           --hide-notes
 
   # Cilium
