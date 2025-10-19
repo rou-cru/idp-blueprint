@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kyverno
+  name: kyverno-system
   labels:
     # Add protection label to exempt this namespace from policies
     platform.idp.com/protected: 'true'

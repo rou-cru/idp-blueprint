@@ -15,7 +15,7 @@ spec:
       namePrefix: 'platform-'
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: kyverno-system
   syncPolicy:
     automated:
       prune: true
