@@ -16,11 +16,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Prepare Devbox configuration
+        run: ln -s devbox-minimal.json devbox.json
+        working-directory: .devcontainer
+
       - name: Install Devbox
         uses: jetpack-io/devbox-install-action@v0.11.0
         with:
           project-path: .devcontainer
-          devbox-json-path: .devcontainer/devbox-minimal.json
 
       - name: Run Linting Tasks
         run: devbox run -- task lint

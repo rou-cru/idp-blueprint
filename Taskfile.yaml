@@ -295,7 +295,7 @@ tasks:
   lint:shell:
     desc: 'Lint all shell scripts'
     cmds:
-      - find . -path ./.devbox -prune -o -name '*.sh' -exec shellcheck {} +
+      - find . -name '*.sh' -type f | grep -v '/.devbox/' | xargs -r shellcheck
 
   lint:dockerfile:
     desc: 'Lint all Dockerfiles'
