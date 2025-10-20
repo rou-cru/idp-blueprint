@@ -11,8 +11,22 @@ resources:
     memory: 128Mi
 
 ## @section Fluent-bit Configuration
-## @description Defines the core behavior, including filters and outputs.
+## @description Defines the core behavior, including inputs, filters and outputs.
 config:
+  # -- Input configuration optimized to reduce file descriptor usage.
+  inputs: |
+    [INPUT]
+        Name tail
+        Path /var/log/containers/*.log
+        multiline.parser docker, cri
+        Tag kube.*
+        Mem_Buf_Limit 5MB
+        Skip_Long_Lines On
+        DB /var/fluent-bit/state/flb_kube.db
+        DB.Sync Normal
+        Path_Key filename
+        Ignore_Older 24h
+
   # -- Filter configuration to enrich logs with Kubernetes metadata.
   filters: |
     [FILTER]
@@ -44,6 +58,9 @@ daemonSetVolumes:
   - name: varlibdockercontainers
     hostPath:
       path: /var/lib/docker/containers
+  - name: fluentbitstate
+    hostPath:
+      path: /var/fluent-bit/state
 
 daemonSetVolumeMounts:
   - name: varlog
@@ -51,3 +68,5 @@ daemonSetVolumeMounts:
   - name: varlibdockercontainers
     mountPath: /var/lib/docker/containers
     readOnly: true
+  - name: fluentbitstate
+    mountPath: /var/fluent-bit/state
