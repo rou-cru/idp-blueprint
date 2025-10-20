@@ -37,9 +37,11 @@ tasks:
       - task: vault:deploy
       # 3. Deploy GitOps Engine
       - task: argocd:deploy
-      # 4. Deploy Policy as Code Engine
+      # 4. Deploy Gateway (requires cert-manager ClusterIssuer)
+      - task: gateway:deploy
+      # 5. Deploy Policy as Code Engine
       - task: policies:deploy
-      # 5. Deploy Application Stacks for everything else
+      # 6. Deploy Application Stacks for everything else
       - task: stacks:deploy # Everything else that's part of the IDP
       - exit 0
 
@@ -155,6 +157,14 @@ tasks:
     desc: 'Apply all Cert-Manager bootstrap resources via Kustomize'
     cmds:
       - kustomize build IT/cert-manager/ | kubectl apply -f -
+
+  # Gateway API
+  # ------------------------------------------------------------------------------
+  gateway:deploy:
+    desc: 'Deploy Gateway API Gateway resource'
+    cmds:
+      - kustomize build IT/gateway/ | kubectl apply -f -
+      - kubectl wait --for=condition=Programmed gateway/idp-gateway -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
 
   # ESO
   # ------------------------------------------------------------------------------

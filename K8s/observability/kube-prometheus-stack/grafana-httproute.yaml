@@ -19,5 +19,5 @@ spec:
     - "grafana.127-0-0-1.sslip.io"
   rules:
     - backendRefs:
-        - name: prometheus-crds-grafana
+        - name: prometheus-grafana
           port: 80

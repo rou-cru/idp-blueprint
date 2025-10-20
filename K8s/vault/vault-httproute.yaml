@@ -19,5 +19,5 @@ spec:
     - "vault.127-0-0-1.sslip.io"
   rules:
     - backendRefs:
-        - name: vault-ui
+        - name: vault
           port: 8200
