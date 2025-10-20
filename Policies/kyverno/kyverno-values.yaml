@@ -5,16 +5,33 @@ crds:
 
 ## @section Resource Management
 ## @description Defines resource requests and limits for the Kyverno controller pods.
-
 # -- Resources for the main admission controller.
-admissionController:
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 250m
-      memory: 256Mi
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+livenessProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+readinessProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 3
+startupProbe:
+  initialDelaySeconds: 0
+  periodSeconds: 10
+  timeoutSeconds: 1
+  successThreshold: 1
+  failureThreshold: 30
 
 # -- Resources for the background controller (generate rules, etc.).
 backgroundController:

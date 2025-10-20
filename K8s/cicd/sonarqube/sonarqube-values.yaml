@@ -12,6 +12,26 @@ sonarqube:
     limits:
       cpu: 1000m
       memory: 1.5Gi
+  livenessProbe:
+    exec:
+      command:
+        - sh
+        - -c
+        - 'wget --no-proxy --quiet -O /dev/null --timeout=1 --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:9000/api/system/liveness"'
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    failureThreshold: 6
+    timeoutSeconds: 1
+  readinessProbe:
+    exec:
+      command:
+        - sh
+        - -c
+        - 'if curl -s -f http://localhost:9000/api/system/status | grep -q -e ''"status":"UP"'' -e ''"status":"DB_MIGRATION_NEEDED"'' -e ''"status":"DB_MIGRATION_RUNNING"''; then exit 0 fi exit 1'
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    failureThreshold: 6
+    timeoutSeconds: 1
 
 ## @section PostgreSQL Database
 ## @description Resource definitions for the bundled PostgreSQL database.

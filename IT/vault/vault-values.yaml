@@ -42,6 +42,24 @@ server:
       memory: 512Mi
       cpu: 500m
 
+  # -- Default livenessProbe for the Vault server. Disabled by default.
+  livenessProbe:
+    enabled: false
+    failureThreshold: 2
+    initialDelaySeconds: 5
+    periodSeconds: 2
+    successThreshold: 1
+    timeoutSeconds: 5
+    execCommand: []
+
+  # -- Default readinessProbe for the Vault server. Enabled by default.
+  readinessProbe:
+    enabled: true
+    failureThreshold: 2
+    initialDelaySeconds: 5
+    path: ""
+
+
   # -- Enables the metrics endpoint for Prometheus.
   serviceMonitor:
     enabled: true
