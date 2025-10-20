@@ -7,3 +7,4 @@ helmCharts:
     releaseName: trivy-operator
     namespace: security
     valuesFile: trivy-values.yaml
+    includeCRDs: true
