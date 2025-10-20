@@ -16,7 +16,7 @@ vars:
   # Operational Settings
   KUBECTL_TIMEOUT: '{{.KUBECTL_TIMEOUT | default "300s"}}'
   K3D_CONFIG: '{{.K3D_CONFIG | default "IT/k3d-cluster-cached.yaml"}}'
-  REGISTRY_CACHE_PATH: '{{.REGISTRY_CACHE_PATH | default "/tmp/k3d-registry"}}'
+  REGISTRY_CACHE_PATH: '{{.REGISTRY_CACHE_PATH | default "$HOME/.k3d-registry"}}'
 
 tasks:
   deploy:
@@ -123,7 +123,7 @@ tasks:
           --namespace kube-system \
           --values IT/cilium/cilium-values.yaml \
           --hide-notes
-      - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system --timeout=120s
+      - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
 
   cilium:enable-servicemonitor:
     desc: 'Enable Cilium ServiceMonitor (requires Prometheus CRDs)'
