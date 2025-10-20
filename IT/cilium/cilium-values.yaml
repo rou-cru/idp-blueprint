@@ -8,6 +8,11 @@ ipam:
     # -- The pod CIDR for the cluster. Must match k3d's default.
     clusterPoolIPv4PodCIDRList: ['10.42.0.0/16']
 
+## @section IPv6 Configuration
+## Disabled for demo environment to improve bootstrap performance.
+ipv6:
+  enabled: false
+
 ## @section Kube-proxy Replacement
 ## Replaces kube-proxy with Cilium's eBPF implementation for higher performance.
 kubeProxyReplacement: true
@@ -85,10 +90,10 @@ operator:
   resources:
     requests:
       cpu: 100m
-      memory: 256Mi
+      memory: 128Mi
     limits:
       cpu: 500m
-      memory: 1Gi
+      memory: 512Mi
 
 ## @section Prometheus Metrics
 ## Configures how Cilium exposes metrics for Prometheus.
@@ -128,8 +133,8 @@ cluster:
 ## @section Performance Tuning
 ## BPF-related performance settings for a local development environment.
 bpf:
-  monitorAggregation: maximum
-  monitorInterval: '5s'
+  monitorAggregation: medium
+  monitorInterval: '10s'
   monitorFlags: 'all'
 
 ## @section Custom Labels

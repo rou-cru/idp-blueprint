@@ -28,6 +28,7 @@ registries:
       "docker.io":
         endpoint:
           - http://registry.localhost:5000
+          - https://mirror.gcr.io
       "quay.io":
         endpoint:
           - http://registry.localhost:5000
@@ -38,13 +39,16 @@ options:
   k3d:
     disableLoadbalancer: false
     wait: true
-    timeout: "120s"
+    timeout: "300s"
   k3s:
     extraArgs:
       - arg: --flannel-backend=none
         nodeFilters:
           - server:*
       - arg: --disable=traefik
+        nodeFilters:
+          - server:*
+      - arg: --disable=servicelb
         nodeFilters:
           - server:*
       - arg: --disable-network-policy

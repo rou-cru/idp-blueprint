@@ -301,6 +301,7 @@ Optimized for local development environments:
 - Visual Studio Code with [Dev Containers
   extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - Git
+- **Docker Hub login required** (`docker login`) to avoid severe rate limiting
 
 > **Important:** This project uses VS Code Dev Containers to provide a
 > pre-configured environment with all required tools (kubectl, helm, k3d, task,
@@ -319,6 +320,9 @@ code .
 task deploy
 
 # ☕ Grab a coffee - deployment takes ~5-10 minutes
+
+# For slow connections, increase timeouts:
+# task deploy KUBECTL_TIMEOUT=600s
 ```
 
 That's it! Your IDP is ready.
