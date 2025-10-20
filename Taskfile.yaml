@@ -9,6 +9,7 @@ vars:
   CILIUM_VERSION: '{{.CILIUM_VERSION | default "1.18.2"}}'
   CERT_MANAGER_VERSION: '{{.CERT_MANAGER_VERSION | default "v1.19.0"}}'
   PROMETHEUS_CRDS_VERSION: '{{.PROMETHEUS_CRDS_VERSION | default "77.14.0"}}'
+  GATEWAY_API_VERSION: '{{.GATEWAY_API_VERSION | default "v1.2.1"}}'
   EXTERNAL_SECRETS_VERSION: '{{.EXTERNAL_SECRETS_VERSION | default "0.20.2"}}'
   VAULT_VERSION: '{{.VAULT_VERSION | default "0.31.0"}}'
   ARGOCD_VERSION: '{{.ARGOCD_VERSION | default "8.6.0"}}'
@@ -27,10 +28,9 @@ tasks:
       - task: k3d:create # Create Nodes
       - task: it:apply-namespaces # Prepare all no-gitops namespaces
       - task: it:apply-serviceaccounts # Prepare all no-gitops SA
+      - task: it:apply-crds # Install CRDs before CNI
       # Complete bootstrapping by adding the CNI
       - task: cilium:deploy
-      - task: it:apply-prometheus-crds
-      - task: cilium:enable-servicemonitor
       - task: external-secrets:deploy
       # 2. Secrets & Certs Management
       - task: cert-manager:deploy
@@ -103,6 +103,18 @@ tasks:
     cmds:
       - kustomize build IT/serviceaccounts/ | kubectl apply -f -
 
+  it:apply-crds:
+    desc: 'Apply all CRDs required for the platform'
+    deps:
+      - it:apply-gateway-api-crds
+      - it:apply-prometheus-crds
+
+  it:apply-gateway-api-crds:
+    desc: 'Apply Gateway API CRDs'
+    cmds:
+      - |
+        kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/{{.GATEWAY_API_VERSION}}/standard-install.yaml
+
   it:apply-prometheus-crds:
     desc: 'Apply Prometheus CRDs from the dedicated Helm chart'
     cmds:
@@ -124,18 +136,6 @@ tasks:
           --values IT/cilium/cilium-values.yaml \
           --hide-notes
       - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
-
-  cilium:enable-servicemonitor:
-    desc: 'Enable Cilium ServiceMonitor (requires Prometheus CRDs)'
-    cmds:
-      - |
-        helm upgrade cilium cilium/cilium \
-          --version {{.CILIUM_VERSION}} \
-          --namespace kube-system \
-          --reuse-values \
-          --set prometheus.serviceMonitor.enabled=true \
-          --set operator.prometheus.serviceMonitor.enabled=true \
-          --hide-notes
 
   # Cert Manager
   # ------------------------------------------------------------------------------
