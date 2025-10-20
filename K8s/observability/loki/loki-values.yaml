@@ -47,3 +47,19 @@ chunksCache:
   enabled: false
 resultsCache:
   enabled: false
+
+# Disable gateway (not needed in SingleBinary mode)
+gateway:
+  enabled: false
+
+# Disable canary (testing component, not needed for demo)
+lokiCanary:
+  enabled: false
+
+# Disable test (not needed for demo, requires canary to be enabled)
+test:
+  enabled: false
+
+# Disable IPv6
+memberlist:
+  enable_ipv6: false
