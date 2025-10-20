@@ -70,3 +70,14 @@ daemonSetVolumeMounts:
     readOnly: true
   - name: fluentbitstate
     mountPath: /var/fluent-bit/state
+
+## @section Health Checks
+## @description Tune probes to account for Loki dependency startup time
+readinessProbe:
+  httpGet:
+    path: /api/v1/health
+    port: http
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
