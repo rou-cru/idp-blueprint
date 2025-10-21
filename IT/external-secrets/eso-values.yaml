@@ -9,17 +9,47 @@ resources:
     cpu: 250m
     memory: 256Mi
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: 1000m
+    memory: 1Gi
 livenessProbe:
-  enabled: false
+  enabled: true
+
+readinessProbe:
+  enabled: true
+  spec:
+    httpGet:
+      port: 8081
+      path: /readyz
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+# -- Increase concurrent ExternalSecret reconciliations for better performance
+concurrent: 5
 
 serviceAccount:
   create: true
-  name: 'cluster-secrets'
+  name: 'external-secrets'
+
+## @section Webhook Configuration
+webhook:
+  certManager:
+    enabled: true
+    addInjectorAnnotations: true
+    cert:
+      create: true
+      issuerRef:
+        group: cert-manager.io
+        kind: ClusterIssuer
+        name: ca-issuer
+      duration: "2160h"
+      renewBefore: "720h"
 
 ## @section Prometheus Metrics
 ## @description Enable Prometheus ServiceMonitor for External Secrets Operator.
 serviceMonitor:
   enabled: true
-  interval: 30s
+  interval: 60s
+  scrapeTimeout: 40s
+  honorLabels: true

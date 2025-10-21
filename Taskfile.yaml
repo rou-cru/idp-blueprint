@@ -31,10 +31,10 @@ tasks:
       - task: it:apply-crds # Install CRDs before CNI
       # Complete bootstrapping by adding the CNI
       - task: cilium:deploy
-      - task: external-secrets:deploy
       # 2. Secrets & Certs Management
       - task: cert-manager:deploy
       - task: vault:deploy
+      - task: external-secrets:deploy
       # 3. Deploy GitOps Engine
       - task: argocd:deploy
       # 4. Deploy Gateway (requires cert-manager ClusterIssuer)
@@ -177,7 +177,7 @@ tasks:
           --namespace external-secrets-system \
           --values IT/external-secrets/eso-values.yaml \
           --hide-notes
-      - kubectl wait --for=condition=available --timeout=300s deployment/external-secrets -n external-secrets-system
+      - kubectl wait --for=condition=available --timeout={{.KUBECTL_TIMEOUT}} deployment/external-secrets -n external-secrets-system
 
   # Vault
   # ------------------------------------------------------------------------------
