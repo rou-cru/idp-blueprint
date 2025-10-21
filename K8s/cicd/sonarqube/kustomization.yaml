@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - sonarqube-httproute.yaml
   - sonarqube-monitoring-externalsecret.yaml
+  - sonarqube-admin-externalsecret.yaml
 
 helmCharts:
   - name: sonarqube

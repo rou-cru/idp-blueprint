@@ -47,5 +47,16 @@ postgresql:
       cpu: 250m
       memory: 256Mi
 
+## @section Secrets
+## @description Admin credentials and monitoring passcode from Vault via ESO.
+# -- Admin password from Vault ExternalSecret.
+setAdminPassword:
+  enabled: true
+  passwordSecretName: sonarqube-admin-credentials
+  passwordSecretKey: password
+  currentPasswordSecretName: sonarqube-admin-credentials
+  currentPasswordSecretKey: currentPassword
+
+# -- Monitoring passcode from Vault ExternalSecret.
 monitoringPasscodeSecretName: "sonarqube-monitoring-passcode"
 monitoringPasscodeSecretKey: "passcode"

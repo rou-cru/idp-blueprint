@@ -19,6 +19,15 @@ vars:
   K3D_CONFIG: '{{.K3D_CONFIG | default "IT/k3d-cluster-cached.yaml"}}'
   REGISTRY_CACHE_PATH: '{{.REGISTRY_CACHE_PATH | default "$HOME/.k3d-registry"}}'
 
+  # Password Configuration
+  # Empty string = generate random (development)
+  # Defined value = use provided password (production/demo)
+  ARGOCD_ADMIN_PASSWORD: '{{.ARGOCD_ADMIN_PASSWORD | default ""}}'
+  GRAFANA_ADMIN_PASSWORD: '{{.GRAFANA_ADMIN_PASSWORD | default ""}}'
+  SONARQUBE_ADMIN_PASSWORD: '{{.SONARQUBE_ADMIN_PASSWORD | default ""}}'
+  SONARQUBE_MONITORING_PASSCODE: '{{.SONARQUBE_MONITORING_PASSCODE | default ""}}'
+  JENKINS_ADMIN_PASSWORD: '{{.JENKINS_ADMIN_PASSWORD | default ""}}'
+
 tasks:
   deploy:
     desc: 'Deploy the entire IDP platform'
@@ -210,8 +219,11 @@ tasks:
   vault:generate-secrets:
     desc: 'Generate initial secrets for all services using Vault'
     cmds:
-      - ./scripts/vault-generate.sh secret/argocd/admin 32 base64 bcrypt admin.password
-      - ./scripts/vault-generate.sh secret/sonarqube/monitoring 16 hex none passcode
+      - ./scripts/vault-generate.sh secret/argocd/admin admin.password "{{.ARGOCD_ADMIN_PASSWORD}}" base64 bcrypt
+      - ./scripts/vault-generate.sh secret/grafana/admin admin-password "{{.GRAFANA_ADMIN_PASSWORD}}" base64 none
+      - ./scripts/vault-generate.sh secret/sonarqube/admin password "{{.SONARQUBE_ADMIN_PASSWORD}}" base64 none
+      - ./scripts/vault-generate.sh secret/sonarqube/monitoring passcode "{{.SONARQUBE_MONITORING_PASSCODE}}" hex none
+      - ./scripts/vault-generate.sh secret/jenkins/admin password "{{.JENKINS_ADMIN_PASSWORD}}" base64 none
 
   it:eso:apply-resources:
     desc: 'Apply ESO SecretStores and ExternalSecrets'

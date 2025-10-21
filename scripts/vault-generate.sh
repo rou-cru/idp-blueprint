@@ -1,15 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
-# Vault secret generator - Decoupled, reusable utility
-# Generates random passwords using Vault and stores them in KV engine
+# Vault secret generator - Production-ready utility
+# Generates or stores provided passwords in Vault KV engine
 #
 # Usage:
-#   ./vault-generate-secret.sh <vault-path> [length] [format] [hashing] [key_name]
+#   ./vault-generate.sh <vault-path> <key-name> [password] [format] [hashing]
 #
 # Examples:
-#   ./vault-generate-secret.sh secret/argocd/admin 32 base64 bcrypt admin.password
-#   ./vault-generate-secret.sh secret/jenkins/admin 24 hex none password
+#   # Generate random password
+#   ./vault-generate.sh secret/argocd/admin admin.password "" base64 bcrypt
+#
+#   # Use provided password
+#   ./vault-generate.sh secret/grafana/admin password "MySecurePass123" base64 none
 
 # shellcheck disable=SC2155
 readonly SCRIPT_NAME=$(basename "$0")
@@ -25,26 +28,25 @@ error() {
 
 usage() {
   cat <<EOF
-Usage: $SCRIPT_NAME <vault-path> [length] [format] [hashing] [key_name]
+Usage: $SCRIPT_NAME <vault-path> <key-name> [password] [format] [hashing]
 
 Arguments:
   vault-path    Vault KV path where secret will be stored (e.g., secret/argocd/admin)
-  length        Password length in bytes (default: 32)
-  format        Output format: base64 or hex (default: base64)
+  key-name      The key name to store the secret under in Vault (e.g., password, admin.password)
+  password      Password to store (if empty, generates random 32-byte password)
+  format        Output format for random generation: base64 or hex (default: base64)
   hashing       Hashing method: bcrypt or none (default: none)
-  key_name      The key name to store the secret under in Vault (default: password)
 
 Environment Variables:
   VAULT_NAMESPACE     Kubernetes namespace where Vault runs (default: auto-detect)
-  VAULT_POD           Vault pod name (default: auto-detect first vault pod)
-
-Note:
-  Token is automatically retrieved from 'vault-init-keys' secret in Vault namespace.
-  Ensure Vault has been initialized before running this script.
+  VAULT_POD           Vault pod name (default: auto-detect)
 
 Examples:
-  $SCRIPT_NAME secret/argocd/admin 32 base64 bcrypt admin.password
-  $SCRIPT_NAME secret/jenkins/admin 24 hex
+  # Random password with bcrypt
+  $SCRIPT_NAME secret/argocd/admin admin.password "" base64 bcrypt
+
+  # Provided password, no hashing
+  $SCRIPT_NAME secret/grafana/admin password "MyPass123" base64 none
 
 EOF
   exit 1
@@ -52,30 +54,30 @@ EOF
 
 detect_vault_namespace() {
   log "Auto-detecting Vault namespace..."
-  
+
   local namespace
   namespace=$(kubectl get pods --all-namespaces -l app.kubernetes.io/name=vault -o jsonpath='{.items[0].metadata.namespace}' 2>/dev/null || echo "")
-  
+
   if [[ -z "$namespace" ]]; then
     error "Cannot auto-detect Vault namespace. Set VAULT_NAMESPACE environment variable."
   fi
-  
+
   log "Detected Vault namespace: ${namespace}"
   echo "$namespace"
 }
 
 detect_vault_pod() {
   local namespace=$1
-  
+
   log "Auto-detecting Vault pod in namespace: ${namespace}..."
-  
+
   local pod
   pod=$(kubectl get pods -n "$namespace" -l app.kubernetes.io/name=vault -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
-  
+
   if [[ -z "$pod" ]]; then
     error "Cannot find Vault pod in namespace: ${namespace}. Set VAULT_POD environment variable."
   fi
-  
+
   log "Detected Vault pod: ${pod}"
   echo "$pod"
 }
@@ -83,14 +85,14 @@ detect_vault_pod() {
 validate_vault_connection() {
   local namespace=$1
   local pod=$2
-  
+
   if ! kubectl get pod "$pod" -n "$namespace" &>/dev/null; then
     error "Vault pod '$pod' not found in namespace '$namespace'"
   fi
 
   local pod_status
   pod_status=$(kubectl get pod "$pod" -n "$namespace" -o jsonpath='{.status.phase}')
-  
+
   if [[ "$pod_status" != "Running" ]]; then
     error "Vault pod '$pod' is not Running (current status: ${pod_status})"
   fi
@@ -98,7 +100,7 @@ validate_vault_connection() {
   if ! kubectl exec -n "$namespace" "$pod" -- vault status &>/dev/null; then
     error "Cannot connect to Vault API in pod '$pod'"
   fi
-  
+
   log "✅ Vault connection validated"
 }
 
@@ -152,15 +154,13 @@ generate_random_password() {
   fi
 
   log "✅ Password generated successfully"
-  log "[DEBUG] Generated password: ${password}"
-
   echo "$password"
 }
 
 hash_password() {
     local password=$1
     local hashing_method=$2
-    
+
     if [[ "$hashing_method" == "bcrypt" ]]; then
         log "Hashing password with bcrypt..."
         if ! command -v bcrypt-tool &> /dev/null; then
@@ -169,7 +169,6 @@ hash_password() {
         local hashed_password
         hashed_password=$(bcrypt-tool hash "$password")
         log "✅ Password hashed successfully"
-        log "[DEBUG] Hashed password: ${hashed_password}"
         echo "$hashed_password"
     else
         echo "$password"
@@ -184,7 +183,7 @@ store_password_in_vault() {
   local key_name=$5
   local password_to_store=$6
 
-  log "Storing password in Vault at path: ${vault_path} with key: ${key_name}..."
+  log "Storing password in Vault at path: ${vault_path} (key: ${key_name})..."
 
   if ! kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
@@ -192,7 +191,7 @@ store_password_in_vault() {
     error "Failed to store password in Vault at path: ${vault_path}"
   fi
 
-  log "✅ Password stored successfully at ${vault_path}"
+  log "✅ Password stored successfully"
 }
 
 verify_storage() {
@@ -214,41 +213,19 @@ verify_storage() {
   fi
 
   log "✅ Password verified in Vault"
-  log "[DEBUG] Retrieved password: ${retrieved_password}"
-}
-
-save_plaintext_to_k8s_secret() {
-  local vault_path=$1
-  local plaintext_password=$2
-  local vault_namespace=$3
-
-  # Extract service name from vault path (e.g., secret/argocd/admin -> argocd)
-  local service_name
-  service_name=$(echo "$vault_path" | cut -d'/' -f2)
-
-  local secret_name="${service_name}-admin-plaintext"
-
-  log "Saving plaintext password to Kubernetes secret '${secret_name}' in namespace '${vault_namespace}'..."
-
-  if kubectl delete secret "$secret_name" -n "$vault_namespace" --ignore-not-found=true &>/dev/null && \
-     kubectl create secret generic "$secret_name" -n "$vault_namespace" --from-literal=password="$plaintext_password" &>/dev/null; then
-    log "✅ Plaintext password saved to secret: ${vault_namespace}/${secret_name}"
-  else
-    log "⚠️  Warning: Failed to save plaintext password to Kubernetes secret (non-critical)"
-  fi
 }
 
 main() {
   # Parse arguments
-  if [[ $# -lt 1 ]]; then
+  if [[ $# -lt 2 ]]; then
     usage
   fi
 
   local vault_path=$1
-  local length=${2:-32}
-  local format=${3:-base64}
-  local hashing=${4:-none}
-  local key_name=${5:-password}
+  local key_name=$2
+  local provided_password=${3:-}
+  local format=${4:-base64}
+  local hashing=${5:-none}
 
   # Validate format
   if [[ "$format" != "base64" && "$format" != "hex" ]]; then
@@ -258,11 +235,6 @@ main() {
   # Validate hashing
   if [[ "$hashing" != "bcrypt" && "$hashing" != "none" ]]; then
     error "Invalid hashing method: ${hashing}. Must be 'bcrypt' or 'none'"
-  fi
-
-  # Validate length
-  if ! [[ "$length" =~ ^[0-9]+$ ]] || [[ "$length" -lt 16 ]]; then
-    error "Invalid length: ${length}. Must be integer >= 16"
   fi
 
   # Auto-detect or use environment variables
@@ -277,33 +249,40 @@ main() {
     vault_pod=$(detect_vault_pod "$vault_namespace")
   fi
 
+  local password_source="provided"
+  if [[ -z "$provided_password" ]]; then
+    password_source="random (32 bytes)"
+  fi
+
   log "===================================================="
   log "Vault Secret Generator"
   log "===================================================="
   log "Vault path:   ${vault_path}"
-  log "Length:       ${length} bytes"
+  log "Key name:     ${key_name}"
+  log "Password:     ${password_source}"
   log "Format:       ${format}"
   log "Hashing:      ${hashing}"
-  log "Key Name:     ${key_name}"
   log "Vault pod:    ${vault_namespace}/${vault_pod}"
   log "===================================================="
 
   # Preflight checks
   validate_vault_connection "$vault_namespace" "$vault_pod"
 
-  # Retrieve token from K8s secret (created by vault-manual-init.sh)
+  # Retrieve token from K8s secret
   local vault_token
   vault_token=$(retrieve_vault_token "$vault_namespace")
 
   # Validate token
   validate_vault_token "$vault_namespace" "$vault_pod" "$vault_token"
 
-  # Generate password
+  # Get password (provided or generate random)
   local password
-  password=$(generate_random_password "$vault_namespace" "$vault_pod" "$vault_token" "$length" "$format")
-
-  # Save plaintext password to K8s secret for debug/testing (before hashing)
-  save_plaintext_to_k8s_secret "$vault_path" "$password" "$vault_namespace"
+  if [[ -n "$provided_password" ]]; then
+    log "Using provided password"
+    password="$provided_password"
+  else
+    password=$(generate_random_password "$vault_namespace" "$vault_pod" "$vault_token" "32" "$format")
+  fi
 
   # Hash password if requested
   local final_password
@@ -317,8 +296,7 @@ main() {
 
   log ""
   log "===================================================="
-  log "✅ Secret generation complete!"
-  log "Path: ${vault_path}"
+  log "✅ Secret stored at: ${vault_path}"
   log "===================================================="
 }
 

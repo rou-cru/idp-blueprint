@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - grafana-httproute.yaml
+  - grafana-admin-externalsecret.yaml
 
 helmCharts:
   - name: kube-prometheus-stack

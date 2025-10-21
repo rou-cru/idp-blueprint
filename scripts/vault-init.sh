@@ -179,11 +179,20 @@ path "secret/metadata/*" {
     ttl=24h
 
   log "✅ Vault configured for ESO (CICD namespace)"
+
+  # Create a namespace-specific role for Observability with ESO
+  kubectl exec -n "$NAMESPACE" vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
+    vault write auth/kubernetes/role/eso-observability-role \
+    bound_service_account_names=external-secrets \
+    bound_service_account_namespaces=observability \
+    policies=eso-policy \
+    ttl=24h
+
+  log "✅ Vault configured for ESO (Observability namespace)"
   log ""
   log "=================================================="
-  log "Vault initialization complete!"
-  log "Root token: $ROOT_TOKEN"
-  log "Unseal key saved in secret: $SECRET_NAME"
+  log "✅ Vault initialization complete!"
+  log "Root token and unseal key saved in secret: $SECRET_NAME"
   log "=================================================="
 }
 

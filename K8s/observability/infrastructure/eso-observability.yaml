@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-secrets
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: serviceaccount
+    app.kubernetes.io/instance: eso-observability
+    app.kubernetes.io/component: secret-sync
+    app.kubernetes.io/part-of: idp
+  annotations:
+    description: 'ServiceAccount for External Secrets Operator to sync Grafana credentials from Vault'
+    contact: 'platform-team'
+    documentation: 'https://external-secrets.io/latest/provider/hashicorp-vault/'

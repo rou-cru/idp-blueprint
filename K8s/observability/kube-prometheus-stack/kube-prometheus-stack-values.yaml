@@ -39,6 +39,11 @@ grafana:
   # -- Disables persistence for this demo environment.
   persistence:
     enabled: false
+  # -- Use existing secret for admin credentials from Vault via ESO.
+  admin:
+    existingSecret: grafana-admin-credentials
+    userKey: admin-user
+    passwordKey: admin-password
   # -- Resource limits and requests for Grafana.
   resources:
     requests:
