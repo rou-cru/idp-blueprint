@@ -73,7 +73,90 @@ graph TD
     CertManager -->|Manages Certificates| K8sApi
 ```
 
-## 2. Node Pools and Workload Deployment
+## 2. Helm to Pods Deployment Flow
+
+This diagram shows the complete deployment chain from Helm charts to running pods,
+illustrating how different layers (Bootstrap, GitOps) interact.
+
+```mermaid
+graph TB
+    subgraph Bootstrap [Bootstrap Layer - IT/]
+        H1[Helm: cilium v1.18.2]
+        H2[Helm: vault v0.31.0]
+        H3[Helm: argocd v8.5.8]
+        H4[Helm: cert-manager v1.18.2]
+        H5[Helm: external-secrets v0.20.2]
+    end
+
+    subgraph GitOps [GitOps Layer - K8s/]
+        direction TB
+
+        subgraph ArgoCD_Core [ArgoCD Applications]
+            APP1[App: observability-fluent-bit]
+            APP2[App: observability-loki]
+            APP3[App: observability-kube-prometheus-stack]
+            APP4[App: cicd-jenkins]
+            APP5[App: security-trivy]
+            APP6[App: platform-policies]
+        end
+
+        subgraph Kustomize [Kustomize + Helm Charts]
+            K1[Kustomize: fluent-bit<br/>helmCharts: fluent-bit v0.54.0]
+            K2[Kustomize: loki<br/>helmCharts: loki v6.42.0]
+            K3[Kustomize: kube-prometheus-stack<br/>helmCharts: v77.14.0]
+            K4[Kustomize: jenkins<br/>helmCharts: jenkins v5.8.101]
+            K5[Kustomize: trivy<br/>helmCharts: trivy-operator v0.31.0]
+            K6[Kustomize: kyverno<br/>helmCharts: kyverno v3.5.2]
+        end
+    end
+
+    subgraph K8s [Kubernetes Resources]
+        direction TB
+
+        subgraph Workloads [Running Workloads]
+            DS1[DaemonSet: cilium-agent]
+            STS1[StatefulSet: vault-0]
+            DEP1[Deployment: argocd-server]
+
+            DS2[DaemonSet: fluent-bit]
+            STS2[StatefulSet: loki]
+            STS3[StatefulSet: prometheus-prometheus]
+            DEP2[Deployment: prometheus-grafana]
+
+            STS4[StatefulSet: jenkins]
+            DEP3[Deployment: trivy-operator]
+            DEP4[Deployment: kyverno-admission-controller]
+        end
+    end
+
+    H1 -->|Deployed via Taskfile| DS1
+    H2 -->|Deployed via Taskfile| STS1
+    H3 -->|Deployed via Taskfile| DEP1
+
+    DEP1 -->|Manages| APP1
+    DEP1 -->|Manages| APP2
+    DEP1 -->|Manages| APP3
+    DEP1 -->|Manages| APP4
+    DEP1 -->|Manages| APP5
+    DEP1 -->|Manages| APP6
+
+    APP1 -->|Builds| K1
+    APP2 -->|Builds| K2
+    APP3 -->|Builds| K3
+    APP4 -->|Builds| K4
+    APP5 -->|Builds| K5
+    APP6 -->|Builds| K6
+
+    K1 -->|Renders Helm + Applies| DS2
+    K2 -->|Renders Helm + Applies| STS2
+    K3 -->|Renders Helm + Applies| STS3
+    K3 -->|Renders Helm + Applies| DEP2
+    K4 -->|Renders Helm + Applies| STS4
+    K5 -->|Renders Helm + Applies| DEP3
+    K6 -->|Renders Helm + Applies| DEP4
+```
+
+## 3. Node Pools and Workload Deployment
 
 Within the Hub cluster, nodes are segmented into logical "Node Pools" using
 labels to isolate workloads. This classification is the basis for future
@@ -81,20 +164,20 @@ scheduling rules with `tolerations` and `affinity`.
 
 ```mermaid
 graph TD
-    subgraph IDPHubCluster [IDP Hub Cluster]
-        subgraph NodePool_Infra [Node Pool: Infra]
+    subgraph IDPHubCluster [IDP Hub Cluster - k3d-idp-demo]
+        subgraph NodePool_Infra [Node Pool: IT Infrastructure]
             direction TB
-            infra_node[k3s-agent-0]
+            infra_node[k3d-idp-demo-agent-0<br/>Label: node-role=it-infra]
         end
 
-        subgraph NodePool_Apps [Node Pool: Apps]
+        subgraph NodePool_Apps [Node Pool: GitOps Workloads]
             direction TB
-            apps_node[k3s-agent-1]
+            apps_node[k3d-idp-demo-agent-1<br/>Label: node-role=k8s-workloads]
         end
 
         subgraph NodePool_CP [Node Pool: Control Plane]
             direction TB
-            cp_node[k3s-server-0]
+            cp_node[k3d-idp-demo-server-0<br/>Control Plane + etcd]
         end
 
         subgraph Workloads_Platform [Platform Services]
@@ -107,36 +190,47 @@ graph TD
 
         subgraph Workloads_Apps [Application Workloads]
             direction LR
-            appA[App A]
-            appB[App B]
+            jenkins[Jenkins]
+            sonar[SonarQube]
+        end
+
+        subgraph DaemonSets_AllNodes [DaemonSets - All Nodes]
+            direction LR
+            cilium[Cilium Agent]
+            fluent[Fluent-bit]
+            node_exp[Node Exporter]
         end
     end
 
-    Workloads_Platform -->|Scheduled on| NodePool_Infra
-    Workloads_Apps -->|Scheduled on| NodePool_Apps
+    Workloads_Platform -.->|Scheduled on| NodePool_Infra
+    Workloads_Apps -.->|Scheduled on| NodePool_Apps
+    DaemonSets_AllNodes -->|Runs on| NodePool_CP
+    DaemonSets_AllNodes -->|Runs on| NodePool_Infra
+    DaemonSets_AllNodes -->|Runs on| NodePool_Apps
 ```
 
 ## 3. Certificate Management Flow
 
-This flow shows how a resource (e.g., an `Ingress`) automatically obtains a TLS
-certificate.
+This flow shows how a Gateway resource automatically obtains a TLS certificate
+via cert-manager annotation.
 
 ```mermaid
 sequenceDiagram
-    participant I as Ingress Resource
+    participant GW as Gateway Resource
     participant CM as cert-manager
     participant CI as ClusterIssuer
     participant CAS as CA Secret
-    participant FinalTLS as Final TLS Secret
+    participant FinalTLS as TLS Certificate Secret
 
-    I->>+CM: 1. Requests certificate via annotation
-    CM->>+CI: 2. Reads the Issuer configuration
+    GW->>+CM: 1. Requests certificate via annotation
+    Note over GW,CM: cert-manager.io/cluster-issuer: ca-issuer
+    CM->>+CI: 2. Reads the ClusterIssuer configuration
     CI-->>-CM: spec.ca.secretName: idp-demo-ca-secret
     CM->>+CAS: 3. Loads the root CA from the Secret
     CAS-->>-CM: CA private key and certificate
-    CM-->>CM: 4. Signs a new certificate
-    CM->>+FinalTLS: 5. Creates/Updates the final Secret for the Ingress
-    FinalTLS-->>-I: 6. Mounts the TLS Secret
+    CM-->>CM: 4. Signs wildcard certificate (*.127-0-0-1.sslip.io)
+    CM->>+FinalTLS: 5. Creates Certificate Secret (idp-wildcard-cert)
+    FinalTLS-->>-GW: 6. Referenced in Gateway spec.listeners.tls
 ```
 
 ## 4. Secret Management Flow
@@ -263,7 +357,55 @@ graph LR
     AppSetSec -->|Generates| AppTrivy
 ```
 
-## 8. Control Loop Overview
+## 8. Gateway API Service Exposure
+
+This diagram shows how services are exposed via Gateway API with wildcard TLS
+and sslip.io DNS (zero configuration required).
+
+```mermaid
+graph TB
+    subgraph External Access
+        Browser[Browser: https://grafana.127-0-0-1.sslip.io]
+    end
+
+    subgraph Gateway API Layer - Namespace: kube-system
+        Gateway[Gateway: idp-gateway<br/>Listener: HTTPS:443<br/>TLS: idp-wildcard-cert]
+        Cert[Certificate: idp-wildcard-cert<br/>*.127-0-0-1.sslip.io<br/>Issuer: ca-issuer]
+    end
+
+    subgraph HTTPRoutes - Distributed
+        HR1[HTTPRoute: argocd<br/>argocd.127-0-0-1.sslip.io]
+        HR2[HTTPRoute: grafana<br/>grafana.127-0-0-1.sslip.io]
+        HR3[HTTPRoute: vault<br/>vault.127-0-0-1.sslip.io]
+        HR4[HTTPRoute: jenkins<br/>jenkins.127-0-0-1.sslip.io]
+        HR5[HTTPRoute: sonarqube<br/>sonarqube.127-0-0-1.sslip.io]
+    end
+
+    subgraph Backend Services
+        S1[argocd-server:443]
+        S2[prometheus-grafana:80]
+        S3[vault:8200]
+        S4[jenkins:8080]
+        S5[sonarqube-sonarqube:9000]
+    end
+
+    Browser -->|HTTPS Request| Gateway
+    Gateway -->|Routes by hostname| HR1
+    Gateway -->|Routes by hostname| HR2
+    Gateway -->|Routes by hostname| HR3
+    Gateway -->|Routes by hostname| HR4
+    Gateway -->|Routes by hostname| HR5
+
+    HR1 --> S1
+    HR2 --> S2
+    HR3 --> S3
+    HR4 --> S4
+    HR5 --> S5
+
+    Cert -.->|Provides TLS| Gateway
+```
+
+## 9. Control Loop Overview
 
 This diagram illustrates the continuous, cross-reconciling control loops between
 the core GitOps components, forming the heart of the "Platform as a System."

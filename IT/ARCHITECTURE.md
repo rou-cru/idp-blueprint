@@ -95,22 +95,25 @@ graph TD
 
 The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 
-1. **Create k3d cluster** (`k3d-cluster.yaml`).
+1. **Create k3d cluster** (`k3d-cluster-cached.yaml` with persistent registry cache).
 2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
 3. **Deploy Cilium CNI** via Helm (`cilium-values.yaml`).
 4. **Deploy Prometheus CRDs** via a dedicated Helm chart install.
-  This is done using the `kube-prometheus-stack` chart with the `crdOnly=true` flag.
-
+   This is done using the `kube-prometheus-stack` chart with the `crdsOnly=true` flag.
 5. **Deploy Cert-Manager** via Helm (`cert-manager-values.yaml`).
-    - Then apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
+   - Wait for webhook readiness.
+   - Then apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
 6. **Deploy Vault Stack**:
-    - Deploy Vault via Helm (`vault-values.yaml`).
-    - Execute the manual initialization script (`vault-manual-init.sh`) to
-    initialize and unseal Vault.
+   - Deploy Vault via Helm (`vault-values.yaml`).
+   - Execute the initialization script (`vault-init.sh`) to initialize and unseal Vault.
 7. **Deploy External Secrets Operator** via Helm (`eso-values.yaml`).
-    - Then apply ESO resources (`ClusterSecretStore`, `ExternalSecret` for ArgoCD)
-      via Kustomize: `kustomize build external-secrets/ | kubectl apply -f -`.
-2. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
+   - Then apply ESO resources (`ClusterSecretStore`, `ExternalSecret` for ArgoCD)
+     via Kustomize: `kustomize build external-secrets/ | kubectl apply -f -`.
+8. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
+9. **Deploy Gateway API** via Kustomize: `kustomize build gateway/ | kubectl apply -f -`.
+   - Creates the Gateway resource with wildcard TLS certificate.
+10. **Deploy Policies** via ArgoCD Application: `kubectl apply -f Policies/app-kyverno.yaml`.
+11. **Deploy Application Stacks** via ApplicationSets: ArgoCD auto-discovers and deploys all apps.
 
 **Key Insight:** The bootstrap process is a carefully orchestrated sequence of Helm deployments
  and Kustomize applications, managed entirely by `Taskfile.yaml`.

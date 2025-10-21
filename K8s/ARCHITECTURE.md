@@ -164,7 +164,7 @@ configuration of these tools declaratively.
     helmCharts:
       - name: jenkins
         repo: https://charts.jenkins.io
-        version: 4.9.2
+        version: 5.8.101
         releaseName: jenkins
         namespace: cicd
         valuesFile: jenkins-values.yaml
