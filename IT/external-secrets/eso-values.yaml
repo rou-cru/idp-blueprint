@@ -11,8 +11,19 @@ resources:
   limits:
     cpu: 1000m
     memory: 1Gi
+## @section Health Probes
+## @description Configure liveness and readiness probes for External Secrets Operator.
 livenessProbe:
   enabled: true
+  spec:
+    httpGet:
+      port: 8082
+      path: /healthz
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
 
 readinessProbe:
   enabled: true
@@ -33,9 +44,14 @@ serviceAccount:
   name: 'external-secrets'
 
 ## @section Webhook Configuration
+## @description Configure External Secrets Operator webhook with cert-manager integration.
 webhook:
+  # -- Certificate validity lookahead interval for webhook
+  # Must be less than cert.renewBefore to prevent crashloops
+  lookaheadInterval: "168h"  # 7 days
   certManager:
     enabled: true
+    # -- Automatically inject CA into webhooks and CRDs
     addInjectorAnnotations: true
     cert:
       create: true
@@ -43,8 +59,14 @@ webhook:
         group: cert-manager.io
         kind: ClusterIssuer
         name: ca-issuer
+      # -- Certificate lifetime: 90 days (2160h)
       duration: "2160h"
+      # -- Renew 30 days before expiry (720h)
+      # Must be greater than webhook.lookaheadInterval (168h)
       renewBefore: "720h"
+      # -- Private key rotation policy (cert-manager >= 1.18.0 default: Always)
+      privateKey:
+        rotationPolicy: Always
 
 ## @section Prometheus Metrics
 ## @description Enable Prometheus ServiceMonitor for External Secrets Operator.
