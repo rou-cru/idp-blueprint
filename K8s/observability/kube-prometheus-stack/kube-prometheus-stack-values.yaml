@@ -16,6 +16,10 @@ alertmanager:
 # -- Prometheus instance configuration.
 prometheus:
   prometheusSpec:
+    # -- Global scrape interval for all ServiceMonitors (unless overridden).
+    scrapeInterval: 60s
+    # -- Global scrape timeout for all ServiceMonitors (unless overridden).
+    scrapeTimeout: 40s
     # -- Metrics retention time.
     retention: 6h
     # -- By not defining storageSpec, it will use an emptyDir (no real persistence).

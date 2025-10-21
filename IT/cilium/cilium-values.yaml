@@ -89,6 +89,9 @@ operator:
     enabled: true
     serviceMonitor:
       enabled: true
+      # -- Higher frequency for critical CNI metrics (network health, packet drops)
+      interval: 30s
+      scrapeTimeout: 25s
   resources:
     requests:
       cpu: 100m
@@ -105,6 +108,9 @@ prometheus:
   # -- If a ServiceMonitor CRD should be created.
   serviceMonitor:
     enabled: true
+    # -- Higher frequency for critical CNI metrics (eBPF events, network flows)
+    interval: 30s
+    scrapeTimeout: 25s
   dashboards:
     # -- Creates a ConfigMap with the official Cilium dashboard for Grafana.
     enabled: true

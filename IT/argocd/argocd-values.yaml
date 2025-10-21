@@ -35,7 +35,9 @@ controller:
     enabled: true
     serviceMonitor:
       enabled: true
+      # -- Higher frequency for GitOps reconciliation tracking
       interval: 30s
+      scrapeTimeout: 25s
 
 # -- Server (UI/API) resource settings
 server:
@@ -50,7 +52,9 @@ server:
     enabled: true
     serviceMonitor:
       enabled: true
+      # -- Higher frequency for user-facing API latency metrics
       interval: 30s
+      scrapeTimeout: 25s
   ingress:
     enabled: false
     tls: false
@@ -68,7 +72,9 @@ repoServer:
     enabled: true
     serviceMonitor:
       enabled: true
-      interval: 30s
+      # -- Standard frequency for background git fetch operations
+      interval: 60s
+      scrapeTimeout: 40s
 
 ## @section Redis Configuration
 ## @description Resource settings for the bundled Redis cache.
@@ -97,7 +103,9 @@ applicationSet:
     enabled: true
     serviceMonitor:
       enabled: true
-      interval: 30s
+      # -- Standard frequency for ApplicationSet template rendering
+      interval: 60s
+      scrapeTimeout: 40s
 
 # -- Custom resource configuration
 crds:

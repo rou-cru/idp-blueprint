@@ -9,7 +9,8 @@ prometheus:
   enabled: true
   servicemonitor:
     enabled: true
-    interval: 30s
+    interval: 60s
+    scrapeTimeout: 40s
 
 ## @section Resource Optimization
 ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
