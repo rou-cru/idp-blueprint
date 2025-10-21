@@ -1,0 +1,25 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: jenkins
+  namespace: cicd
+  labels:
+    app.kubernetes.io/name: servicemonitor
+    app.kubernetes.io/instance: jenkins
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: idp
+  annotations:
+    description: 'Prometheus ServiceMonitor for Jenkins metrics'
+    contact: 'platform-team'
+    documentation: 'https://plugins.jenkins.io/prometheus/'
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: jenkins-controller
+  endpoints:
+    - port: http
+      path: /prometheus/
+      interval: 60s
+      scrapeTimeout: 40s
+      honorLabels: true

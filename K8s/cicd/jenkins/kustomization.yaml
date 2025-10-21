@@ -3,6 +3,9 @@ kind: Kustomization
 
 resources:
   - jenkins-httproute.yaml
+  - jenkins-servicemonitor.yaml
+  - jenkins-admin-externalsecret.yaml
+  - sonarqube-token-externalsecret.yaml
 
 helmCharts:
   - name: jenkins
