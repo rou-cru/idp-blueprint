@@ -14,16 +14,29 @@ resources:
 ## @section Health Probes
 ## @description Configure liveness and readiness probes for External Secrets Operator.
 livenessProbe:
-  enabled: true
+  # -- Enabled determines if the liveness probe should be used or not. By default it's disabled.
+  enabled: false
+  # -- The body of the liveness probe settings.
   spec:
-    httpGet:
-      port: 8082
-      path: /healthz
-    initialDelaySeconds: 20
-    periodSeconds: 10
+    # -- Address for liveness probe.
+    address: ""
+    # -- Specify the maximum amount of time to wait for a probe to respond before considering it fails.
     timeoutSeconds: 5
-    failureThreshold: 3
+    # -- Number of consecutive probe failures that should occur before considering the probe as failed.
+    failureThreshold: 5
+    # -- Period in seconds for K8s to start performing probes.
+    periodSeconds: 10
+    # -- Number of successful probes to mark probe successful.
     successThreshold: 1
+    # -- Delay in seconds for the container to start before performing the initial probe.
+    initialDelaySeconds: 10
+    # -- Handler for liveness probe.
+    httpGet:
+      # -- Set this value to 8082 to active liveness probes.
+      # @schema type: [string, integer]
+      port: 8082
+      # -- Path for liveness probe.
+      path: /healthz
 
 readinessProbe:
   enabled: true
