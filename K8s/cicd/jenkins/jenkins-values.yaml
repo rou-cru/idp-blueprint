@@ -19,14 +19,14 @@ controller:
 
   ## @subsection Admin Credentials
   ## @description Admin password from Vault via External Secrets Operator.
-  # -- Admin username.
-  adminUser: "admin"
   # -- Use existing secret for admin credentials from Vault.
   admin:
     createSecret: false
     existingSecret: "jenkins-admin-credentials"
     userKey: jenkins-admin-user
     passwordKey: jenkins-admin-password
+    # -- Admin username (replaces deprecated adminUser).
+    username: "admin"
 
   ## @subsection Executor Configuration
   ## @description Best practice: no builds on controller, all on dynamic agents.

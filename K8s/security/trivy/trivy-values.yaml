@@ -45,3 +45,36 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+
+# -- Trivy scanner configuration.
+trivy:
+  # -- Mode: ClientServer uses a central Trivy server to avoid downloading DB on every scan.
+  mode: ClientServer
+  # -- Trivy Server URL (deployed below).
+  serverURL: "http://trivy-server.security.svc:4954"
+
+# -- Deploy a central Trivy Server with persistent vulnerability DB cache.
+# This eliminates repeated DB downloads (~500MB) on every scan.
+trivyServer:
+  # -- Enable Trivy Server deployment.
+  enabled: true
+
+  # -- Persistent storage for vulnerability database.
+  # DB is downloaded once every 12 hours instead of on every scan.
+  persistence:
+    enabled: true
+    storageClass: "local-path"
+    size: 1Gi
+
+  # -- Update vulnerability DB every 12 hours.
+  # Balances freshness with network/resource usage.
+  dbUpdateInterval: 12h
+
+  # -- Resource limits for Trivy Server.
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi

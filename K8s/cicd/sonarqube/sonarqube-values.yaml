@@ -1,6 +1,10 @@
 ## @section SonarQube Server
 ## @description Resource definitions for the main SonarQube application.
-edition: "community"
+
+## @section Community Build
+## @description Enable SonarQube Community Build
+community:
+  enabled: true
 
 sonarqube:
   # -- Resource requests and limits for the SonarQube server.
