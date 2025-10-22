@@ -49,13 +49,11 @@ grafana:
     type: pvc
     size: 1Gi
     accessModes: [ReadWriteOnce]
-
   # -- Use existing secret for admin credentials from Vault via ESO.
   admin:
     existingSecret: grafana-admin-credentials
     userKey: admin-user
     passwordKey: admin-password
-
   # -- Resource limits and requests for Grafana.
   resources:
     requests:
@@ -64,7 +62,6 @@ grafana:
     limits:
       cpu: 250m
       memory: 256Mi
-
   # -- Additional datasources for Grafana.
   additionalDataSources:
     - name: Loki
@@ -72,13 +69,11 @@ grafana:
       url: http://loki.observability.svc.cluster.local:3100
       access: proxy
       isDefault: false
-
   # -- Automatically install useful plugins on startup.
   plugins:
     - grafana-piechart-panel
     - grafana-polystat-panel
     - marcusolsson-json-datasource
-
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
   sidecar:
     dashboards:
@@ -86,7 +81,6 @@ grafana:
       label: grafana_dashboard
       # -- An empty labelValue searches for the presence of the label, regardless of its value.
       labelValue: ""
-
   # -- Advanced Grafana configuration via grafana.ini
   grafana.ini:
     users:
@@ -127,7 +121,6 @@ kube-state-metrics:
   # Disables: ReplicaSets, ConfigMaps, Secrets, RBAC, HPAs, Leases, Webhooks, etc.
   extraArgs:
     - --resources=cronjobs,daemonsets,deployments,jobs,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,pods,services,statefulsets,storageclasses
-
   prometheus:
     monitor:
       # Drop high-cardinality labels that add noise without operational value.
@@ -141,7 +134,6 @@ kube-state-metrics:
         # Drop image_id: SHA256 hashes redundant with image tag
         - action: labeldrop
           regex: "image_id"
-
   resources:
     requests:
       cpu: 25m
@@ -154,26 +146,30 @@ kube-state-metrics:
 ## @description Prometheus Node Exporter configuration.
 # -- Resource limits and requests for the node-exporter.
 prometheus-node-exporter:
-  # -- Disable collectors not relevant for K3d virtualized environment or Cilium eBPF networking.
+  # -- Minimal collector set optimized for K3d + Cilium eBPF environments.
+  # Uses whitelist approach (disable defaults, enable only essentials) to minimize overhead.
   extraArgs:
-    # Virtualization-specific: Hardware monitoring irrelevant in K3d containers
-    - --no-collector.hwmon
-    - --no-collector.edac
-    - --no-collector.thermal
-    - --no-collector.powersupplyclass
-    # Cilium eBPF-specific: Networking handled by Cilium eBPF, not kernel netfilter
-    - --no-collector.arp
-    - --no-collector.conntrack
-    - --no-collector.ipvs
-    # Not useful for K8s troubleshooting
-    - --no-collector.entropy
+    # Disable all default collectors (40+ collectors)
+    - --collector.disable-defaults
+    # Enable ONLY essential collectors for K8s observability (10 collectors)
+    - --collector.cpu          # CPU usage per core and aggregated
+    - --collector.cpufreq      # CPU frequency scaling
+    - --collector.meminfo      # Memory usage (free, cached, buffers, etc.)
+    - --collector.diskstats    # Disk I/O operations and latency
+    - --collector.filesystem   # Filesystem usage and inodes
+    - --collector.netdev       # Network interface traffic and errors
+    - --collector.loadavg      # System load averages (1m, 5m, 15m)
+    - --collector.pressure     # PSI: CPU/Memory/IO pressure stall information
+    - --collector.vmstat       # Virtual memory stats (paging, swapping)
+    - --collector.stat         # Context switches, interrupts, forks
+    - --collector.uname        # Kernel version and system metadata
   resources:
     requests:
-      cpu: 25m
-      memory: 32Mi
+      cpu: 15m
+      memory: 24Mi
     limits:
-      cpu: 50m
-      memory: 64Mi
+      cpu: 30m
+      memory: 48Mi
 
 ## @section Windows Exporter
 ## @description Windows Exporter configuration.
