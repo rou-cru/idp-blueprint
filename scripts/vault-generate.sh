@@ -53,24 +53,16 @@ EOF
 }
 
 detect_vault_namespace() {
-  log "Auto-detecting Vault namespace..."
-
   local namespace
   namespace=$(kubectl get pods --all-namespaces -l app.kubernetes.io/name=vault -o jsonpath='{.items[0].metadata.namespace}' 2>/dev/null || echo "")
 
   if [[ -z "$namespace" ]]; then
     error "Cannot auto-detect Vault namespace. Set VAULT_NAMESPACE environment variable."
   fi
-
-  log "Detected Vault namespace: ${namespace}"
-  echo "$namespace"
 }
 
 detect_vault_pod() {
   local namespace=$1
-
-  log "Auto-detecting Vault pod in namespace: ${namespace}..."
-
   local pod
   pod=$(kubectl get pods -n "$namespace" -l app.kubernetes.io/name=vault -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || echo "")
 
@@ -78,8 +70,7 @@ detect_vault_pod() {
     error "Cannot find Vault pod in namespace: ${namespace}. Set VAULT_POD environment variable."
   fi
 
-  log "Detected Vault pod: ${pod}"
-  echo "$pod"
+  log "Detected Vault pod: ${pod} in ${namespace}."
 }
 
 validate_vault_connection() {
@@ -100,15 +91,10 @@ validate_vault_connection() {
   if ! kubectl exec -n "$namespace" "$pod" -- vault status &>/dev/null; then
     error "Cannot connect to Vault API in pod '$pod'"
   fi
-
-  log "✅ Vault connection validated"
 }
 
 retrieve_vault_token() {
   local namespace=$1
-
-  log "Retrieving Vault token from Kubernetes secret..."
-
   local token
   token=$(kubectl get secret vault-init-keys -n "$namespace" -o jsonpath='{.data.root-token}' 2>/dev/null | base64 -d)
 
@@ -117,7 +103,6 @@ retrieve_vault_token() {
   fi
 
   log "✅ Token retrieved successfully"
-  echo "$token"
 }
 
 validate_vault_token() {
@@ -130,8 +115,6 @@ validate_vault_token() {
     vault token lookup &>/dev/null; then
     error "Invalid VAULT_TOKEN or token has expired"
   fi
-
-  log "✅ Vault token validated"
 }
 
 generate_random_password() {
@@ -201,8 +184,6 @@ verify_storage() {
   local vault_path=$4
   local key_name=$5
 
-  log "Verifying storage..."
-
   local retrieved_password
   retrieved_password=$(kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
@@ -211,8 +192,6 @@ verify_storage() {
   if [[ -z "$retrieved_password" ]]; then
     error "Failed to verify password storage at path: ${vault_path}"
   fi
-
-  log "✅ Password verified in Vault"
 }
 
 main() {
@@ -262,7 +241,6 @@ main() {
   log "Password:     ${password_source}"
   log "Format:       ${format}"
   log "Hashing:      ${hashing}"
-  log "Vault pod:    ${vault_namespace}/${vault_pod}"
   log "===================================================="
 
   # Preflight checks
@@ -278,7 +256,6 @@ main() {
   # Get password (provided or generate random)
   local password
   if [[ -n "$provided_password" ]]; then
-    log "Using provided password"
     password="$provided_password"
   else
     password=$(generate_random_password "$vault_namespace" "$vault_pod" "$vault_token" "32" "$format")
@@ -294,7 +271,6 @@ main() {
   # Verify
   verify_storage "$vault_namespace" "$vault_pod" "$vault_token" "$vault_path" "$key_name"
 
-  log ""
   log "===================================================="
   log "✅ Secret stored at: ${vault_path}"
   log "===================================================="

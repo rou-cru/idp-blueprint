@@ -58,7 +58,6 @@ server:
     # -- Path for the readiness probe. Defaults to /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
     path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
 
-
   # -- Enables the metrics endpoint for Prometheus.
   serviceMonitor:
     enabled: true

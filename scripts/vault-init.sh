@@ -41,7 +41,6 @@ wait_for_vault_pod() {
     set +o pipefail
     if kubectl exec -n "$NAMESPACE" vault-0 -- vault status -format=json 2>/dev/null | jq -e '.version' >/dev/null 2>&1; then
       set -o pipefail
-      log "✅ Vault pod is ready and API is responsive"
       return 0
     fi
     set -o pipefail
@@ -59,8 +58,6 @@ wait_for_vault_pod() {
 }
 
 main() {
-  log "Starting manual Vault initialization..."
-
   # Wait for Vault pod to be ready before attempting operations
   if ! wait_for_vault_pod; then
     log "ERROR: Cannot proceed without Vault pod being available"
@@ -90,7 +87,6 @@ main() {
   fi
 
   # 2. Initialize Vault
-  log "Initializing Vault with 1 key share..."
   INIT_OUTPUT=$(kubectl exec -n "$NAMESPACE" vault-0 -- vault operator init \
     -key-shares=1 \
     -key-threshold=1 \
@@ -112,7 +108,6 @@ main() {
   log "✅ Vault unsealed"
 
   # 4. Persist keys to Kubernetes Secret
-  log "Saving keys to Kubernetes secret '$SECRET_NAME'..."
   kubectl create secret generic "$SECRET_NAME" -n "$NAMESPACE" \
     --from-literal=unseal-key="$UNSEAL_KEY" \
     --from-literal=root-token="$ROOT_TOKEN" \
@@ -131,9 +126,6 @@ main() {
   kubectl exec -n "$NAMESPACE" vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
     vault write auth/kubernetes/config \
     kubernetes_host="https://kubernetes.default.svc:443"
-
-  # Enable secrets engines
-  log "Enabling secrets engines..."
 
   # KV v2 for static secrets (passwords, tokens, API keys)
   kubectl exec -n "$NAMESPACE" vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
@@ -188,8 +180,6 @@ path "secret/metadata/*" {
     policies=eso-policy \
     ttl=24h
 
-  log "✅ Vault configured for ESO (Observability namespace)"
-  log ""
   log "=================================================="
   log "✅ Vault initialization complete!"
   log "Root token and unseal key saved in secret: $SECRET_NAME"
