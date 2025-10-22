@@ -6,14 +6,14 @@ crds:
 
 ## @section Alertmanager
 ## @description Alertmanager configuration.
-# -- Alertmanager configuration.
 alertmanager:
-  # -- Disables Alertmanager for this demo environment.
+  # -- Disabled by default. This blueprint uses Grafana Unified Alerting as the
+  # primary platform for managing alerts from all datasources (Prometheus, Loki, etc.),
+  # providing a single, integrated user experience.
   enabled: false
 
 ## @section Prometheus
 ## @description Prometheus instance configuration.
-# -- Prometheus instance configuration.
 prometheus:
   prometheusSpec:
     # -- Global scrape interval for all ServiceMonitors (unless overridden).
@@ -22,36 +22,49 @@ prometheus:
     scrapeTimeout: 40s
     # -- Metrics retention time.
     retention: 6h
-    # -- By not defining storageSpec, it will use an emptyDir (no real persistence).
+    # -- Enable persistence for Prometheus TSDB. 1Gi supports 6h retention for ~50 pods
+    # with 4x overhead margin. Data survives pod restarts but is lost on cluster destruction.
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
     # -- Resource limits and requests for Prometheus.
     resources:
       requests:
         cpu: 100m
-        memory: 256Mi
+        memory: 384Mi
       limits:
         cpu: 250m
         memory: 512Mi
 
 ## @section Grafana
 ## @description Grafana instance configuration.
-# -- Grafana instance configuration.
 grafana:
-  # -- Disables persistence for this demo environment.
+  # -- Enable persistence for dashboards and settings
   persistence:
-    enabled: false
+    enabled: true
+    type: pvc
+    size: 1Gi
+    accessModes: [ReadWriteOnce]
+
   # -- Use existing secret for admin credentials from Vault via ESO.
   admin:
     existingSecret: grafana-admin-credentials
     userKey: admin-user
     passwordKey: admin-password
+
   # -- Resource limits and requests for Grafana.
   resources:
     requests:
       cpu: 50m
       memory: 128Mi
     limits:
-      cpu: 100m
+      cpu: 250m
       memory: 256Mi
+
   # -- Additional datasources for Grafana.
   additionalDataSources:
     - name: Loki
@@ -59,6 +72,40 @@ grafana:
       url: http://loki.observability.svc.cluster.local:3100
       access: proxy
       isDefault: false
+
+  # -- Automatically install useful plugins on startup.
+  plugins:
+    - grafana-piechart-panel
+    - grafana-polystat-panel
+    - marcusolsson-json-datasource
+
+  # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      # -- An empty labelValue searches for the presence of the label, regardless of its value.
+      labelValue: ""
+
+  # -- Advanced Grafana configuration via grafana.ini
+  grafana.ini:
+    users:
+      # -- Disables the user sign-up page.
+      allow_sign_up: false
+      # -- Set the default UI theme to dark.
+      default_theme: dark
+
+    # -- Example for Azure AD OAuth.
+    # To enable, uncomment the block and provide the values, ideally via secrets.
+    # auth.azuread:
+    #   enabled: true
+    #   name: "Azure AD"
+    #   allow_sign_up: true
+    #   client_id: "$AZURE_CLIENT_ID"
+    #   client_secret: "$AZURE_CLIENT_SECRET"
+    #   scopes: "openid email profile"
+    #   auth_url: "https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/authorize"
+    #   token_url: "https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/token"
 
 ## @section Prometheus Operator
 ## @description Prometheus Operator configuration.
@@ -76,6 +123,25 @@ prometheusOperator:
 ## @description Kube State Metrics configuration.
 # -- Resource limits and requests for kube-state-metrics.
 kube-state-metrics:
+  # Enable only relevant resource types (whitelist approach).
+  # Disables: ReplicaSets, ConfigMaps, Secrets, RBAC, HPAs, Leases, Webhooks, etc.
+  extraArgs:
+    - --resources=cronjobs,daemonsets,deployments,jobs,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,pods,services,statefulsets,storageclasses
+
+  prometheus:
+    monitor:
+      # Drop high-cardinality labels that add noise without operational value.
+      metricRelabelings:
+        # Drop uid label: UUIDs not useful in dashboards/queries
+        - action: labeldrop
+          regex: "uid"
+        # Drop container_id: SHA256 hashes change on every restart (high churn)
+        - action: labeldrop
+          regex: "container_id"
+        # Drop image_id: SHA256 hashes redundant with image tag
+        - action: labeldrop
+          regex: "image_id"
+
   resources:
     requests:
       cpu: 25m
@@ -88,6 +154,19 @@ kube-state-metrics:
 ## @description Prometheus Node Exporter configuration.
 # -- Resource limits and requests for the node-exporter.
 prometheus-node-exporter:
+  # -- Disable collectors not relevant for K3d virtualized environment or Cilium eBPF networking.
+  extraArgs:
+    # Virtualization-specific: Hardware monitoring irrelevant in K3d containers
+    - --no-collector.hwmon
+    - --no-collector.edac
+    - --no-collector.thermal
+    - --no-collector.powersupplyclass
+    # Cilium eBPF-specific: Networking handled by Cilium eBPF, not kernel netfilter
+    - --no-collector.arp
+    - --no-collector.conntrack
+    - --no-collector.ipvs
+    # Not useful for K8s troubleshooting
+    - --no-collector.entropy
   resources:
     requests:
       cpu: 25m

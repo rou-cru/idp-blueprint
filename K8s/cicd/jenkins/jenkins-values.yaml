@@ -127,9 +127,9 @@ controller:
               namespace: "cicd"
               jenkinsUrl: "http://jenkins.cicd.svc.cluster.local:8080"
               jenkinsTunnel: "jenkins-agent.cicd.svc.cluster.local:50000"
-              containerCapStr: "10"
+              containerCapStr: "1"
               maxRequestsPerHostStr: "32"
-              retentionTimeout: 5
+              retentionTimeout: 0
               connectTimeout: 5
               readTimeout: 15
               podLabels:
@@ -219,9 +219,9 @@ agent:
   # -- Pod retention policy.
   podRetention: "Never"
   # -- Container cap (max simultaneous agents).
-  containerCap: 10
+  containerCap: 1
   # -- Idle minutes before termination.
-  idleMinutes: 0
+  idleMinutes: 1
 
 ## @section Persistence
 ## @description Disable persistence for demo environment (ephemeral jobs/configs).

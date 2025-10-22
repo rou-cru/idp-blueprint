@@ -20,6 +20,6 @@ spec:
   endpoints:
     - port: http
       path: /prometheus/
-      interval: 60s
+      interval: 120s
       scrapeTimeout: 40s
       honorLabels: true

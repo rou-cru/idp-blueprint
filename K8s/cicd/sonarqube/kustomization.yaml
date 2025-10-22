@@ -9,7 +9,7 @@ resources:
 helmCharts:
   - name: sonarqube
     repo: https://SonarSource.github.io/helm-chart-sonarqube
-    version: 2025.5.0
+    version: 2025.6.0
     releaseName: sonarqube
     namespace: cicd
     valuesFile: sonarqube-values.yaml

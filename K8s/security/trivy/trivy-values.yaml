@@ -1,11 +1,47 @@
-## @section Trivy Operator
-## @description Resource definitions for the trivy-operator.
+# -- Target Kubernetes workload resources for vulnerability and config-audit scans.
+# Comma-separated list. If blank, all workloads are scanned.
+targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
+
+# -- Namespaces to be excluded from scanning.
+excludeNamespaces: "kube-system,argocd,cert-manager,vault-system,kyverno-system"
+
+# -- Prometheus ServiceMonitor configuration.
+serviceMonitor:
+  # -- Enables the deployment of a ServiceMonitor.
+  enabled: true
+  # -- Chooses the metric’s labels on collisions with target labels.
+  honorLabels: true
+
 operator:
-  # -- Resource requests and limits for the operator.
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 500m
-      memory: 512Mi
+  # -- Enable vulnerability scanner.
+  vulnerabilityScannerEnabled: true
+  # -- Enable configuration audit scanner.
+  configAuditScannerEnabled: true
+  # -- Enable RBAC assessment scanner.
+  rbacAssessmentScannerEnabled: true
+  # -- Enable exposed secret scanner.
+  exposedSecretScannerEnabled: true
+  # -- Disable infrastructure assessment scanner. This is because the underlying
+  # infrastructure in a k3d environment is not user-configurable.
+  infraAssessmentScannerEnabled: false
+  # -- Enable cluster compliance scanner.
+  clusterComplianceEnabled: true
+
+compliance:
+  # -- Enable and configure compliance reporting.
+  enabled: true
+  # -- Define which compliance specifications to run.
+  # We use 'k8s-pss-baseline' as it's a practical starting point for workload
+  # security. Stricter specs like CIS or NSA would produce unactionable noise
+  # in a local k3d environment where infrastructure is not user-configurable.
+  specs:
+    - "k8s-pss-baseline-0.1"
+
+# -- Resource limits and requests for Trivy Operator controller.
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

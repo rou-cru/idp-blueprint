@@ -1,7 +1,6 @@
 ## @section SonarQube Server
 ## @description Resource definitions for the main SonarQube application.
-community:
-  enabled: true
+edition: "community"
 
 sonarqube:
   # -- Resource requests and limits for the SonarQube server.
@@ -12,6 +11,7 @@ sonarqube:
     limits:
       cpu: 1000m
       memory: 1.5Gi
+  # -- Liveness probe to check if the SonarQube server is running.
   livenessProbe:
     exec:
       command:
@@ -22,6 +22,7 @@ sonarqube:
     periodSeconds: 30
     failureThreshold: 6
     timeoutSeconds: 1
+  # -- Readiness probe to check if the SonarQube server is ready to accept traffic.
   readinessProbe:
     exec:
       command:
@@ -33,10 +34,24 @@ sonarqube:
     failureThreshold: 6
     timeoutSeconds: 1
 
+# -- Required initContainer to set kernel parameters for Elasticsearch.
+initSysctl:
+  enabled: true
+
+# -- Required initContainer to set filesystem permissions.
+initFs:
+  enabled: true
+
+## @section Persistence
+## @description Configure persistence for SonarQube data, extensions, and logs.
+persistence:
+  enabled: true
+  # -- Minimal size for a demo environment.
+  size: 2Gi
+
 ## @section PostgreSQL Database
 ## @description Resource definitions for the bundled PostgreSQL database.
-# -- By default, the chart deploys a PostgreSQL database.
-# -- We will define resources for it as well.
+# -- Configuration for the bundled PostgreSQL database.
 postgresql:
   # -- Resource requests and limits for the PostgreSQL pod.
   resources:
