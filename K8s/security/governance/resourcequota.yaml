@@ -7,7 +7,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   hard:
-    requests.cpu: "700m"
-    requests.memory: "1Gi"
-    limits.cpu: "3000m"
-    limits.memory: "3Gi"
+    # Increased to accommodate Trivy operator (100m requests, 500m limits)
+    # plus Trivy scan jobs (2 CPU, 2Gi memory per scan)
+    requests.cpu: "1000m"
+    requests.memory: "2Gi"
+    limits.cpu: "5000m"
+    limits.memory: "5Gi"

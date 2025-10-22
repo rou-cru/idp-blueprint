@@ -39,6 +39,9 @@ config:
         Tag kube.*
         Mem_Buf_Limit 5MB
         Skip_Long_Lines On
+        # Disable inotify to prevent "too many open files" errors
+        # Use stat-based file watching instead
+        Inotify_Watcher false
         DB /var/fluent-bit/state/flb_kube.db
         DB.Sync Normal
         Path_Key filename
@@ -142,15 +145,25 @@ args:
   - --workdir=/fluent-bit/etc
   - --config=/fluent-bit/etc/conf/fluent-bit.conf
 
+## @section Hot Reload Configuration
+## @description Enable automatic configuration reload when ConfigMap changes
 hotReload:
-  enabled: false
+  enabled: true
   image:
     repository: ghcr.io/jimmidyson/configmap-reload
     tag: v0.15.0
     digest:
     pullPolicy: IfNotPresent
-  resources: {}
-  extraWatchVolumes: []
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 50m
+      memory: 32Mi
+  extraWatchVolumes:
+    - name: scripts
+      mountPath: /watch/scripts
   securityContext:
     privileged: false
     allowPrivilegeEscalation: false
