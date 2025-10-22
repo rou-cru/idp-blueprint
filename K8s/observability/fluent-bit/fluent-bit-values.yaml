@@ -57,14 +57,13 @@ config:
         Name        lua
         Match       kube.*
         call        remove_labels
-        code        |
-          function remove_labels(tag, timestamp, record)
-            if record.kubernetes and record.kubernetes.labels then
-              record.kubernetes.labels['pod-template-hash'] = nil
-              record.kubernetes.labels['controller-revision-hash'] = nil
-            end
-            return 2, timestamp, record
-          end
+        code        function remove_labels(tag, timestamp, record)
+                      if record.kubernetes and record.kubernetes.labels then
+                        record.kubernetes.labels['pod-template-hash'] = nil
+                        record.kubernetes.labels['controller-revision-hash'] = nil
+                      end
+                      return 2, timestamp, record
+                    end
   outputs: |
     [OUTPUT]
         Name loki
