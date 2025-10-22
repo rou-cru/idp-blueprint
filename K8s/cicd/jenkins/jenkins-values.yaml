@@ -19,12 +19,11 @@ controller:
 
   ## @subsection Admin Credentials
   ## @description Admin password from Vault via External Secrets Operator.
-  # -- Disable default admin secret creation.
-  adminSecret: true
   # -- Admin username.
   adminUser: "admin"
   # -- Use existing secret for admin credentials from Vault.
   admin:
+    createSecret: false
     existingSecret: "jenkins-admin-credentials"
     userKey: jenkins-admin-user
     passwordKey: jenkins-admin-password

@@ -6,6 +6,9 @@ deploymentMode: SingleBinary
 ## @section Loki Configuration
 ## @description Core Loki settings for storage, retention, and authentication.
 loki:
+  # -- Storage backend configuration (filesystem for demo).
+  storage:
+    type: filesystem
   # -- This section uses the modern, structured configuration format.
   structuredConfig:
     auth_enabled: false

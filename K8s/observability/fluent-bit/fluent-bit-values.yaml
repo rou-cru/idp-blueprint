@@ -92,10 +92,10 @@ daemonSetVolumes:
       path: /var/fluent-bit/state
   - name: config
     configMap:
-      name: {{ include "fluent-bit.fullname" . }}-config
+      name: "{{ include \"fluent-bit.fullname\" . }}-config"
   - name: scripts
     configMap:
-      name: {{ include "fluent-bit.fullname" . }}-scripts
+      name: "{{ include \"fluent-bit.fullname\" . }}-scripts"
       defaultMode: 0755
 
 daemonSetVolumeMounts:
