@@ -59,6 +59,7 @@ detect_vault_namespace() {
   if [[ -z "$namespace" ]]; then
     error "Cannot auto-detect Vault namespace. Set VAULT_NAMESPACE environment variable."
   fi
+  echo "$namespace"
 }
 
 detect_vault_pod() {
@@ -71,6 +72,7 @@ detect_vault_pod() {
   fi
 
   log "Detected Vault pod: ${pod} in ${namespace}."
+  echo "$pod"
 }
 
 validate_vault_connection() {
@@ -103,6 +105,7 @@ retrieve_vault_token() {
   fi
 
   log "✅ Token retrieved successfully"
+  echo "$token"
 }
 
 validate_vault_token() {
@@ -165,8 +168,6 @@ store_password_in_vault() {
   local vault_path=$4
   local key_name=$5
   local password_to_store=$6
-
-  log "Storing password in Vault at path: ${vault_path} (key: ${key_name})..."
 
   if ! kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
