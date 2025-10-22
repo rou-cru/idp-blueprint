@@ -22,6 +22,8 @@ resources:
     cpu: 500m
     memory: 512Mi
 
+## @section Webhook Configuration
+## @description Resource and probe settings for the cert-manager webhook.
 webhook:
   resources:
     requests:
@@ -30,6 +32,7 @@ webhook:
     limits:
       cpu: 200m
       memory: 256Mi
+  # -- Liveness probe for the webhook pod.
   livenessProbe:
     httpGet:
       path: /livez
@@ -40,6 +43,7 @@ webhook:
     periodSeconds: 10
     successThreshold: 1
     failureThreshold: 3
+  # -- Readiness probe for the webhook pod.
   readinessProbe:
     httpGet:
       path: /healthz
@@ -51,6 +55,8 @@ webhook:
     successThreshold: 1
     failureThreshold: 3
 
+## @section CA Injector Configuration
+## @description Resource settings for the cert-manager cainjector.
 cainjector:
   resources:
     requests:

@@ -13,7 +13,7 @@ policyReporter:
 ## @section Policy Reporter UI
 ## @description Resource definitions for the UI component.
 ui:
-  # -- We want to deploy the UI.
+  # -- Enables the deployment of the Policy Reporter UI.
   enabled: true
   # -- Resource requests and limits for the UI.
   resources:

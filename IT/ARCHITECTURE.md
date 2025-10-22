@@ -30,8 +30,9 @@ Static Kubernetes resources that are not part of a Helm chart installation (e.g.
 
 ### 3. Bootstrap Resources via Kustomize
 
-Some components require orchestrated deployment of multiple resources. These use
-Kustomize for composition and are deployed via `kustomize build <dir>/ | kubectl apply -f -`.
+Some components require orchestrated deployment of multiple resources.
+These use Kustomize for composition and are deployed via
+`kustomize build <dir>/ | kubectl apply -f -`.
 
 - **Location**: Subdirectories with their own `kustomization.yaml`.
 - **Purpose**:

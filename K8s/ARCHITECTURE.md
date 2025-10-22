@@ -183,3 +183,26 @@ configuration of these tools declaratively.
 5. **Commit & Push:** Commit your changes to Git. The corresponding `ApplicationSet`
     will automatically detect the new directory and deploy your application into the
     correct namespace.
+
+## Component Versioning Strategy
+
+The project uses a two-tiered strategy for managing Helm chart versions,
+depending on how each component is deployed:
+
+1. **Core Infrastructure Components (Managed by `Taskfile.yaml`)**
+    - **Components**: Cilium, Cert-Manager, Vault, ArgoCD.
+    - **Method**: These components are deployed imperatively via
+      `helm upgrade` tasks within the `Taskfile.yaml`.
+    - **Version Source**: Their chart versions are centralized in the `vars:` section of
+      the `Taskfile.yaml`. This allows for top-level control over
+      critical infrastructure versions.
+
+2. **Application Stack Components (Managed by GitOps)**
+    - **Components**: Jenkins, SonarQube, Loki, Prometheus, Trivy, etc.
+    - **Method**: These components are deployed declaratively by ArgoCD via
+      `ApplicationSet` resources.
+    - **Version Source**: The Helm chart version is specified directly in each
+      application's respective `kustomization.yaml` file.
+      This approach keeps an application's entire configuration,
+      including its version, co-located in a single place,
+      adhering to GitOps principles.

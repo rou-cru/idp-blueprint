@@ -1,6 +1,5 @@
 ## @section Vault Server
 ## @description Vault server configuration.
-# -- Vault server configuration in standalone mode.
 server:
   standalone:
     # -- Enables standalone server configuration.
@@ -27,8 +26,7 @@ server:
         path = "/vault/logs/audit.log"
       }
 
-  # Note: Vault data is persisted in PVC 'data-vault-0' (auto-created by Helm chart)
-  # The PVC uses local-path storage class and is mounted at /vault/data
+  # -- Configures persistence for Vault data using a PVC.
   dataStorage:
     enabled: true
     size: 1Gi
@@ -57,7 +55,8 @@ server:
     enabled: true
     failureThreshold: 2
     initialDelaySeconds: 5
-    path: ""
+    # -- Path for the readiness probe. Defaults to /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
 
 
   # -- Enables the metrics endpoint for Prometheus.
@@ -68,7 +67,6 @@ server:
 
 ## @section Vault UI
 ## @description Vault UI configuration.
-# -- Vault UI configuration.
 ui:
   # -- Enables the Vault UI.
   enabled: true

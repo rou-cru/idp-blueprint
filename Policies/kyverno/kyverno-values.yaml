@@ -14,18 +14,21 @@ resources:
     cpu: 250m
     memory: 256Mi
 
+# -- Liveness probe for the main admission controller.
 livenessProbe:
   initialDelaySeconds: 0
   periodSeconds: 10
   timeoutSeconds: 1
   successThreshold: 1
   failureThreshold: 3
+# -- Readiness probe for the main admission controller.
 readinessProbe:
   initialDelaySeconds: 0
   periodSeconds: 10
   timeoutSeconds: 1
   successThreshold: 1
   failureThreshold: 3
+# -- Startup probe for the main admission controller.
 startupProbe:
   initialDelaySeconds: 0
   periodSeconds: 10
@@ -33,7 +36,8 @@ startupProbe:
   successThreshold: 1
   failureThreshold: 30
 
-# -- Resources for the background controller (generate rules, etc.).
+## @section Background Controller
+## @description Manages background tasks like generating policy rules.
 backgroundController:
   resources:
     requests:
@@ -43,7 +47,8 @@ backgroundController:
       cpu: 250m
       memory: 256Mi
 
-# -- Resources for the cleanup controller (ttl, etc.).
+## @section Cleanup Controller
+## @description Handles the cleanup of resources based on policies.
 cleanupController:
   resources:
     requests:
@@ -53,7 +58,8 @@ cleanupController:
       cpu: 250m
       memory: 256Mi
 
-# -- Resources for the reports controller.
+## @section Reports Controller
+## @description Generates and manages policy reports.
 reportsController:
   resources:
     requests:
