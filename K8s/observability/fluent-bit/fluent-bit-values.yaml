@@ -90,9 +90,6 @@ daemonSetVolumes:
   - name: fluentbitstate
     hostPath:
       path: /var/fluent-bit/state
-  - name: config
-    configMap:
-      name: "{{ include \"fluent-bit.fullname\" . }}-config"
   - name: scripts
     configMap:
       name: "{{ include \"fluent-bit.fullname\" . }}-scripts"
