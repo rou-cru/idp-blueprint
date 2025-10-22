@@ -3,9 +3,11 @@ kind: ResourceQuota
 metadata:
   name: cicd-quota
   namespace: cicd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   hard:
-    requests.cpu: "1250m"
+    requests.cpu: "1500m"
     requests.memory: "3Gi"
     limits.cpu: "4500m"
     limits.memory: "7Gi"

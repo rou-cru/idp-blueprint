@@ -3,6 +3,8 @@ kind: LimitRange
 metadata:
   name: default-limit-range
   namespace: cicd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   limits:
     - type: Container

@@ -1,0 +1,99 @@
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-infrastructure
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 1000000
+globalDefault: false
+description: Platform infrastructure components (Vault, ArgoCD, ESO, Cert-Manager)
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-policy
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 100000
+globalDefault: false
+description: Policy enforcement (Kyverno admission/background controllers)
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-security
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 12000
+globalDefault: false
+description: Security detection (Trivy vulnerability scanning)
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 10000
+globalDefault: false
+description: Observability data collection (Prometheus, Loki, Fluent-bit)
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-cicd
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 7500
+globalDefault: false
+description: CI/CD services (Jenkins controller, SonarQube server)
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: platform-dashboards
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 5000
+globalDefault: false
+description: Visualization dashboards (Grafana, Alertmanager, Policy Reporter)
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: user-workloads
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 3000
+globalDefault: false
+description: User applications deployed via GitOps
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: cicd-execution
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 2500
+globalDefault: false
+description: CI/CD execution pods (Jenkins agents, ephemeral builds)
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: unclassified-workload
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: priority-class
+value: 0
+globalDefault: true
+description: Default priority for unclassified workloads (test, experimental)

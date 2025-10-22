@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/instance: vault-ui-demo
     app.kubernetes.io/component: ui
   annotations:
+    argocd.argoproj.io/sync-wave: "2"
     description: 'HTTPRoute for Vault UI'
     contact: platform-team
     documentation: https://www.vaultproject.io/

@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/instance: jenkins-demo
     app.kubernetes.io/component: automation-server
   annotations:
+    argocd.argoproj.io/sync-wave: "2"
     description: 'HTTPRoute for Jenkins CI/CD server'
     contact: platform-team
     documentation: https://www.jenkins.io/doc/

@@ -3,9 +3,11 @@ kind: ResourceQuota
 metadata:
   name: security-quota
   namespace: security
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   hard:
-    requests.cpu: "500m"
-    requests.memory: "2Gi"
-    limits.cpu: "1500m"
-    limits.memory: "4Gi"
+    requests.cpu: "700m"
+    requests.memory: "1Gi"
+    limits.cpu: "3000m"
+    limits.memory: "3Gi"

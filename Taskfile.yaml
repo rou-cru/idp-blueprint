@@ -20,8 +20,8 @@ vars:
   REGISTRY_CACHE_PATH: '{{.REGISTRY_CACHE_PATH | default "$HOME/.k3d-registry"}}'
 
   # Password Configuration
-  # Empty string = generate random (development)
-  # Defined value = use provided password (production/demo)
+  # Empty string = generate random
+  # Defined value = use provided password
   ARGOCD_ADMIN_PASSWORD: '{{.ARGOCD_ADMIN_PASSWORD | default ""}}'
   GRAFANA_ADMIN_PASSWORD: '{{.GRAFANA_ADMIN_PASSWORD | default ""}}'
   SONARQUBE_ADMIN_PASSWORD: '{{.SONARQUBE_ADMIN_PASSWORD | default ""}}'
@@ -38,18 +38,18 @@ tasks:
       - task: it:apply-namespaces # Prepare all no-gitops namespaces
       - task: it:apply-serviceaccounts # Prepare all no-gitops SA
       - task: it:apply-crds # Install CRDs before CNI
+      - task: it:apply-priorityclasses # Install PriorityClasses for scheduling
       # Complete bootstrapping by adding the CNI
       - task: cilium:deploy
       # 2. Secrets & Certs Management
-      - task: cert-manager:deploy
-      - task: vault:deploy
+      - task: it:deploy-secret-and-certs
       - task: external-secrets:deploy
       # 3. Deploy GitOps Engine
       - task: argocd:deploy
       # 4. Deploy Gateway (requires cert-manager ClusterIssuer)
       - task: gateway:deploy
       # 5. Deploy Policy as Code Engine
-      - task: policies:deploy
+#      - task: policies:deploy
       # 6. Deploy Application Stacks for everything else
       - task: stacks:deploy # Everything else that's part of the IDP
       - exit 0
@@ -120,6 +120,11 @@ tasks:
       - it:apply-gateway-api-crds
       - it:apply-prometheus-crds
 
+  it:apply-priorityclasses:
+    desc: 'Apply PriorityClasses for pod scheduling'
+    cmds:
+      - kustomize build IT/priorityclasses/ | kubectl apply -f -
+
   it:apply-gateway-api-crds:
     desc: 'Apply Gateway API CRDs'
     cmds:
@@ -147,6 +152,14 @@ tasks:
           --values IT/cilium/cilium-values.yaml \
           --hide-notes
       - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
+
+  # Infrastructure Parallel Deployment
+  # ------------------------------------------------------------------------------
+  it:deploy-secret-and-certs:
+    desc: 'Deploy cert-manager and vault'
+    deps:
+      - cert-manager:deploy
+      - vault:deploy
 
   # Cert Manager
   # ------------------------------------------------------------------------------
@@ -245,7 +258,7 @@ tasks:
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout={{.KUBECTL_TIMEOUT}}
       - task: it:eso:apply-resources
       - kubectl apply -f IT/argocd/appproject-platform.yaml
-      - kubectl apply -f IT/argocd/appproject-observability.yaml
+ #     - kubectl apply -f IT/argocd/appproject-observability.yaml
       - kubectl apply -f IT/argocd/appproject-cicd.yaml
       - kubectl apply -f IT/argocd/appproject-security.yaml
 

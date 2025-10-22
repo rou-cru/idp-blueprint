@@ -3,9 +3,11 @@ kind: ResourceQuota
 metadata:
   name: observability-quota
   namespace: observability
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   hard:
-    requests.cpu: "2000m"
-    requests.memory: "6Gi"
-    limits.cpu: "4000m"
-    limits.memory: "12Gi"
+    requests.cpu: "800m"
+    requests.memory: "2Gi"
+    limits.cpu: "2500m"
+    limits.memory: "4Gi"
