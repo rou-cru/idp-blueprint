@@ -9,7 +9,7 @@ spec:
   hard:
     # Increased to accommodate Trivy operator (100m requests, 500m limits)
     # plus Trivy scan jobs (2 CPU, 2Gi memory per scan)
-    requests.cpu: "1000m"
-    requests.memory: "2Gi"
-    limits.cpu: "5000m"
-    limits.memory: "5Gi"
+    requests.cpu: "2000m"
+    requests.memory: "4Gi"
+    limits.cpu: "8000m"
+    limits.memory: "8Gi"

@@ -9,7 +9,7 @@ spec:
   hard:
     # Increased to accommodate Jenkins StatefulSet (250m+50m requests, 1+0.1 limits)
     # plus SonarQube and other CICD workloads
-    requests.cpu: "2000m"
-    requests.memory: "4Gi"
-    limits.cpu: "6000m"
-    limits.memory: "10Gi"
+    requests.cpu: "3000m"
+    requests.memory: "6Gi"
+    limits.cpu: "8000m"
+    limits.memory: "14Gi"

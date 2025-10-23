@@ -37,26 +37,27 @@ controller:
 
   ## @subsection Plugin Installation
   ## @description Core plugins for GitOps, observability, and code quality.
+  ## Using :latest tag to auto-resolve all dependency conflicts.
   installPlugins:
     # Core workflow and Kubernetes
-    - kubernetes:4252.vb_b_4b_b_15a_b_6af
-    - workflow-aggregator:600.vb_57cdd26fdd7
-    - git:5.7.0
-    - configuration-as-code:1909.vb_b_8b_b_95e59e
+    - kubernetes:latest
+    - workflow-aggregator:latest
+    - git:latest
+    - configuration-as-code:latest
     # Observability
-    - prometheus:819.v50953a_c560dd
+    - prometheus:latest
     # UI/UX improvements
-    - pipeline-graph-view:667.ve2f397347f13
-    - dark-theme:574.va_19f05d54df5
+    - pipeline-graph-view:latest
+    - dark-theme:latest
     # Code quality integration
-    - sonar:2.18
+    - sonar:latest
     # Kubernetes credentials provider for secure secret management
-    - kubernetes-credentials-provider:1.279.v3a_7a_86d17ffd
+    - kubernetes-credentials-provider:latest
 
-  # -- Install latest versions of dependencies.
+  # -- Install latest versions of dependencies to resolve conflicts automatically.
   installLatestPlugins: true
   # -- Install latest versions of explicitly specified plugins.
-  installLatestSpecifiedPlugins: false
+  installLatestSpecifiedPlugins: true
   # -- Overwrite plugins on upgrade.
   overwritePlugins: true
   # -- Overwrite bundled plugins with installPlugins versions.
@@ -68,15 +69,6 @@ controller:
     # -- Enable default JCasC configuration.
     defaultConfig: true
     configScripts:
-      # -- Welcome message displayed on Jenkins dashboard.
-      welcome-message: |
-        jenkins:
-          systemMessage: |
-            ✅ Jenkins configured via GitOps (ArgoCD)
-            📊 Metrics: /prometheus/
-            🔐 Secrets: Vault + External Secrets Operator
-            🎨 Theme: Dark Mode enabled by default
-
       # -- Prometheus metrics configuration.
       prometheus-config: |
         unclassified:
@@ -98,14 +90,12 @@ controller:
             processingDisabledBuilds: false
             perBuildMetrics: false
             jobAttributeName: "jenkins_job"
-
       # -- Dark theme as default.
       appearance-config: |
         appearance:
           themeManager:
             disableUserThemes: false
             theme: "dark"
-
       # -- SonarQube server integration.
       sonarqube-config: |
         unclassified:
@@ -115,7 +105,6 @@ controller:
               - name: "SonarQube"
                 serverUrl: "http://sonarqube-sonarqube.cicd.svc.cluster.local:9000"
                 credentialsId: "sonarqube-token"
-
       # -- Kubernetes cloud configuration for dynamic agents.
       kubernetes-cloud: |
         jenkins:
@@ -139,7 +128,6 @@ controller:
               - key: "app.kubernetes.io/part-of"
                 value: "idp"
               templates: []
-
     # -- Security realm (uses admin from existingSecret).
     securityRealm: |-
       local:
@@ -149,7 +137,6 @@ controller:
         - id: "${chart-admin-username}"
           name: "Jenkins Admin"
           password: "${chart-admin-password}"
-
     # -- Authorization strategy.
     authorizationStrategy: |-
       loggedInUsersCanDoAnything:
@@ -211,7 +198,7 @@ agent:
   resources:
     requests:
       cpu: 512m
-      memory: 512Mi
+      memory: 1Gi
     limits:
       cpu: 1000m
       memory: 1Gi
@@ -223,10 +210,11 @@ agent:
   idleMinutes: 1
 
 ## @section Persistence
-## @description Disable persistence for demo environment (ephemeral jobs/configs).
-persistence:
-  # -- Disable persistent volume for demo.
-  enabled: false
+## @description Persistence for demo environment.
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClassName: standard
 
 ## @section RBAC
 ## @description Role-Based Access Control for Kubernetes integration.
