@@ -1,6 +1,14 @@
 ## @section Controller Configuration
 ## @description Defines settings for the Jenkins controller pod.
 controller:
+  ## @subsection Image Configuration
+  ## @description Use custom Jenkins master image.
+  # -- Custom Jenkins master image.
+  image:
+    repository: "roucru/jenkins"
+    tag: "master"
+    pullPolicy: IfNotPresent
+
   ## @subsection Resource Optimization
   ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
   resources:
@@ -194,6 +202,12 @@ agent:
   enabled: true
   # -- Default namespace for agents.
   namespace: cicd
+  ## @subsection Image Configuration
+  ## @description Use custom Jenkins agent image.
+  # -- Custom Jenkins agent image.
+  image:
+    repository: "roucru/jenkins"
+    tag: "agent"
   # -- Agent resources (builds are resource-intensive).
   resources:
     requests:
