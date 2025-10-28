@@ -10,7 +10,7 @@ resources:
 helmCharts:
   - name: jenkins
     repo: https://charts.jenkins.io
-    version: 5.8.101
+    version: 5.8.104
     releaseName: jenkins
     namespace: cicd
     valuesFile: jenkins-values.yaml

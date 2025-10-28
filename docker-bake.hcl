@@ -48,3 +48,43 @@ target "release-minimal" {
   inherits = ["minimal"]
   output = ["type=image,push=true"]
 }
+
+// Jenkins Master variant
+target "jenkins-master" {
+  dockerfile = "K8s/cicd/jenkins/master.dockerfile"
+  context    = "."
+  platforms  = ["linux/amd64"]
+  tags = ["roucru/jenkins:master"]
+  output = ["type=image"]
+}
+
+// Jenkins Agent variant
+target "jenkins-agent" {
+  dockerfile = "K8s/cicd/jenkins/agent.dockerfile"
+  context    = "."
+  platforms  = ["linux/amd64"]
+  tags = ["roucru/jenkins:agent"]
+  output = ["type=image"]
+}
+
+// Release Jenkins Master image
+target "release-jenkins-master" {
+  inherits = ["jenkins-master"]
+  output = ["type=image,push=true"]
+}
+
+// Release Jenkins Agent image
+target "release-jenkins-agent" {
+  inherits = ["jenkins-agent"]
+  output = ["type=image,push=true"]
+}
+
+// Group to build both Jenkins images locally
+group "jenkins-all" {
+  targets = ["jenkins-master", "jenkins-agent"]
+}
+
+// Group to release both Jenkins images
+group "release-jenkins-all" {
+  targets = ["release-jenkins-master", "release-jenkins-agent"]
+}
