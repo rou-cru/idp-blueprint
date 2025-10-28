@@ -12,10 +12,11 @@ dex:
 
 # -- Create cluster roles for ArgoCD.
 createClusterRoles: true
+
 # -- Disable certificate management, as it is handled by cert-manager.
 certificate:
   enabled: false
-# -- Sets the global logging format.
+  # -- Sets the global logging format.
   format: json
   # -- Sets the global logging level.
   level: warn

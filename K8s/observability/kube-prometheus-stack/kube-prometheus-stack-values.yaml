@@ -89,18 +89,6 @@ grafana:
       # -- Set the default UI theme to dark.
       default_theme: dark
 
-    # -- Example for Azure AD OAuth.
-    # To enable, uncomment the block and provide the values, ideally via secrets.
-    # auth.azuread:
-    #   enabled: true
-    #   name: "Azure AD"
-    #   allow_sign_up: true
-    #   client_id: "$AZURE_CLIENT_ID"
-    #   client_secret: "$AZURE_CLIENT_SECRET"
-    #   scopes: "openid email profile"
-    #   auth_url: "https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/authorize"
-    #   token_url: "https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/token"
-
 ## @section Prometheus Operator
 ## @description Prometheus Operator configuration.
 # -- Resource limits and requests for the Prometheus Operator.

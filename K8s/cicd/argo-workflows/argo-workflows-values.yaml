@@ -58,7 +58,7 @@ controller:
 
 ## @section Server
 server:
-  enabled: true
+  enabled: false
   resources:
     requests:
       cpu: 50m
@@ -109,9 +109,10 @@ workflowDefaults:
 ## @section Artifact Repository
 ## @description Artifact storage configuration (disabled - not required for basic CI/CD)
 artifactRepository:
-  s3:
-    enabled: false
-  gcs:
-    enabled: false
-  azure:
-    enabled: false
+  archiveLogs: false
+  s3: {}
+  gcs: {}
+  azure: {}
+  artifactRepositoryRef: {}
+  customArtifactRepository: {}
+
