@@ -3,13 +3,6 @@ crds:
   install: true
   keep: true
 
-## @section Common Labels
-commonLabels:
-  app.kubernetes.io/part-of: idp
-  app.kubernetes.io/name: argo-workflows
-  app.kubernetes.io/instance: argo-workflows-demo
-  app.kubernetes.io/component: workflow-engine
-
 ## @section Controller
 controller:
   resources:
@@ -115,4 +108,3 @@ artifactRepository:
   azure: {}
   artifactRepositoryRef: {}
   customArtifactRepository: {}
-

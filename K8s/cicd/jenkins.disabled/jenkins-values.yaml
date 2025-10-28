@@ -223,8 +223,8 @@ agent:
   # -- Idle minutes before termination.
   idleMinutes: 1
 
-## @section Persistence
-## @description Persistence for demo environment.
+  ## @section Persistence
+  ## @description Persistence for demo environment.
   persistence:
     enabled: true
     size: 8Gi
