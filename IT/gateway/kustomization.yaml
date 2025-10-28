@@ -5,7 +5,13 @@ commonAnnotations:
   argocd.argoproj.io/sync-wave: "2"
 
 resources:
+  - idp-wildcard-cert.yaml
   - idp-gateway.yaml
+  - httproutes/argocd-httproute.yaml
+  - httproutes/grafana-httproute.yaml
+  - httproutes/vault-httproute.yaml
+  - httproutes/sonarqube-httproute.yaml
+  - httproutes/argo-workflows-httproute.yaml
 
 labels:
   - includeSelectors: true

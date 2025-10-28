@@ -17,7 +17,7 @@ spec:
     - name: idp-gateway
       namespace: kube-system
   hostnames:
-    - "vault.127-0-0-1.sslip.io"
+    - "vault.${DNS_SUFFIX}"
   rules:
     - backendRefs:
         - name: vault

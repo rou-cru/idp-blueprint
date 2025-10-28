@@ -5,6 +5,10 @@ vars:
   DOCKER_IMAGE_TAG: '{{.DOCKER_IMAGE_TAG | default "latest"}}'
   DOCKER_IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL | default "minimal"}}'
 
+  # Network Configuration
+  LAN_IP:
+    sh: ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1"
+
   # Helm Chart Versions
   CILIUM_VERSION: '{{.CILIUM_VERSION | default "1.18.2"}}'
   CERT_MANAGER_VERSION: '{{.CERT_MANAGER_VERSION | default "v1.19.0"}}'
@@ -22,11 +26,16 @@ vars:
   # Password Configuration
   # Empty string = generate random
   # Defined value = use provided password
-  ARGOCD_ADMIN_PASSWORD: '{{.ARGOCD_ADMIN_PASSWORD | default ""}}'
+  ARGOCD_ADMIN_PASSWORD: '{{.ARGOCD_ADMIN_PASSWORD | default "argo"}}'
   GRAFANA_ADMIN_PASSWORD: '{{.GRAFANA_ADMIN_PASSWORD | default ""}}'
   SONARQUBE_ADMIN_PASSWORD: '{{.SONARQUBE_ADMIN_PASSWORD | default ""}}'
   SONARQUBE_MONITORING_PASSCODE: '{{.SONARQUBE_MONITORING_PASSCODE | default ""}}'
-  JENKINS_ADMIN_PASSWORD: '{{.JENKINS_ADMIN_PASSWORD | default ""}}'
+  # JENKINS_ADMIN_PASSWORD: '{{.JENKINS_ADMIN_PASSWORD | default ""}}'
+
+  # Docker Registry Configuration
+  DOCKER_REGISTRY_URL: '{{.DOCKER_REGISTRY_URL | default "docker.io"}}'
+  DOCKER_REGISTRY_USERNAME: '{{.DOCKER_REGISTRY_USERNAME | default ""}}'
+  DOCKER_REGISTRY_PASSWORD: '{{.DOCKER_REGISTRY_PASSWORD | default ""}}'
 
 tasks:
   deploy:
@@ -34,12 +43,9 @@ tasks:
     cmds:
       - defer: echo '{{if .EXIT_CODE}}⚠️  Deployment failed! Run "task destroy" to clean up and retry.{{else}}Success 😌{{end}}'
       # 1. Bootstrap Cluster
-      - task: k3d:create # Create Nodes
-      - task: it:apply-namespaces # Prepare all no-gitops namespaces
-      - task: it:apply-serviceaccounts # Prepare all no-gitops SA
-      - task: it:apply-crds # Install CRDs before CNI
-      - task: it:apply-priorityclasses # Install PriorityClasses for scheduling
-      # Complete bootstrapping by adding the CNI
+      - task: k3d:create
+      - task: it:apply-namespaces
+      - task: it:bootstrap
       - task: cilium:deploy
       # 2. Secrets & Certs Management
       - task: it:deploy-secret-and-certs
@@ -49,7 +55,7 @@ tasks:
       # 4. Deploy Gateway (requires cert-manager ClusterIssuer)
       - task: gateway:deploy
       # 5. Deploy Policy as Code Engine
-#      - task: policies:deploy
+      - task: policies:deploy
       # 6. Deploy Application Stacks for everything else
       - task: stacks:deploy # Everything else that's part of the IDP
       - exit 0
@@ -104,6 +110,14 @@ tasks:
     cmds:
       - k3d cluster create idp-demo -c {{.K3D_CONFIG}}
 
+  it:bootstrap:
+    desc: 'Bootstrap cluster prerequisites and preload images'
+    deps:
+      - cilium:preload
+      - it:apply-serviceaccounts
+      - it:apply-crds
+      - it:apply-priorityclasses
+
   it:apply-namespaces:
     desc: 'Apply all IT bootstrap namespaces via Kustomize'
     cmds:
@@ -129,7 +143,12 @@ tasks:
     desc: 'Apply Gateway API CRDs'
     cmds:
       - |
-        kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/{{.GATEWAY_API_VERSION}}/standard-install.yaml
+        GATEWAY_API_URL="https://github.com/kubernetes-sigs/gateway-api/releases/download/{{.GATEWAY_API_VERSION}}/standard-install.yaml"
+        TEMP_FILE="/tmp/gateway-api-{{.GATEWAY_API_VERSION}}.yaml"
+        if [ ! -f "$TEMP_FILE" ]; then
+          curl -fsSL "$GATEWAY_API_URL" -o "$TEMP_FILE"
+        fi
+        kubectl apply -f "$TEMP_FILE"
 
   it:apply-prometheus-crds:
     desc: 'Apply Prometheus CRDs from the dedicated Helm chart'
@@ -142,6 +161,13 @@ tasks:
 
   # Cilium
   # ------------------------------------------------------------------------------
+  cilium:preload:
+    desc: 'Pre-load Cilium image to Docker host'
+    vars:
+      CILIUM_IMAGE: 'quay.io/cilium/cilium:v{{.CILIUM_VERSION}}'
+    cmds:
+      - docker pull {{.CILIUM_IMAGE}}
+
   cilium:deploy:
     desc: 'Install Cilium as CNI'
     cmds:
@@ -184,9 +210,17 @@ tasks:
   # ------------------------------------------------------------------------------
   gateway:deploy:
     desc: 'Deploy Gateway API Gateway resource'
+    env:
+      DNS_SUFFIX: '{{.LAN_IP | replace "." "-"}}.nip.io'
     cmds:
-      - kustomize build IT/gateway/ | kubectl apply -f -
+      - kustomize build IT/gateway/ | envsubst | kubectl apply -f -
       - kubectl wait --for=condition=Programmed gateway/idp-gateway -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
+      - echo "✅ Gateway ready. Services available at:"
+      - echo "   https://argocd.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://grafana.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://vault.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://sonarqube.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://workflows.{{.LAN_IP | replace "." "-"}}.nip.io"
 
   # ESO
   # ------------------------------------------------------------------------------
@@ -236,7 +270,10 @@ tasks:
       - ./scripts/vault-generate.sh secret/grafana/admin admin-password "{{.GRAFANA_ADMIN_PASSWORD}}" base64 none
       - ./scripts/vault-generate.sh secret/sonarqube/admin password "{{.SONARQUBE_ADMIN_PASSWORD}}" base64 none
       - ./scripts/vault-generate.sh secret/sonarqube/monitoring passcode "{{.SONARQUBE_MONITORING_PASSCODE}}" hex none
-      - ./scripts/vault-generate.sh secret/jenkins/admin password "{{.JENKINS_ADMIN_PASSWORD}}" base64 none
+      - ./scripts/vault-generate.sh secret/docker/registry registry "{{.DOCKER_REGISTRY_URL}}" base64 none
+      - ./scripts/vault-generate.sh secret/docker/registry username "{{.DOCKER_REGISTRY_USERNAME}}" base64 none
+      - ./scripts/vault-generate.sh secret/docker/registry password "{{.DOCKER_REGISTRY_PASSWORD}}" base64 none
+      # - ./scripts/vault-generate.sh secret/jenkins/admin password "{{.JENKINS_ADMIN_PASSWORD}}" base64 none
 
   it:eso:apply-resources:
     desc: 'Apply ESO SecretStores and ExternalSecrets'
@@ -258,7 +295,7 @@ tasks:
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd --timeout={{.KUBECTL_TIMEOUT}}
       - task: it:eso:apply-resources
       - kubectl apply -f IT/argocd/appproject-platform.yaml
- #     - kubectl apply -f IT/argocd/appproject-observability.yaml
+      - kubectl apply -f IT/argocd/appproject-observability.yaml
       - kubectl apply -f IT/argocd/appproject-cicd.yaml
       - kubectl apply -f IT/argocd/appproject-security.yaml
 

@@ -17,7 +17,7 @@ spec:
     - name: idp-gateway
       namespace: kube-system
   hostnames:
-    - "grafana.127-0-0-1.sslip.io"
+    - "grafana.${DNS_SUFFIX}"
   rules:
     - backendRefs:
         - name: prometheus-grafana

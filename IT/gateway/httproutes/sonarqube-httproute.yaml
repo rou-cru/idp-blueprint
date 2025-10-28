@@ -17,7 +17,7 @@ spec:
     - name: idp-gateway
       namespace: kube-system
   hostnames:
-    - "sonarqube.127-0-0-1.sslip.io"
+    - "sonarqube.${DNS_SUFFIX}"
   rules:
     - backendRefs:
         - name: sonarqube-sonarqube
