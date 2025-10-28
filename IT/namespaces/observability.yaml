@@ -1,0 +1,12 @@
+# Defines the namespace for the observability stack.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability
+  labels:
+    app.kubernetes.io/name: observability
+    app.kubernetes.io/instance: observability-demo
+    app.kubernetes.io/component: observability-stack
+    app.kubernetes.io/managed-by: kubectl
+  annotations:
+    description: 'Namespace for observability tools (Prometheus, Grafana, Loki).'

@@ -17,7 +17,7 @@ spec:
     - name: idp-gateway
       namespace: kube-system
   hostnames:
-    - "argocd.127-0-0-1.sslip.io"
+    - "argocd.${DNS_SUFFIX}"
   rules:
     - backendRefs:
         - name: argocd-server

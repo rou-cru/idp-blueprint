@@ -158,6 +158,7 @@ path "secret/metadata/*" {
     bound_service_account_names=external-secrets \
     bound_service_account_namespaces=argocd \
     policies=eso-policy \
+    audience=vault \
     ttl=24h
 
   log "✅ Vault configured for ESO (ArgoCD namespace)"
@@ -168,6 +169,7 @@ path "secret/metadata/*" {
     bound_service_account_names=external-secrets \
     bound_service_account_namespaces=cicd \
     policies=eso-policy \
+    audience=vault \
     ttl=24h
 
   log "✅ Vault configured for ESO (CICD namespace)"
@@ -178,6 +180,7 @@ path "secret/metadata/*" {
     bound_service_account_names=external-secrets \
     bound_service_account_namespaces=observability \
     policies=eso-policy \
+    audience=vault \
     ttl=24h
 
   log "=================================================="

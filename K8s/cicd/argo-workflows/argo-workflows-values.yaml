@@ -1,0 +1,118 @@
+## @section CRDs
+crds:
+  install: true
+  keep: true
+
+## @section Common Labels
+commonLabels:
+  app.kubernetes.io/part-of: idp
+  app.kubernetes.io/name: argo-workflows
+  app.kubernetes.io/instance: argo-workflows-demo
+  app.kubernetes.io/component: workflow-engine
+
+## @section Controller
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  workflowNamespaces:
+    - cicd
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: argo-workflow-controller
+  metricsConfig:
+    enabled: true
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      prometheus: kube-prometheus
+  workflowDefaults:
+    spec:
+      ttlStrategy:
+        secondsAfterCompletion: 3600
+        secondsAfterSuccess: 1800
+        secondsAfterFailure: 7200
+      podGC:
+        strategy: OnPodCompletion
+        deleteDelayDuration: 60s
+  retentionPolicy:
+    completed: 10
+    failed: 5
+    errored: 5
+  workflowRestrictions:
+    templateReferencing: Strict
+  nodeEvents:
+    enabled: true
+  workflowEvents:
+    enabled: true
+  priorityClassName: platform-cicd
+  persistence:
+    archive: false
+  parallelism: 10
+
+## @section Server
+server:
+  enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: argo-workflow-server
+  authModes:
+    - server
+  sso:
+    enabled: false
+  priorityClassName: platform-cicd
+
+## @section Workflow Executor
+executor:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 128Mi
+
+## @section Workflow Service Account
+workflow:
+  serviceAccount:
+    create: true
+    name: argo-workflow
+  rbac:
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources: ["secrets"]
+        verbs: ["get"]
+
+## @section Workflow Defaults
+## @description Global defaults applied to all workflows
+workflowDefaults:
+  spec:
+    priorityClassName: cicd-execution
+    serviceAccountName: argo-workflow
+
+## @section Artifact Repository
+## @description Artifact storage configuration (disabled - not required for basic CI/CD)
+artifactRepository:
+  archiveLogs: false
+  s3: {}
+  gcs: {}
+  azure: {}
+  artifactRepositoryRef: {}
+  customArtifactRepository: {}
+

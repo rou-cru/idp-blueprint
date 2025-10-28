@@ -19,7 +19,7 @@ spec:
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "*.127-0-0-1.sslip.io"
+      hostname: "*.${DNS_SUFFIX}"
       allowedRoutes:
         namespaces:
           from: All

@@ -1,5 +1,6 @@
 # kind -- DaemonSet or Deployment
 kind: DaemonSet
+
 # replicaCount -- Only applicable if kind=Deployment
 replicaCount: 1
 
@@ -13,9 +14,10 @@ resources:
     cpu: 100m
     memory: 128Mi
 
- # -- Time to wait before flushing data (in seconds)
+# -- Time to wait before flushing data (in seconds)
 flush: 1
 metricsPort: 2020
+
 # -- Default log level.
 logLevel: info
 
@@ -118,6 +120,7 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 3
+
 # -- Liveness probe for the Fluent-bit pod.
 livenessProbe:
   httpGet:

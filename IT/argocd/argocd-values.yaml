@@ -12,10 +12,11 @@ dex:
 
 # -- Create cluster roles for ArgoCD.
 createClusterRoles: true
+
 # -- Disable certificate management, as it is handled by cert-manager.
 certificate:
   enabled: false
-# -- Sets the global logging format.
+  # -- Sets the global logging format.
   format: json
   # -- Sets the global logging level.
   level: warn
@@ -190,8 +191,8 @@ configs:
   ## @section Repository Configuration
   ## @description Configure Helm repositories for ArgoCD
   repositories:
-    argo:
-      name: argo
+    argo-project:
+      name: argo-project
       url: https://argoproj.github.io/argo-helm
       type: helm
     prometheus-community:
@@ -230,10 +231,10 @@ configs:
       name: policy-reporter
       url: https://kyverno.github.io/policy-reporter
       type: helm
-    jenkins:
-      name: jenkins
-      url: https://charts.jenkins.io
-      type: helm
+    # jenkins:
+    #   name: jenkins
+    #   url: https://charts.jenkins.io
+    #   type: helm
     bitnami:
       name: bitnami
       url: https://charts.bitnami.com/bitnami
