@@ -12,11 +12,9 @@ loki:
   # -- This section uses the modern, structured configuration format.
   structuredConfig:
     auth_enabled: false
-
     server:
       http_listen_port: 3100
       grpc_listen_port: 9095
-
     common:
       path_prefix: /var/loki
       storage:
@@ -24,7 +22,6 @@ loki:
           chunks_directory: /var/loki/chunks
           rules_directory: /var/loki/rules
       replication_factor: 1
-
     # In a short-lived demo environment (<6h), keeping the index period at 24h
     # is the most efficient strategy. It prevents the compactor from doing
     # heavy work (building a full block) for data that will be deleted soon,
@@ -38,7 +35,6 @@ loki:
           index:
             prefix: index_
             period: 24h
-
     storage_config:
       boltdb_shipper:
         active_index_directory: /var/loki/boltdb-shipper-active
@@ -46,12 +42,10 @@ loki:
         cache_ttl: 24h
       filesystem:
         directory: /var/loki/chunks
-
     compactor:
       working_directory: /var/loki/compactor
       retention_enabled: true
       delete_request_store: filesystem
-
     limits_config:
       retention_period: 6h
 

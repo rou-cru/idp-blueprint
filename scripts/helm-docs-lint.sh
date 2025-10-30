@@ -4,13 +4,14 @@ ROOT_DIR=$(git rev-parse --show-toplevel)
 TEMPLATE="$ROOT_DIR/.helm-docs-template.gotmpl"
 EXIT_CODE=0
 
-find . -type f -name '*-values.yaml' -printf '%h\n' | sort -u | while read -r dir; do
+# Use process substitution to avoid subshell in while loop
+while read -r dir; do
   values_file=$(find "$dir" -maxdepth 1 -name '*-values.yaml' -type f | head -1)
 
   if [ -n "$values_file" ]; then
     chart_name=$(basename "$dir")
 
-    cd "$dir"
+    cd "$dir" || exit
     echo "apiVersion: v2
 name: $chart_name
 version: 0.1.0" > Chart.yaml
@@ -25,8 +26,8 @@ version: 0.1.0" > Chart.yaml
     fi
 
     rm Chart.yaml values.yaml
-    cd "$ROOT_DIR"
+    cd "$ROOT_DIR" || exit
   fi
-done
+done < <(find . -type f -name '*-values.yaml' -printf '%h\n' | sort -u)
 
 exit $EXIT_CODE
