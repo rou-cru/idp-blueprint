@@ -47,7 +47,6 @@ This document lists the configuration parameters for the `fluent-bit` component.
 | livenessProbe.periodSeconds | int | `10` | Period seconds |
 | livenessProbe.timeoutSeconds | int | `5` | Timeout seconds |
 | logLevel | string | `"info"` | Default log level |
-| luaScripts | object | `{"remove_labels.lua":"function remove_labels(tag, timestamp, record)\n  if record.kubernetes and record.kubernetes.labels then\n    record.kubernetes.labels['pod-template-hash'] = nil\n    record.kubernetes.labels['controller-revision-hash'] = nil\n  end\n  return 2, timestamp, record\nend\n"}` | Lua scripts for log processing |
 | luaScripts."remove_labels.lua" | string | `"function remove_labels(tag, timestamp, record)\n  if record.kubernetes and record.kubernetes.labels then\n    record.kubernetes.labels['pod-template-hash'] = nil\n    record.kubernetes.labels['controller-revision-hash'] = nil\n  end\n  return 2, timestamp, record\nend\n"` | Lua script to remove high-cardinality labels |
 | metricsPort | int | `2020` | Metrics port |
 | priorityClassName | string | `"platform-observability"` | Priority class for Fluent Bit pods |
