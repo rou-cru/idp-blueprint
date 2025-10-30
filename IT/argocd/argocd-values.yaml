@@ -1,136 +1,174 @@
-## @section High Availability
-## @description Configuration for ArgoCD's High Availability mode.
-# -- Disable High Availability mode to keep the deployment lightweight for the demo.
+# @section -- High Availability
 ha:
+  # -- (bool) Enable High Availability mode for production deployments
   enabled: false
 
-## @section Dex Configuration
-## @description Dex is a federated OpenID Connect provider.
-# -- Disable Dex to save resources as it's not needed for this demo.
+# @section -- Authentication
 dex:
+  # -- (bool) Enable Dex federated OpenID Connect provider
   enabled: false
 
-# -- Create cluster roles for ArgoCD.
+# -- (bool) Create cluster roles for ArgoCD
+# @section -- RBAC
 createClusterRoles: true
 
-# -- Disable certificate management, as it is handled by cert-manager.
+# @section -- TLS
 certificate:
+  # -- (bool) Enable certificate management (handled by cert-manager)
   enabled: false
-  # -- Sets the global logging format.
+  # -- (string) Global logging format
   format: json
-  # -- Sets the global logging level.
+  # -- (string) Global logging level
   level: warn
 
-## @section Resource Optimization
-## @description Set low resource requests and limits for the main components to optimize for a demo environment.
+# @section -- Controller
 controller:
+  # -- (string) Priority class for controller pods
   priorityClassName: platform-infrastructure
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 250m
+      # -- (string) Memory request
       memory: 512Mi
     limits:
+      # -- (string) CPU limit
       cpu: 1000m
+      # -- (string) Memory limit
       memory: 1Gi
   metrics:
+    # -- (bool) Enable Prometheus metrics
     enabled: true
     serviceMonitor:
+      # -- (bool) Enable ServiceMonitor for Prometheus Operator
       enabled: true
-      # -- Higher frequency for GitOps reconciliation tracking
+      # -- (string) Scrape interval for GitOps reconciliation tracking
       interval: 30s
+      # -- (string) Scrape timeout
       scrapeTimeout: 25s
 
+# @section -- Server
 server:
+  # -- (string) Priority class for server pods
   priorityClassName: platform-infrastructure
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 125m
+      # -- (string) Memory request
       memory: 128Mi
     limits:
+      # -- (string) CPU limit
       cpu: 250m
+      # -- (string) Memory limit
       memory: 256Mi
   metrics:
+    # -- (bool) Enable metrics
     enabled: true
     serviceMonitor:
+      # -- (bool) Enable ServiceMonitor
       enabled: true
-      # -- Higher frequency for user-facing API latency metrics
+      # -- (string) Scrape interval for user-facing API latency
       interval: 30s
+      # -- (string) Scrape timeout
       scrapeTimeout: 25s
   ingress:
+    # -- (bool) Enable ingress
     enabled: false
+    # -- (bool) Enable TLS
     tls: false
 
+# @section -- Repository Server
 repoServer:
+  # -- (string) Priority class
   priorityClassName: platform-infrastructure
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 250m
+      # -- (string) Memory request
       memory: 256Mi
     limits:
+      # -- (string) CPU limit
       cpu: 500m
+      # -- (string) Memory limit
       memory: 512Mi
   metrics:
+    # -- (bool) Enable metrics
     enabled: true
     serviceMonitor:
+      # -- (bool) Enable ServiceMonitor
       enabled: true
-      # -- Standard frequency for background git fetch operations
+      # -- (string) Scrape interval for background git operations
       interval: 60s
+      # -- (string) Scrape timeout
       scrapeTimeout: 40s
 
-## @section Redis Configuration
-## @description Resource settings for the bundled Redis cache.
+# @section -- Redis
 redis:
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 100m
+      # -- (string) Memory request
       memory: 128Mi
     limits:
+      # -- (string) CPU limit
       cpu: 250m
+      # -- (string) Memory limit
       memory: 256Mi
 
-## @section Feature Flags
-## @description Toggles for core ArgoCD features.
-# -- Enable the ApplicationSet controller, which is key to our GitOps strategy.
+# @section -- ApplicationSet
 applicationSet:
+  # -- (string) Priority class
   priorityClassName: platform-infrastructure
+  # -- (bool) Enable ApplicationSet controller
   enabled: true
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 125m
+      # -- (string) Memory request
       memory: 256Mi
     limits:
+      # -- (string) CPU limit
       cpu: 250m
+      # -- (string) Memory limit
       memory: 512Mi
   metrics:
+    # -- (bool) Enable metrics
     enabled: true
     serviceMonitor:
+      # -- (bool) Enable ServiceMonitor
       enabled: true
-      # -- Standard frequency for ApplicationSet template rendering
+      # -- (string) Scrape interval for template rendering
       interval: 60s
+      # -- (string) Scrape timeout
       scrapeTimeout: 40s
 
+# @section -- CRDs
 crds:
+  # -- (bool) Install CRDs
   install: true
-  # -- Keep CRDs on chart uninstall.
+  # -- (bool) Keep CRDs on chart uninstall
   keep: true
 
-## @section Secret Management
-## @description ArgoCD admin password from Vault-generated Secret
+# @section -- Configuration
 configs:
   secret:
+    # -- (bool) Create secret for admin credentials
     createSecret: true
-    # -- Placeholder for admin password. Vault is the source of truth.
+    # -- (string) Admin password hash (managed by Vault)
+    # @default -- Vault-generated bcrypt hash
     argocdServerAdminPassword: '$2a$10$tYFiS1qMKY8rUMgc/a31TO19Rhg7auvSye9Vx8opYY/8rnUwfTaSO'
-  ## @section Kustomize Configuration
-  ## @description Enable Helm support in Kustomize globally
   cm:
-    # -- Enable Helm charts in Kustomize builds
+    # -- (string) Enable Helm support in Kustomize builds
     kustomize.buildOptions: "--enable-helm"
-    # -- Use annotation-based tracking for better performance
+    # -- (string) Resource tracking method for performance
     application.resourceTrackingMethod: annotation
-    # -- Enable status badge for applications
+    # -- (string) Enable status badges
     statusbadge.enabled: true
-    # -- Exclude high-frequency resources from reconciliation
+    # -- (string) Exclude high-frequency resources from reconciliation
     resource.exclusions: |
       ### Network resources created by the Kubernetes control plane and excluded to reduce the number of watched events and UI clutter
       - apiGroups:
@@ -186,76 +224,116 @@ configs:
         - BackgroundScanReport
         - ClusterBackgroundScanReport
         - UpdateRequest
-    # -- Enable exec feature in Argo UI
+    # -- (bool) Enable exec feature in Argo UI
     exec.enabled: true
-    # -- Enable local admin user
+    # -- (bool) Enable local admin user
     admin.enabled: true
-    # -- Timeout to discover if a new manifests version got published to the repository
+    # -- (string) Timeout to discover new manifest versions
     timeout.reconciliation: 180s
-  ## @section Repository Configuration
-  ## @description Configure Helm repositories for ArgoCD
+  # @section -- Repositories
   repositories:
     argo-project:
+      # -- (string) Repository name
       name: argo-project
+      # -- (string) Repository URL
       url: https://argoproj.github.io/argo-helm
+      # -- (string) Repository type
       type: helm
     prometheus-community:
+      # -- (string) Repository name
       name: prometheus-community
+      # -- (string) Repository URL
       url: https://prometheus-community.github.io/helm-charts
+      # -- (string) Repository type
       type: helm
     grafana:
+      # -- (string) Repository name
       name: grafana
+      # -- (string) Repository URL
       url: https://grafana.github.io/helm-charts
+      # -- (string) Repository type
       type: helm
     open-telemetry:
+      # -- (string) Repository name
       name: open-telemetry
+      # -- (string) Repository URL
       url: https://open-telemetry.github.io/opentelemetry-helm-charts
+      # -- (string) Repository type
       type: helm
     sonarsource:
+      # -- (string) Repository name
       name: sonarsource
+      # -- (string) Repository URL
       url: https://SonarSource.github.io/helm-chart-sonarqube
+      # -- (string) Repository type
       type: helm
     external-secrets:
+      # -- (string) Repository name
       name: external-secrets
+      # -- (string) Repository URL
       url: https://charts.external-secrets.io
+      # -- (string) Repository type
       type: helm
     jetstack:
+      # -- (string) Repository name
       name: jetstack
+      # -- (string) Repository URL
       url: https://charts.jetstack.io/
+      # -- (string) Repository type
       type: helm
     kyverno:
+      # -- (string) Repository name
       name: kyverno
+      # -- (string) Repository URL
       url: https://kyverno.github.io/kyverno/
+      # -- (string) Repository type
       type: helm
     aqua:
+      # -- (string) Repository name
       name: aqua
+      # -- (string) Repository URL
       url: https://aquasecurity.github.io/helm-charts/
+      # -- (string) Repository type
       type: helm
     policy-reporter:
+      # -- (string) Repository name
       name: policy-reporter
+      # -- (string) Repository URL
       url: https://kyverno.github.io/policy-reporter
+      # -- (string) Repository type
       type: helm
-    # jenkins:
-    #   name: jenkins
-    #   url: https://charts.jenkins.io
-    #   type: helm
     bitnami:
+      # -- (string) Repository name
       name: bitnami
+      # -- (string) Repository URL
       url: https://charts.bitnami.com/bitnami
+      # -- (string) Repository type
       type: helm
     fluent:
+      # -- (string) Repository name
       name: fluent
+      # -- (string) Repository URL
       url: https://fluent.github.io/helm-charts
+      # -- (string) Repository type
       type: helm
     pixie-operator:
+      # -- (string) Repository name
       name: pixie-operator
+      # -- (string) Repository URL
       url: https://artifacts.px.dev/helm_charts/operator
+      # -- (string) Repository type
       type: helm
     hashicorp:
+      # -- (string) Repository name
       name: hashicorp
+      # -- (string) Repository URL
       url: https://helm.releases.hashicorp.com
+      # -- (string) Repository type
       type: helm
     cilium:
+      # -- (string) Repository name
       name: cilium
+      # -- (string) Repository URL
       url: https://helm.cilium.io/
+      # -- (string) Repository type
       type: helm

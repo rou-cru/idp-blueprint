@@ -1,11 +1,11 @@
-## @section Vault Server
-## @description Vault server configuration.
+# @section -- Server
 server:
+  # -- (string) Priority class for Vault pods
   priorityClassName: platform-infrastructure
   standalone:
-    # -- Enables standalone server configuration.
+    # -- (bool) Enables standalone server configuration
     enabled: true
-    # -- HCL configuration for the Raft storage backend.
+    # -- (string) HCL configuration for the Raft storage backend
     config: |
       storage "raft" {
         path    = "/vault/data"
@@ -22,54 +22,61 @@ server:
         prometheus_retention_time = "30s"
         disable_hostname          = true
       }
-      # -- Enables a file audit device.
       audit "file" {
         path = "/vault/logs/audit.log"
       }
-
-  # -- Configures persistence for Vault data using a PVC.
   dataStorage:
+    # -- (bool) Enable persistence
     enabled: true
+    # -- (string) Storage size
     size: 1Gi
-
-  # -- Resource configuration for the Vault pod.
   resources:
     requests:
+      # -- (string) Memory request
       memory: 256Mi
+      # -- (string) CPU request
       cpu: 250m
     limits:
+      # -- (string) Memory limit
       memory: 512Mi
+      # -- (string) CPU limit
       cpu: 500m
-
-  # -- Default livenessProbe for the Vault server. Disabled by default.
   livenessProbe:
+    # -- (bool) Enable liveness probe
     enabled: false
+    # -- (int) Failure threshold
     failureThreshold: 2
+    # -- (int) Initial delay seconds
     initialDelaySeconds: 5
+    # -- (int) Period seconds
     periodSeconds: 2
+    # -- (int) Success threshold
     successThreshold: 1
+    # -- (int) Timeout seconds
     timeoutSeconds: 5
+    # -- (list) Exec command
     execCommand: []
-
-  # -- Default readinessProbe for the Vault server. Enabled by default.
   readinessProbe:
+    # -- (bool) Enable readiness probe
     enabled: true
+    # -- (int) Failure threshold
     failureThreshold: 2
+    # -- (int) Initial delay seconds
     initialDelaySeconds: 5
-    # -- Path for the readiness probe. Defaults to /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
+    # -- (string) Readiness probe path
     path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
-
-  # -- Enables the metrics endpoint for Prometheus.
   serviceMonitor:
+    # -- (bool) Enable ServiceMonitor
     enabled: true
+    # -- (string) Scrape interval
     interval: 60s
+    # -- (string) Scrape timeout
     scrapeTimeout: 40s
 
-## @section Vault UI
-## @description Vault UI configuration.
+# @section -- UI
 ui:
-  # -- Enables the Vault UI.
+  # -- (bool) Enable Vault UI
   enabled: true
-  # -- Service type for the UI.
   service:
+    # -- (string) Service type
     type: 'ClusterIP'

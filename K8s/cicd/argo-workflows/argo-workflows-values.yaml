@@ -1,10 +1,15 @@
 ## @section CRDs
+## @description Controls the installation of Argo Workflows Custom Resource Definitions.
 crds:
+  # -- Install and manage CRDs.
   install: true
+  # -- Keep CRDs on chart uninstall.
   keep: true
 
 ## @section Controller
+## @description Configuration for the Argo Workflows controller.
 controller:
+  # -- Resource requests and limits for the controller.
   resources:
     requests:
       cpu: 100m
@@ -12,46 +17,63 @@ controller:
     limits:
       cpu: 500m
       memory: 512Mi
+  # -- Namespaces where the controller will manage workflows.
   workflowNamespaces:
     - cicd
+  # -- Create RBAC resources for the controller.
   rbac:
     create: true
+  # -- Service account for the controller.
   serviceAccount:
     create: true
     name: argo-workflow-controller
+  # -- Enable Prometheus metrics endpoint.
   metricsConfig:
     enabled: true
+  # -- Create a ServiceMonitor for Prometheus.
   serviceMonitor:
     enabled: true
     additionalLabels:
       prometheus: kube-prometheus
+  # -- Default TTL strategy for completed workflows.
   workflowDefaults:
     spec:
       ttlStrategy:
         secondsAfterCompletion: 3600
         secondsAfterSuccess: 1800
         secondsAfterFailure: 7200
+      # -- Garbage collection strategy for completed pods.
       podGC:
         strategy: OnPodCompletion
         deleteDelayDuration: 60s
+  # -- Retention policy for completed workflows.
   retentionPolicy:
     completed: 10
     failed: 5
     errored: 5
+  # -- Restrict template referencing to be within the same namespace.
   workflowRestrictions:
     templateReferencing: Strict
+  # -- Enable node events for workflows.
   nodeEvents:
     enabled: true
+  # -- Enable workflow events.
   workflowEvents:
     enabled: true
+  # -- Priority class for the controller pod.
   priorityClassName: platform-cicd
+  # -- Persistence configuration for the controller.
   persistence:
     archive: false
+  # -- Maximum number of parallel workflows.
   parallelism: 10
 
 ## @section Server
+## @description Configuration for the Argo Workflows server (UI).
 server:
+  # -- Enable the Argo Workflows server.
   enabled: false
+  # -- Resource requests and limits for the server.
   resources:
     requests:
       cpu: 50m
@@ -59,19 +81,26 @@ server:
     limits:
       cpu: 250m
       memory: 256Mi
+  # -- Create RBAC resources for the server.
   rbac:
     create: true
+  # -- Service account for the server.
   serviceAccount:
     create: true
     name: argo-workflow-server
+  # -- Authentication modes for the server.
   authModes:
     - server
+  # -- Enable Single Sign-On (SSO).
   sso:
     enabled: false
+  # -- Priority class for the server pod.
   priorityClassName: platform-cicd
 
 ## @section Workflow Executor
+## @description Configuration for the workflow executor.
 executor:
+  # -- Resource requests and limits for the executor.
   resources:
     requests:
       cpu: 50m
@@ -81,10 +110,13 @@ executor:
       memory: 128Mi
 
 ## @section Workflow Service Account
+## @description Configuration for the service account used by workflows.
 workflow:
+  # -- Service account for workflows.
   serviceAccount:
     create: true
     name: argo-workflow
+  # -- RBAC resources for workflows.
   rbac:
     create: true
     rules:
@@ -93,18 +125,26 @@ workflow:
         verbs: ["get"]
 
 ## @section Workflow Defaults
-## @description Global defaults applied to all workflows
+## @description Global defaults applied to all workflows.
 workflowDefaults:
   spec:
+    # -- Priority class for workflow pods.
     priorityClassName: cicd-execution
+    # -- Service account for workflow pods.
     serviceAccountName: argo-workflow
 
 ## @section Artifact Repository
-## @description Artifact storage configuration (disabled - not required for basic CI/CD)
+## @description Artifact storage configuration (disabled - not required for basic CI/CD).
 artifactRepository:
+  # -- Archive logs to the artifact repository.
   archiveLogs: false
+  # -- S3 artifact repository configuration.
   s3: {}
+  # -- GCS artifact repository configuration.
   gcs: {}
+  # -- Azure artifact repository configuration.
   azure: {}
+  # -- Reference to a custom artifact repository.
   artifactRepositoryRef: {}
+  # -- Custom artifact repository configuration.
   customArtifactRepository: {}

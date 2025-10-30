@@ -1,57 +1,64 @@
-## @section IPAM Configuration
-## Defines how pod IP addresses are managed.
-## `cluster-pool` is the recommended mode for efficient IP allocation.
+# @section -- IPAM
 ipam:
-  # -- IPAM mode.
+  # -- (string) IPAM mode (cluster-pool recommended for efficient allocation)
   mode: 'cluster-pool'
   operator:
-    # -- The pod CIDR for the cluster. Must match k3d's default.
+    # -- (list) Pod CIDR for the cluster (must match k3d default)
     clusterPoolIPv4PodCIDRList: ['10.42.0.0/16']
 
-## @section IPv6 Configuration
-## Disabled for demo environment to improve bootstrap performance.
+# @section -- IPv6
 ipv6:
+  # -- (bool) Enable IPv6 support (disabled for demo performance)
   enabled: false
 
-## @section Kube-proxy Replacement
-## Replaces kube-proxy with Cilium's eBPF implementation for higher performance.
+# -- (bool) Replace kube-proxy with Cilium's eBPF implementation
+# @section -- Kube-proxy Replacement
 kubeProxyReplacement: true
 
-## @section Hubble Observability
-## Enables Hubble for network flow visibility.
+# @section -- Hubble
 hubble:
-  # -- Toggles Hubble on or off.
+  # -- (bool) Enable Hubble
   enabled: true
-  # -- The Hubble Relay component aggregates data from all Hubble instances.
   relay:
+    # -- (bool) Enable Hubble Relay
     enabled: true
+    # -- (int) Number of replicas
     replicas: 1
     resources:
       requests:
+        # -- (string) CPU request
         cpu: 100m
+        # -- (string) Memory request
         memory: 128Mi
       limits:
+        # -- (string) CPU limit
         cpu: 500m
+        # -- (string) Memory limit
         memory: 256Mi
-  # -- The Hubble UI provides a graphical interface to explore network data.
   ui:
+    # -- (bool) Enable Hubble UI
     enabled: true
+    # -- (int) Number of replicas
     replicas: 1
     resources:
       requests:
+        # -- (string) CPU request
         cpu: 50m
+        # -- (string) Memory request
         memory: 64Mi
       limits:
+        # -- (string) CPU limit
         cpu: 100m
+        # -- (string) Memory limit
         memory: 128Mi
-    # -- The Ingress for the Hubble UI. Disabled for now, to be managed by ArgoCD.
     ingress:
+      # -- (bool) Enable ingress
       enabled: false
-    # -- Service type for the UI. `ClusterIP` is used to avoid exposing it directly.
     service:
+      # -- (string) Service type
       type: ClusterIP
-  # -- Enables specific metrics for Hubble to collect.
   metrics:
+    # -- (list) Enabled metrics for Hubble to collect
     enabled:
       - dns:query;ignoreAAAA
       - drop
@@ -61,97 +68,111 @@ hubble:
       - icmp
       - http
 
-## @section Cilium Ingress Controller
-## Use Cilium's native, eBPF-powered Ingress Controller.
+# @section -- Ingress Controller
 ingressController:
-  # -- Enable the Ingress Controller.
+  # -- (bool) Enable the Ingress Controller
   enabled: true
-  # -- Make this the default IngressClass for all Ingress resources.
+  # -- (bool) Make this the default IngressClass
   default: true
-  # -- Use a shared service for all Ingresses.
+  # -- (string) Use shared service for all Ingresses
   loadbalancerMode: shared
   service:
-    # -- Expose the Ingress Controller via a LoadBalancer service.
-    # k3d's built-in load balancer will automatically pick this up.
+    # -- (string) Service type (k3d load balancer will handle this)
     type: LoadBalancer
 
-## @section Gateway API
-## Enables support for the modern Gateway API standard for traffic routing.
+# @section -- Gateway API
 gatewayAPI:
+  # -- (bool) Enable Gateway API
   enabled: true
 
-## @section Cilium Operator Configuration
+# @section -- Operator
 operator:
-  # -- Number of replicas for the Cilium operator.
+  # -- (int) Number of replicas for the operator
   replicas: 1
   prometheus:
-    # -- Expose Prometheus metrics from the operator.
+    # -- (bool) Enable Prometheus metrics
     enabled: true
     serviceMonitor:
+      # -- (bool) Enable ServiceMonitor
       enabled: true
-      # -- Higher frequency for critical CNI metrics (network health, packet drops)
+      # -- (string) Scrape interval for critical CNI metrics
       interval: 30s
+      # -- (string) Scrape timeout
       scrapeTimeout: 25s
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 100m
+      # -- (string) Memory request
       memory: 128Mi
     limits:
+      # -- (string) CPU limit
       cpu: 500m
+      # -- (string) Memory limit
       memory: 512Mi
 
-## @section Prometheus Metrics
-## Configures how Cilium exposes metrics for Prometheus.
+# @section -- Observability
 prometheus:
-  # -- Enable metrics exposition.
+  # -- (bool) Enable metrics exposition
   enabled: true
-  # -- If a ServiceMonitor CRD should be created.
   serviceMonitor:
+    # -- (bool) Create ServiceMonitor CRD
     enabled: true
-    # -- Higher frequency for critical CNI metrics (eBPF events, network flows)
+    # -- (string) Scrape interval for eBPF events and network flows
     interval: 30s
+    # -- (string) Scrape timeout
     scrapeTimeout: 25s
   dashboards:
-    # -- Creates a ConfigMap with the official Cilium dashboard for Grafana.
+    # -- (bool) Create ConfigMap with official Cilium dashboard
     enabled: true
-    # -- Namespace where the dashboard ConfigMap will be created.
+    # -- (string) Namespace for dashboard ConfigMap
     namespace: default
 
-## @section Network Policy
-## Sets the default enforcement mode for CiliumNetworkPolicy.
+# -- (string) Default enforcement mode for CiliumNetworkPolicy
+# @section -- Network Policy
 policyEnforcementMode: 'default'
 
-## @section BGP Control Plane
-## Disabled for this demo. Used for announcing routes in on-prem environments.
+# @section -- BGP
 bgpControlPlane:
+  # -- (bool) Enable BGP (disabled for demo, used for on-prem route announcement)
   enabled: false
 
-## @section Encryption
-## Disabled for this local demo. Can be enabled for production environments.
+# @section -- Security
 encryption:
+  # -- (bool) Enable encryption (disabled for local demo)
   enabled: false
+  # -- (string) Encryption type
   type: wireguard
 
-## @section Cluster Identification
-## Basic information about the cluster for multi-cluster scenarios.
+# @section -- Cluster
 cluster:
+  # -- (string) Cluster name
   name: idp-demo
+  # -- (int) Cluster ID
   id: 1
 
-## @section Performance Tuning
-## BPF-related performance settings for a local development environment.
+# @section -- Performance
 bpf:
+  # -- (string) Monitor aggregation level
   monitorAggregation: medium
+  # -- (string) Monitor interval
   monitorInterval: '10s'
+  # -- (string) Monitor flags
   monitorFlags: 'all'
 
-## @section Custom Labels
-## Adds labels to all resources to comply with the tagging policy.
+# @section -- Labels
 commonLabels:
+  # -- (string) Application instance
   app.kubernetes.io/instance: cilium-demo
+  # -- (string) Application version
   app.kubernetes.io/version: '1.18.2'
+  # -- (string) Application component
   app.kubernetes.io/component: cni
+  # -- (string) Part of platform
   app.kubernetes.io/part-of: idp
+  # -- (string) Owner
   owner: platform-engineer
+  # -- (string) Business unit
   business-unit: engineering
+  # -- (string) Environment
   environment: demo

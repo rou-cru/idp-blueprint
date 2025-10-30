@@ -1,71 +1,95 @@
-## @section External Secrets Operator Configuration
-
+# -- (string) Priority class for External Secrets Operator pods
+# @section -- General Configuration
 priorityClassName: platform-infrastructure
 
-# -- Install CRDs. Should be true for the initial installation.
+# -- (bool) Install CRDs. Should be true for the initial installation
+# @section -- CRDs
 installCRDs: true
-# -- Number of replicas for the operator.
+
+# -- (int) Number of replicas for the operator
+# @section -- Deployment
 replicas: 1
-# -- Defines resource requests and limits for the operator pod.
+
+# @section -- Resources
 resources:
   requests:
+    # -- (string) CPU request
     cpu: 250m
+    # -- (string) Memory request
     memory: 256Mi
   limits:
+    # -- (string) CPU limit
     cpu: 1000m
+    # -- (string) Memory limit
     memory: 1Gi
-## @section Health Probes
-## @description Configure liveness and readiness probes for External Secrets Operator.
-livenessProbe:
-  enabled: false
 
+# @section -- Health Probes
+livenessProbe:
+  # -- (bool) Enable liveness probe
+  enabled: false
 readinessProbe:
+  # -- (bool) Enable readiness probe
   enabled: true
   spec:
     httpGet:
+      # -- (int) Readiness probe port
       port: 8081
+      # -- (string) Readiness probe path
       path: /readyz
+    # -- (int) Initial delay before readiness probe
     initialDelaySeconds: 20
+    # -- (int) Period between readiness probes
     periodSeconds: 10
+    # -- (int) Timeout for readiness probe
     timeoutSeconds: 5
+    # -- (int) Failure threshold for readiness probe
     failureThreshold: 3
 
-# -- Increase concurrent ExternalSecret reconciliations for better performance
+# -- (int) Concurrent ExternalSecret reconciliations for better performance
+# @section -- Performance
 concurrent: 5
 
+# @section -- RBAC
 serviceAccount:
+  # -- (bool) Create service account
   create: true
+  # -- (string) Service account name
   name: 'external-secrets'
 
-## @section Webhook Configuration
-## @description Configure External Secrets Operator webhook with cert-manager integration.
+# @section -- Webhook
 webhook:
-  # -- Certificate validity lookahead interval for webhook
-  # Must be less than cert.renewBefore to prevent crashloops
-  lookaheadInterval: "168h"  # 7 days
+  # -- (string) Certificate validity lookahead interval (must be less than cert.renewBefore)
+  lookaheadInterval: "168h"
   certManager:
+    # -- (bool) Enable cert-manager for webhook certificates
     enabled: true
-    # -- Automatically inject CA into webhooks and CRDs
+    # -- (bool) Automatically inject CA into webhooks and CRDs
     addInjectorAnnotations: true
     cert:
+      # -- (bool) Create certificate resource
       create: true
       issuerRef:
+        # -- (string) Issuer group
         group: cert-manager.io
+        # -- (string) Issuer kind
         kind: ClusterIssuer
+        # -- (string) Issuer name
         name: ca-issuer
-      # -- Certificate lifetime: 90 days (2160h)
+      # -- (string) Certificate lifetime (90 days)
       duration: "2160h"
-      # -- Renew 30 days before expiry (720h)
-      # Must be greater than webhook.lookaheadInterval (168h)
+      # -- (string) Renew certificate 30 days before expiry
       renewBefore: "720h"
-      # -- Private key rotation policy (cert-manager >= 1.18.0 default: Always)
       privateKey:
+        # -- (string) Private key rotation policy
         rotationPolicy: Always
 
-## @section Prometheus Metrics
-## @description Enable Prometheus ServiceMonitor for External Secrets Operator.
+# @section -- Observability
 serviceMonitor:
+  # -- (bool) Enable ServiceMonitor
   enabled: true
+  # -- (string) Scrape interval
   interval: 60s
+  # -- (string) Scrape timeout
   scrapeTimeout: 40s
+  # -- (bool) Honor labels from service
   honorLabels: true

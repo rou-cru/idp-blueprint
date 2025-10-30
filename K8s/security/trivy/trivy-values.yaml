@@ -1,84 +1,86 @@
-# -- Target Kubernetes workload resources for vulnerability and config-audit scans.
+# @section -- General
+# -- (string) Priority class for Trivy pods
 priorityClassName: platform-security
 
-# -- Comma-separated list. If blank, all workloads are scanned.
+# -- (string) Comma-separated list of target workloads
 targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
 
-# -- Namespaces to be excluded from scanning.
+# -- (string) Namespaces to be excluded from scanning
 excludeNamespaces: "kube-system,argocd,cert-manager,vault-system,kyverno-system"
 
-# -- Prometheus ServiceMonitor configuration.
-serviceMonitor:
-  # -- Enables the deployment of a ServiceMonitor.
-  enabled: true
-  # -- Chooses the metric’s labels on collisions with target labels.
-  honorLabels: true
-
+# @section -- Operator
 operator:
-  # -- Enable vulnerability scanner.
+  # -- (bool) Enable vulnerability scanner
   vulnerabilityScannerEnabled: true
-  # -- Enable configuration audit scanner.
+  # -- (bool) Enable configuration audit scanner
   configAuditScannerEnabled: true
-  # -- Enable RBAC assessment scanner.
+  # -- (bool) Enable RBAC assessment scanner
   rbacAssessmentScannerEnabled: true
-  # -- Enable exposed secret scanner.
+  # -- (bool) Enable exposed secret scanner
   exposedSecretScannerEnabled: true
-  # -- Disable infrastructure assessment scanner. This is because the underlying
-  # infrastructure in a k3d environment is not user-configurable.
+  # -- (bool) Disable infrastructure assessment scanner
   infraAssessmentScannerEnabled: false
-  # -- Enable cluster compliance scanner.
+  # -- (bool) Enable cluster compliance scanner
   clusterComplianceEnabled: true
 
+# @section -- Compliance
 compliance:
-  # -- Enable and configure compliance reporting.
+  # -- (bool) Enable compliance reporting
   enabled: true
-  # -- Define which compliance specifications to run.
-  # We use 'k8s-pss-baseline' as it's a practical starting point for workload
-  # security. Stricter specs like CIS or NSA would produce unactionable noise
-  # in a local k3d environment where infrastructure is not user-configurable.
+  # -- (list) Compliance specifications to run
   specs:
     - "k8s-pss-baseline-0.1"
 
-# -- Resource limits and requests for Trivy Operator controller.
+# @section -- Resources
 resources:
   requests:
-    # -- The amount of CPU to request.
+    # -- (string) CPU request
     cpu: 100m
-    # -- The amount of memory to request.
+    # -- (string) Memory request
     memory: 128Mi
   limits:
+    # -- (string) CPU limit
     cpu: 500m
+    # -- (string) Memory limit
     memory: 512Mi
 
-# -- Trivy scanner configuration.
+# @section -- Scanner
 trivy:
-  # -- Mode: ClientServer uses a central Trivy server to avoid downloading DB on every scan.
+  # -- (string) Scanner mode
   mode: ClientServer
-  # -- Trivy Server URL (deployed below).
+  # -- (string) Trivy Server URL
   serverURL: "http://trivy-server.security.svc:4954"
 
-# -- Deploy a central Trivy Server with persistent vulnerability DB cache.
-# This eliminates repeated DB downloads (~500MB) on every scan.
+# @section -- Trivy Server
 trivyServer:
-  # -- Enable Trivy Server deployment.
+  # -- (bool) Enable Trivy Server deployment
   enabled: true
-
-  # -- Persistent storage for vulnerability database.
-  # DB is downloaded once every 12 hours instead of on every scan.
-  persistence:
-    enabled: true
-    storageClass: "local-path"
-    size: 1Gi
-
-  # -- Update vulnerability DB every 12 hours.
-  # Balances freshness with network/resource usage.
+  # -- (string) Database update interval
   dbUpdateInterval: 12h
 
-  # -- Resource limits for Trivy Server.
+  persistence:
+    # -- (bool) Enable persistence
+    enabled: true
+    # -- (string) Storage class
+    storageClass: "local-path"
+    # -- (string) Storage size
+    size: 1Gi
+
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 200m
+      # -- (string) Memory request
       memory: 512Mi
     limits:
+      # -- (string) CPU limit
       cpu: 1000m
+      # -- (string) Memory limit
       memory: 1Gi
+
+# @section -- Observability
+serviceMonitor:
+  # -- (bool) Enable ServiceMonitor
+  enabled: true
+  # -- (bool) Honor labels on collisions
+  honorLabels: true

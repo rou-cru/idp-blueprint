@@ -392,6 +392,7 @@ tasks:
       - task: lint:shell
       - task: lint:dockerfile
       - task: lint:markdown
+      - task: lint:helm
       # Uncomment to start using Conventional Commits -> https://www.conventionalcommits.org
       #- task: lint:commit
 
@@ -414,6 +415,11 @@ tasks:
     desc: 'Lint all Markdown files'
     cmds:
       - markdownlint-cli2 .
+
+  lint:helm:
+    desc: 'Validate Helm values documentation completeness'
+    cmds:
+      - ./scripts/helm-docs-lint.sh
 
   lint:commit:
     desc: 'Lint the last commit message'
@@ -469,15 +475,7 @@ tasks:
   docs:helm:
     desc: 'Generate documentation for Helm charts'
     cmds:
-      - |
-        for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
-          if [ -f "$dir/values.yaml" ]; then
-            CHART_NAME=$(basename $dir)
-            echo "apiVersion: v2\nname: $CHART_NAME\nversion: 0.1.0" > $dir/Chart.yaml
-            (cd $dir && helm-docs --template-files ../.helm-docs-template.gotmpl)
-            rm $dir/Chart.yaml
-          fi
-        done
+      - ./scripts/helm-docs-generate.sh
 
   # CA CERTIFICATE
   # ------------------------------------------------------------------------------
