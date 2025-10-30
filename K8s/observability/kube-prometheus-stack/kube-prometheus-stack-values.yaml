@@ -15,6 +15,7 @@ alertmanager:
 ## @section Prometheus
 ## @description Prometheus instance configuration.
 prometheus:
+  priorityClassName: platform-observability
   prometheusSpec:
     # -- Global scrape interval for all ServiceMonitors (unless overridden).
     scrapeInterval: 60s
@@ -43,6 +44,7 @@ prometheus:
 ## @section Grafana
 ## @description Grafana instance configuration.
 grafana:
+  priorityClassName: platform-dashboards
   # -- Enable persistence for dashboards and settings
   persistence:
     enabled: true
@@ -51,8 +53,10 @@ grafana:
     accessModes: [ReadWriteOnce]
   # -- Use existing secret for admin credentials from Vault via ESO.
   admin:
+    # checkov:skip=CKV_SECRET_6:The existingSecret field is a reference to a secret, not a secret itself.
     existingSecret: grafana-admin-credentials
     userKey: admin-user
+    # checkov:skip=CKV_SECRET_6:The passwordKey field is a key name, not a secret.
     passwordKey: admin-password
   # -- Resource limits and requests for Grafana.
   resources:
@@ -93,6 +97,7 @@ grafana:
 ## @description Prometheus Operator configuration.
 # -- Resource limits and requests for the Prometheus Operator.
 prometheusOperator:
+  priorityClassName: platform-observability
   resources:
     requests:
       cpu: 25m
@@ -105,6 +110,7 @@ prometheusOperator:
 ## @description Kube State Metrics configuration.
 # -- Resource limits and requests for kube-state-metrics.
 kube-state-metrics:
+  priorityClassName: platform-observability
   # Enable only relevant resource types (whitelist approach).
   # Disables: ReplicaSets, ConfigMaps, Secrets, RBAC, HPAs, Leases, Webhooks, etc.
   extraArgs:
@@ -134,6 +140,7 @@ kube-state-metrics:
 ## @description Prometheus Node Exporter configuration.
 # -- Resource limits and requests for the node-exporter.
 prometheus-node-exporter:
+  priorityClassName: platform-observability
   # -- Minimal collector set optimized for K3d + Cilium eBPF environments.
   # Uses whitelist approach (disable defaults, enable only essentials) to minimize overhead.
   extraArgs:

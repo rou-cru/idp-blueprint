@@ -1,6 +1,7 @@
 ## @section Vault Server
 ## @description Vault server configuration.
 server:
+  priorityClassName: platform-infrastructure
   standalone:
     # -- Enables standalone server configuration.
     enabled: true

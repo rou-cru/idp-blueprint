@@ -1,5 +1,7 @@
 # -- Target Kubernetes workload resources for vulnerability and config-audit scans.
-# Comma-separated list. If blank, all workloads are scanned.
+priorityClassName: platform-security
+
+# -- Comma-separated list. If blank, all workloads are scanned.
 targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
 
 # -- Namespaces to be excluded from scanning.
@@ -40,7 +42,9 @@ compliance:
 # -- Resource limits and requests for Trivy Operator controller.
 resources:
   requests:
+    # -- The amount of CPU to request.
     cpu: 100m
+    # -- The amount of memory to request.
     memory: 128Mi
   limits:
     cpu: 500m

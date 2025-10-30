@@ -72,3 +72,7 @@ USER jenkins
 
 # Set working directory
 WORKDIR /home/jenkins/agent
+
+# Disable healthcheck for this agent, as it's a slave and doesn't host a service.
+# This addresses the CKV_DOCKER_2 security finding.
+HEALTHCHECK NONE

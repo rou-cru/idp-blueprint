@@ -58,6 +58,7 @@ loki:
 ## @section Single Binary Mode
 ## @description Configuration for the single-binary deployment mode.
 singleBinary:
+  priorityClassName: platform-observability
   # -- Number of replicas for the single binary.
   replicas: 1
   # -- Resource limits and requests for Loki.

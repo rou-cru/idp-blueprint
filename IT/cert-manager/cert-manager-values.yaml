@@ -1,5 +1,8 @@
 ## @section Custom Resource Definitions
 ## @description Enable the installation of cert-manager CRDs.
+
+priorityClassName: platform-infrastructure
+
 crds:
   enabled: true
 

@@ -5,6 +5,10 @@ metadata:
   namespace: cicd
 spec:
   serviceAccountName: argo-workflow
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
   entrypoint: build-and-push
   arguments:
     parameters:
@@ -26,32 +30,39 @@ spec:
     - name: docker-config
       secret:
         secretName: docker-registry-credentials
+    - name: workspace
+      emptyDir: {}
   templates:
     - name: build-and-push
       steps:
         - - name: clone
             template: git-clone
         - - name: build
-            template: docker-build
+            template: kaniko-build
 
     - name: git-clone
       container:
         image: alpine/git:2.43.0
         command: [sh, -c]
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
         args:
           - |
             git clone --branch {{workflow.parameters.branch}} --single-branch {{workflow.parameters.repo-url}} /workspace
         volumeMounts:
           - name: workspace
             mountPath: /workspace
-      volumes:
-        - name: workspace
-          emptyDir: {}
 
-    - name: docker-build
+    - name: kaniko-build
       container:
         image: gcr.io/kaniko-project/executor:v1.25.0
         command: ["/kaniko/executor"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
         args:
           - --context=/workspace/{{workflow.parameters.context-path}}
           - --dockerfile=/workspace/{{workflow.parameters.dockerfile-path}}
@@ -61,6 +72,3 @@ spec:
             mountPath: /workspace
           - name: docker-config
             mountPath: /kaniko/.docker/
-      volumes:
-        - name: workspace
-          emptyDir: {}

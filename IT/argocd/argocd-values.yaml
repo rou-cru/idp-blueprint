@@ -24,6 +24,7 @@ certificate:
 ## @section Resource Optimization
 ## @description Set low resource requests and limits for the main components to optimize for a demo environment.
 controller:
+  priorityClassName: platform-infrastructure
   resources:
     requests:
       cpu: 250m
@@ -40,6 +41,7 @@ controller:
       scrapeTimeout: 25s
 
 server:
+  priorityClassName: platform-infrastructure
   resources:
     requests:
       cpu: 125m
@@ -59,6 +61,7 @@ server:
     tls: false
 
 repoServer:
+  priorityClassName: platform-infrastructure
   resources:
     requests:
       cpu: 250m
@@ -89,6 +92,7 @@ redis:
 ## @description Toggles for core ArgoCD features.
 # -- Enable the ApplicationSet controller, which is key to our GitOps strategy.
 applicationSet:
+  priorityClassName: platform-infrastructure
   enabled: true
   resources:
     requests:

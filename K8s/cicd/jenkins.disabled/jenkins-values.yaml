@@ -30,8 +30,10 @@ controller:
   # -- Use existing secret for admin credentials from Vault.
   admin:
     createSecret: false
+    # checkov:skip=CKV_SECRET_6:The existingSecret field is a reference to a secret, not a secret itself.
     existingSecret: "jenkins-admin-credentials"
     userKey: jenkins-admin-user
+    # checkov:skip=CKV_SECRET_6:The passwordKey field is a key name, not a secret.
     passwordKey: jenkins-admin-password
     # -- Admin username (replaces deprecated adminUser).
     username: "admin"

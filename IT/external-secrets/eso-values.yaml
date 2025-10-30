@@ -1,4 +1,7 @@
 ## @section External Secrets Operator Configuration
+
+priorityClassName: platform-infrastructure
+
 # -- Install CRDs. Should be true for the initial installation.
 installCRDs: true
 # -- Number of replicas for the operator.

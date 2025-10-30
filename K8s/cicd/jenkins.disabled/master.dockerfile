@@ -33,3 +33,8 @@ ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
 
 # Expose Jenkins web interface and agent ports
 EXPOSE 8080 50000
+
+# Add a healthcheck to verify that the Jenkins UI is responsive.
+# This addresses the CKV_DOCKER_2 security finding.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
+  CMD curl --fail http://localhost:8080/login || exit 1

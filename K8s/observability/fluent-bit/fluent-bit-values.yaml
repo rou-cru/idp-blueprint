@@ -1,4 +1,7 @@
 # kind -- DaemonSet or Deployment
+
+priorityClassName: platform-observability
+
 kind: DaemonSet
 
 # replicaCount -- Only applicable if kind=Deployment
