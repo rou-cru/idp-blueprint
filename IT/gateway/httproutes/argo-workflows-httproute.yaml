@@ -4,6 +4,7 @@ metadata:
   name: argo-workflows
   namespace: cicd
   labels:
+    app.kubernetes.io/part-of: idp
     app.kubernetes.io/name: argo-workflows
     app.kubernetes.io/instance: argo-workflows-demo
     app.kubernetes.io/component: workflow-engine

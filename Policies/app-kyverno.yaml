@@ -3,6 +3,12 @@ kind: Application
 metadata:
   name: platform-policies
   namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: argocd-application
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:

@@ -1,13 +1,11 @@
-## @section CRDs
-## @description Controls the installation of Argo Workflows Custom Resource Definitions.
+# @section -- CRDs
 crds:
   # -- Install and manage CRDs.
   install: true
   # -- Keep CRDs on chart uninstall.
   keep: true
 
-## @section Controller
-## @description Configuration for the Argo Workflows controller.
+# @section -- Controller
 controller:
   # -- Resource requests and limits for the controller.
   resources:
@@ -68,8 +66,7 @@ controller:
   # -- Maximum number of parallel workflows.
   parallelism: 10
 
-## @section Server
-## @description Configuration for the Argo Workflows server (UI).
+# @section -- Server
 server:
   # -- Enable the Argo Workflows server.
   enabled: false
@@ -97,8 +94,7 @@ server:
   # -- Priority class for the server pod.
   priorityClassName: platform-cicd
 
-## @section Workflow Executor
-## @description Configuration for the workflow executor.
+# @section -- Workflow Executor
 executor:
   # -- Resource requests and limits for the executor.
   resources:
@@ -109,8 +105,7 @@ executor:
       cpu: 250m
       memory: 128Mi
 
-## @section Workflow Service Account
-## @description Configuration for the service account used by workflows.
+# @section -- Workflow Service Account
 workflow:
   # -- Service account for workflows.
   serviceAccount:
@@ -124,8 +119,7 @@ workflow:
         resources: ["secrets"]
         verbs: ["get"]
 
-## @section Workflow Defaults
-## @description Global defaults applied to all workflows.
+# @section -- Workflow Defaults
 workflowDefaults:
   spec:
     # -- Priority class for workflow pods.
@@ -133,8 +127,7 @@ workflowDefaults:
     # -- Service account for workflow pods.
     serviceAccountName: argo-workflow
 
-## @section Artifact Repository
-## @description Artifact storage configuration (disabled - not required for basic CI/CD).
+# @section -- Artifact Repository
 artifactRepository:
   # -- Archive logs to the artifact repository.
   archiveLogs: false

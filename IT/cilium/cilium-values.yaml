@@ -87,6 +87,8 @@ gatewayAPI:
 
 # @section -- Operator
 operator:
+  # -- (string) Priority class for the Cilium operator
+  priorityClassName: platform-infrastructure
   # -- (int) Number of replicas for the operator
   replicas: 1
   prometheus:

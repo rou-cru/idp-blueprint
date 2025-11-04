@@ -2,6 +2,12 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: require-component-labels
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: policy
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
     policies.kyverno.io/title: Require Standard Component Labels
     policies.kyverno.io/category: Best Practices

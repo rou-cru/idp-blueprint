@@ -4,6 +4,7 @@ metadata:
   name: argocd-server
   namespace: argocd
   labels:
+    app.kubernetes.io/part-of: idp
     app.kubernetes.io/name: argocd-server
     app.kubernetes.io/instance: argocd-server-demo
     app.kubernetes.io/component: ui

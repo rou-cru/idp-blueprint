@@ -431,21 +431,25 @@ tasks:
   validate:
     desc: 'Run all validation tasks'
     cmds:
-      - task: validate:kustomize
       - task: validate:kubeval
 
   validate:kustomize:
-    desc: 'Validate all Kustomize overlays by building them'
+    desc: 'Validate all Kustomize overlays by building them (run validate:kubeval instead for complete validation)'
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
       - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
-        kustomize build $dir --enable-helm; done
+        kustomize build $dir --enable-helm > /dev/null; done
 
   validate:kubeval:
-    desc: 'Validate Kubernetes manifests against their schemas'
+    desc: 'Validate Kubernetes manifests - build Kustomize overlays and check schemas'
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
-      - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -; done
+      - |
+        echo "Validating Kustomize overlays and Kubernetes schemas..."
+        for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
+          echo "  Building and validating: $dir"
+          kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -
+        done
 
   # SECURITY
   # ------------------------------------------------------------------------------
