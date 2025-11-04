@@ -1,12 +1,13 @@
-# Defines the namespace for the CI/CD stack.
+# Defines the namespace for CI/CD components.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: cicd
   labels:
-    app.kubernetes.io/name: cicd
-    app.kubernetes.io/instance: cicd-demo
-    app.kubernetes.io/component: cicd-stack
-    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
-    description: 'Namespace for CI/CD tools (SonarQube, Argo Workflows).'
+    argocd.argoproj.io/sync-wave: "-3"
+    description: "Namespace for CI/CD platform components."

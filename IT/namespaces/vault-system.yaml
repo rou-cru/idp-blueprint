@@ -1,13 +1,13 @@
-# Defines the namespace for the HashiCorp Vault component.
-# This namespace will contain the Vault server and related configuration.
+# Defines the namespace for HashiCorp Vault.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: vault-system
   labels:
-    app.kubernetes.io/name: vault
-    app.kubernetes.io/instance: vault-demo
-    app.kubernetes.io/component: secret-manager
-    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
-    description: 'Namespace for the HashiCorp Vault secret management system.'
+    argocd.argoproj.io/sync-wave: "-3"
+    description: "Namespace for HashiCorp Vault secrets backend."
