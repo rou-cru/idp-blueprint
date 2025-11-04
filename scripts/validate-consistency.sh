@@ -78,23 +78,26 @@ echo ""
 echo "3. Verificando consistencia de 'owner' y 'business-unit'..."
 
 # Lista de kustomizations a verificar (DRY - single source)
-# shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
 KUSTOMIZATIONS="IT/kustomization.yaml IT/argocd/kustomization.yaml K8s/argocd/kustomization.yaml K8s/cicd/infrastructure/kustomization.yaml"
 
+# shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
 OWNER_VALUES=$(grep -h "owner:" $KUSTOMIZATIONS 2>/dev/null | awk '{print $2}' | sort -u | wc -l)
 if [ "$OWNER_VALUES" -eq 1 ]; then
   echo "  ✅ Valor de 'owner' consistente en todos los kustomizations"
 else
   echo "  ❌ Valores de 'owner' inconsistentes:"
+  # shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
   grep -h "owner:" $KUSTOMIZATIONS 2>/dev/null | sort -u
   ((ERRORS++))
 fi
 
+# shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
 BU_VALUES=$(grep -h "business-unit:" $KUSTOMIZATIONS 2>/dev/null | awk '{print $2}' | sort -u | wc -l)
 if [ "$BU_VALUES" -eq 1 ]; then
   echo "  ✅ Valor de 'business-unit' consistente en todos los kustomizations"
 else
   echo "  ❌ Valores de 'business-unit' inconsistentes:"
+  # shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
   grep -h "business-unit:" $KUSTOMIZATIONS 2>/dev/null | sort -u
   ((ERRORS++))
 fi
