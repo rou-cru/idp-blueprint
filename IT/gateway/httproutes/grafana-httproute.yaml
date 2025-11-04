@@ -4,6 +4,7 @@ metadata:
   name: grafana
   namespace: observability
   labels:
+    app.kubernetes.io/part-of: idp
     app.kubernetes.io/name: grafana
     app.kubernetes.io/instance: grafana-demo
     app.kubernetes.io/component: visualization

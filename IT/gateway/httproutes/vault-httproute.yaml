@@ -4,6 +4,7 @@ metadata:
   name: vault-ui
   namespace: vault-system
   labels:
+    app.kubernetes.io/part-of: idp
     app.kubernetes.io/name: vault-ui
     app.kubernetes.io/instance: vault-ui-demo
     app.kubernetes.io/component: ui

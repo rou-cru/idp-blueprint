@@ -4,6 +4,7 @@ kind: ClusterIssuer
 metadata:
   name: self-signed-issuer
   labels:
+    app.kubernetes.io/part-of: idp
     app.kubernetes.io/name: self-signed-issuer
     app.kubernetes.io/instance: self-signed-issuer-demo
     app.kubernetes.io/component: certificate-authority
