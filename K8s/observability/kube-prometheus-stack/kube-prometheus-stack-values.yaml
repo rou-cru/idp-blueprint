@@ -29,13 +29,16 @@ prometheus:
           resources:
             requests:
               storage: 1Gi
-    # -- Resource limits and requests for Prometheus.
     resources:
       requests:
+        # -- (string) CPU request
         cpu: 100m
+        # -- (string) Memory request
         memory: 384Mi
       limits:
+        # -- (string) CPU limit
         cpu: 250m
+        # -- (string) Memory limit
         memory: 512Mi
 
 # @section -- Grafana
@@ -54,13 +57,16 @@ grafana:
     userKey: admin-user
     # checkov:skip=CKV_SECRET_6:The passwordKey field is a key name, not a secret.
     passwordKey: admin-password
-  # -- Resource limits and requests for Grafana.
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 50m
+      # -- (string) Memory request
       memory: 128Mi
     limits:
+      # -- (string) CPU limit
       cpu: 250m
+      # -- (string) Memory limit
       memory: 256Mi
   # -- Additional datasources for Grafana.
   additionalDataSources:
@@ -92,71 +98,86 @@ grafana:
 # @section -- Prometheus Operator
 # -- Resource limits and requests for the Prometheus Operator.
 prometheusOperator:
+  # -- (string) Priority class
   priorityClassName: platform-observability
+
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 25m
+      # -- (string) Memory request
       memory: 32Mi
     limits:
+      # -- (string) CPU limit
       cpu: 50m
+      # -- (string) Memory limit
       memory: 64Mi
 
 # @section -- Kube State Metrics
 # -- Resource limits and requests for kube-state-metrics.
 kube-state-metrics:
+  # -- (string) Priority class
   priorityClassName: platform-observability
-  # -- Enable only relevant resource types (whitelist approach).
-  # Disables: ReplicaSets, ConfigMaps, Secrets, RBAC, HPAs, Leases, Webhooks, etc.
+  # -- (list) Enable only relevant resource types (whitelist approach)
   extraArgs:
     - --resources=cronjobs,daemonsets,deployments,jobs,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,pods,services,statefulsets,storageclasses
+
   prometheus:
     monitor:
-      # -- Drop high-cardinality labels that add noise without operational value.
+      # -- (list) Drop high-cardinality labels
       metricRelabelings:
-        # -- Drop uid label: UUIDs not useful in dashboards/queries
+        # Drop uid label
         - action: labeldrop
           regex: "uid"
-        # -- Drop container_id: SHA256 hashes change on every restart (high churn)
+        # Drop container_id
         - action: labeldrop
           regex: "container_id"
-        # -- Drop image_id: SHA256 hashes redundant with image tag
+        # Drop image_id
         - action: labeldrop
           regex: "image_id"
+
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 25m
+      # -- (string) Memory request
       memory: 64Mi
     limits:
+      # -- (string) CPU limit
       cpu: 50m
+      # -- (string) Memory limit
       memory: 128Mi
 
 # @section -- Prometheus Node Exporter
 # -- Resource limits and requests for the node-exporter.
 prometheus-node-exporter:
+  # -- (string) Priority class
   priorityClassName: platform-observability
-  # -- Minimal collector set optimized for K3d + Cilium eBPF environments.
-  # Uses whitelist approach (disable defaults, enable only essentials) to minimize overhead.
+  # -- (list) Minimal collector set optimized for K3d
   extraArgs:
-    # -- Disable all default collectors (40+ collectors)
     - --collector.disable-defaults
-    # -- Enable ONLY essential collectors for K8s observability (10 collectors)
-    - --collector.cpu # CPU usage per core and aggregated
-    - --collector.cpufreq # CPU frequency scaling
-    - --collector.meminfo # Memory usage (free, cached, buffers, etc.)
-    - --collector.diskstats # Disk I/O operations and latency
-    - --collector.filesystem # Filesystem usage and inodes
-    - --collector.netdev # Network interface traffic and errors
-    - --collector.loadavg # System load averages (1m, 5m, 15m)
-    - --collector.pressure # PSI: CPU/Memory/IO pressure stall information
-    - --collector.vmstat # Virtual memory stats (paging, swapping)
-    - --collector.stat # Context switches, interrupts, forks
-    - --collector.uname # Kernel version and system metadata
+    - --collector.cpu
+    - --collector.cpufreq
+    - --collector.meminfo
+    - --collector.diskstats
+    - --collector.filesystem
+    - --collector.netdev
+    - --collector.loadavg
+    - --collector.pressure
+    - --collector.vmstat
+    - --collector.stat
+    - --collector.uname
+
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 15m
+      # -- (string) Memory request
       memory: 24Mi
     limits:
+      # -- (string) CPU limit
       cpu: 30m
+      # -- (string) Memory limit
       memory: 48Mi
 
 # @section -- Windows Exporter
