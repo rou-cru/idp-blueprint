@@ -66,11 +66,11 @@ for ns in IT/namespaces/*.yaml; do
     fi
   fi
 done
-if [ $NS_ERRORS -eq 0 ]; then
+if [ "$NS_ERRORS" -eq 0 ]; then
   echo "  ✅ Todos los namespaces IT tienen los labels requeridos"
 else
   echo "  ❌ Errores en labels de namespaces: $NS_ERRORS"
-  ((ERRORS+=$NS_ERRORS))
+  ((ERRORS+=NS_ERRORS))
 fi
 
 # 3. Verificar owner y business-unit consistency
@@ -78,6 +78,7 @@ echo ""
 echo "3. Verificando consistencia de 'owner' y 'business-unit'..."
 
 # Lista de kustomizations a verificar (DRY - single source)
+# shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
 KUSTOMIZATIONS="IT/kustomization.yaml IT/argocd/kustomization.yaml K8s/argocd/kustomization.yaml K8s/cicd/infrastructure/kustomization.yaml"
 
 OWNER_VALUES=$(grep -h "owner:" $KUSTOMIZATIONS 2>/dev/null | awk '{print $2}' | sort -u | wc -l)
@@ -112,7 +113,7 @@ fi
 echo ""
 echo "5. Verificando kustomizations con labels pero sin resources..."
 KUST_ERRORS=0
-for kust in $(find . -name "kustomization.yaml" 2>/dev/null); do
+while IFS= read -r kust; do
   # Skip label-only overlays (K8s/argocd, K8s/vault)
   if [[ "$kust" == *"K8s/argocd/kustomization.yaml" ]] || [[ "$kust" == *"K8s/vault/kustomization.yaml" ]]; then
     continue
@@ -121,12 +122,12 @@ for kust in $(find . -name "kustomization.yaml" 2>/dev/null); do
     echo "  ❌ $kust tiene labels pero no resources"
     ((KUST_ERRORS++))
   fi
-done
-if [ $KUST_ERRORS -eq 0 ]; then
+done < <(find . -name "kustomization.yaml" 2>/dev/null)
+if [ "$KUST_ERRORS" -eq 0 ]; then
   echo "  ✅ Todos los kustomizations con labels tienen resources (excepto overlays conocidos)"
 else
   echo "  ❌ Kustomizations inválidos: $KUST_ERRORS"
-  ((ERRORS+=$KUST_ERRORS))
+  ((ERRORS+=KUST_ERRORS))
 fi
 
 # 6. Verificar priorityClassName coverage
@@ -137,7 +138,7 @@ echo "6. Verificando cobertura de priorityClassName..."
 TOTAL_VALUES_FILES=$(find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" 2>/dev/null | wc -l)
 ACTUAL=$(find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" -exec grep -l "priorityClassName" {} \; 2>/dev/null | wc -l)
 
-if [ $ACTUAL -eq $TOTAL_VALUES_FILES ]; then
+if [ "$ACTUAL" -eq "$TOTAL_VALUES_FILES" ]; then
   echo "  ✅ Priority class coverage: 100% ($ACTUAL/$TOTAL_VALUES_FILES archivos)"
 else
   echo "  ⚠️  Priority class coverage: $ACTUAL/$TOTAL_VALUES_FILES archivos"
