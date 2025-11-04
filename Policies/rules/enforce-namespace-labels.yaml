@@ -2,6 +2,12 @@ apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
   name: enforce-namespace-labels
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: policy
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
     policies.kyverno.io/title: Enforce Standard Namespace Labels
     policies.kyverno.io/category: Best Practices
