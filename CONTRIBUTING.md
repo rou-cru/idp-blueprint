@@ -120,23 +120,28 @@ The following conventions are the most common and are required for this project:
 
 ## Label Standards
 
-This project enforces strict label standards to ensure consistency, policy compliance, and resource discoverability across all Kubernetes resources.
+This project enforces strict label standards to ensure consistency, policy compliance,
+and resource discoverability across all Kubernetes resources.
 
 ### Required Documentation
 
 All contributors **MUST** read and follow the standards defined in:
-- **[docs/LABELS_STANDARD.md](./docs/LABELS_STANDARD.md)**: Complete label standards, canonical values, and conventions
+
+- **[docs/LABELS_STANDARD.md](./docs/LABELS_STANDARD.md)**: Complete label standards, canonical
+  values, and conventions
 
 ### Quick Reference
 
 **Canonical Label Values:**
+
 - `owner: platform-team`
 - `business-unit: infrastructure`
 - `environment: demo`
 - `app.kubernetes.io/part-of: idp`
 
 **Namespace Requirements (Enforced by Kyverno):**
-All namespaces MUST include: `app.kubernetes.io/part-of`, `owner`, `business-unit`, and `environment` labels.
+All namespaces MUST include: `app.kubernetes.io/part-of`, `owner`, `business-unit`, and
+`environment` labels.
 
 **Comment Style for Values Files:**
 Use `# @section -- Section Name` (single hash with double dash) for consistency with helm-docs.
@@ -144,6 +149,7 @@ Use `# @section -- Section Name` (single hash with double dash) for consistency 
 ### Validation
 
 Before submitting changes:
+
 1. Run `task lint` to validate YAML syntax
 2. Run `kustomize build <directory>` to verify kustomization files
 3. Check that labels comply with Kyverno policies defined in `Policies/rules/`
