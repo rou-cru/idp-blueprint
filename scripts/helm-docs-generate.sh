@@ -1,24 +1,18 @@
 #!/bin/bash
-set -e
+# Generate documentation for all Helm values files using helm-docs
 
-ROOT_DIR=$(git rev-parse --show-toplevel)
-TEMPLATE="$ROOT_DIR/.helm-docs-template.gotmpl"
+set -euo pipefail
 
-find . -type f -name '*-values.yaml' -printf '%h\n' | sort -u | while read -r dir; do
-  values_file=$(find "$dir" -maxdepth 1 -name '*-values.yaml' -type f | head -1)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/helm-docs-common.sh"
 
-  if [ -n "$values_file" ]; then
-    chart_name=$(basename "$dir")
+# Callback function for generating documentation
+generate_docs() {
+  local template=$1
+  local values_name=$2
 
-    cd "$dir"
-    echo "apiVersion: v2
-name: $chart_name
-version: 0.1.0" > Chart.yaml
+  helm-docs --template-files="$template"
+}
 
-    ln -sf "$(basename "$values_file")" values.yaml
-    helm-docs --template-files="$TEMPLATE"
-    rm Chart.yaml values.yaml
-
-    cd "$ROOT_DIR"
-  fi
-done
+# Run helm-docs for all values files
+helm_docs_foreach generate_docs
