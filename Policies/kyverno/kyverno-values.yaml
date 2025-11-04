@@ -2,6 +2,10 @@
 crds:
   install: true
 
+# @section -- Priority Class
+# -- Priority class for Kyverno admission controller
+priorityClassName: platform-policy
+
 # @section -- Resource Management
 # -- Resources for the main admission controller.
 resources:

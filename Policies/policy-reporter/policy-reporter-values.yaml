@@ -1,3 +1,7 @@
+# @section -- Priority Class
+# -- Priority class for Policy Reporter
+priorityClassName: platform-observability
+
 # @section -- Policy Reporter Core
 policyReporter:
   # -- Resource requests and limits for the core engine.

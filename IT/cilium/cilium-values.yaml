@@ -1,3 +1,8 @@
+# @section -- Priority Class
+# -- Priority class for the Cilium operator
+operator:
+  priorityClassName: platform-infrastructure
+
 # @section -- IPAM
 ipam:
   # -- (string) IPAM mode (cluster-pool recommended for efficient allocation)
