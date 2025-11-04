@@ -1,10 +1,8 @@
-## @section Deployment Mode
-## @description Defines the deployment mode for Loki.
+# @section -- Deployment Mode
 # -- Deploy Loki as a single monolithic binary. See https://grafana.com/docs/loki/latest/get-started/deployment-modes/
 deploymentMode: SingleBinary
 
-## @section Loki Configuration
-## @description Core Loki settings for storage, retention, and authentication.
+# @section -- Loki Configuration
 loki:
   # -- Storage backend configuration (filesystem for demo).
   storage:
@@ -49,8 +47,7 @@ loki:
     limits_config:
       retention_period: 6h
 
-## @section Single Binary Mode
-## @description Configuration for the single-binary deployment mode.
+# @section -- Single Binary Mode
 singleBinary:
   priorityClassName: platform-observability
   # -- Number of replicas for the single binary.
@@ -87,8 +84,7 @@ singleBinary:
     timeoutSeconds: 1
     failureThreshold: 3
 
-## @section Component Disablement
-## @description Disable unused components for single-binary mode.
+# @section -- Component Disablement
 # -- Disable read replicas (not used in single-binary mode).
 read:
   replicas: 0

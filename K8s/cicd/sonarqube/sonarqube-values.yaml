@@ -1,8 +1,6 @@
-## @section SonarQube Server
-## @description Resource definitions for the main SonarQube application.
+# @section -- SonarQube Server
 
-## @section Community Build
-## @description Enable SonarQube Community Build
+# @section -- Community Build
 community:
   enabled: true
 
@@ -47,15 +45,13 @@ initSysctl:
 initFs:
   enabled: true
 
-## @section Persistence
-## @description Configure persistence for SonarQube data, extensions, and logs.
+# @section -- Persistence
 persistence:
   enabled: true
   # -- Minimal size for a demo environment.
   size: 2Gi
 
-## @section PostgreSQL Database
-## @description Resource definitions for the bundled PostgreSQL database.
+# @section -- PostgreSQL Database
 # -- Configuration for the bundled PostgreSQL database.
 postgresql:
   priorityClassName: platform-cicd
@@ -68,8 +64,7 @@ postgresql:
       cpu: 250m
       memory: 256Mi
 
-## @section Secrets
-## @description Admin credentials and monitoring passcode from Vault via ESO.
+# @section -- Secrets
 # -- Admin password from Vault ExternalSecret.
 setAdminPassword:
   enabled: true

@@ -1,19 +1,16 @@
-## @section CRDs
-## @description CRD installation configuration.
+# @section -- CRDs
 # -- Disables the installation of CRDs, as they are managed separately.
 crds:
   enabled: false
 
-## @section Alertmanager
-## @description Alertmanager configuration.
+# @section -- Alertmanager
 alertmanager:
   # -- Disabled by default. This blueprint uses Grafana Unified Alerting as the
   # primary platform for managing alerts from all datasources (Prometheus, Loki, etc.),
   # providing a single, integrated user experience.
   enabled: false
 
-## @section Prometheus
-## @description Prometheus instance configuration.
+# @section -- Prometheus
 prometheus:
   priorityClassName: platform-observability
   prometheusSpec:
@@ -41,8 +38,7 @@ prometheus:
         cpu: 250m
         memory: 512Mi
 
-## @section Grafana
-## @description Grafana instance configuration.
+# @section -- Grafana
 grafana:
   priorityClassName: platform-dashboards
   # -- Enable persistence for dashboards and settings
@@ -93,8 +89,7 @@ grafana:
       # -- Set the default UI theme to dark.
       default_theme: dark
 
-## @section Prometheus Operator
-## @description Prometheus Operator configuration.
+# @section -- Prometheus Operator
 # -- Resource limits and requests for the Prometheus Operator.
 prometheusOperator:
   priorityClassName: platform-observability
@@ -106,8 +101,7 @@ prometheusOperator:
       cpu: 50m
       memory: 64Mi
 
-## @section Kube State Metrics
-## @description Kube State Metrics configuration.
+# @section -- Kube State Metrics
 # -- Resource limits and requests for kube-state-metrics.
 kube-state-metrics:
   priorityClassName: platform-observability
@@ -136,8 +130,7 @@ kube-state-metrics:
       cpu: 50m
       memory: 128Mi
 
-## @section Prometheus Node Exporter
-## @description Prometheus Node Exporter configuration.
+# @section -- Prometheus Node Exporter
 # -- Resource limits and requests for the node-exporter.
 prometheus-node-exporter:
   priorityClassName: platform-observability
@@ -166,8 +159,7 @@ prometheus-node-exporter:
       cpu: 30m
       memory: 48Mi
 
-## @section Windows Exporter
-## @description Windows Exporter configuration.
+# @section -- Windows Exporter
 # -- Disables unnecessary components.
 windows-exporter:
   enabled: false

@@ -1,10 +1,8 @@
-## @section CRD Management
-## @description Controls the installation of Kyverno Custom Resource Definitions (CRDs).
+# @section -- CRD Management
 crds:
   install: true
 
-## @section Resource Management
-## @description Defines resource requests and limits for the Kyverno controller pods.
+# @section -- Resource Management
 # -- Resources for the main admission controller.
 resources:
   requests:
@@ -36,8 +34,7 @@ startupProbe:
   successThreshold: 1
   failureThreshold: 30
 
-## @section Background Controller
-## @description Manages background tasks like generating policy rules.
+# @section -- Background Controller
 backgroundController:
   resources:
     requests:
@@ -47,8 +44,7 @@ backgroundController:
       cpu: 250m
       memory: 256Mi
 
-## @section Cleanup Controller
-## @description Handles the cleanup of resources based on policies.
+# @section -- Cleanup Controller
 cleanupController:
   resources:
     requests:
@@ -58,8 +54,7 @@ cleanupController:
       cpu: 250m
       memory: 256Mi
 
-## @section Reports Controller
-## @description Generates and manages policy reports.
+# @section -- Reports Controller
 reportsController:
   resources:
     requests:

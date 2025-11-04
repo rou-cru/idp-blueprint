@@ -1,5 +1,4 @@
-## @section Controller Configuration
-## @description Defines settings for the Jenkins controller pod.
+# @section -- Controller Configuration
 controller:
   ## @subsection Image Configuration
   ## @description Use custom Jenkins master image.
@@ -197,8 +196,7 @@ controller:
       periodSeconds: 10
       timeoutSeconds: 5
 
-## @section Agent Configuration
-## @description Kubernetes-based dynamic build agents.
+# @section -- Agent Configuration
 agent:
   # -- Enable Kubernetes agents.
   enabled: true
@@ -232,16 +230,14 @@ agent:
     size: 8Gi
     storageClassName: standard
 
-## @section RBAC
-## @description Role-Based Access Control for Kubernetes integration.
+# @section -- RBAC
 rbac:
   # -- Create RBAC resources.
   create: true
   # -- Allow Jenkins to read Kubernetes secrets (for kubernetes-credentials-provider).
   readSecrets: true
 
-## @section Service Account
-## @description Service account for Jenkins controller.
+# @section -- Service Account
 serviceAccount:
   # -- Create service account.
   create: true
