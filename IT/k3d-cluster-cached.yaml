@@ -48,9 +48,6 @@ options:
       - arg: --disable=traefik
         nodeFilters:
           - server:*
-      - arg: --disable=servicelb
-        nodeFilters:
-          - server:*
       - arg: --disable-network-policy
         nodeFilters:
           - server:*

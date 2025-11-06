@@ -178,6 +178,12 @@ tasks:
           --values IT/cilium/cilium-values.yaml \
           --hide-notes
       - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
+      - task: cilium:apply-l2-resources
+
+  cilium:apply-patches:
+    desc: 'Apply Cilium Kustomize patches for LAN exposure and gateway configuration'
+    cmds:
+      - kustomize build IT/cilium/ | kubectl apply -f -
 
   # Infrastructure Parallel Deployment
   # ------------------------------------------------------------------------------

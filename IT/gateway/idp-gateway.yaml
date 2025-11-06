@@ -16,6 +16,17 @@ metadata:
 spec:
   gatewayClassName: cilium
   listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "*.${DNS_SUFFIX}"
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: idp-wildcard-cert
     - name: https
       protocol: HTTPS
       port: 443

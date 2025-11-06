@@ -1,0 +1,27 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: lan-pool
+  labels:
+    app.kubernetes.io/name: cilium-ippool
+    app.kubernetes.io/instance: lan-pool
+    app.kubernetes.io/component: loadbalancer
+    app.kubernetes.io/part-of: idp
+  annotations:
+    description: 'IP pool for LoadBalancer services on LAN'
+    contact: platform-team
+    documentation: 'https://docs.cilium.io/en/stable/network/l2-announcements/'
+spec:
+  # ServiceSelector can be used to limit which services use this pool
+  # Empty selector means all LoadBalancer services can use it
+  serviceSelector:
+    matchExpressions:
+      - key: io.cilium/lb-ipam-ips
+        operator: DoesNotExist
+  blocks:
+    # Using high end of subnet range to minimize DHCP conflicts
+    # Adjust the network prefix (192.168.65) to match your LAN
+    # IMPORTANT: Verify these IPs are not in use before applying
+    - start: "192.168.65.240"
+      stop: "192.168.65.250"

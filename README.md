@@ -333,7 +333,7 @@ That's it! Your IDP is ready.
 
 Deployed via Helm on Node 2 (static workloads):
 
-- **Cilium** - eBPF-based CNI and network policies
+- **Cilium** - eBPF-based CNI, network policies, and LoadBalancer with L2 announcements for LAN service exposure
 - **Cert-Manager** - TLS certificate automation
 - **Vault** - Secret storage backend
 - **External Secrets** - Vault-to-Kubernetes secret sync

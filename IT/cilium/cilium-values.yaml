@@ -68,22 +68,45 @@ hubble:
       - icmp
       - http
 
+# @section -- CNI Configuration
+# Cilium operates as the primary CNI
+cni:
+  # -- (string) CNI chaining mode (none = complete CNI replacement)
+  chainingMode: none
+  # -- (bool) Exclusive mode (Cilium is the only CNI)
+  exclusive: true
+
 # @section -- Ingress Controller
+# Disabled - project uses Gateway API exclusively
 ingressController:
   # -- (bool) Enable the Ingress Controller
-  enabled: true
-  # -- (bool) Make this the default IngressClass
-  default: true
-  # -- (string) Use shared service for all Ingresses
-  loadbalancerMode: shared
-  service:
-    # -- (string) Service type (k3d load balancer will handle this)
-    type: LoadBalancer
+  enabled: false
+
+# @section -- Kubernetes Integration
+# -- (bool) Enable Kubernetes EndpointSlice feature
+enableK8sEndpointSlice: true
 
 # @section -- Gateway API
 gatewayAPI:
   # -- (bool) Enable Gateway API
   enabled: true
+
+# @section -- LoadBalancer & L2 Announcements
+# Disabled for k3d (docker bridge network isolation)
+# K3s ServiceLB is used instead for LAN exposure
+l2announcements:
+  # -- (bool) Enable L2 announcements
+  enabled: false
+  # -- (string) Lease duration
+  leaseDuration: 3s
+  # -- (string) Lease renew deadline
+  leaseRenewDeadline: 1s
+  # -- (string) Lease retry period
+  leaseRetryPeriod: 500ms
+
+externalIPs:
+  # -- (bool) Enable external IPs
+  enabled: false
 
 # @section -- Operator
 operator:
