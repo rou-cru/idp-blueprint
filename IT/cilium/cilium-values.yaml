@@ -193,9 +193,14 @@ cluster:
 # @section -- Performance
 bpf:
   # -- (bool) Enable BPF host routing for improved performance
-  hostRouting: true
+  # Disabled for k3d/Docker environments - causes DNS resolution issues
+  # Enable only for bare-metal/VM deployments
+  hostRouting: false
   # -- (bool) Enable BPF masquerading for traffic leaving cluster nodes
-  masquerade: true
+  # Disabled for k3d/Docker environments - interferes with Docker bridge networking
+  # and causes DNS responses to be malformed ("server misbehaving" errors)
+  # Enable only for bare-metal/VM deployments
+  masquerade: false
   # -- (string) Monitor aggregation level
   monitorAggregation: medium
   # -- (string) Monitor interval

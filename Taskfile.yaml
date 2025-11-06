@@ -213,9 +213,24 @@ tasks:
     env:
       DNS_SUFFIX: '{{.LAN_IP | replace "." "-"}}.nip.io'
     cmds:
+      # 1. Apply Gateway resources (triggers service creation)
       - kustomize build IT/gateway/ | envsubst | kubectl apply -f -
-      - kubectl wait --for=condition=Programmed gateway/idp-gateway -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
+      # 2. Wait for the service to be created by Cilium
+      - kubectl wait --for=jsonpath='{.status.addresses}' gateway/idp-gateway -n kube-system --timeout=60s || echo "⚠️  Gateway service not ready yet, continuing..."
+      - sleep 3
+      # 3. Apply NodePort patch immediately while service is fresh
       - kubectl apply -f IT/gateway/patch/gateway-service-patch.yaml
+      # 4. Verify patch was applied correctly
+      - |
+        HTTP_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-80")].nodePort}')
+        HTTPS_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-443")].nodePort}')
+        if [ "$HTTP_PORT" != "30080" ] || [ "$HTTPS_PORT" != "30443" ]; then
+          echo "❌ NodePort patch failed! HTTP=$HTTP_PORT (expected 30080), HTTPS=$HTTPS_PORT (expected 30443)"
+          exit 1
+        fi
+        echo "✅ NodePorts verified: HTTP=30080, HTTPS=30443"
+      # 5. Now wait for Gateway to be fully programmed
+      - kubectl wait --for=condition=Programmed gateway/idp-gateway -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
       - echo "✅ Gateway ready. Services available at:"
       - echo "   https://argocd.{{.LAN_IP | replace "." "-"}}.nip.io"
       - echo "   https://grafana.{{.LAN_IP | replace "." "-"}}.nip.io"

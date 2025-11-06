@@ -1,14 +1,42 @@
-# cilium
+# Cilium CNI Configuration
 
 This document lists the configuration parameters for the `cilium` component.
 
+## Overview
+
+Cilium is deployed as the primary CNI (Container Network Interface) for the IDP platform, replacing the default Flannel CNI. It provides:
+
+- **eBPF-based networking** for high performance
+- **Gateway API support** for modern traffic routing
+- **Hubble observability** for network visibility
+- **kube-proxy replacement** using eBPF
+
+## Network Exposure Strategy
+
+The platform uses **Gateway API with NodePort** services:
+
+1. **GatewayClass**: `cilium-nodeport` (defined via `CiliumGatewayClassConfig`)
+2. **Service Type**: NodePort with static port assignments
+3. **k3d Port Mapping**: Host ports 80/443 → NodePorts 30080/30443
+4. **NodePort Patch**: Applied automatically during gateway deployment to ensure static ports
+
+This approach is optimal for k3d/Docker environments where LoadBalancer services are not available.
+
 ## Values
+
+### Gateway API
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| gatewayAPI.enabled | bool | `true` | Enable Gateway API support |
+| ingressController.enabled | bool | `false` | Ingress Controller disabled (using Gateway API instead) |
 
 ### Kube-proxy Replacement
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | kubeProxyReplacement | bool | `true` | Replace kube-proxy with Cilium's eBPF implementation |
+| l7Proxy | bool | `true` | Enable L7 proxy for Gateway API and HTTP routing |
 
 ### Network Policy
 
@@ -52,10 +80,8 @@ This document lists the configuration parameters for the `cilium` component.
 | hubble.ui.resources.requests.cpu | string | `"50m"` | CPU request |
 | hubble.ui.resources.requests.memory | string | `"64Mi"` | Memory request |
 | hubble.ui.service.type | string | `"ClusterIP"` | Service type |
-| ingressController.default | bool | `true` | Make this the default IngressClass |
-| ingressController.enabled | bool | `true` | Enable the Ingress Controller |
-| ingressController.loadbalancerMode | string | `"shared"` | Use shared service for all Ingresses |
-| ingressController.service.type | string | `"LoadBalancer"` | Service type (k3d load balancer will handle this) |
+| l2announcements.enabled | bool | `false` | L2 announcements disabled for k3d/Docker environments |
+| externalIPs.enabled | bool | `false` | External IPs disabled for demo |
 | ipam.mode | string | `"cluster-pool"` | IPAM mode (cluster-pool recommended for efficient allocation) |
 | ipam.operator.clusterPoolIPv4PodCIDRList | list | `["10.42.0.0/16"]` | Pod CIDR for the cluster (must match k3d default) |
 | ipv6.enabled | bool | `false` | Enable IPv6 support (disabled for demo performance) |
