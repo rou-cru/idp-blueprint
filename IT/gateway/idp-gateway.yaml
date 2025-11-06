@@ -23,10 +23,6 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - name: idp-wildcard-cert
     - name: https
       protocol: HTTPS
       port: 443
