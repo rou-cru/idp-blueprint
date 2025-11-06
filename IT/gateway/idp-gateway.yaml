@@ -14,7 +14,7 @@ metadata:
     documentation: https://gateway-api.sigs.k8s.io/
     cert-manager.io/cluster-issuer: ca-issuer
 spec:
-  gatewayClassName: cilium
+  gatewayClassName: cilium-nodeport
   listeners:
     - name: http
       protocol: HTTP
