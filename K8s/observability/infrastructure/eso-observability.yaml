@@ -9,6 +9,9 @@ metadata:
     app.kubernetes.io/instance: eso-observability
     app.kubernetes.io/component: secret-sync
     app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
     description: 'ServiceAccount for External Secrets Operator to sync Grafana credentials from Vault'
     contact: 'platform-team'
