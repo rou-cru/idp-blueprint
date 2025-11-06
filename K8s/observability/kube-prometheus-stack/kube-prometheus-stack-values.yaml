@@ -1,20 +1,18 @@
-## @section CRDs
-## @description CRD installation configuration.
+# @section -- CRDs
 # -- Disables the installation of CRDs, as they are managed separately.
 crds:
   enabled: false
 
-## @section Alertmanager
-## @description Alertmanager configuration.
+# @section -- Alertmanager
 alertmanager:
   # -- Disabled by default. This blueprint uses Grafana Unified Alerting as the
   # primary platform for managing alerts from all datasources (Prometheus, Loki, etc.),
   # providing a single, integrated user experience.
   enabled: false
 
-## @section Prometheus
-## @description Prometheus instance configuration.
+# @section -- Prometheus
 prometheus:
+  priorityClassName: platform-observability
   prometheusSpec:
     # -- Global scrape interval for all ServiceMonitors (unless overridden).
     scrapeInterval: 60s
@@ -31,18 +29,21 @@ prometheus:
           resources:
             requests:
               storage: 1Gi
-    # -- Resource limits and requests for Prometheus.
     resources:
       requests:
+        # -- (string) CPU request
         cpu: 100m
+        # -- (string) Memory request
         memory: 384Mi
       limits:
+        # -- (string) CPU limit
         cpu: 250m
+        # -- (string) Memory limit
         memory: 512Mi
 
-## @section Grafana
-## @description Grafana instance configuration.
+# @section -- Grafana
 grafana:
+  priorityClassName: platform-dashboards
   # -- Enable persistence for dashboards and settings
   persistence:
     enabled: true
@@ -51,16 +52,21 @@ grafana:
     accessModes: [ReadWriteOnce]
   # -- Use existing secret for admin credentials from Vault via ESO.
   admin:
+    # checkov:skip=CKV_SECRET_6:The existingSecret field is a reference to a secret, not a secret itself.
     existingSecret: grafana-admin-credentials
     userKey: admin-user
+    # checkov:skip=CKV_SECRET_6:The passwordKey field is a key name, not a secret.
     passwordKey: admin-password
-  # -- Resource limits and requests for Grafana.
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 50m
+      # -- (string) Memory request
       memory: 128Mi
     limits:
+      # -- (string) CPU limit
       cpu: 250m
+      # -- (string) Memory limit
       memory: 256Mi
   # -- Additional datasources for Grafana.
   additionalDataSources:
@@ -89,90 +95,92 @@ grafana:
       # -- Set the default UI theme to dark.
       default_theme: dark
 
-    # -- Example for Azure AD OAuth.
-    # To enable, uncomment the block and provide the values, ideally via secrets.
-    # auth.azuread:
-    #   enabled: true
-    #   name: "Azure AD"
-    #   allow_sign_up: true
-    #   client_id: "$AZURE_CLIENT_ID"
-    #   client_secret: "$AZURE_CLIENT_SECRET"
-    #   scopes: "openid email profile"
-    #   auth_url: "https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/authorize"
-    #   token_url: "https://login.microsoftonline.com/YOUR_TENANT_ID/oauth2/v2.0/token"
-
-## @section Prometheus Operator
-## @description Prometheus Operator configuration.
+# @section -- Prometheus Operator
 # -- Resource limits and requests for the Prometheus Operator.
 prometheusOperator:
+  # -- (string) Priority class
+  priorityClassName: platform-observability
+
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 25m
+      # -- (string) Memory request
       memory: 32Mi
     limits:
+      # -- (string) CPU limit
       cpu: 50m
+      # -- (string) Memory limit
       memory: 64Mi
 
-## @section Kube State Metrics
-## @description Kube State Metrics configuration.
+# @section -- Kube State Metrics
 # -- Resource limits and requests for kube-state-metrics.
 kube-state-metrics:
-  # Enable only relevant resource types (whitelist approach).
-  # Disables: ReplicaSets, ConfigMaps, Secrets, RBAC, HPAs, Leases, Webhooks, etc.
+  # -- (string) Priority class
+  priorityClassName: platform-observability
+  # -- (list) Enable only relevant resource types (whitelist approach)
   extraArgs:
     - --resources=cronjobs,daemonsets,deployments,jobs,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,pods,services,statefulsets,storageclasses
+
   prometheus:
     monitor:
-      # Drop high-cardinality labels that add noise without operational value.
+      # -- (list) Drop high-cardinality labels
       metricRelabelings:
-        # Drop uid label: UUIDs not useful in dashboards/queries
+        # Drop uid label
         - action: labeldrop
           regex: "uid"
-        # Drop container_id: SHA256 hashes change on every restart (high churn)
+        # Drop container_id
         - action: labeldrop
           regex: "container_id"
-        # Drop image_id: SHA256 hashes redundant with image tag
+        # Drop image_id
         - action: labeldrop
           regex: "image_id"
+
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 25m
+      # -- (string) Memory request
       memory: 64Mi
     limits:
+      # -- (string) CPU limit
       cpu: 50m
+      # -- (string) Memory limit
       memory: 128Mi
 
-## @section Prometheus Node Exporter
-## @description Prometheus Node Exporter configuration.
+# @section -- Prometheus Node Exporter
 # -- Resource limits and requests for the node-exporter.
 prometheus-node-exporter:
-  # -- Minimal collector set optimized for K3d + Cilium eBPF environments.
-  # Uses whitelist approach (disable defaults, enable only essentials) to minimize overhead.
+  # -- (string) Priority class
+  priorityClassName: platform-observability
+  # -- (list) Minimal collector set optimized for K3d
   extraArgs:
-    # Disable all default collectors (40+ collectors)
     - --collector.disable-defaults
-    # Enable ONLY essential collectors for K8s observability (10 collectors)
-    - --collector.cpu          # CPU usage per core and aggregated
-    - --collector.cpufreq      # CPU frequency scaling
-    - --collector.meminfo      # Memory usage (free, cached, buffers, etc.)
-    - --collector.diskstats    # Disk I/O operations and latency
-    - --collector.filesystem   # Filesystem usage and inodes
-    - --collector.netdev       # Network interface traffic and errors
-    - --collector.loadavg      # System load averages (1m, 5m, 15m)
-    - --collector.pressure     # PSI: CPU/Memory/IO pressure stall information
-    - --collector.vmstat       # Virtual memory stats (paging, swapping)
-    - --collector.stat         # Context switches, interrupts, forks
-    - --collector.uname        # Kernel version and system metadata
+    - --collector.cpu
+    - --collector.cpufreq
+    - --collector.meminfo
+    - --collector.diskstats
+    - --collector.filesystem
+    - --collector.netdev
+    - --collector.loadavg
+    - --collector.pressure
+    - --collector.vmstat
+    - --collector.stat
+    - --collector.uname
+
   resources:
     requests:
+      # -- (string) CPU request
       cpu: 15m
+      # -- (string) Memory request
       memory: 24Mi
     limits:
+      # -- (string) CPU limit
       cpu: 30m
+      # -- (string) Memory limit
       memory: 48Mi
 
-## @section Windows Exporter
-## @description Windows Exporter configuration.
+# @section -- Windows Exporter
 # -- Disables unnecessary components.
 windows-exporter:
   enabled: false

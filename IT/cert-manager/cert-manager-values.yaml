@@ -1,67 +1,112 @@
-## @section Custom Resource Definitions
-## @description Enable the installation of cert-manager CRDs.
+# -- CRD installation configuration
+# @section -- Custom Resource Definitions
 crds:
+  # -- (bool) Enable the installation of cert-manager CRDs
   enabled: true
 
-## @section Prometheus Metrics
-## @description Enable Prometheus ServiceMonitor for cert-manager components.
+global:
+  priorityClassName: platform-infrastructure
+
+# -- Prometheus metrics configuration
+# @section -- Observability
 prometheus:
+  # -- (bool) Enable Prometheus metrics
   enabled: true
+  # -- ServiceMonitor configuration
   servicemonitor:
+    # -- (bool) Enable ServiceMonitor for cert-manager components
     enabled: true
+    # -- (string) Scrape interval
     interval: 60s
+    # -- (string) Scrape timeout
     scrapeTimeout: 40s
 
-## @section Resource Optimization
-## @description Set low resource requests and limits for the main components to optimize for a demo environment.
 resources:
+  # -- Resource requests
   requests:
+    # -- (string) CPU request
     cpu: 250m
+    # -- (string) Memory request
     memory: 256Mi
+  # -- Resource limits
   limits:
+    # -- (string) CPU limit
     cpu: 500m
+    # -- (string) Memory limit
     memory: 512Mi
 
-## @section Webhook Configuration
-## @description Resource and probe settings for the cert-manager webhook.
+# -- Webhook configuration
+# @section -- Webhook
 webhook:
+  # -- Resource settings for the webhook
   resources:
+    # -- Resource requests
     requests:
+      # -- (string) CPU request
       cpu: 100m
+      # -- (string) Memory request
       memory: 128Mi
+    # -- Resource limits
     limits:
+      # -- (string) CPU limit
       cpu: 200m
+      # -- (string) Memory limit
       memory: 256Mi
-  # -- Liveness probe for the webhook pod.
+  # -- Liveness probe for the webhook pod
   livenessProbe:
+    # -- HTTP GET configuration
     httpGet:
+      # -- (string) Liveness probe path
       path: /livez
+      # -- (int) Liveness probe port
       port: 6080
+      # -- (string) Liveness probe scheme
       scheme: HTTP
+    # -- (int) Initial delay before liveness probe
     initialDelaySeconds: 0
+    # -- (int) Timeout for liveness probe
     timeoutSeconds: 1
+    # -- (int) Period between liveness probes
     periodSeconds: 10
+    # -- (int) Success threshold for liveness probe
     successThreshold: 1
+    # -- (int) Failure threshold for liveness probe
     failureThreshold: 3
-  # -- Readiness probe for the webhook pod.
+  # -- Readiness probe for the webhook pod
   readinessProbe:
+    # -- HTTP GET configuration
     httpGet:
+      # -- (string) Readiness probe path
       path: /healthz
+      # -- (int) Readiness probe port
       port: 6080
+      # -- (string) Readiness probe scheme
       scheme: HTTP
+    # -- (int) Initial delay before readiness probe
     initialDelaySeconds: 0
+    # -- (int) Timeout for readiness probe
     timeoutSeconds: 1
+    # -- (int) Period between readiness probes
     periodSeconds: 10
+    # -- (int) Success threshold for readiness probe
     successThreshold: 1
+    # -- (int) Failure threshold for readiness probe
     failureThreshold: 3
 
-## @section CA Injector Configuration
-## @description Resource settings for the cert-manager cainjector.
+# -- CA injector configuration
+# @section -- CA Injector
 cainjector:
+  # -- Resource settings for cainjector
   resources:
+    # -- Resource requests
     requests:
+      # -- (string) CPU request
       cpu: 100m
+      # -- (string) Memory request
       memory: 128Mi
+    # -- Resource limits
     limits:
+      # -- (string) CPU limit
       cpu: 200m
+      # -- (string) Memory limit
       memory: 256Mi
