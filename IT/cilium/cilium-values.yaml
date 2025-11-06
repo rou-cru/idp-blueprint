@@ -76,6 +76,12 @@ cni:
   # -- (bool) Exclusive mode (Cilium is the only CNI)
   exclusive: true
 
+# @section -- Envoy Proxy
+# Required for L7 features like Gateway API and Ingress
+envoy:
+  # -- (bool) Enable Envoy proxy
+  enabled: true
+
 # @section -- Ingress Controller
 # Disabled - project uses Gateway API exclusively
 ingressController:
