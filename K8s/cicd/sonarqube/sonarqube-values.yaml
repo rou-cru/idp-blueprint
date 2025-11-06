@@ -6,6 +6,11 @@ community:
 
 sonarqube:
   priorityClassName: platform-cicd
+  # -- Environment variables for reverse proxy configuration
+  # Required when SonarQube is behind a reverse proxy that terminates TLS
+  env:
+    - name: SONAR_WEB_JAVAADDITIONALOPTS
+      value: "-Dsonar.web.proxyScheme=https"
   # -- Resource requests and limits for the SonarQube server.
   resources:
     requests:
