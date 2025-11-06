@@ -69,7 +69,11 @@ controller:
 # @section -- Server
 server:
   # -- Enable the Argo Workflows server.
-  enabled: false
+  # Required for web UI and API access
+  enabled: true
+  # -- Secure mode disabled when behind TLS-terminating gateway
+  # The Gateway handles TLS, so the server receives plain HTTP
+  secure: false
   # -- Resource requests and limits for the server.
   resources:
     requests:
