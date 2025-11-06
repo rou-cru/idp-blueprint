@@ -4,6 +4,12 @@ kind: Certificate
 metadata:
   name: idp-demo-ca
   namespace: cert-manager
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: certificate
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
     description: 'Defines the self-signed root CA Certificate for the IDP.'
 spec:
@@ -13,6 +19,7 @@ spec:
   privateKey:
     algorithm: ECDSA
     size: 256
+    rotationPolicy: Always
   issuerRef:
     name: self-signed-issuer
     kind: ClusterIssuer

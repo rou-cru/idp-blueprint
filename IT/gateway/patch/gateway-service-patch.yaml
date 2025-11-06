@@ -1,0 +1,28 @@
+# gateway-service-patch.yaml
+#
+# Forces the Cilium Gateway Service to use static NodePorts for HTTP and HTTPS.
+# This is necessary because in the k3d environment, we need to map host ports
+# to specific ports on the master node.
+#
+# The patch targets the service created by the Cilium Gateway API for our specific
+# Gateway resource ('idp-gateway').
+#
+# IMPORTANT: Cilium auto-generates port names as "port-{number}" (e.g., port-80, port-443)
+# not the listener names from the Gateway spec (http, https).
+apiVersion: v1
+kind: Service
+metadata:
+  name: cilium-gateway-idp-gateway
+  namespace: kube-system
+spec:
+  ports:
+    - name: port-80
+      nodePort: 30080
+      port: 80
+      protocol: TCP
+      targetPort: 80
+    - name: port-443
+      nodePort: 30443
+      port: 443
+      protocol: TCP
+      targetPort: 443

@@ -4,6 +4,7 @@ metadata:
   name: vault-ui
   namespace: vault-system
   labels:
+    app.kubernetes.io/part-of: idp
     app.kubernetes.io/name: vault-ui
     app.kubernetes.io/instance: vault-ui-demo
     app.kubernetes.io/component: ui
@@ -17,7 +18,7 @@ spec:
     - name: idp-gateway
       namespace: kube-system
   hostnames:
-    - "vault.127-0-0-1.sslip.io"
+    - "vault.${DNS_SUFFIX}"
   rules:
     - backendRefs:
         - name: vault

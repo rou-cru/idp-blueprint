@@ -1,15 +1,13 @@
 # Defines the namespace for the cert-manager component.
-# This namespace will contain all resources related to certificate management.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: cert-manager
   labels:
-    app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager-demo
-    app.kubernetes.io/component: certificate-authority
-    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
-    description:
-      'Namespace for all cert-manager components, including the controller and related
-      resources.'
+    argocd.argoproj.io/sync-wave: "-3"
+    description: "Namespace for the cert-manager certificate management system."

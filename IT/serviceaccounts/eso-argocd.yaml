@@ -8,6 +8,9 @@ metadata:
     app.kubernetes.io/instance: eso-argocd
     app.kubernetes.io/component: secret-sync
     app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
     description: 'ESO ServiceAccount for secret synchronization from Vault'
     contact: platform-team

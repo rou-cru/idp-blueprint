@@ -1,8 +1,8 @@
-# Defines the namespace for the External Secrets Operator.
+# Defines the namespace for the observability stack.
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: external-secrets-system
+  name: observability
   labels:
     app.kubernetes.io/part-of: idp
     owner: platform-team
@@ -10,4 +10,4 @@ metadata:
     environment: demo
   annotations:
     argocd.argoproj.io/sync-wave: "-3"
-    description: "Namespace for the External Secrets Operator."
+    description: "Namespace for the observability stack."

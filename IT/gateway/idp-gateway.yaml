@@ -14,12 +14,19 @@ metadata:
     documentation: https://gateway-api.sigs.k8s.io/
     cert-manager.io/cluster-issuer: ca-issuer
 spec:
-  gatewayClassName: cilium
+  gatewayClassName: cilium-nodeport
   listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: "*.${DNS_SUFFIX}"
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "*.127-0-0-1.sslip.io"
+      hostname: "*.${DNS_SUFFIX}"
       allowedRoutes:
         namespaces:
           from: All

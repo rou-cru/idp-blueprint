@@ -4,9 +4,10 @@ kind: Namespace
 metadata:
   name: argocd
   labels:
-    app.kubernetes.io/name: argocd
-    app.kubernetes.io/instance: argocd-demo
-    app.kubernetes.io/component: gitops-engine
-    app.kubernetes.io/managed-by: kubectl
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   annotations:
-    description: 'Namespace for the ArgoCD GitOps engine.'
+    argocd.argoproj.io/sync-wave: "-3"
+    description: "Namespace for the ArgoCD GitOps engine."

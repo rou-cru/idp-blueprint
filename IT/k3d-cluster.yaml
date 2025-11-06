@@ -6,12 +6,12 @@ servers: 1
 agents: 2
 image: rancher/k3s:v1.33.4-k3s1
 ports:
-  - port: 80:80
+  - port: 80:30080
     nodeFilters:
-      - loadbalancer
-  - port: 443:443
+      - server:0
+  - port: 443:30443
     nodeFilters:
-      - loadbalancer
+      - server:0
 options:
   k3d:
     disableLoadbalancer: false

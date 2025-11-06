@@ -3,6 +3,12 @@ kind: ApplicationSet
 metadata:
   name: observability
   namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: applicationset
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
 spec:
   generators:
     - git:
@@ -37,3 +43,12 @@ spec:
             duration: 10s
             factor: 2
             maxDuration: 10m
+      ignoreDifferences:
+        - group: admissionregistration.k8s.io
+          kind: MutatingWebhookConfiguration
+          jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'

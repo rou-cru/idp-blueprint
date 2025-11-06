@@ -5,5 +5,7 @@ kind: Kustomization
 resources:
   - argocd.yaml
   - cert-manager.yaml
+  - cicd.yaml
   - external-secrets-system.yaml
+  - observability.yaml
   - vault-system.yaml
