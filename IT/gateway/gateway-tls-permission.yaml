@@ -1,0 +1,12 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideEnvoyConfig
+metadata:
+  name: gateway-tls-secrets
+spec:
+  services:
+    - name: idp-gateway
+      namespace: kube-system
+  resources:
+    - kind: Secret
+      name: idp-wildcard-cert
+      namespace: kube-system

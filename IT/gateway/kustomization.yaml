@@ -14,6 +14,7 @@ resources:
   - httproutes/sonarqube-httproute.yaml
   - httproutes/vault-httproute.yaml
   - httproutes/redirect-http-to-https.yaml
+  - gateway-tls-permission.yaml
 
 labels:
   - includeSelectors: true
