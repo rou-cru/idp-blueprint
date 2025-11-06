@@ -51,9 +51,6 @@ controller:
 server:
   # -- (string) Priority class for server pods
   priorityClassName: platform-infrastructure
-  # -- (bool) Run server without TLS (required when behind TLS-terminating proxy)
-  # The Gateway handles TLS termination, so ArgoCD receives plain HTTP
-  insecure: true
   resources:
     requests:
       # -- (string) CPU request
@@ -158,6 +155,12 @@ crds:
 
 # @section -- Configuration
 configs:
+  # -- ArgoCD server command-line parameters
+  # Required for TLS termination at reverse proxy/gateway
+  params:
+    # -- (bool) Run server without TLS (required when behind TLS-terminating proxy)
+    # The Gateway handles TLS termination, so ArgoCD receives plain HTTP
+    server.insecure: true
   secret:
     # -- (bool) Create secret for admin credentials
     createSecret: true
