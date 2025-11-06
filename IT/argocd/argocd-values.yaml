@@ -51,6 +51,9 @@ controller:
 server:
   # -- (string) Priority class for server pods
   priorityClassName: platform-infrastructure
+  # -- (bool) Run server without TLS (required when behind TLS-terminating proxy)
+  # The Gateway handles TLS termination, so ArgoCD receives plain HTTP
+  insecure: true
   resources:
     requests:
       # -- (string) CPU request
