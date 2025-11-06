@@ -23,6 +23,20 @@ vars:
   K3D_CONFIG: '{{.K3D_CONFIG | default "IT/k3d-cluster-cached.yaml"}}'
   REGISTRY_CACHE_PATH: '{{.REGISTRY_CACHE_PATH | default "$HOME/.k3d-registry"}}'
 
+  # k3d NodePort Configuration
+  NODEPORT_HTTP: '30080'
+  NODEPORT_HTTPS: '30443'
+
+  # ArgoCD Configuration
+  ARGOCD_SYNC_TIMEOUT: '10m'
+  ARGOCD_BACKOFF_DURATION: '10s'
+  ARGOCD_BACKOFF_FACTOR: '2'
+  ARGOCD_BACKOFF_MAX_DURATION: '10m'
+  ARGOCD_RETRY_LIMIT: '10'
+
+  # Gateway Timeouts
+  GATEWAY_WAIT_TIMEOUT: '60s'
+
   # Password Configuration
   # Empty string = generate random
   # Defined value = use provided password
@@ -215,7 +229,7 @@ tasks:
       # 1. Apply Gateway resources (triggers service creation)
       - kustomize build IT/gateway/ | envsubst | kubectl apply -f -
       # 2. Wait for the service to be created by Cilium
-      - kubectl wait --for=jsonpath='{.status.addresses}' gateway/idp-gateway -n kube-system --timeout=60s || echo "⚠️  Gateway service not ready yet, continuing..."
+      - kubectl wait --for=jsonpath='{.status.addresses}' gateway/idp-gateway -n kube-system --timeout={{.GATEWAY_WAIT_TIMEOUT}} || echo "⚠️  Gateway service not ready yet, continuing..."
       - sleep 3
       # 3. Apply NodePort patch immediately while service is fresh
       - kubectl apply -f IT/gateway/patch/gateway-service-patch.yaml
@@ -223,11 +237,11 @@ tasks:
       - |
         HTTP_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-80")].nodePort}')
         HTTPS_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-443")].nodePort}')
-        if [ "$HTTP_PORT" != "30080" ] || [ "$HTTPS_PORT" != "30443" ]; then
-          echo "❌ NodePort patch failed! HTTP=$HTTP_PORT (expected 30080), HTTPS=$HTTPS_PORT (expected 30443)"
+        if [ "$HTTP_PORT" != "{{.NODEPORT_HTTP}}" ] || [ "$HTTPS_PORT" != "{{.NODEPORT_HTTPS}}" ]; then
+          echo "❌ NodePort patch failed! HTTP=$HTTP_PORT (expected {{.NODEPORT_HTTP}}), HTTPS=$HTTPS_PORT (expected {{.NODEPORT_HTTPS}})"
           exit 1
         fi
-        echo "✅ NodePorts verified: HTTP=30080, HTTPS=30443"
+        echo "✅ NodePorts verified: HTTP={{.NODEPORT_HTTP}}, HTTPS={{.NODEPORT_HTTPS}}"
       # 5. Now wait for Gateway to be fully programmed
       - kubectl wait --for=condition=Programmed gateway/idp-gateway -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
       - echo "✅ Gateway ready. Services available at:"

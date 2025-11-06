@@ -2,12 +2,10 @@
 #
 # Forces the Cilium Gateway Service to use static NodePorts for HTTP and HTTPS.
 # This is necessary because in the k3d environment, we need to map host ports
-# to specific ports on the master node. By setting these NodePorts statically,
-# we ensure that the gateway is always accessible from the host machine via
-# ports 80 and 443, which are mapped in the k3d-cluster.yaml configuration.
+# to specific ports on the master node.
 #
-# The patch targets the service created by the Cilium Gateway API for our specific
-# Gateway resource ('idp-gateway').
+# NOTE: NodePort values (30080/30443) are centralized in Taskfile.yaml vars
+# as NODEPORT_HTTP and NODEPORT_HTTPS. Update there if changing ports.
 #
 # IMPORTANT: Cilium auto-generates port names as "port-{number}" (e.g., port-80, port-443)
 # not the listener names from the Gateway spec (http, https).
