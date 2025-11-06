@@ -61,8 +61,12 @@ controller:
   # -- Priority class for the controller pod.
   priorityClassName: platform-cicd
   # -- Persistence configuration for the controller.
+  # Completely disable archive and persistence for k3d environment
   persistence:
     archive: false
+    connectionPool:
+      maxIdleConns: 0
+      maxOpenConns: 0
   # -- Maximum number of parallel workflows.
   parallelism: 10
 
