@@ -1,0 +1,74 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: docker-build-push
+  namespace: cicd
+spec:
+  serviceAccountName: argo-workflow
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    runAsNonRoot: true
+  entrypoint: build-and-push
+  arguments:
+    parameters:
+      - name: repo-url
+        value: https://github.com/rou-cru/idp-blueprint.git
+      - name: branch
+        value: main
+      - name: dockerfile-path
+        value: Dockerfile
+      - name: context-path
+        value: .
+      - name: image-name
+        value: myorg/myimage
+      - name: image-tag
+        value: latest
+      - name: registry
+        value: docker.io
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: docker-registry-credentials
+    - name: workspace
+      emptyDir: {}
+  templates:
+    - name: build-and-push
+      steps:
+        - - name: clone
+            template: git-clone
+        - - name: build
+            template: kaniko-build
+
+    - name: git-clone
+      container:
+        image: alpine/git:2.43.0
+        command: [sh, -c]
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        args:
+          - |
+            git clone --branch {{workflow.parameters.branch}} --single-branch {{workflow.parameters.repo-url}} /workspace
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+
+    - name: kaniko-build
+      container:
+        image: gcr.io/kaniko-project/executor:v1.25.0
+        command: ["/kaniko/executor"]
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        args:
+          - --context=/workspace/{{workflow.parameters.context-path}}
+          - --dockerfile=/workspace/{{workflow.parameters.dockerfile-path}}
+          - --destination={{workflow.parameters.registry}}/{{workflow.parameters.image-name}}:{{workflow.parameters.image-tag}}
+        volumeMounts:
+          - name: workspace
+            mountPath: /workspace
+          - name: docker-config
+            mountPath: /kaniko/.docker/

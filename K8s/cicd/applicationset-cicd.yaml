@@ -3,6 +3,12 @@ kind: ApplicationSet
 metadata:
   name: cicd
   namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: applicationset
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
 spec:
   generators:
     - git:
@@ -10,6 +16,8 @@ spec:
         revision: HEAD
         directories:
           - path: K8s/cicd/*
+          - path: K8s/cicd/jenkins.disabled
+            exclude: true
   template:
     metadata:
       name: 'cicd-{{path.basename}}'
