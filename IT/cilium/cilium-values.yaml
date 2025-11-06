@@ -85,6 +85,10 @@ cni:
 envoy:
   # -- (bool) Enable Envoy proxy
   enabled: true
+  prometheus:
+    enabled: true
+    serviceMonitor:
+      enabled: true
 
 # @section -- Ingress Controller
 # Disabled - project uses Gateway API exclusively
@@ -188,6 +192,8 @@ cluster:
 
 # @section -- Performance
 bpf:
+  # -- (bool) Enable BPF host routing for improved performance
+  hostRouting: true
   # -- (bool) Enable BPF masquerading for traffic leaving cluster nodes
   masquerade: true
   # -- (string) Monitor aggregation level
