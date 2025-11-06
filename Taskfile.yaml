@@ -30,7 +30,6 @@ vars:
   GRAFANA_ADMIN_PASSWORD: '{{.GRAFANA_ADMIN_PASSWORD | default ""}}'
   SONARQUBE_ADMIN_PASSWORD: '{{.SONARQUBE_ADMIN_PASSWORD | default ""}}'
   SONARQUBE_MONITORING_PASSCODE: '{{.SONARQUBE_MONITORING_PASSCODE | default ""}}'
-  # JENKINS_ADMIN_PASSWORD: '{{.JENKINS_ADMIN_PASSWORD | default ""}}'
 
   # Docker Registry Configuration
   DOCKER_REGISTRY_URL: '{{.DOCKER_REGISTRY_URL | default "docker.io"}}'
@@ -290,7 +289,6 @@ tasks:
       - ./scripts/vault-generate.sh secret/docker/registry registry "{{.DOCKER_REGISTRY_URL}}" base64 none
       - ./scripts/vault-generate.sh secret/docker/registry username "{{.DOCKER_REGISTRY_USERNAME}}" base64 none
       - ./scripts/vault-generate.sh secret/docker/registry password "{{.DOCKER_REGISTRY_PASSWORD}}" base64 none
-      # - ./scripts/vault-generate.sh secret/jenkins/admin password "{{.JENKINS_ADMIN_PASSWORD}}" base64 none
 
   it:eso:apply-resources:
     desc: 'Apply ESO SecretStores and ExternalSecrets'
@@ -355,39 +353,6 @@ tasks:
     cmds:
       - task: image:release:minimal
       - task: image:release
-      - task: image:release:jenkins-all
-
-  # Jenkins Images
-  # ------------------------------------------------------------------------------
-  image:build:jenkins-master:
-    desc: 'Build the Jenkins Master image'
-    cmds:
-      - docker bake jenkins-master --progress=tty
-
-  image:build:jenkins-agent:
-    desc: 'Build the Jenkins Agent image'
-    cmds:
-      - docker bake jenkins-agent --progress=tty
-
-  image:build:jenkins-all:
-    desc: 'Build both Jenkins Master and Agent images'
-    cmds:
-      - docker bake jenkins-all --progress=tty
-
-  image:release:jenkins-master:
-    desc: 'Build and push Jenkins Master image to Registry'
-    cmds:
-      - docker buildx bake release-jenkins-master --progress=tty
-
-  image:release:jenkins-agent:
-    desc: 'Build and push Jenkins Agent image to Registry'
-    cmds:
-      - docker buildx bake release-jenkins-agent --progress=tty
-
-  image:release:jenkins-all:
-    desc: 'Build and push both Jenkins images to Registry'
-    cmds:
-      - docker buildx bake release-jenkins-all --progress=tty
 
   ################################################################################
   # LINTING, VALIDATION & SECURITY TASKS

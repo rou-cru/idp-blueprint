@@ -32,7 +32,7 @@ graph LR
     end
 
     subgraph ArgoCD
-        B -- discovers --> E(jenkins/);
+        B -- discovers --> E(argo-workflows/);
         C -- discovers --> F(loki/);
         C -- discovers --> G(prometheus/);
     end
@@ -78,7 +78,7 @@ graph TD
 
         B --> B1(applicationset-cicd.yaml);
         B --> B2(namespace.yaml);
-        B --> B3(jenkins/);
+        B --> B3(argo-workflows/);
         B3 --> B3a(kustomization.yaml);
 
         C --> C1(applicationset-observability.yaml);
@@ -149,25 +149,25 @@ This is the **preferred, standard method** for deploying **third-party applicati
 or any software available as a Helm chart. It allows us to version and manage the
 configuration of these tools declaratively.
 
-- **When to Use It:** For tools like Jenkins, Loki, Prometheus, Trivy, etc.
+- **When to Use It:** For tools like Argo Workflows, Loki, Prometheus, Trivy, etc.
 - **Structure:**
-  - A directory is created for the application (e.g., `jenkins/`).
+  - A directory is created for the application (e.g., `argo-workflows/`).
   - A `kustomization.yaml` file defines the Helm chart in the `helmCharts` section.
-  - A `values.yaml` file (e.g. `jenkins-values.yaml`) contains all custom
+  - A `values.yaml` file (e.g. `argo-workflows-values.yaml`) contains all custom
         configuration for that chart.
 
-- **Example (`K8s/cicd/jenkins/kustomization.yaml`):**
+- **Example (`K8s/cicd/argo-workflows/kustomization.yaml`):**
 
     ```yaml
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
     helmCharts:
-      - name: jenkins
-        repo: https://charts.jenkins.io
-        version: 5.8.101
-        releaseName: jenkins
+      - name: argo-workflows
+        repo: https://argoproj.github.io/argo-helm
+        version: 0.45.11
+        releaseName: argo-workflows
         namespace: cicd
-        valuesFile: jenkins-values.yaml
+        valuesFile: argo-workflows-values.yaml
     ```
 
 ## Workflow for Deploying a New Application
@@ -198,7 +198,7 @@ depending on how each component is deployed:
       critical infrastructure versions.
 
 2. **Application Stack Components (Managed by GitOps)**
-    - **Components**: Jenkins, SonarQube, Loki, Prometheus, Trivy, etc.
+    - **Components**: Argo Workflows, SonarQube, Loki, Prometheus, Trivy, etc.
     - **Method**: These components are deployed declaratively by ArgoCD via
       `ApplicationSet` resources.
     - **Version Source**: The Helm chart version is specified directly in each

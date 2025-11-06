@@ -10,7 +10,6 @@
 ![Kyverno](https://img.shields.io/badge/Kyverno-Policies-blue?style=flat-square)
 ![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-orange?style=flat-square&logo=prometheus)
 ![Grafana](https://img.shields.io/badge/Grafana-Dashboards-orange?style=flat-square&logo=grafana)
-![Jenkins](https://img.shields.io/badge/Jenkins-CI/CD-red?style=flat-square&logo=jenkins)
 ![Trivy](https://img.shields.io/badge/Trivy-Security-blue?style=flat-square)
 
 > **An Internal Developer Platform (IDP) Blueprint** - Deploy a complete platform
@@ -29,7 +28,7 @@ that demonstrates modern Platform Engineering practices:
   [Loki](https://grafana.com/docs/loki/latest/?pg=oss-loki&plcmt=quick-links) +
   [Fluent-bit](https://fluentbit.io)
 - ✅ **Security scanning** with [Trivy](https://trivy.dev/latest)
-- ✅ **CI/CD** with [Jenkins](https://www.jenkins.io),
+- ✅ **CI/CD** with [Argo Workflows](https://argo-workflows.readthedocs.io),
   [SonarQube](https://www.sonarsource.com/)
 - ✅ **eBPF Service Mesh** with [Cilium](https://cilium.io)
 - ✅ **Secrets management** with
@@ -96,7 +95,7 @@ flowchart LR
         Loki["Loki"]
         Grafana["Grafana"]
         Fluent["Fluent-bit"]
-        Jenkins["Jenkins"]
+        Workflows["Argo Workflows"]
         Sonarqube["Sonarqube"]
         Trivy["Trivy"]
   end
@@ -107,7 +106,7 @@ flowchart LR
     NS ==> StaticPhase
     StaticPhase -.-> Cilium & ESO & ArgoCD & CertMgr & Vault
     GitOps --> PolicyStack
-    CICD -.-> Jenkins & Sonarqube
+    CICD -.-> Workflows & Sonarqube
     Sec -.-> Trivy
     ArgoCD ==> GitOpsPhase
     GitOpsPhase -.-> PolicyStack & Obs & CICD & Sec
@@ -128,7 +127,7 @@ flowchart LR
     Loki@{ shape: h-cyl}
     Grafana@{ shape: h-cyl}
     Fluent@{ shape: h-cyl}
-    Jenkins@{ shape: h-cyl}
+    Workflows@{ shape: h-cyl}
     Sonarqube@{ shape: h-cyl}
     Trivy@{ shape: h-cyl}
     Start@{ shape: braces}
@@ -167,7 +166,7 @@ flowchart TB
         KSM["Kube State Metrics"]
         Grafana["Grafana"]
         Loki["Loki"]
-        Jenkins["Jenkins"]
+        Workflows["Argo Workflows"]
         Sonar["SonarQube"]
         Trivy["Trivy"]
   end
@@ -179,13 +178,13 @@ flowchart TB
         Node2
         Node3
   end
-    Jenkins == Provide Images &amp; Manifest ==> ArgoCD
     Git[("Git Repository")] -- policies as code --> ArgoCD
     Git -- ApplicationSets --> ArgoCD
     ESO == Deploy Secrets request by ==> ArgoCD
     Vault == provides secrets === ESO
-    Sonar == Quality Gates === Jenkins
-    Trivy == scans images === Jenkins
+    Workflows == CI/CD Execution ==> ArgoCD
+    Sonar == Quality Analysis === Workflows
+    Trivy == Security Scans === ArgoCD
     ArgoCD == GitOps Policy ==> Kyverno
     PolicyReporter === Kyverno
     PolicyReporter == Policy Metrics ==> Grafana
@@ -201,7 +200,6 @@ flowchart TB
     Node3 -. scrapes Pods Logs .-> FluentBit
     FluentBit == Save Logs ==> Loki
     Loki == Logs ==> Grafana
-    Jenkins ==> n1[("Image Registry")]
     style CertMgr stroke:#AA00FF
     style Vault stroke:#AA00FF
     style ESO stroke:#AA00FF
@@ -212,7 +210,7 @@ flowchart TB
     style AlertMgr stroke:#FFD600
     style KSM stroke:#2962FF
     style Loki stroke:#D50000
-    style Jenkins stroke:#00C853
+    style Workflows stroke:#00C853
     style Sonar stroke:#FFD600
     style Trivy stroke:#AA00FF
     style Cilium stroke:#000000,fill:#757575
@@ -222,7 +220,6 @@ flowchart TB
     style Node2 stroke:#000000,fill:#757575
     style Node3 fill:#757575,stroke:#000000
     style Git stroke:#00C853
-    style n1 stroke:#00C853
     style K3s stroke:#000000,fill:#424242
     linkStyle 0 stroke:#00C853,stroke-width:2px,fill:none
     linkStyle 1 stroke:#00C853,stroke-width:2px,fill:none
@@ -354,7 +351,7 @@ code**:
 Deployed via ArgoCD ApplicationSets on Node 3:
 
 - **Observability**: Prometheus, Grafana, Loki, Fluent-bit
-- **CI/CD**: Jenkins, SonarQube
+- **CI/CD**: Argo Workflows, SonarQube
 - **Security**: Trivy Operator
 
 ## 🤝 Contributing
