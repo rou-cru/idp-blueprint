@@ -1,7 +1,7 @@
 # @section -- CRDs
-# -- Disables the installation of CRDs, as they are managed separately.
+# -- Enable CRD installation by the chart since they're not managed separately
 crds:
-  enabled: false
+  enabled: true
 
 # @section -- Alertmanager
 alertmanager:
