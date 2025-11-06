@@ -44,7 +44,7 @@ graph TD
 
             subgraph CICDStack [CI/CD Stack]
                 direction LR
-                Jenkins[Jenkins]
+                Workflows[Argo Workflows]
                 SonarQube[SonarQube]
             end
 
@@ -68,7 +68,7 @@ graph TD
     FluentBit -->|Collects Logs| Loki
     Prometheus -->|Scrapes Metrics| Grafana
     Loki -->|Provides Logs| Grafana
-    Jenkins -->|Sends analysis to| SonarQube
+    Workflows -->|Triggers analysis in| SonarQube
     Trivy -->|Scans Resources| K8sApi
     CertManager -->|Manages Certificates| K8sApi
 ```
@@ -95,7 +95,7 @@ graph TB
             APP1[App: observability-fluent-bit]
             APP2[App: observability-loki]
             APP3[App: observability-kube-prometheus-stack]
-            APP4[App: cicd-jenkins]
+            APP4[App: cicd-argo-workflows]
             APP5[App: security-trivy]
             APP6[App: platform-policies]
         end
@@ -104,7 +104,7 @@ graph TB
             K1[Kustomize: fluent-bit<br/>helmCharts: fluent-bit v0.54.0]
             K2[Kustomize: loki<br/>helmCharts: loki v6.42.0]
             K3[Kustomize: kube-prometheus-stack<br/>helmCharts: v77.14.0]
-            K4[Kustomize: jenkins<br/>helmCharts: jenkins v5.8.101]
+            K4[Kustomize: argo-workflows<br/>helmCharts: argo-workflows v0.45.11]
             K5[Kustomize: trivy<br/>helmCharts: trivy-operator v0.31.0]
             K6[Kustomize: kyverno<br/>helmCharts: kyverno v3.5.2]
         end
@@ -123,9 +123,10 @@ graph TB
             STS3[StatefulSet: prometheus-prometheus]
             DEP2[Deployment: prometheus-grafana]
 
-            STS4[StatefulSet: jenkins]
-            DEP3[Deployment: trivy-operator]
-            DEP4[Deployment: kyverno-admission-controller]
+            DEP3[Deployment: argo-workflows-server]
+            DEP4[Deployment: argo-workflows-controller]
+            DEP5[Deployment: trivy-operator]
+            DEP6[Deployment: kyverno-admission-controller]
         end
     end
 
@@ -190,7 +191,7 @@ graph TD
 
         subgraph Workloads_Apps [Application Workloads]
             direction LR
-            jenkins[Jenkins]
+            workflows[Argo Workflows]
             sonar[SonarQube]
         end
 
@@ -377,15 +378,15 @@ graph TB
         HR1[HTTPRoute: argocd<br/>argocd.127-0-0-1.sslip.io]
         HR2[HTTPRoute: grafana<br/>grafana.127-0-0-1.sslip.io]
         HR3[HTTPRoute: vault<br/>vault.127-0-0-1.sslip.io]
-        HR4[HTTPRoute: jenkins<br/>jenkins.127-0-0-1.sslip.io]
+        HR4[HTTPRoute: workflows<br/>workflows.127-0-0-1.sslip.io]
         HR5[HTTPRoute: sonarqube<br/>sonarqube.127-0-0-1.sslip.io]
     end
 
     subgraph Backend Services
-        S1[argocd-server:443]
+        S1[argocd-server:80]
         S2[prometheus-grafana:80]
         S3[vault:8200]
-        S4[jenkins:8080]
+        S4[argo-workflows-server:2746]
         S5[sonarqube-sonarqube:9000]
     end
 

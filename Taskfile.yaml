@@ -5,6 +5,10 @@ vars:
   DOCKER_IMAGE_TAG: '{{.DOCKER_IMAGE_TAG | default "latest"}}'
   DOCKER_IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL | default "minimal"}}'
 
+  # Network Configuration
+  LAN_IP:
+    sh: ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1"
+
   # Helm Chart Versions
   CILIUM_VERSION: '{{.CILIUM_VERSION | default "1.18.2"}}'
   CERT_MANAGER_VERSION: '{{.CERT_MANAGER_VERSION | default "v1.19.0"}}'
@@ -19,6 +23,20 @@ vars:
   K3D_CONFIG: '{{.K3D_CONFIG | default "IT/k3d-cluster-cached.yaml"}}'
   REGISTRY_CACHE_PATH: '{{.REGISTRY_CACHE_PATH | default "$HOME/.k3d-registry"}}'
 
+  # k3d NodePort Configuration
+  NODEPORT_HTTP: '30080'
+  NODEPORT_HTTPS: '30443'
+
+  # ArgoCD Configuration
+  ARGOCD_SYNC_TIMEOUT: '10m'
+  ARGOCD_BACKOFF_DURATION: '10s'
+  ARGOCD_BACKOFF_FACTOR: '2'
+  ARGOCD_BACKOFF_MAX_DURATION: '10m'
+  ARGOCD_RETRY_LIMIT: '10'
+
+  # Gateway Timeouts
+  GATEWAY_WAIT_TIMEOUT: '60s'
+
   # Password Configuration
   # Empty string = generate random
   # Defined value = use provided password
@@ -26,7 +44,11 @@ vars:
   GRAFANA_ADMIN_PASSWORD: '{{.GRAFANA_ADMIN_PASSWORD | default ""}}'
   SONARQUBE_ADMIN_PASSWORD: '{{.SONARQUBE_ADMIN_PASSWORD | default ""}}'
   SONARQUBE_MONITORING_PASSCODE: '{{.SONARQUBE_MONITORING_PASSCODE | default ""}}'
-  JENKINS_ADMIN_PASSWORD: '{{.JENKINS_ADMIN_PASSWORD | default ""}}'
+
+  # Docker Registry Configuration
+  DOCKER_REGISTRY_URL: '{{.DOCKER_REGISTRY_URL | default "docker.io"}}'
+  DOCKER_REGISTRY_USERNAME: '{{.DOCKER_REGISTRY_USERNAME | default ""}}'
+  DOCKER_REGISTRY_PASSWORD: '{{.DOCKER_REGISTRY_PASSWORD | default ""}}'
 
 tasks:
   deploy:
@@ -34,12 +56,9 @@ tasks:
     cmds:
       - defer: echo '{{if .EXIT_CODE}}⚠️  Deployment failed! Run "task destroy" to clean up and retry.{{else}}Success 😌{{end}}'
       # 1. Bootstrap Cluster
-      - task: k3d:create # Create Nodes
-      - task: it:apply-namespaces # Prepare all no-gitops namespaces
-      - task: it:apply-serviceaccounts # Prepare all no-gitops SA
-      - task: it:apply-crds # Install CRDs before CNI
-      - task: it:apply-priorityclasses # Install PriorityClasses for scheduling
-      # Complete bootstrapping by adding the CNI
+      - task: k3d:create
+      - task: it:apply-namespaces
+      - task: it:bootstrap
       - task: cilium:deploy
       # 2. Secrets & Certs Management
       - task: it:deploy-secret-and-certs
@@ -104,6 +123,14 @@ tasks:
     cmds:
       - k3d cluster create idp-demo -c {{.K3D_CONFIG}}
 
+  it:bootstrap:
+    desc: 'Bootstrap cluster prerequisites and preload images'
+    deps:
+      - cilium:preload
+      - it:apply-serviceaccounts
+      - it:apply-crds
+      - it:apply-priorityclasses
+
   it:apply-namespaces:
     desc: 'Apply all IT bootstrap namespaces via Kustomize'
     cmds:
@@ -129,7 +156,12 @@ tasks:
     desc: 'Apply Gateway API CRDs'
     cmds:
       - |
-        kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/{{.GATEWAY_API_VERSION}}/standard-install.yaml
+        GATEWAY_API_URL="https://github.com/kubernetes-sigs/gateway-api/releases/download/{{.GATEWAY_API_VERSION}}/standard-install.yaml"
+        TEMP_FILE="/tmp/gateway-api-{{.GATEWAY_API_VERSION}}.yaml"
+        if [ ! -f "$TEMP_FILE" ]; then
+          curl -fsSL "$GATEWAY_API_URL" -o "$TEMP_FILE"
+        fi
+        kubectl apply -f "$TEMP_FILE"
 
   it:apply-prometheus-crds:
     desc: 'Apply Prometheus CRDs from the dedicated Helm chart'
@@ -142,6 +174,13 @@ tasks:
 
   # Cilium
   # ------------------------------------------------------------------------------
+  cilium:preload:
+    desc: 'Pre-load Cilium image to Docker host'
+    vars:
+      CILIUM_IMAGE: 'quay.io/cilium/cilium:v{{.CILIUM_VERSION}}'
+    cmds:
+      - docker pull {{.CILIUM_IMAGE}}
+
   cilium:deploy:
     desc: 'Install Cilium as CNI'
     cmds:
@@ -184,9 +223,33 @@ tasks:
   # ------------------------------------------------------------------------------
   gateway:deploy:
     desc: 'Deploy Gateway API Gateway resource'
+    env:
+      DNS_SUFFIX: '{{.LAN_IP | replace "." "-"}}.nip.io'
     cmds:
-      - kustomize build IT/gateway/ | kubectl apply -f -
+      # 1. Apply Gateway resources (triggers service creation)
+      - kustomize build IT/gateway/ | envsubst | kubectl apply -f -
+      # 2. Wait for the service to be created by Cilium
+      - kubectl wait --for=jsonpath='{.status.addresses}' gateway/idp-gateway -n kube-system --timeout={{.GATEWAY_WAIT_TIMEOUT}} || echo "⚠️  Gateway service not ready yet, continuing..."
+      - sleep 3
+      # 3. Apply NodePort patch immediately while service is fresh
+      - kubectl apply -f IT/gateway/patch/gateway-service-patch.yaml
+      # 4. Verify patch was applied correctly
+      - |
+        HTTP_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-80")].nodePort}')
+        HTTPS_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-443")].nodePort}')
+        if [ "$HTTP_PORT" != "{{.NODEPORT_HTTP}}" ] || [ "$HTTPS_PORT" != "{{.NODEPORT_HTTPS}}" ]; then
+          echo "❌ NodePort patch failed! HTTP=$HTTP_PORT (expected {{.NODEPORT_HTTP}}), HTTPS=$HTTPS_PORT (expected {{.NODEPORT_HTTPS}})"
+          exit 1
+        fi
+        echo "✅ NodePorts verified: HTTP={{.NODEPORT_HTTP}}, HTTPS={{.NODEPORT_HTTPS}}"
+      # 5. Now wait for Gateway to be fully programmed
       - kubectl wait --for=condition=Programmed gateway/idp-gateway -n kube-system --timeout={{.KUBECTL_TIMEOUT}}
+      - echo "✅ Gateway ready. Services available at:"
+      - echo "   https://argocd.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://grafana.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://vault.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://sonarqube.{{.LAN_IP | replace "." "-"}}.nip.io"
+      - echo "   https://workflows.{{.LAN_IP | replace "." "-"}}.nip.io"
 
   # ESO
   # ------------------------------------------------------------------------------
@@ -200,6 +263,7 @@ tasks:
           --values IT/external-secrets/eso-values.yaml \
           --hide-notes
       - kubectl wait --for=condition=available --timeout={{.KUBECTL_TIMEOUT}} deployment/external-secrets -n external-secrets-system
+      - kubectl wait --for=condition=available --timeout={{.KUBECTL_TIMEOUT}} deployment/external-secrets-webhook -n external-secrets-system
 
   # Vault
   # ------------------------------------------------------------------------------
@@ -236,7 +300,9 @@ tasks:
       - ./scripts/vault-generate.sh secret/grafana/admin admin-password "{{.GRAFANA_ADMIN_PASSWORD}}" base64 none
       - ./scripts/vault-generate.sh secret/sonarqube/admin password "{{.SONARQUBE_ADMIN_PASSWORD}}" base64 none
       - ./scripts/vault-generate.sh secret/sonarqube/monitoring passcode "{{.SONARQUBE_MONITORING_PASSCODE}}" hex none
-      - ./scripts/vault-generate.sh secret/jenkins/admin password "{{.JENKINS_ADMIN_PASSWORD}}" base64 none
+      - ./scripts/vault-generate.sh secret/docker/registry registry "{{.DOCKER_REGISTRY_URL}}" base64 none
+      - ./scripts/vault-generate.sh secret/docker/registry username "{{.DOCKER_REGISTRY_USERNAME}}" base64 none
+      - ./scripts/vault-generate.sh secret/docker/registry password "{{.DOCKER_REGISTRY_PASSWORD}}" base64 none
 
   it:eso:apply-resources:
     desc: 'Apply ESO SecretStores and ExternalSecrets'
@@ -301,39 +367,6 @@ tasks:
     cmds:
       - task: image:release:minimal
       - task: image:release
-      - task: image:release:jenkins-all
-
-  # Jenkins Images
-  # ------------------------------------------------------------------------------
-  image:build:jenkins-master:
-    desc: 'Build the Jenkins Master image'
-    cmds:
-      - docker bake jenkins-master --progress=tty
-
-  image:build:jenkins-agent:
-    desc: 'Build the Jenkins Agent image'
-    cmds:
-      - docker bake jenkins-agent --progress=tty
-
-  image:build:jenkins-all:
-    desc: 'Build both Jenkins Master and Agent images'
-    cmds:
-      - docker bake jenkins-all --progress=tty
-
-  image:release:jenkins-master:
-    desc: 'Build and push Jenkins Master image to Registry'
-    cmds:
-      - docker buildx bake release-jenkins-master --progress=tty
-
-  image:release:jenkins-agent:
-    desc: 'Build and push Jenkins Agent image to Registry'
-    cmds:
-      - docker buildx bake release-jenkins-agent --progress=tty
-
-  image:release:jenkins-all:
-    desc: 'Build and push both Jenkins images to Registry'
-    cmds:
-      - docker buildx bake release-jenkins-all --progress=tty
 
   ################################################################################
   # LINTING, VALIDATION & SECURITY TASKS
@@ -342,6 +375,7 @@ tasks:
   check:
     desc: 'Run all checks (lint, validation, security)'
     cmds:
+      - task: cleanup
       - task: lint
       - task: validate
       - task: security
@@ -355,6 +389,7 @@ tasks:
       - task: lint:shell
       - task: lint:dockerfile
       - task: lint:markdown
+      - task: lint:helm
       # Uncomment to start using Conventional Commits -> https://www.conventionalcommits.org
       #- task: lint:commit
 
@@ -378,6 +413,11 @@ tasks:
     cmds:
       - markdownlint-cli2 .
 
+  lint:helm:
+    desc: 'Validate Helm values documentation completeness'
+    cmds:
+      - ./scripts/helm-docs-lint.sh
+
   lint:commit:
     desc: 'Lint the last commit message'
     cmds:
@@ -388,21 +428,25 @@ tasks:
   validate:
     desc: 'Run all validation tasks'
     cmds:
-      - task: validate:kustomize
       - task: validate:kubeval
 
   validate:kustomize:
-    desc: 'Validate all Kustomize overlays by building them'
+    desc: 'Validate all Kustomize overlays by building them (run validate:kubeval instead for complete validation)'
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
       - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
-        kustomize build $dir --enable-helm; done
+        kustomize build $dir --enable-helm > /dev/null; done
 
   validate:kubeval:
-    desc: 'Validate Kubernetes manifests against their schemas'
+    desc: 'Validate Kubernetes manifests - build Kustomize overlays and check schemas'
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
-      - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -; done
+      - |
+        echo "Validating Kustomize overlays and Kubernetes schemas..."
+        for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
+          echo "  Building and validating: $dir"
+          kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -
+        done
 
   # SECURITY
   # ------------------------------------------------------------------------------
@@ -422,6 +466,11 @@ tasks:
     cmds:
       - trufflehog filesystem . --exclude-paths .trufflehog-ignore --log-level=-1
 
+  cleanup:
+    desc: 'Remove temporary chart directories'
+    cmds:
+      - find . -type d -name charts -exec rm -rf {} +
+
   # DOCS
   # ------------------------------------------------------------------------------
   docs:
@@ -432,15 +481,7 @@ tasks:
   docs:helm:
     desc: 'Generate documentation for Helm charts'
     cmds:
-      - |
-        for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
-          if [ -f "$dir/values.yaml" ]; then
-            CHART_NAME=$(basename $dir)
-            echo "apiVersion: v2\nname: $CHART_NAME\nversion: 0.1.0" > $dir/Chart.yaml
-            (cd $dir && helm-docs --template-files ../.helm-docs-template.gotmpl)
-            rm $dir/Chart.yaml
-          fi
-        done
+      - ./scripts/helm-docs-generate.sh
 
   # CA CERTIFICATE
   # ------------------------------------------------------------------------------
