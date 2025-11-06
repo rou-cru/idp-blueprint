@@ -1,12 +1,11 @@
-# -- Priority class for cert-manager pods
-# @section -- General Configuration
-priorityClassName: platform-infrastructure
-
 # -- CRD installation configuration
 # @section -- Custom Resource Definitions
 crds:
   # -- (bool) Enable the installation of cert-manager CRDs
   enabled: true
+
+global:
+  priorityClassName: platform-infrastructure
 
 # -- Prometheus metrics configuration
 # @section -- Observability
@@ -22,8 +21,6 @@ prometheus:
     # -- (string) Scrape timeout
     scrapeTimeout: 40s
 
-# -- Resource requests and limits for cert-manager
-# @section -- Resources
 resources:
   # -- Resource requests
   requests:
