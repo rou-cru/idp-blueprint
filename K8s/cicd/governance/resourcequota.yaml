@@ -5,6 +5,12 @@ metadata:
   namespace: cicd
   annotations:
     argocd.argoproj.io/sync-wave: "1"
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: governance
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
 spec:
   hard:
     # Increased to accommodate Jenkins StatefulSet (250m+50m requests, 1+0.1 limits)
