@@ -11,6 +11,10 @@ ipv6:
   # -- (bool) Enable IPv6 support (disabled for demo performance)
   enabled: false
 
+# @section -- L7 Proxy
+# Required for L7 features like Gateway API and Ingress
+l7Proxy: true
+
 # -- (bool) Replace kube-proxy with Cilium's eBPF implementation
 # @section -- Kube-proxy Replacement
 kubeProxyReplacement: true
@@ -184,6 +188,8 @@ cluster:
 
 # @section -- Performance
 bpf:
+  # -- (bool) Enable BPF masquerading for traffic leaving cluster nodes
+  masquerade: true
   # -- (string) Monitor aggregation level
   monitorAggregation: medium
   # -- (string) Monitor interval
