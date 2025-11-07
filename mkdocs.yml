@@ -45,6 +45,7 @@ theme:
   font:
     text: Inter
     code: Fira Code
+    # Note: Space Grotesk for headings is loaded via extra.css
   features:
     # Content features
     - content.action.edit
