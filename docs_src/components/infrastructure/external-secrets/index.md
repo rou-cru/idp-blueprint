@@ -1,6 +1,6 @@
 # external-secrets
 
-![Version: 0.20.2](https://img.shields.io/badge/Version-0.20.2-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://external-secrets.io)
+![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://external-secrets.io)
 
 Synchronize secrets from external sources into Kubernetes
 
@@ -8,7 +8,7 @@ Synchronize secrets from external sources into Kubernetes
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.20.2` |
+| **Chart Version** | `latest` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [external-secrets](https://external-secrets.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |

@@ -4,8 +4,8 @@ The CI/CD stack provides workflow orchestration and code quality analysis capabi
 
 ## Core Components
 
-- **[Argo Workflows](argo-workflows.md)**: Kubernetes-native workflow engine for orchestrating parallel jobs
-- **[SonarQube](sonarqube.md)**: Code quality and security analysis platform
+- **[Argo Workflows](argo-workflows/index.md)**: Kubernetes-native workflow engine for orchestrating parallel jobs
+- **[SonarQube](sonarqube/index.md)**: Code quality and security analysis platform
 
 ## CI/CD Capabilities
 

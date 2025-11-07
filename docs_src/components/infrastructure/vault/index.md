@@ -1,6 +1,6 @@
 # vault
 
-![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://www.vaultproject.io)
+![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://www.vaultproject.io)
 
 Secrets management and data protection platform
 
@@ -8,7 +8,7 @@ Secrets management and data protection platform
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.31.0` |
+| **Chart Version** | `latest` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [vault](https://www.vaultproject.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |

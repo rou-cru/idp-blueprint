@@ -1,6 +1,6 @@
 # trivy
 
-![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://trivy.dev)
+![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://trivy.dev)
 
 Comprehensive security scanner for vulnerabilities and misconfigurations
 
@@ -8,7 +8,7 @@ Comprehensive security scanner for vulnerabilities and misconfigurations
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `latest` |
+| **Chart Version** | `0.31.0` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [trivy](https://trivy.dev) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |

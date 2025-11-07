@@ -4,7 +4,7 @@ The security stack provides vulnerability scanning and compliance checking capab
 
 ## Core Components
 
-- **[Trivy](trivy.md)**: Comprehensive security scanner for vulnerabilities and misconfigurations
+- **[Trivy](trivy/index.md)**: Comprehensive security scanner for vulnerabilities and misconfigurations
 
 ## Security Capabilities
 

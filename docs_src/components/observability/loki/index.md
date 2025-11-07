@@ -1,6 +1,6 @@
 # loki
 
-![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://grafana.com/oss/loki)
+![Version: 6.42.0](https://img.shields.io/badge/Version-6.42.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://grafana.com/oss/loki)
 
 Log aggregation system designed to store and query logs
 
@@ -8,7 +8,7 @@ Log aggregation system designed to store and query logs
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `latest` |
+| **Chart Version** | `6.42.0` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [loki](https://grafana.com/oss/loki) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |

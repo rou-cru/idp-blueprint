@@ -1,6 +1,6 @@
 apiVersion: v2
 name: argocd
-version: 8.6.0
+version: latest
 description: Declarative GitOps continuous delivery for Kubernetes
 type: application
 home: https://argo-cd.readthedocs.io

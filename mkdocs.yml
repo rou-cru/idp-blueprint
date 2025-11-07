@@ -114,30 +114,29 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  - social:
-      cards: true
-      cards_layout: custom
-      cards_layout_options:
-        background: "#4051b5"
-        color: "#ffffff"
-  - sitemap:
-      sitemap_filename: sitemap.xml
+  # - social:
+  #     cards: true
+  #     cards_layout_options:
+  #       background_color: "#4051b5"
+  #       color: "#ffffff"
+  # - sitemap:
+  #     sitemap_filename: sitemap.xml
   - minify:
       minify_html: true
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
-  - glightbox:
-      touchNavigation: true
-      loop: false
-      effect: zoom
-      slide_effect: slide
-      width: 100%
-      height: auto
-      zoomable: true
-      draggable: true
-      auto_caption: false
-      caption_position: bottom
+  # - glightbox:
+  #     touchNavigation: true
+  #     loop: false
+  #     effect: zoom
+  #     slide_effect: slide
+  #     width: 100%
+  #     height: auto
+  #     zoomable: true
+  #     draggable: true
+  #     auto_caption: false
+  #     caption_position: bottom
 
 # Customization
 extra:
@@ -209,7 +208,6 @@ nav:
   - Guides:
       - Overview: guides/overview.md
       - Contributing: guides/contributing.md
-      - Labels Standard: guides/labels-standard.md
       - Policy Tagging: guides/policy-tagging.md
   - Reference:
       - Overview: reference/overview.md

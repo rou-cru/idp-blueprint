@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://kyverno.io)
+![Version: 3.5.2](https://img.shields.io/badge/Version-3.5.2-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://kyverno.io)
 
 Kubernetes-native policy management and security engine
 
@@ -8,7 +8,7 @@ Kubernetes-native policy management and security engine
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `latest` |
+| **Chart Version** | `3.5.2` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [kyverno](https://kyverno.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
