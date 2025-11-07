@@ -128,16 +128,51 @@ html {
 }
 
 .md-header__title {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   transition: opacity var(--transition-duration) var(--transition-easing);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-right: 1rem;
 }
 
 .md-header__title:hover {
   opacity: 0.8;
+}
+
+/* NAVIGATION TABS - Inline with header, not separate line */
+.md-tabs {
+  height: 3rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: auto;
+  width: auto;
+  background-color: transparent;
+  overflow: visible;
+}
+
+.md-tabs__list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.md-tabs__item {
+  display: inline-flex;
+  height: 3rem;
+  padding: 0;
+}
+
+.md-tabs__link {
+  font-size: 0.75rem;
+  padding: 0 0.8rem;
+  display: flex;
+  align-items: center;
+  height: 3rem;
 }
 
 /* Subtle elevation on scroll */
@@ -158,9 +193,15 @@ html {
   margin-top: 2rem;
 }
 
+.md-footer__inner {
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 0.5rem 1rem;
+}
+
 .md-footer-meta {
   background-color: transparent;
-  padding: 0.5rem 1rem;
+  padding: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
@@ -169,6 +210,7 @@ html {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
+  padding: 0.4rem 0;
 }
 
 [data-md-color-scheme="slate"] .md-footer-meta {
@@ -179,6 +221,12 @@ html {
   font-size: 0.7rem;
   opacity: 0.6;
   white-space: nowrap;
+  margin: 0;
+  padding: 0;
+}
+
+.md-footer-copyright__highlight {
+  color: inherit;
 }
 
 /* Social links with hover animation */
@@ -572,14 +620,14 @@ mark,
   background-color: var(--md-accent-fg-color);
 }
 
-/* Better use of horizontal space - wider content area */
+/* Better use of horizontal space - REDUCE sidebar widths */
 @media screen and (min-width: 76.25em) {
   .md-sidebar--primary {
-    width: 15rem;
+    width: 12rem;
   }
 
   .md-sidebar--secondary {
-    width: 15rem;
+    width: 12rem;
   }
 
   /* Maximize content width */
@@ -588,24 +636,24 @@ mark,
   }
 
   .md-content__inner {
-    max-width: 1600px;
-    padding-left: 3rem;
-    padding-right: 3rem;
+    max-width: 1400px;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
   }
 }
 
-/* Extra wide screens - even more space */
+/* Extra wide screens - reasonable increase */
 @media screen and (min-width: 100em) {
   .md-sidebar--primary {
-    width: 18rem;
+    width: 14rem;
   }
 
   .md-sidebar--secondary {
-    width: 18rem;
+    width: 14rem;
   }
 
   .md-content__inner {
-    max-width: 1800px;
+    max-width: 1600px;
   }
 }
 
