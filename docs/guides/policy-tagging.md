@@ -1,97 +1,76 @@
-# Kubernetes Labeling Standards
+# Kubernetes Labeling Standards for Policies
 
-This document defines the standard metadata policy for all Kubernetes resources within
-this project. The goal is to ensure operational consistency, enable FinOps capabilities,
-and improve discoverability and automation.
+> **Note:** This guide has been consolidated into the complete labeling standards documentation.
+> For comprehensive information about labels, annotations, priority classes, sync waves,
+> and validation, please see the [Kubernetes Labeling Standards](../reference/labels-standard.md).
 
-## Labels vs. Annotations: The Core Principle
+## Overview
 
-A crucial distinction determines whether a piece of metadata should be a label or an
-annotation:
+All resources in the IDP Blueprint platform use standardized labels to ensure:
 
-- **Use a Label** when you need to **SELECT, FILTER, or GROUP** resources. Labels are
-  indexed by the Kubernetes API server and are fundamental to the control plane (e.g.,
-  for `kubectl -l`, Service selectors, NetworkPolicies). If you need to query for a set
-  of resources based on a value, it must be a label.
+- **Operational consistency** across all components
+- **Policy enforcement** via Kyverno
+- **Resource governance** with quotas and limits
+- **GitOps automation** with ArgoCD sync waves
+- **Observability** and monitoring
 
-- **Use an Annotation** for arbitrary metadata intended to be **READ by HUMANS or
-  EXTERNAL TOOLS**. This data is not used for selection. It is perfect for storing
-  descriptions, URLs, or contact information that automation scripts or documentation
-  generators will consume.
+## Quick Reference
 
----
+### Business Labels (Required on Namespaces)
 
-## Specification Table
+| Label | Value | Purpose |
+|-------|-------|---------|
+| `owner` | `platform-team` | Team responsible for the resource |
+| `business-unit` | `infrastructure` | Business unit for cost allocation |
+| `environment` | `demo` | Environment classification |
 
-| #   | Tag                           | Type       | Classification       | Meaning                                        | Example Values                   | Propagated? |
-| --- | ----------------------------- | ---------- | -------------------- | ---------------------------------------------- | -------------------------------- | ----------- |
-| 1   | `app.kubernetes.io/name`      | Label      | ✅ Official K8s      | Canonical name of the application              | `vault`, `cilium`                | Yes         |
-| 2   | `app.kubernetes.io/instance`  | Label      | ✅ Official K8s      | Unique identifier for the deployment instance  | `vault-demo`, `cilium-idp`       | Yes         |
-| 3   | `app.kubernetes.io/version`   | Label      | ✅ Official K8s      | Semantic version of the code/chart             | `"1.15.0"`                       | No          |
-| 4   | `app.kubernetes.io/component` | Label      | ✅ Official K8s      | The component's role in the architecture       | `cni`, `secret-manager`          | Yes         |
-| 5   | `app.kubernetes.io/part-of`   | Label      | ✅ Official K8s      | The higher-level application this is part of   | `idp`                            | Yes         |
-| 6   | `owner`                       | Label      | ⚠️ De Facto Standard | The team responsible for the workload          | `platform-engineer`              | Yes         |
-| 7   | `business-unit`               | Label      | ⚠️ De Facto Standard | Business unit for FinOps chargeback            | `engineering`, `infrastructure`  | Yes         |
-| 8   | `environment`                 | Label      | ⚠️ De Facto Standard | Execution environment (permanent or ephemeral) | `prod`, `staging`, `dev`, `demo` | Yes         |
-| 9   | `description`                 | Annotation | 📝 Project Specific  | A brief explanation of the resource's purpose  | `Primary ClusterIssuer...`       | No          |
-| 10  | `contact`                     | Annotation | 📝 Project Specific  | Channel for incident response                  | `#platform-alerts`               | Yes         |
-| 11  | `documentation`               | Annotation | 📝 Project Specific  | Link to runbook or technical docs              | `https://wiki.example.com/vault` | Yes         |
+### Application Labels (Kubernetes Recommended)
 
----
+| Label | Example | Purpose |
+|-------|---------|---------|
+| `app.kubernetes.io/part-of` | `idp` | Parent application/platform |
+| `app.kubernetes.io/name` | `vault` | Component name |
+| `app.kubernetes.io/instance` | `vault-demo` | Instance identifier |
+| `app.kubernetes.io/version` | `1.15.0` | Version of the component |
+| `app.kubernetes.io/component` | `database` | Role within the architecture |
 
-## Detailed Policy
+## Using Labels with Policies
 
-### Propagation
+When creating Kyverno policies that leverage these labels:
 
-Common metadata (like `owner`, `environment`, `business-unit`) should be set on the
-`Namespace` object. A policy engine like **Kyverno** is expected to automatically
-propagate these to all resources within that namespace.
+1. **Namespace Propagation**: Labels defined on namespaces are automatically propagated
+   to workloads by Kyverno policies (`Policies/rules/enforce-namespace-labels.yaml`)
 
-### Label Details
+2. **Validation**: Policies validate that required labels are present
+   - `enforce-namespace-labels.yaml`: Enforces business labels on namespaces
+   - `require-component-labels.yaml`: Audits application labels on workloads
 
-| Label | Required | Scope | Example |
-|-------|----------|-------|---------|
-| `app.kubernetes.io/name` | Yes | All workloads | `vault`, `cilium` |
-| `app.kubernetes.io/instance` | Yes | All workloads | `vault-demo`, `cilium-idp` |
-| `app.kubernetes.io/version` | No | Workloads | `1.18.2` |
-| `app.kubernetes.io/component` | Yes | All resources | `cni`, `secret-manager` |
-| `app.kubernetes.io/part-of` | Yes | All resources | `idp` |
-| `owner` | Yes | All resources | `platform-team` |
-| `business-unit` | Yes | All resources | `infrastructure` |
-| `environment` | Yes | All resources | `demo` |
+3. **Label Selectors**: Use label selectors in policy rules to target specific resources:
+   ```yaml
+   match:
+     any:
+       - resources:
+           kinds:
+             - Deployment
+           selector:
+             matchLabels:
+               app.kubernetes.io/part-of: idp
+   ```
 
-### Best Practices
+## Complete Documentation
 
-1. **Always use the official Kubernetes app labels** when possible
-2. **Use consistent values** across the platform
-3. **Document custom labels** in this specification
-4. **Apply labels at the namespace level** to ensure propagation
-5. **Avoid high-cardinality labels** that could impact performance
+For the full specification including:
 
-### Implementation
+- **Priority Classes Assignment** for resource scheduling
+- **External Secrets RefreshInterval Strategy** for secret synchronization
+- **ArgoCD Sync Wave Annotations** for deployment ordering
+- **Complete Validation Rules** with Kyverno examples
+- **Label propagation details**
 
-Labels are enforced through Kyverno policies:
-- `enforce-namespace-labels` - ensures namespaces have required labels
-- `require-component-labels` - ensures workloads have required labels
+Please refer to the [Kubernetes Labeling Standards](../reference/labels-standard.md) documentation.
 
-1. **`app.kubernetes.io/name`**: The application's name (e.g., `vault`).
-2. **`app.kubernetes.io/instance`**: A unique name for the instance, often combining
-    name and environment (e.g., `vault-demo`).
-3. **`app.kubernetes.io/version`**: The deployed version. **Must not** be used in
-    `spec.selector.matchLabels`.
-4. **`app.kubernetes.io/component`**: The role this application plays (e.g., `cni`,
-    `secret-manager`).
-5. **`app.kubernetes.io/part-of`**: The parent application. For this project, the value
-    is `idp`.
-6. **`owner`**: The team responsible. Must be a team name, not an individual.
-7. **`business-unit`**: The organizational department for FinOps.
-8. **`environment`**: The environment type. This project uses `demo` to signify its
-    ephemeral and testing nature, distinct from permanent environments like `dev` or
-    `prod`.
+## See Also
 
-### Annotation Details
-
-9. **`description`**: A human-readable explanation of the resource. This will be used
-    by `yq` to auto-generate documentation.
-10. **`contact`**: A stable contact point for alerts, preferably a team channel.
-11. **`documentation`**: A direct URL to relevant technical documentation.
+- [Architecture: Applications](../architecture/applications.md) - How labels are used in GitOps
+- [Kyverno Policies](../components/policy/kyverno/index.md) - Policy enforcement details
+- [Contributing Guide](contributing.md) - How to contribute with proper labeling

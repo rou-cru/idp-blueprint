@@ -260,7 +260,7 @@ flowchart TB
   Secrets Operator
 
 📖 For detailed architecture documentation, see
-[ARCHITECTURE_VISUAL.md](./ARCHITECTURE_VISUAL.md)
+[Architecture Overview](./docs/architecture/overview.md)
 
 ## 📊 Resource Requirements
 
@@ -368,7 +368,7 @@ Contributions are welcome! Here's how you can help:
   - Integration with other tools
   - Translations
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+See [Contributing Guide](./docs/guides/contributing.md) for detailed guidelines.
 
 ## 🗺️ Roadmap
 
