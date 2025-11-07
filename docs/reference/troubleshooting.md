@@ -49,9 +49,16 @@ This guide covers common issues and their solutions when working with the IDP Bl
 
 ### Vault Initialization Problems
 1. Check Vault pod status: `kubectl get pods -n vault-system`
-2. Review Vault logs: `kubectl logs -n vault-system <vault-pod-name>`
-3. Verify if Vault is sealed: `kubectl exec -n vault-system <vault-pod-name> -- vault status`
-4. If needed, reinitialize: `./scripts/vault-init.sh`
+2. Review Vault logs: `kubectl logs -n vault-system vault-0`
+3. Verify if Vault is sealed:
+   ```bash
+   kubectl exec -n vault-system vault-0 -- vault status
+   ```
+4. If Vault is sealed and needs to be unsealed, use the initialization task:
+   ```bash
+   task vault:init
+   ```
+   This will unseal Vault and configure authentication for External Secrets Operator.
 
 ### Grafana Dashboard Issues
 1. Check if Grafana is running: `kubectl get pods -n observability`

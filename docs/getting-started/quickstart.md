@@ -50,6 +50,6 @@ Default credentials will be available in your local Vault instance.
 
 ## What's Next?
 
-- Visit the [Deployment](deployment.md) guide for more detailed information
-- Check out the [Architecture](../architecture/overview.md) to understand how everything works
-- Explore the different [Components](../components/infrastructure/index.md)
+- Visit the [Deployment](deployment.md) guide for more detailed information about the deployment process
+- Check out the [Architecture](../architecture/overview.md) to understand how the platform is structured
+- Explore the platform [Components](../architecture/overview.md#components) including infrastructure, observability, and security stacks
