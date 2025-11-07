@@ -1,16 +1,16 @@
-# IDP-blueprint
+# IDP-blueprint: Internal Developer Platform
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?style=flat-square&logo=kubernetes)](https://k3d.io/)
-[![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?style=flat-square&logo=docker)](https://containers.dev/)
-[![Task](https://img.shields.io/badge/Automation-Task-violet?style=flat-square&logo=task)](https://taskfile.dev/)
-![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange?style=flat-square)
-![Cilium](https://img.shields.io/badge/CNI-Cilium-yellow?style=flat-square)
-![Vault](https://img.shields.io/badge/Vault-Secrets-black?style=flat-square&logo=vault)
-![Kyverno](https://img.shields.io/badge/Kyverno-Policies-blue?style=flat-square)
-![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-orange?style=flat-square&logo=prometheus)
-![Grafana](https://img.shields.io/badge/Grafana-Dashboards-orange?style=flat-square&logo=grafana)
-![Trivy](https://img.shields.io/badge/Trivy-Security-blue?style=flat-square)
+<div align="center">
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?style=for-the-badge&logo=kubernetes)](https://k3d.io/)
+[![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?style=for-the-badge&logo=docker)](https://containers.dev/)
+[![Task](https://img.shields.io/badge/Automation-Task-violet?style=for-the-badge&logo=task)](https://taskfile.dev/)
+[![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange?style=for-the-badge)](https://argo-cd.readthedocs.io/)
+[![Cilium](https://img.shields.io/badge/CNI-Cilium-yellow?style=for-the-badge)](https://cilium.io/)
+[![Vault](https://img.shields.io/badge/Vault-Secrets-black?style=for-the-badge&logo=vault)](https://www.vaultproject.io/)
+
+</div>
 
 > **An Internal Developer Platform (IDP) Blueprint** - Deploy a complete platform
 > engineering stack (GitOps, Observability, Security & Policy Enforcement) with
@@ -21,21 +21,21 @@
 An **opinionated, resource-optimized IDP** running on [K3d](https://k3d.io/stable)
 that demonstrates modern Platform Engineering practices:
 
-- ✅ **GitOps-first** with [ArgoCD](https://argo-cd.readthedocs.io/en/stable)
-- ✅ **Policy-as-Code** with [Kyverno](https://kyverno.io)
-- ✅ **Observability** with [Prometheus](https://prometheus.io),
-  [Grafana](https://grafana.com/grafana/?plcmt=products-nav),
-  [Loki](https://grafana.com/docs/loki/latest/?pg=oss-loki&plcmt=quick-links) +
-  [Fluent-bit](https://fluentbit.io)
-- ✅ **Security scanning** with [Trivy](https://trivy.dev/latest)
-- ✅ **CI/CD** with [Argo Workflows](https://argo-workflows.readthedocs.io),
-  [SonarQube](https://www.sonarsource.com/)
-- ✅ **eBPF Service Mesh** with [Cilium](https://cilium.io)
-- ✅ **Secrets management** with
-  [Vault](https://www.hashicorp.com/en/products/vault) + [External
-  Secrets](https://external-secrets.io/latest)
-- ✅ **Certificate management** with [cert-manager](https://cert-manager.io)
-- ✅ **Single command deployment** by [Task](https://taskfile.dev) so just `task deploy`
+<div align="center">
+
+| 🔁 **GitOps-first** | 🛡️ **Policy-as-Code** | 📊 **Observability** | 🔐 **Security Scanning** |
+|:---:|:---:|:---:|:---:|
+| ArgoCD | Kyverno | Prometheus + Grafana + Loki | Trivy |
+| **CI/CD** | **eBPF Service Mesh** | **Secrets Management** | **Certificate Management** |
+| Argo Workflows + SonarQube | Cilium | Vault + External Secrets | Cert-Manager |
+
+</div>
+
+- ✅ **Single command deployment**: Deploy the entire platform with `task deploy`
+- ✅ **Pre-configured environment**: VS Code Dev Containers with all tools ready
+- ✅ **Modular architecture**: Components organized in logical stacks
+- ✅ **Resource optimized**: Designed for local development with ~3.5-8.9 cores
+- ✅ **Production ready patterns**: Implements GitOps, policy-as-code, and security-first approach
 
 ## 💡 Why This Matters: Real-World Value
 
@@ -66,7 +66,9 @@ From idea to validated prototype in minutes, now you only need one command:
 conferences, writing a technical article, or onboarding a junior engineer, you
 can have your own IDP wherever and whenever you need it.
 
-## Deploy
+## 🏗️ Deployment Architecture
+
+<div align="center">
 
 ```mermaid
 ---
@@ -135,9 +137,13 @@ flowchart LR
     NS@{ shape: card}
 ```
 
+</div>
+
 > **Deployment time:** ~5-10 minutes | **Command:** `task deploy`
 
-## 🗃️ Architecture
+### 🗃️ Node Architecture
+
+<div align="center">
 
 ```mermaid
 ---
@@ -245,6 +251,8 @@ flowchart TB
     linkStyle 21 stroke:#D50000,fill:none
 ```
 
+</div>
+
 **Why this architecture?**
 
 - **Node separation** ensures resource isolation and easier troubleshooting
@@ -260,36 +268,33 @@ flowchart TB
   Secrets Operator
 
 📖 For detailed architecture documentation, see
-[ARCHITECTURE_VISUAL.md](./ARCHITECTURE_VISUAL.md)
+[Architecture Overview](architecture/overview.md)
 
 ## 📊 Resource Requirements
 
 Optimized for local development environments:
 
-### Minimum Theoretical Footprint (Total Requests)
-
-| Resource   | Total Requested |
-| ---------- | --------------: |
-| **CPU**    | **~3.5 cores**  |
-| **Memory** | **~5.4 GiB**    |
-
-### Maximum Theoretical Footprint (Total Limits)
-
-| Resource   | Total Limited  |
-| ---------- | --------------: |
-| **CPU**    | **~8.9 cores** |
-| **Memory** | **~11 GiB**   |
+| Resource   | Requested | Limited |
+| ---------- | ------------: | ----------: |
+| **CPU**    | **~3.5 cores**  | **~8.9 cores** |
+| **Memory** | **~5.4 GiB**    | **~11 GiB**   |
 
 **💡 Recommendation:**
 
-- Minimum: 4 CPU cores, 8GB RAM
-- Comfortable: 6 CPU cores, 12GB RAM
-- Disk: ~20GB available
+- **Minimum**: 4 CPU cores, 8GB RAM
+- **Comfortable**: 6 CPU cores, 12GB RAM
+- **Storage**: ~20GB available
 
 > **Note:** These numbers exclude k3d control plane and OS overhead. Real-world
 > usage may vary based on workload.
 
 ## 🚀 Quick Start
+
+<div align="center">
+
+[![Deploy with Task](https://img.shields.io/badge/Deploy%20with-Task-29b6f6?style=for-the-badge&logo=task&logoColor=white)](https://taskfile.dev/)
+
+</div>
 
 ### Prerequisites
 
@@ -356,6 +361,12 @@ Deployed via ArgoCD ApplicationSets on Node 3:
 
 ## 🤝 Contributing
 
+<div align="center">
+
+[![Contributing](https://img.shields.io/badge/Contributions-Welcome-2ea44f?style=for-the-badge&logo=github)](https://github.com/rou-cru/idp-blueprint/issues)
+
+</div>
+
 Contributions are welcome! Here's how you can help:
 
 - 🐛 Report bugs via
@@ -368,7 +379,7 @@ Contributions are welcome! Here's how you can help:
   - Integration with other tools
   - Translations
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+See [Contributing Guide](guides/contributing.md) for detailed guidelines.
 
 ## 🗺️ Roadmap
 
@@ -388,13 +399,18 @@ implementations.
 
 ## 🙏 Acknowledgments
 
+<div align="center">
+
 This project integrates and builds upon excellent open-source tools from the
 Cloud Native ecosystem:
 
-- ArgoCD by Argo Project
-- Cilium by Isovalent
-- Kyverno by Kyverno Project
-- And many others listed in the tech stack
+[![ArgoCD](https://img.shields.io/badge/ArgoCD-2196F3?style=for-the-badge&logo=argoproj&logoColor=white)](https://argo-cd.readthedocs.io/)
+[![Cilium](https://img.shields.io/badge/Cilium-29BEB0?style=for-the-badge&logo=cilium&logoColor=white)](https://cilium.io/)
+[![Vault](https://img.shields.io/badge/Vault-2B2B2B?style=for-the-badge&logo=hashicorp&logoColor=white)](https://www.vaultproject.io/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)](https://grafana.com/)
+
+</div>
 
 ---
 
@@ -516,4 +532,12 @@ the project.
 
 ---
 
+<div align="center">
+
 **⭐ If you find this project useful, please consider starring it on GitHub!**
+
+[![Stargazers repo roster for @rou-cru/idp-blueprint](https://reporoster.com/stars/rou-cru/idp-blueprint)](https://github.com/rou-cru/idp-blueprint/stargazers)
+
+**[Join our community](https://github.com/rou-cru/idp-blueprint/discussions) | [Report an issue](https://github.com/rou-cru/idp-blueprint/issues) | [Documentation](getting-started/overview.md)**
+
+</div>

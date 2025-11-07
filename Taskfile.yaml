@@ -504,6 +504,19 @@ tasks:
     cmds:
       - mkdocs gh-deploy --force
 
+  docs:linkcheck:
+    desc: 'Check for broken links in built documentation'
+    cmds:
+      - |
+        if ! command -v lychee &> /dev/null; then
+          echo "⚠️  lychee not found, skipping link check"
+          exit 0
+        fi
+        lychee --verbose --no-progress --max-redirects 10 \
+          --exclude "localhost|127.0.0.1|0.0.0.0" \
+          --exclude "nip.io" \
+          site/
+
   docs:clean:
     desc: 'Clean generated documentation artifacts'
     cmds:

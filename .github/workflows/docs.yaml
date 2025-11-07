@@ -29,6 +29,14 @@ jobs:
         with:
           fetch-depth: 0  # Full history for git-revision-date plugin
 
+      - name: Restore MkDocs cache
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: mkdocs-${{ hashFiles('mkdocs.yml', 'docs/**') }}
+          restore-keys: |
+            mkdocs-
+
       - name: Prepare Devbox configuration
         run: ln -s devbox-minimal.json devbox.json
         working-directory: .devcontainer
@@ -49,6 +57,25 @@ jobs:
       - name: Build MkDocs site
         run: devbox run -- task docs:build
         working-directory: .devcontainer
+
+      - name: Validate build output
+        run: |
+          test -d site/ || { echo "Error: site/ directory not found"; exit 1; }
+          test -f site/index.html || { echo "Error: site/index.html not found"; exit 1; }
+          test -f site/sitemap.xml || { echo "Error: site/sitemap.xml not found"; exit 1; }
+          echo "✅ Build output validated"
+
+      - name: Check for broken links
+        run: devbox run -- task docs:linkcheck
+        working-directory: .devcontainer
+        continue-on-error: true
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-site-${{ github.sha }}
+          path: site/
+          retention-days: 7
 
       - name: Deploy to GitHub Pages
         run: devbox run -- task docs:deploy
