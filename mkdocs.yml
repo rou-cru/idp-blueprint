@@ -18,51 +18,54 @@ theme:
   language: en
   custom_dir: overrides/
   palette:
+    # Palette toggle for dark mode (default)
+    - media: "(prefers-color-scheme)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
     # Palette toggle for light mode
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       primary: indigo
       accent: blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     # Palette toggle for dark mode
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       primary: indigo
       accent: blue
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: Switch to system preference
   font:
     text: Inter
     code: Fira Code
+    # Note: Space Grotesk for headings is loaded via extra.css
   features:
-    - announce.dismiss
+    # Content features
     - content.action.edit
-    - content.action.view
-    - content.code.annotate
     - content.code.copy
-    - content.code.select
     - content.tabs.link
     - content.tooltips
-    - header.autohide
-    - navigation.expand
+    # Navigation features - simplified for cleaner UX
     - navigation.footer
     - navigation.indexes
     - navigation.instant
-    - navigation.instant.prefetch
-    - navigation.instant.progress
     - navigation.path
-    - navigation.prune
     - navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top
     - navigation.tracking
+    # Search features
     - search.highlight
-    - search.share
     - search.suggest
     - toc.follow
-    - toc.integrate
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
