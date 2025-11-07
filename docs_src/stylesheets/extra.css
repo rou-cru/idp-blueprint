@@ -1,8 +1,15 @@
 /* Professional, minimalist styles for IDP Blueprint documentation */
+/* Enhanced with animations, search highlighting, and mobile optimizations */
 
 :root {
   --md-primary-fg-color: #4051b5;
   --md-accent-fg-color: #2196f3;
+  /* Animation timing */
+  --transition-duration: 200ms;
+  --transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Search highlight colors */
+  --search-highlight-color: #ffd54f;
+  --search-highlight-bg: rgba(255, 213, 79, 0.2);
 }
 
 /* Dark mode optimizations */
@@ -12,6 +19,29 @@
   --md-default-bg-color: #1a1a1a;
   --md-default-fg-color: #e0e0e0;
   --md-code-bg-color: #0d0d0d;
+  /* Search highlight for dark mode */
+  --search-highlight-color: #ffb300;
+  --search-highlight-bg: rgba(255, 179, 0, 0.15);
+}
+
+/* SMOOTH SCROLL - Better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* COMPACT HEADER - More space for content */
@@ -19,10 +49,21 @@
   height: 3rem;
   box-shadow: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  transition: box-shadow var(--transition-duration) var(--transition-easing),
+              background-color var(--transition-duration) var(--transition-easing);
+}
+
+/* Subtle elevation on scroll */
+.md-header[data-md-state="shadow"] {
+  box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
 }
 
 [data-md-color-scheme="slate"] .md-header {
   border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-header[data-md-state="shadow"] {
+  box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.3), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.4);
 }
 
 .md-header__inner {
@@ -32,6 +73,11 @@
 .md-header__title {
   font-size: 0.9rem;
   font-weight: 500;
+  transition: opacity var(--transition-duration) var(--transition-easing);
+}
+
+.md-header__title:hover {
+  opacity: 0.8;
 }
 
 /* COMPACT FOOTER - Less visual weight */
@@ -54,7 +100,18 @@
   opacity: 0.6;
 }
 
-/* NAVIGATION - Cleaner, more space-efficient */
+/* Social links with hover animation */
+.md-footer__link {
+  transition: transform var(--transition-duration) var(--transition-easing),
+              opacity var(--transition-duration) var(--transition-easing);
+}
+
+.md-footer__link:hover {
+  transform: translateY(-2px);
+  opacity: 1;
+}
+
+/* NAVIGATION - Cleaner, more space-efficient with animations */
 .md-nav {
   font-size: 0.75rem;
 }
@@ -69,6 +126,30 @@
   padding: 0.2rem 0;
 }
 
+/* Smooth navigation link transitions */
+.md-nav__link {
+  transition: color var(--transition-duration) var(--transition-easing),
+              background-color var(--transition-duration) var(--transition-easing),
+              padding-left var(--transition-duration) var(--transition-easing);
+  border-radius: 0.2rem;
+}
+
+.md-nav__link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding-left: 0.8rem;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Active nav item with subtle indicator */
+.md-nav__link--active {
+  font-weight: 600;
+  border-left: 3px solid var(--md-accent-fg-color);
+  padding-left: 0.6rem !important;
+}
+
 /* CONTENT SPACING - Maximize content area */
 .md-content {
   max-width: 100%;
@@ -77,6 +158,18 @@
 .md-content__inner {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+  animation: fadeIn 400ms var(--transition-easing);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .md-typeset h1 {
@@ -89,12 +182,25 @@
   margin: 2rem 0 1rem;
   font-weight: 600;
   font-size: 1.5rem;
+  scroll-margin-top: 4rem; /* Account for fixed header */
 }
 
 .md-typeset h3 {
   margin: 1.5rem 0 0.8rem;
   font-weight: 600;
   font-size: 1.2rem;
+  scroll-margin-top: 4rem;
+}
+
+/* Heading permalink with smooth animation */
+.md-typeset :is(h1,h2,h3,h4,h5,h6) .headerlink {
+  opacity: 0;
+  transition: opacity var(--transition-duration) var(--transition-easing),
+              color var(--transition-duration) var(--transition-easing);
+}
+
+.md-typeset :is(h1,h2,h3,h4,h5,h6):hover .headerlink {
+  opacity: 1;
 }
 
 /* CODE BLOCKS - Professional, minimal shadows */
@@ -102,10 +208,19 @@
   border-radius: 0.3rem;
   box-shadow: none;
   border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: border-color var(--transition-duration) var(--transition-easing);
+}
+
+.highlight:hover {
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 [data-md-color-scheme="slate"] .highlight {
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-md-color-scheme="slate"] .highlight:hover {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .md-typeset pre > code {
@@ -113,6 +228,16 @@
   padding: 1em;
   font-size: 0.8rem;
   line-height: 1.5;
+}
+
+/* Copy button animation */
+.md-clipboard {
+  transition: opacity var(--transition-duration) var(--transition-easing),
+              transform var(--transition-duration) var(--transition-easing);
+}
+
+.md-clipboard:hover {
+  transform: scale(1.1);
 }
 
 /* TABLES - Clean, professional styling */
@@ -137,6 +262,19 @@
   background-color: rgba(255, 255, 255, 0.03);
 }
 
+/* Table row hover effect */
+.md-typeset table:not([class]) tbody tr {
+  transition: background-color var(--transition-duration) var(--transition-easing);
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
 /* MERMAID DIAGRAMS - Subtle background */
 .mermaid {
   text-align: center;
@@ -153,32 +291,67 @@
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* ADMONITIONS - Cleaner, less visual noise */
+/* ADMONITIONS - Cleaner, less visual noise with animations */
 .md-typeset .admonition,
 .md-typeset details {
   font-size: 0.85rem;
   border-radius: 0.3rem;
   box-shadow: none;
   border-left: 3px solid;
+  transition: border-left-width var(--transition-duration) var(--transition-easing),
+              box-shadow var(--transition-duration) var(--transition-easing);
 }
 
-/* LINKS - Subtle, professional */
+.md-typeset .admonition:hover,
+.md-typeset details:hover {
+  border-left-width: 4px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition:hover,
+[data-md-color-scheme="slate"] .md-typeset details:hover {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* LINKS - Subtle, professional with smooth transitions */
 .md-typeset a {
   text-decoration: none;
   font-weight: 500;
+  transition: color var(--transition-duration) var(--transition-easing),
+              opacity var(--transition-duration) var(--transition-easing);
 }
 
 .md-typeset a:hover {
   text-decoration: underline;
   text-decoration-thickness: 1px;
+  opacity: 0.8;
 }
 
-/* BADGES - Smaller, more discreet */
+/* External links indicator with animation */
+.md-typeset a[href^="http"]::after {
+  content: " ↗";
+  font-size: 0.8em;
+  opacity: 0.5;
+  transition: opacity var(--transition-duration) var(--transition-easing);
+}
+
+.md-typeset a[href^="http"]:hover::after {
+  opacity: 1;
+}
+
+/* BADGES - Smaller, more discreet with hover effect */
 .md-typeset img[alt*="badge" i] {
   height: 20px;
   max-height: 20px;
   vertical-align: middle;
   margin: 0 0.2rem;
+  transition: transform var(--transition-duration) var(--transition-easing),
+              opacity var(--transition-duration) var(--transition-easing);
+}
+
+.md-typeset img[alt*="badge" i]:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
 }
 
 /* Remove excessive padding from centered divs */
@@ -192,7 +365,7 @@
   padding: 1rem 0;
 }
 
-/* GRID CARDS - Tighter spacing */
+/* GRID CARDS - Tighter spacing with hover effects */
 .md-typeset .grid {
   gap: 1rem;
   margin: 1rem 0;
@@ -200,6 +373,71 @@
 
 .md-typeset .grid.cards {
   gap: 1rem;
+}
+
+.md-typeset .grid > * {
+  transition: transform var(--transition-duration) var(--transition-easing),
+              box-shadow var(--transition-duration) var(--transition-easing);
+}
+
+.md-typeset .grid > *:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .grid > *:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* SEARCH HIGHLIGHTING - Professional, visible highlighting */
+mark,
+.md-search-result__item mark,
+.md-typeset mark {
+  background-color: var(--search-highlight-bg);
+  color: inherit;
+  border-bottom: 2px solid var(--search-highlight-color);
+  padding: 0.1em 0.2em;
+  border-radius: 0.2em;
+  font-weight: 600;
+  transition: background-color var(--transition-duration) var(--transition-easing);
+}
+
+/* Search result item with smooth transitions */
+.md-search-result__item {
+  transition: background-color var(--transition-duration) var(--transition-easing),
+              transform var(--transition-duration) var(--transition-easing);
+  border-radius: 0.3rem;
+}
+
+.md-search-result__item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  transform: translateX(4px);
+}
+
+[data-md-color-scheme="slate"] .md-search-result__item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Search input with focus animation */
+.md-search__input {
+  transition: box-shadow var(--transition-duration) var(--transition-easing),
+              border-color var(--transition-duration) var(--transition-easing);
+}
+
+.md-search__input:focus {
+  box-shadow: 0 0 0 2px var(--md-accent-fg-color);
+}
+
+/* Back to top button with smooth appearance */
+.md-top {
+  transition: opacity var(--transition-duration) var(--transition-easing),
+              transform var(--transition-duration) var(--transition-easing),
+              background-color var(--transition-duration) var(--transition-easing);
+}
+
+.md-top:hover {
+  transform: scale(1.1);
+  background-color: var(--md-accent-fg-color);
 }
 
 /* Better use of horizontal space */
@@ -218,7 +456,11 @@
   display: none;
 }
 
-/* Responsive improvements for mobile */
+/* ===================================
+   MOBILE OPTIMIZATIONS
+   =================================== */
+
+/* Tablets and smaller (< 960px) */
 @media screen and (max-width: 76.1875em) {
   .md-nav--primary .md-nav__title[for=__drawer] {
     background-color: var(--md-primary-fg-color);
@@ -226,10 +468,121 @@
 
   .md-typeset h1 {
     font-size: 1.6rem;
+    line-height: 1.3;
   }
 
   .md-typeset h2 {
     font-size: 1.3rem;
+    line-height: 1.4;
+  }
+
+  .md-typeset h3 {
+    font-size: 1.1rem;
+  }
+
+  /* Better spacing on tablets */
+  .md-content__inner {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Optimize code blocks for smaller screens */
+  .md-typeset pre > code {
+    font-size: 0.75rem;
+  }
+
+  /* Make tables scrollable on mobile */
+  .md-typeset table:not([class]) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Mobile phones (< 600px) */
+@media screen and (max-width: 37.5em) {
+  .md-typeset h1 {
+    font-size: 1.4rem;
+  }
+
+  .md-typeset h2 {
+    font-size: 1.2rem;
+  }
+
+  .md-typeset h3 {
+    font-size: 1rem;
+  }
+
+  /* Tighter padding on mobile */
+  .md-content__inner {
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  /* Reduce font size slightly on very small screens */
+  .md-typeset {
+    font-size: 0.9rem;
+  }
+
+  /* Make code blocks more readable on mobile */
+  .md-typeset pre > code {
+    font-size: 0.7rem;
+    padding: 0.8em;
+  }
+
+  /* Optimize grid cards for mobile */
+  .md-typeset .grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem;
+  }
+
+  /* Better button sizing on mobile */
+  .md-button {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* Improve touch targets */
+  .md-nav__link {
+    padding: 0.6rem 0.8rem;
+  }
+
+  /* Mobile-optimized search */
+  .md-search__input {
+    font-size: 1rem; /* Prevents zoom on iOS */
+  }
+
+  /* Hide secondary sidebar on mobile (if visible) */
+  .md-sidebar--secondary {
+    display: none;
+  }
+
+  /* Optimize admonitions for mobile */
+  .md-typeset .admonition,
+  .md-typeset details {
+    font-size: 0.8rem;
+    padding: 0.8rem;
+  }
+}
+
+/* Landscape mobile optimization */
+@media screen and (max-width: 76.1875em) and (orientation: landscape) {
+  .md-header {
+    height: 2.5rem;
+  }
+
+  .md-content__inner {
+    padding-top: 1rem;
+  }
+}
+
+/* High-DPI displays optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .md-typeset {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
@@ -241,13 +594,52 @@
 
 .md-typeset li {
   margin: 0.3rem 0;
+  transition: padding-left var(--transition-duration) var(--transition-easing);
 }
 
-/* Professional blockquote styling */
+/* Professional blockquote styling with animation */
 .md-typeset blockquote {
   border-left: 3px solid var(--md-accent-fg-color);
   padding-left: 1rem;
   margin: 1rem 0;
   color: inherit;
   opacity: 0.9;
+  transition: border-left-width var(--transition-duration) var(--transition-easing),
+              padding-left var(--transition-duration) var(--transition-easing),
+              opacity var(--transition-duration) var(--transition-easing);
+}
+
+.md-typeset blockquote:hover {
+  border-left-width: 4px;
+  padding-left: 1.2rem;
+  opacity: 1;
+}
+
+/* Loading animation for instant navigation */
+.md-progress {
+  background-color: var(--md-accent-fg-color);
+  transition: transform 250ms cubic-bezier(0.1, 0.7, 0.1, 1);
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid var(--md-accent-fg-color);
+  outline-offset: 2px;
+  border-radius: 0.2rem;
+}
+
+/* Skip to content link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--md-accent-fg-color);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top var(--transition-duration) var(--transition-easing);
+}
+
+.skip-link:focus {
+  top: 0;
 }
