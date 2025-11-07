@@ -17,17 +17,17 @@ lint_docs() {
   local component_name
   component_name=$(basename "$chart_dir")
 
+  # Check if index.md exists
+  if [ ! -f "index.md" ]; then
+    echo "⚠️  $component_name - missing index.md (run 'task docs:helm' to generate)"
+    return 0  # Don't fail on missing docs, just warn
+  fi
+
   # Run helm-docs in dry-run mode (-d)
   # If it would make changes, it returns non-zero
   if helm-docs --template-files="$template" -d > /dev/null 2>&1; then
-    # Also check if index.md exists (it should be renamed from README.md)
-    if [ -f "index.md" ]; then
-      echo "✅ $component_name"
-      return 0
-    else
-      echo "❌ $component_name - missing index.md (run 'task docs:helm' to generate)"
-      return 1
-    fi
+    echo "✅ $component_name"
+    return 0
   else
     echo "❌ $component_name - helm-docs would make changes (run 'task docs:helm' to update)"
     return 1

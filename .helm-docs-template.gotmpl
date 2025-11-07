@@ -8,31 +8,31 @@
 
 | Property | Value |
 |----------|-------|
-| **Category** | {{ index .Annotations "idp.blueprint/category" }} |
+| **Category** | {{ index .Chart.Annotations "idp.blueprint/category" }} |
 | **Chart Version** | `{{ .Version }}` (synced with Taskfile.yaml) |
 | **Upstream Project** | {{ if .Home }}[{{ .Name }}]({{ .Home }}){{ else }}N/A{{ end }} |
-| **Configuration Source** | `{{ index .Annotations "idp.blueprint/source" }}` |
+| **Configuration Source** | `{{ index .Chart.Annotations "idp.blueprint/source" }}` |
 {{ if .Maintainers }}| **Maintainers** | {{ range .Maintainers }}{{ .Name }}{{ if .URL }} ([link]({{ .URL }})){{ end }}{{ end }} |{{ end }}
 
 ## Purpose
 
-This component is part of the **{{ index .Annotations "idp.blueprint/category" }}** layer of the IDP Blueprint platform.
+This component is part of the **{{ index .Chart.Annotations "idp.blueprint/category" }}** layer of the IDP Blueprint platform.
 
-{{ if eq (index .Annotations "idp.blueprint/category") "infrastructure" }}
+{{ if eq (index .Chart.Annotations "idp.blueprint/category") "infrastructure" }}
 **Infrastructure components** are deployed via Helm during the bootstrap phase, before ArgoCD takes over. They provide the foundational services required for the platform to function.
-{{ else if eq (index .Annotations "idp.blueprint/category") "policy" }}
+{{ else if eq (index .Chart.Annotations "idp.blueprint/category") "policy" }}
 **Policy components** enforce governance and compliance across the platform. They are deployed via ArgoCD and managed as code in Git.
-{{ else if eq (index .Annotations "idp.blueprint/category") "observability" }}
+{{ else if eq (index .Chart.Annotations "idp.blueprint/category") "observability" }}
 **Observability components** provide monitoring, logging, and metrics collection capabilities. They are deployed via ArgoCD ApplicationSets.
-{{ else if eq (index .Annotations "idp.blueprint/category") "cicd" }}
+{{ else if eq (index .Chart.Annotations "idp.blueprint/category") "cicd" }}
 **CI/CD components** enable continuous integration and delivery workflows. They are deployed via ArgoCD ApplicationSets.
-{{ else if eq (index .Annotations "idp.blueprint/category") "security" }}
+{{ else if eq (index .Chart.Annotations "idp.blueprint/category") "security" }}
 **Security components** provide vulnerability scanning and security assessments. They are deployed via ArgoCD ApplicationSets.
 {{ end }}
 
 ## Configuration Values
 
-The following table lists the configurable parameters defined in `{{ index .Annotations "idp.blueprint/source" }}`:
+The following table lists the configurable parameters defined in `{{ index .Chart.Annotations "idp.blueprint/source" }}`:
 
 {{ template "chart.valuesSection" . }}
 
@@ -40,4 +40,4 @@ The following table lists the configurable parameters defined in `{{ index .Anno
 
 **Documentation Auto-generated** by [helm-docs](https://github.com/norwoodj/helm-docs)
 **Last Updated**: This file is regenerated automatically when values change
-**Source**: {{ index .Annotations "idp.blueprint/source" }}
+**Source**: {{ index .Chart.Annotations "idp.blueprint/source" }}
