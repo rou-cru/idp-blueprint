@@ -3,12 +3,12 @@
 <div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?style=for-the-badge&logo=kubernetes)](https://k3d.io/)
-[![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?style=for-the-badge&logo=docker)](https://containers.dev/)
-[![Task](https://img.shields.io/badge/Automation-Task-violet?style=for-the-badge&logo=task)](https://taskfile.dev/)
-[![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange?style=for-the-badge)](https://argo-cd.readthedocs.io/)
-[![Cilium](https://img.shields.io/badge/CNI-Cilium-yellow?style=for-the-badge)](https://cilium.io/)
-[![Vault](https://img.shields.io/badge/Vault-Secrets-black?style=for-the-badge&logo=vault)](https://www.vaultproject.io/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?logo=kubernetes)](https://k3d.io/)
+[![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?logo=docker)](https://containers.dev/)
+[![Task](https://img.shields.io/badge/Automation-Task-violet?logo=task)](https://taskfile.dev/)
+[![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange)](https://argo-cd.readthedocs.io/)
+[![Cilium](https://img.shields.io/badge/CNI-Cilium-yellow)](https://cilium.io/)
+[![Vault](https://img.shields.io/badge/Vault-Secrets-black?logo=vault)](https://www.vaultproject.io/)
 
 </div>
 
@@ -16,14 +16,14 @@
 > engineering stack (GitOps, Observability, Security & Policy Enforcement) with
 > a single command on your laptop!
 
-## 🎯 What is this?
+## What is this?
 
 An **opinionated, resource-optimized IDP** running on [K3d](https://k3d.io/stable)
 that demonstrates modern Platform Engineering practices:
 
 <div align="center">
 
-| 🔁 **GitOps-first** | 🛡️ **Policy-as-Code** | 📊 **Observability** | 🔐 **Security Scanning** |
+| **GitOps-first** | **Policy-as-Code** | **Observability** | **Security Scanning** |
 |:---:|:---:|:---:|:---:|
 | ArgoCD | Kyverno | Prometheus + Grafana + Loki | Trivy |
 | **CI/CD** | **eBPF Service Mesh** | **Secrets Management** | **Certificate Management** |
@@ -31,42 +31,44 @@ that demonstrates modern Platform Engineering practices:
 
 </div>
 
-- ✅ **Single command deployment**: Deploy the entire platform with `task deploy`
-- ✅ **Pre-configured environment**: VS Code Dev Containers with all tools ready
-- ✅ **Modular architecture**: Components organized in logical stacks
-- ✅ **Resource optimized**: Designed for local development with ~3.5-8.9 cores
-- ✅ **Production ready patterns**: Implements GitOps, policy-as-code, and security-first approach
+**Key Features:**
 
-## 💡 Why This Matters: Real-World Value
+- Single command deployment: Deploy the entire platform with `task deploy`
+- Pre-configured environment: VS Code Dev Containers with all tools ready
+- Modular architecture: Components organized in logical stacks
+- Resource optimized: Designed for local development with ~3.5-8.9 cores
+- Production ready patterns: Implements GitOps, policy-as-code, and security-first approach
+
+## Why This Matters: Real-World Value
 
 ### For Platform Engineers
 
-> **Prototype and validate infrastructure changes risk-free.** Test Kyverno
-> policies, Vault configs, or GitOps workflows locally before proposing to
-> production. Experiment with eBPF networking, policy enforcement, or
-> observability patterns without waiting for cloud resources or breaking shared
-> environments.
+**Prototype and validate infrastructure changes risk-free.** Test Kyverno
+policies, Vault configs, or GitOps workflows locally before proposing to
+production. Experiment with eBPF networking, policy enforcement, or
+observability patterns without waiting for cloud resources or breaking shared
+environments.
 
 ### For DevOps/SRE Teams
 
-> **Learning lab for modern cloud-native tools.** Understand how ArgoCD
-> ApplicationSets work, debug Cilium network policies, or explore Prometheus
-> metrics—all in a realistic multi-node cluster on your laptop. Perfect for
-> training new team members or evaluating tools before adoption.
+**Learning lab for modern cloud-native tools.** Understand how ArgoCD
+ApplicationSets work, debug Cilium network policies, or explore Prometheus
+metrics—all in a realistic multi-node cluster on your laptop. Perfect for
+training new team members or evaluating tools before adoption.
 
 ### For Security Engineers
 
-> **Validate compliance controls in minutes.** Draft security policies as code
-> (Kyverno), test them against real workloads, and generate compliance reports
-> (Policy Reporter) without provisioning infrastructure. Demonstrate "block root
-> containers" or "enforce image signing" policies with concrete evidence.
+**Validate compliance controls in minutes.** Draft security policies as code
+(Kyverno), test them against real workloads, and generate compliance reports
+(Policy Reporter) without provisioning infrastructure. Demonstrate "block root
+containers" or "enforce image signing" policies with concrete evidence.
 
 From idea to validated prototype in minutes, now you only need one command:
 `task deploy`. Whether you're evaluating new tools, preparing demonstrations or
 conferences, writing a technical article, or onboarding a junior engineer, you
 can have your own IDP wherever and whenever you need it.
 
-## 🏗️ Deployment Architecture
+## Deployment Architecture
 
 <div align="center">
 
@@ -141,7 +143,7 @@ flowchart LR
 
 > **Deployment time:** ~5-10 minutes | **Command:** `task deploy`
 
-### 🗃️ Node Architecture
+### Node Architecture
 
 <div align="center">
 
@@ -267,10 +269,9 @@ flowchart TB
 - **Vault as source of truth** for secrets, synced to Kubernetes via External
   Secrets Operator
 
-📖 For detailed architecture documentation, see
-[Architecture Overview](architecture/overview.md)
+For detailed architecture documentation, see [Architecture Overview](architecture/overview.md)
 
-## 📊 Resource Requirements
+## Resource Requirements
 
 Optimized for local development environments:
 
@@ -279,7 +280,7 @@ Optimized for local development environments:
 | **CPU**    | **~3.5 cores**  | **~8.9 cores** |
 | **Memory** | **~5.4 GiB**    | **~11 GiB**   |
 
-**💡 Recommendation:**
+**Recommendation:**
 
 - **Minimum**: 4 CPU cores, 8GB RAM
 - **Comfortable**: 6 CPU cores, 12GB RAM
@@ -288,13 +289,9 @@ Optimized for local development environments:
 > **Note:** These numbers exclude k3d control plane and OS overhead. Real-world
 > usage may vary based on workload.
 
-## 🚀 Quick Start
+## Quick Start
 
-<div align="center">
-
-[![Deploy with Task](https://img.shields.io/badge/Deploy%20with-Task-29b6f6?style=for-the-badge&logo=task&logoColor=white)](https://taskfile.dev/)
-
-</div>
+[![Deploy with Task](https://img.shields.io/badge/Deploy%20with-Task-29b6f6?logo=task&logoColor=white)](https://taskfile.dev/)
 
 ### Prerequisites
 
@@ -320,7 +317,7 @@ code .
 # Once inside the Dev Container, deploy everything:
 task deploy
 
-# ☕ Grab a coffee - deployment takes ~5-10 minutes
+# Deployment takes ~5-10 minutes
 
 # For slow connections, increase timeouts:
 # task deploy KUBECTL_TIMEOUT=600s
@@ -328,9 +325,9 @@ task deploy
 
 That's it! Your IDP is ready.
 
-## 📚 What's Included
+## What's Included
 
-### Core Infrastructure (`IT/`)
+### Core Infrastructure (IT/)
 
 Deployed via Helm on Node 2 (static workloads):
 
@@ -341,7 +338,7 @@ Deployed via Helm on Node 2 (static workloads):
 - **External Secrets** - Vault-to-Kubernetes secret sync
 - **ArgoCD** - GitOps engine
 
-### Policy Layer (`Policies/`)
+### Policy Layer (Policies/)
 
 First GitOps deployment to ensure compliance from the start - **policies as
 code**:
@@ -351,7 +348,7 @@ code**:
 - **Pre-configured policies**: Namespace labels, component labels, best
   practices (all in Git)
 
-### Application Stacks (`K8s/`)
+### Application Stacks (K8s/)
 
 Deployed via ArgoCD ApplicationSets on Node 3:
 
@@ -359,21 +356,16 @@ Deployed via ArgoCD ApplicationSets on Node 3:
 - **CI/CD**: Argo Workflows, SonarQube
 - **Security**: Trivy Operator
 
-## 🤝 Contributing
+## Contributing
 
-<div align="center">
-
-[![Contributing](https://img.shields.io/badge/Contributions-Welcome-2ea44f?style=for-the-badge&logo=github)](https://github.com/rou-cru/idp-blueprint/issues)
-
-</div>
+[![Contributing](https://img.shields.io/badge/Contributions-Welcome-2ea44f?logo=github)](https://github.com/rou-cru/idp-blueprint/issues)
 
 Contributions are welcome! Here's how you can help:
 
-- 🐛 Report bugs via
-  [Issues](https://github.com/rou-cru/idp-blueprint/issues)
-- 💡 Suggest features or improvements
-- 📖 Improve documentation
-- 🔧 Submit pull requests for:
+- Report bugs via [Issues](https://github.com/rou-cru/idp-blueprint/issues)
+- Suggest features or improvements
+- Improve documentation
+- Submit pull requests for:
   - Additional Kyverno policies
   - Resource optimization improvements
   - Integration with other tools
@@ -381,7 +373,7 @@ Contributions are welcome! Here's how you can help:
 
 See [Contributing Guide](guides/contributing.md) for detailed guidelines.
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] Add Backstage as developer portal
 - [ ] Crossplane for infrastructure as code
@@ -389,7 +381,7 @@ See [Contributing Guide](guides/contributing.md) for detailed guidelines.
 - [ ] Cost optimization dashboard
 - [ ] Implement NetworkPolicies for enhanced security and namespace isolation
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE)
 file for details.
@@ -397,18 +389,18 @@ file for details.
 Feel free to use this as a reference or foundation for your own IDP
 implementations.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 <div align="center">
 
 This project integrates and builds upon excellent open-source tools from the
 Cloud Native ecosystem:
 
-[![ArgoCD](https://img.shields.io/badge/ArgoCD-2196F3?style=for-the-badge&logo=argoproj&logoColor=white)](https://argo-cd.readthedocs.io/)
-[![Cilium](https://img.shields.io/badge/Cilium-29BEB0?style=for-the-badge&logo=cilium&logoColor=white)](https://cilium.io/)
-[![Vault](https://img.shields.io/badge/Vault-2B2B2B?style=for-the-badge&logo=hashicorp&logoColor=white)](https://www.vaultproject.io/)
-[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white)](https://prometheus.io/)
-[![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)](https://grafana.com/)
+[![ArgoCD](https://img.shields.io/badge/ArgoCD-2196F3?logo=argoproj&logoColor=white)](https://argo-cd.readthedocs.io/)
+[![Cilium](https://img.shields.io/badge/Cilium-29BEB0?logo=cilium&logoColor=white)](https://cilium.io/)
+[![Vault](https://img.shields.io/badge/Vault-2B2B2B?logo=hashicorp&logoColor=white)](https://www.vaultproject.io/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?logo=prometheus&logoColor=white)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-F46800?logo=grafana&logoColor=white)](https://grafana.com/)
 
 </div>
 
@@ -534,10 +526,10 @@ the project.
 
 <div align="center">
 
-**⭐ If you find this project useful, please consider starring it on GitHub!**
+**If you find this project useful, please consider starring it on GitHub!**
 
 [![Stargazers repo roster for @rou-cru/idp-blueprint](https://reporoster.com/stars/rou-cru/idp-blueprint)](https://github.com/rou-cru/idp-blueprint/stargazers)
 
-**[Join our community](https://github.com/rou-cru/idp-blueprint/discussions) | [Report an issue](https://github.com/rou-cru/idp-blueprint/issues) | [Documentation](getting-started/overview.md)**
+[Join our community](https://github.com/rou-cru/idp-blueprint/discussions) | [Report an issue](https://github.com/rou-cru/idp-blueprint/issues) | [Documentation](getting-started/overview.md)
 
 </div>
