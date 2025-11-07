@@ -1,0 +1,15 @@
+apiVersion: v2
+name: cilium
+version: latest
+description: eBPF-based CNI with Gateway API support and L7 proxy capabilities
+type: application
+home: https://cilium.io
+sources:
+  - https://github.com/rou-cru/idp-blueprint
+maintainers:
+  - name: Platform Engineering Team
+    url: https://github.com/rou-cru/idp-blueprint
+annotations:
+  idp.blueprint/category: infrastructure
+  idp.blueprint/source: IT/cilium/cilium-values.yaml
+  idp.blueprint/managed-by: helm-docs

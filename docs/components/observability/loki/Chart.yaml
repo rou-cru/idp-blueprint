@@ -1,0 +1,15 @@
+apiVersion: v2
+name: loki
+version: 6.42.0
+description: Log aggregation system designed to store and query logs
+type: application
+home: https://grafana.com/oss/loki
+sources:
+  - https://github.com/rou-cru/idp-blueprint
+maintainers:
+  - name: Platform Engineering Team
+    url: https://github.com/rou-cru/idp-blueprint
+annotations:
+  idp.blueprint/category: observability
+  idp.blueprint/source: K8s/observability/loki/loki-values.yaml
+  idp.blueprint/managed-by: helm-docs

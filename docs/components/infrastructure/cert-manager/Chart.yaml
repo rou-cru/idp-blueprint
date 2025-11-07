@@ -1,0 +1,15 @@
+apiVersion: v2
+name: cert-manager
+version: latest
+description: Cloud-native certificate management for Kubernetes
+type: application
+home: https://cert-manager.io
+sources:
+  - https://github.com/rou-cru/idp-blueprint
+maintainers:
+  - name: Platform Engineering Team
+    url: https://github.com/rou-cru/idp-blueprint
+annotations:
+  idp.blueprint/category: infrastructure
+  idp.blueprint/source: IT/cert-manager/cert-manager-values.yaml
+  idp.blueprint/managed-by: helm-docs
