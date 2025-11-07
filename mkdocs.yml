@@ -14,6 +14,7 @@ copyright: Copyright &copy; 2024 IDP Blueprint Contributors
 theme:
   name: material
   language: en
+  custom_dir: overrides/
   palette:
     # Palette toggle for light mode
     - scheme: default
@@ -38,7 +39,10 @@ theme:
     - content.action.view
     - content.code.annotate
     - content.code.copy
+    - content.code.select
+    - content.tabs.link
     - content.tooltips
+    - header.autohide
     - navigation.expand
     - navigation.footer
     - navigation.indexes
@@ -46,6 +50,7 @@ theme:
     - navigation.instant.prefetch
     - navigation.instant.progress
     - navigation.path
+    - navigation.prune
     - navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
@@ -55,6 +60,7 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
+    - toc.integrate
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
@@ -106,6 +112,14 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - social:
+      cards: true
+      cards_layout: custom
+      cards_layout_options:
+        background: "#4051b5"
+        color: "#ffffff"
+  - sitemap:
+      sitemap_filename: sitemap.xml
   - minify:
       minify_html: true
   - git-revision-date-localized:
@@ -155,6 +169,7 @@ extra_css:
 nav:
   - Home: index.md
   - Getting Started:
+      - Overview: getting-started/overview.md
       - Prerequisites: getting-started/prerequisites.md
       - Quick Start: getting-started/quickstart.md
       - Deployment: getting-started/deployment.md
@@ -166,29 +181,35 @@ nav:
       - Secrets Management: architecture/secrets.md
   - Components:
       - Infrastructure:
-          - components/infrastructure/index.md
+          - Overview: components/infrastructure/index.md
           - Cilium CNI: components/infrastructure/cilium.md
           - Cert Manager: components/infrastructure/cert-manager.md
           - Vault: components/infrastructure/vault.md
           - External Secrets: components/infrastructure/external-secrets.md
           - ArgoCD: components/infrastructure/argocd.md
       - Policy:
-          - components/policy/index.md
+          - Overview: components/policy/index.md
           - Kyverno: components/policy/kyverno.md
           - Policy Reporter: components/policy/policy-reporter.md
       - Observability:
-          - components/observability/index.md
+          - Overview: components/observability/index.md
           - Prometheus: components/observability/prometheus.md
+          - Loki: components/observability/loki.md
+          - Fluent-bit: components/observability/fluent-bit.md
       - CI/CD:
-          - components/cicd/index.md
+          - Overview: components/cicd/index.md
           - Argo Workflows: components/cicd/argo-workflows.md
           - SonarQube: components/cicd/sonarqube.md
       - Security:
-          - components/security/index.md
+          - Overview: components/security/index.md
           - Trivy: components/security/trivy.md
   - Guides:
+      - Overview: guides/overview.md
       - Contributing: guides/contributing.md
       - Labels Standard: guides/labels-standard.md
+      - Policy Tagging: guides/policy-tagging.md
   - Reference:
+      - Overview: reference/overview.md
       - Resource Requirements: reference/resource-requirements.md
       - Troubleshooting: reference/troubleshooting.md
+      - Label Standards: reference/labels-standard.md

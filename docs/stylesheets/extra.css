@@ -3,37 +3,108 @@
 :root {
   --md-primary-fg-color: #4051b5;
   --md-accent-fg-color: #2196f3;
+  --md-custom-color-twitter: #1da1f2;
+  --md-custom-color-discord: #5865f2;
+  --md-custom-color-github: #24292f;
 }
 
 /* Improve code block visibility */
 .highlight {
   border-radius: 0.2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Better tables */
 .md-typeset table:not([class]) {
   font-size: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 0.25rem;
+  overflow: hidden;
 }
 
 /* Mermaid diagram improvements */
 .mermaid {
   text-align: center;
   margin: 2em 0;
+  padding: 1.5em;
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 /* Command prompts styling */
 .md-typeset pre > code {
   display: block;
   padding: 1em;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Better admonitions */
 .md-typeset .admonition,
 .md-typeset details {
   font-size: 0.8rem;
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Improve navigation breadcrumbs */
 .md-nav__title {
   font-weight: 600;
+}
+
+/* Enhanced homepage styling */
+.md-typeset h1 + .grid {
+  margin-top: 2rem;
+}
+
+/* Footer enhancements */
+.md-footer-meta {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Improved feature grid on homepage */
+.md-typeset .grid.cards {
+  gap: 1.25rem;
+}
+
+/* Better link styling */
+.md-typeset a {
+  text-decoration: none;
+}
+
+.md-typeset a:hover {
+  text-decoration: underline;
+}
+
+/* Custom hero section styling */
+.tx-hero {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+/* Enhanced badges */
+.md-typeset :is(.emojivoto) {
+  display: inline-flex;
+  vertical-align: middle;
+  height: 1.5em;
+  width: 1.5em;
+  margin: 0 0.25em;
+}
+
+/* Announcement bar styling */
+.md-announce {
+  background-color: var(--md-primary-fg-color);
+  color: white;
+}
+
+.md-announce a {
+  color: #ffeb3b;
+  font-weight: bold;
+}
+
+/* Responsive design improvements */
+@media screen and (max-width: 76.1875em) {
+  .md-nav--primary .md-nav__title[for=__drawer] {
+    background-color: var(--md-primary-fg-color);
+  }
 }

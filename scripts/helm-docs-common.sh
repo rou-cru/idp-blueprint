@@ -59,6 +59,12 @@ helm_docs_foreach() {
       return 1
     }
 
+    # Validate symlink doesn't exist before creating
+    if [ -e values.yaml ] && [ ! -L values.yaml ]; then
+      echo "Error: values.yaml already exists and is not a symlink in $chart_dir" >&2
+      return 1
+    fi
+
     # Create temporary symlink to source values file
     ln -sf "$source_values" values.yaml
 

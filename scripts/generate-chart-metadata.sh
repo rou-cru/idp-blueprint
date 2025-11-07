@@ -79,11 +79,16 @@ get_version_from_taskfile() {
     return 1
   fi
 
-  # Extract version from Taskfile using grep and awk
+  # Extract version from Taskfile using yq (more robust than grep/awk)
   local version
-  version=$(grep -E "^\s+${version_var}:" Taskfile.yaml | awk -F'"' '{print $2}')
+  if command -v yq &> /dev/null; then
+    version=$(yq eval ".vars.${version_var}" Taskfile.yaml 2>/dev/null | sed 's/{{.*default "\(.*\)"}}/\1/')
+  else
+    # Fallback to grep/awk if yq not available
+    version=$(grep -E "^\s+${version_var}:" Taskfile.yaml | awk -F'"' '{print $2}')
+  fi
 
-  if [ -n "$version" ]; then
+  if [ -n "$version" ] && [ "$version" != "null" ]; then
     echo "$version"
     return 0
   fi

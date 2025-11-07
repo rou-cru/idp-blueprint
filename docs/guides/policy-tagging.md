@@ -1,4 +1,4 @@
-# Kubernetes Tagging Policy
+# Kubernetes Labeling Standards
 
 This document defines the standard metadata policy for all Kubernetes resources within
 this project. The goal is to ensure operational consistency, enable FinOps capabilities,
@@ -48,6 +48,31 @@ Common metadata (like `owner`, `environment`, `business-unit`) should be set on 
 propagate these to all resources within that namespace.
 
 ### Label Details
+
+| Label | Required | Scope | Example |
+|-------|----------|-------|---------|
+| `app.kubernetes.io/name` | Yes | All workloads | `vault`, `cilium` |
+| `app.kubernetes.io/instance` | Yes | All workloads | `vault-demo`, `cilium-idp` |
+| `app.kubernetes.io/version` | No | Workloads | `1.18.2` |
+| `app.kubernetes.io/component` | Yes | All resources | `cni`, `secret-manager` |
+| `app.kubernetes.io/part-of` | Yes | All resources | `idp` |
+| `owner` | Yes | All resources | `platform-team` |
+| `business-unit` | Yes | All resources | `infrastructure` |
+| `environment` | Yes | All resources | `demo` |
+
+### Best Practices
+
+1. **Always use the official Kubernetes app labels** when possible
+2. **Use consistent values** across the platform
+3. **Document custom labels** in this specification
+4. **Apply labels at the namespace level** to ensure propagation
+5. **Avoid high-cardinality labels** that could impact performance
+
+### Implementation
+
+Labels are enforced through Kyverno policies:
+- `enforce-namespace-labels` - ensures namespaces have required labels
+- `require-component-labels` - ensures workloads have required labels
 
 1. **`app.kubernetes.io/name`**: The application's name (e.g., `vault`).
 2. **`app.kubernetes.io/instance`**: A unique name for the instance, often combining
