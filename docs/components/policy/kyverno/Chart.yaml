@@ -1,0 +1,15 @@
+apiVersion: v2
+name: kyverno
+version: latest
+description: Kubernetes-native policy management and security engine
+type: application
+home: https://kyverno.io
+sources:
+  - https://github.com/rou-cru/idp-blueprint
+maintainers:
+  - name: Platform Engineering Team
+    url: https://github.com/rou-cru/idp-blueprint
+annotations:
+  idp.blueprint/category: policy
+  idp.blueprint/source: Policies/kyverno/kyverno-values.yaml
+  idp.blueprint/managed-by: helm-docs

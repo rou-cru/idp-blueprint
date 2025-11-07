@@ -476,12 +476,40 @@ tasks:
   docs:
     desc: 'Generate all automatic documentation'
     cmds:
+      - task: docs:metadata
       - task: docs:helm
 
+  docs:metadata:
+    desc: 'Generate Chart.yaml metadata files for all components'
+    cmds:
+      - ./scripts/generate-chart-metadata.sh
+
   docs:helm:
-    desc: 'Generate documentation for Helm charts'
+    desc: 'Generate component documentation from Helm values using helm-docs'
     cmds:
       - ./scripts/helm-docs-generate.sh
+
+  docs:build:
+    desc: 'Build MkDocs documentation site'
+    cmds:
+      - mkdocs build --strict
+
+  docs:serve:
+    desc: 'Serve documentation locally at http://localhost:8000'
+    cmds:
+      - mkdocs serve
+
+  docs:deploy:
+    desc: 'Deploy documentation to GitHub Pages'
+    cmds:
+      - mkdocs gh-deploy --force
+
+  docs:clean:
+    desc: 'Clean generated documentation artifacts'
+    cmds:
+      - rm -rf site/
+      - find docs/components -type f -name "index.md" -delete
+      - echo "✅ Documentation artifacts cleaned"
 
   # CA CERTIFICATE
   # ------------------------------------------------------------------------------
