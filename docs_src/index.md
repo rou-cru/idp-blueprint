@@ -6,6 +6,7 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?logo=kubernetes)](https://k3d.io/)
 [![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?logo=docker)](https://containers.dev/)
 [![Task](https://img.shields.io/badge/Automation-Task-violet?logo=task)](https://taskfile.dev/)
+
 [![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange)](https://argo-cd.readthedocs.io/)
 [![Cilium](https://img.shields.io/badge/CNI-Cilium-yellow)](https://cilium.io/)
 [![Vault](https://img.shields.io/badge/Vault-Secrets-black?logo=vault)](https://www.vaultproject.io/)
