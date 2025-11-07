@@ -8,6 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/helm-docs-common.sh"
 
 # Callback function for generating documentation
+# shellcheck disable=SC2317  # Called indirectly by helm_docs_foreach
 generate_docs() {
   local template=$1
   local chart_dir=$2

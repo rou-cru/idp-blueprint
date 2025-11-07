@@ -44,7 +44,8 @@ get_version() {
   fi
 
   # Extract version from Taskfile using grep and awk
-  local version=$(grep -E "^\s+${version_var}:" Taskfile.yaml | awk -F'"' '{print $2}')
+  local version
+  version=$(grep -E "^\s+${version_var}:" Taskfile.yaml | awk -F'"' '{print $2}')
 
   if [ -z "$version" ]; then
     echo "latest"
@@ -62,7 +63,8 @@ generate_chart_yaml() {
   local source_path=$5
   local version_var=$6
 
-  local version=$(get_version "$version_var")
+  local version
+  version=$(get_version "$version_var")
   local output_dir="docs/components/${category}/${component}"
   local output_file="${output_dir}/Chart.yaml"
 
