@@ -1,110 +1,253 @@
-/* Custom styles for IDP Blueprint documentation */
+/* Professional, minimalist styles for IDP Blueprint documentation */
 
 :root {
   --md-primary-fg-color: #4051b5;
   --md-accent-fg-color: #2196f3;
-  --md-custom-color-twitter: #1da1f2;
-  --md-custom-color-discord: #5865f2;
-  --md-custom-color-github: #24292f;
 }
 
-/* Improve code block visibility */
-.highlight {
-  border-radius: 0.2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Dark mode optimizations */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #5c6bc0;
+  --md-accent-fg-color: #42a5f5;
+  --md-default-bg-color: #1a1a1a;
+  --md-default-fg-color: #e0e0e0;
+  --md-code-bg-color: #0d0d0d;
 }
 
-/* Better tables */
-.md-typeset table:not([class]) {
+/* COMPACT HEADER - More space for content */
+.md-header {
+  height: 3rem;
+  box-shadow: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.md-header__inner {
+  padding: 0 0.8rem;
+}
+
+.md-header__title {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* COMPACT FOOTER - Less visual weight */
+.md-footer {
+  margin-top: 2rem;
+}
+
+.md-footer-meta {
+  background-color: transparent;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-footer-meta {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.md-footer-copyright {
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+/* NAVIGATION - Cleaner, more space-efficient */
+.md-nav {
   font-size: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  border-radius: 0.25rem;
+}
+
+.md-nav__title {
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.6rem 0.6rem;
+}
+
+.md-nav__item {
+  padding: 0.2rem 0;
+}
+
+/* CONTENT SPACING - Maximize content area */
+.md-content {
+  max-width: 100%;
+}
+
+.md-content__inner {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.md-typeset h1 {
+  margin: 0 0 1.5rem;
+  font-weight: 600;
+  font-size: 2rem;
+}
+
+.md-typeset h2 {
+  margin: 2rem 0 1rem;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.md-typeset h3 {
+  margin: 1.5rem 0 0.8rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+/* CODE BLOCKS - Professional, minimal shadows */
+.highlight {
+  border-radius: 0.3rem;
+  box-shadow: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+[data-md-color-scheme="slate"] .highlight {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.md-typeset pre > code {
+  display: block;
+  padding: 1em;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* TABLES - Clean, professional styling */
+.md-typeset table:not([class]) {
+  font-size: 0.8rem;
+  box-shadow: none;
+  border-radius: 0.3rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
-/* Mermaid diagram improvements */
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.md-typeset table:not([class]) th {
+  font-weight: 600;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* MERMAID DIAGRAMS - Subtle background */
 .mermaid {
   text-align: center;
   margin: 2em 0;
   padding: 1.5em;
   border-radius: 0.5rem;
   background: rgba(0, 0, 0, 0.02);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-/* Command prompts styling */
-.md-typeset pre > code {
-  display: block;
-  padding: 1em;
-  background-color: rgba(0, 0, 0, 0.05);
+[data-md-color-scheme="slate"] .mermaid {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* Better admonitions */
+/* ADMONITIONS - Cleaner, less visual noise */
 .md-typeset .admonition,
 .md-typeset details {
-  font-size: 0.8rem;
-  border-radius: 0.25rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 0.85rem;
+  border-radius: 0.3rem;
+  box-shadow: none;
+  border-left: 3px solid;
 }
 
-/* Improve navigation breadcrumbs */
-.md-nav__title {
-  font-weight: 600;
-}
-
-/* Enhanced homepage styling */
-.md-typeset h1 + .grid {
-  margin-top: 2rem;
-}
-
-/* Footer enhancements */
-.md-footer-meta {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-/* Improved feature grid on homepage */
-.md-typeset .grid.cards {
-  gap: 1.25rem;
-}
-
-/* Better link styling */
+/* LINKS - Subtle, professional */
 .md-typeset a {
   text-decoration: none;
+  font-weight: 500;
 }
 
 .md-typeset a:hover {
   text-decoration: underline;
+  text-decoration-thickness: 1px;
 }
 
-/* Custom hero section styling */
+/* BADGES - Smaller, more discreet */
+.md-typeset img[alt*="badge" i] {
+  height: 20px;
+  max-height: 20px;
+  vertical-align: middle;
+  margin: 0 0.2rem;
+}
+
+/* Remove excessive padding from centered divs */
+.md-typeset div[align="center"] {
+  margin: 1rem 0;
+}
+
+/* Optimize hero sections */
 .tx-hero {
   text-align: center;
-  padding: 2rem 0;
+  padding: 1rem 0;
 }
 
-/* Enhanced badges */
-.md-typeset :is(.emojivoto) {
-  display: inline-flex;
-  vertical-align: middle;
-  height: 1.5em;
-  width: 1.5em;
-  margin: 0 0.25em;
+/* GRID CARDS - Tighter spacing */
+.md-typeset .grid {
+  gap: 1rem;
+  margin: 1rem 0;
 }
 
-/* Announcement bar styling */
+.md-typeset .grid.cards {
+  gap: 1rem;
+}
+
+/* Better use of horizontal space */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    width: 12rem;
+  }
+
+  .md-sidebar--secondary {
+    width: 12rem;
+  }
+}
+
+/* Hide announcement bar space completely */
 .md-announce {
-  background-color: var(--md-primary-fg-color);
-  color: white;
+  display: none;
 }
 
-.md-announce a {
-  color: #ffeb3b;
-  font-weight: bold;
-}
-
-/* Responsive design improvements */
+/* Responsive improvements for mobile */
 @media screen and (max-width: 76.1875em) {
   .md-nav--primary .md-nav__title[for=__drawer] {
     background-color: var(--md-primary-fg-color);
   }
+
+  .md-typeset h1 {
+    font-size: 1.6rem;
+  }
+
+  .md-typeset h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Tighter list spacing */
+.md-typeset ul,
+.md-typeset ol {
+  margin: 0.8rem 0;
+}
+
+.md-typeset li {
+  margin: 0.3rem 0;
+}
+
+/* Professional blockquote styling */
+.md-typeset blockquote {
+  border-left: 3px solid var(--md-accent-fg-color);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: inherit;
+  opacity: 0.9;
 }
