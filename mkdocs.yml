@@ -2,10 +2,12 @@ site_name: IDP Blueprint
 site_description: An Internal Developer Platform (IDP) Blueprint - Complete platform engineering stack with GitOps, Observability, Security & Policy Enforcement
 site_author: Platform Engineering Team
 site_url: https://rou-cru.github.io/idp-blueprint
+site_dir: docs
+docs_dir: docs_src
 
 repo_name: rou-cru/idp-blueprint
 repo_url: https://github.com/rou-cru/idp-blueprint
-edit_uri: edit/main/docs/
+edit_uri: edit/main/docs_src/
 
 # Copyright
 copyright: Copyright &copy; 2024 IDP Blueprint Contributors

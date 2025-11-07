@@ -16,21 +16,14 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write  # Required to commit and push built docs
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     # Only run if CI was successful (or manual trigger)
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -40,7 +33,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache
-          key: mkdocs-${{ hashFiles('mkdocs.yml', 'docs/**') }}
+          key: mkdocs-${{ hashFiles('mkdocs.yml', 'docs_src/**') }}
           restore-keys: |
             mkdocs-
 
@@ -67,9 +60,9 @@ jobs:
 
       - name: Validate build output
         run: |
-          test -d site/ || { echo "Error: site/ directory not found"; exit 1; }
-          test -f site/index.html || { echo "Error: site/index.html not found"; exit 1; }
-          test -f site/sitemap.xml || { echo "Error: site/sitemap.xml not found"; exit 1; }
+          test -d docs/ || { echo "Error: docs/ directory not found"; exit 1; }
+          test -f docs/index.html || { echo "Error: docs/index.html not found"; exit 1; }
+          test -f docs/sitemap.xml || { echo "Error: docs/sitemap.xml not found"; exit 1; }
           echo "✅ Build output validated"
 
       - name: Check for broken links
@@ -77,11 +70,10 @@ jobs:
         working-directory: .devcontainer
         continue-on-error: true
 
-      - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site/
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit and push built documentation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git diff --quiet && git diff --staged --quiet || git commit -m "docs: update built documentation [skip ci]"
+          git push
