@@ -1,17 +1,15 @@
 # IDP-blueprint: Internal Developer Platform
 
-<div align="center">
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?logo=kubernetes)](https://k3d.io/)
-[![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?logo=docker)](https://containers.dev/)
-[![Task](https://img.shields.io/badge/Automation-Task-violet?logo=task)](https://taskfile.dev/)
-
-[![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-orange)](https://argo-cd.readthedocs.io/)
-[![Cilium](https://img.shields.io/badge/CNI-Cilium-yellow)](https://cilium.io/)
-[![Vault](https://img.shields.io/badge/Vault-Secrets-black?logo=vault)](https://www.vaultproject.io/)
-
-</div>
+<p align="center">
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://k3d.io/"><img src="https://img.shields.io/badge/Kubernetes-k3d-blue?logo=kubernetes" alt="Kubernetes"></a>
+  <a href="https://containers.dev/"><img src="https://img.shields.io/badge/Docker-Dev_Containers-blue?logo=docker" alt="Docker"></a>
+  <a href="https://taskfile.dev/"><img src="https://img.shields.io/badge/Automation-Task-violet?logo=task" alt="Task"></a>
+  <br>
+  <a href="https://argo-cd.readthedocs.io/"><img src="https://img.shields.io/badge/ArgoCD-GitOps-orange" alt="ArgoCD"></a>
+  <a href="https://cilium.io/"><img src="https://img.shields.io/badge/CNI-Cilium-yellow" alt="Cilium"></a>
+  <a href="https://www.vaultproject.io/"><img src="https://img.shields.io/badge/Vault-Secrets-black?logo=vault" alt="Vault"></a>
+</p>
 
 > **An Internal Developer Platform (IDP) Blueprint** - Deploy a complete platform
 > engineering stack (GitOps, Observability, Security & Policy Enforcement) with
