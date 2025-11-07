@@ -11,9 +11,8 @@ Containers** and **Devbox**. This approach ensures that all contributors use the
 same tooling and dependencies, which are defined as code in the repository.
 
 All required tools (linters, `kubectl`, `helm`, etc.) are automatically installed when
-the container starts. Please refer to the [**Quick Start** section in the
-README.md](./README.md#🚀-quick-start) for instructions on how to launch the
-environment.
+the container starts. Please refer to the [**Quick Start** guide](../getting-started/quickstart.md)
+for instructions on how to launch the environment.
 
 ## Code Style and Quality Checks
 
@@ -33,13 +32,14 @@ quality gates.
 ## Architectural Conventions
 
 To maintain a clear and scalable structure, the project follows specific architectural
-conventions. Before adding or modifying files, please read the following documents:
+conventions. Before adding or modifying files, please read the architecture documentation:
 
-- **[IT/ARCHITECTURE.md](./IT/ARCHITECTURE.md)**: Describes the structure of the
-  **bootstrap layer**, which includes core components like the CNI and secret
-  management.
-- **[K8s/ARCHITECTURE.md](./K8s/ARCHITECTURE.md)**: Describes the **GitOps structure** for
-  all application stacks managed by ArgoCD, including the "App of AppSets" pattern.
+- **[Infrastructure Layer](../architecture/infrastructure.md)**: Describes the structure of the
+  **bootstrap layer** (in the `IT/` directory), which includes core components like Cilium CNI,
+  Vault, and certificate management
+- **[Application Layer](../architecture/applications.md)**: Describes the **GitOps structure**
+  (in the `K8s/` directory) for all application stacks managed by ArgoCD, including the
+  "App of AppSets" pattern
 
 ## Kubernetes Manifest Conventions
 
@@ -127,8 +127,8 @@ and resource discoverability across all Kubernetes resources.
 
 All contributors **MUST** read and follow the standards defined in:
 
-- **[docs/LABELS_STANDARD.md](./docs/LABELS_STANDARD.md)**: Complete label standards, canonical
-  values, and conventions
+- **[Kubernetes Labeling Standards](../reference/labels-standard.md)**: Complete label standards,
+  canonical values, priority classes, and conventions
 
 ### Quick Reference
 
@@ -159,8 +159,8 @@ Before submitting changes:
 This project values the use of **atomic commits**.
 Each commit must represent a single, logical, and complete change.
 While it can be tempting to group many changes into a single commit
-before pushing(i did it many times and probably i'll do it again),
-this practice severely harms the project's maintainability.
+before pushing, this practice should be avoided as it severely harms
+the project's maintainability and code review efficiency.
 
 The primary reason for requiring atomic commits is to enable the effective use of `git bisect`,
 a powerful tool for finding which commit introduced a bug.

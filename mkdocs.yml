@@ -182,27 +182,28 @@ nav:
   - Components:
       - Infrastructure:
           - Overview: components/infrastructure/index.md
-          - Cilium CNI: components/infrastructure/cilium.md
-          - Cert Manager: components/infrastructure/cert-manager.md
-          - Vault: components/infrastructure/vault.md
-          - External Secrets: components/infrastructure/external-secrets.md
-          - ArgoCD: components/infrastructure/argocd.md
+          - Cilium CNI: components/infrastructure/cilium/index.md
+          - Cert Manager: components/infrastructure/cert-manager/index.md
+          - Vault: components/infrastructure/vault/index.md
+          - External Secrets: components/infrastructure/external-secrets/index.md
+          - ArgoCD: components/infrastructure/argocd/index.md
       - Policy:
           - Overview: components/policy/index.md
-          - Kyverno: components/policy/kyverno.md
-          - Policy Reporter: components/policy/policy-reporter.md
+          - Kyverno: components/policy/kyverno/index.md
+          - Policy Reporter: components/policy/policy-reporter/index.md
       - Observability:
           - Overview: components/observability/index.md
-          - Prometheus: components/observability/prometheus.md
-          - Loki: components/observability/loki.md
-          - Fluent-bit: components/observability/fluent-bit.md
+          - Prometheus: components/observability/prometheus/index.md
+          - Grafana: components/observability/grafana.md
+          - Loki: components/observability/loki/index.md
+          - Fluent-bit: components/observability/fluent-bit/index.md
       - CI/CD:
           - Overview: components/cicd/index.md
-          - Argo Workflows: components/cicd/argo-workflows.md
-          - SonarQube: components/cicd/sonarqube.md
+          - Argo Workflows: components/cicd/argo-workflows/index.md
+          - SonarQube: components/cicd/sonarqube/index.md
       - Security:
           - Overview: components/security/index.md
-          - Trivy: components/security/trivy.md
+          - Trivy: components/security/trivy/index.md
   - Guides:
       - Overview: guides/overview.md
       - Contributing: guides/contributing.md
