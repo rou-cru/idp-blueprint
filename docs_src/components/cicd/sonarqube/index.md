@@ -1,6 +1,6 @@
 # sonarqube
 
-![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://www.sonarsource.com/products/sonarqube)
+![Version: 2025.5.0](https://img.shields.io/badge/Version-2025.5.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://www.sonarsource.com/products/sonarqube)
 
 Code quality and security analysis platform
 
@@ -8,7 +8,7 @@ Code quality and security analysis platform
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `latest` |
+| **Chart Version** | `2025.5.0` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [sonarqube](https://www.sonarsource.com/products/sonarqube) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |

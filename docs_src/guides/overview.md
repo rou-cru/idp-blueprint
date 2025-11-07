@@ -5,7 +5,7 @@ This section provides comprehensive guides for working with the IDP Blueprint pl
 ## Available Guides
 
 - **[Contributing](contributing.md)**: Guidelines for contributing to the project
-- **[Labels Standard](labels-standard.md)**: Standards for Kubernetes labeling
+- **[Labels Standard](../reference/labels-standard.md)**: Standards for Kubernetes labeling
 - **[Policy Tagging](policy-tagging.md)**: Guidelines for tagging resources with policies
 
 ## Getting Help

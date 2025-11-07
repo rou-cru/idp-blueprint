@@ -1,6 +1,6 @@
 apiVersion: v2
 name: cert-manager
-version: v1.19.0
+version: latest
 description: Cloud-native certificate management for Kubernetes
 type: application
 home: https://cert-manager.io

@@ -1,6 +1,6 @@
 # fluent-bit
 
-![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://fluentbit.io)
+![Version: 0.54.0](https://img.shields.io/badge/Version-0.54.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://fluentbit.io)
 
 Fast and lightweight log processor and forwarder
 
@@ -8,7 +8,7 @@ Fast and lightweight log processor and forwarder
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `latest` |
+| **Chart Version** | `0.54.0` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [fluent-bit](https://fluentbit.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |

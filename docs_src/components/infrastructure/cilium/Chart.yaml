@@ -1,6 +1,6 @@
 apiVersion: v2
 name: cilium
-version: 1.18.2
+version: latest
 description: eBPF-based CNI with Gateway API support and L7 proxy capabilities
 type: application
 home: https://cilium.io

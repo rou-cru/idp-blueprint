@@ -1,6 +1,6 @@
 # cert-manager
 
-![Version: v1.19.0](https://img.shields.io/badge/Version-v1.19.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://cert-manager.io)
+![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://cert-manager.io)
 
 Cloud-native certificate management for Kubernetes
 
@@ -8,7 +8,7 @@ Cloud-native certificate management for Kubernetes
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `v1.19.0` |
+| **Chart Version** | `latest` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [cert-manager](https://cert-manager.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |

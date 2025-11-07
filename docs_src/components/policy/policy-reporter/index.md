@@ -1,6 +1,6 @@
 # policy-reporter
 
-![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://kyverno.github.io/policy-reporter)
+![Version: 3.5.0](https://img.shields.io/badge/Version-3.5.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://kyverno.github.io/policy-reporter)
 
 Monitoring and observability for policy engine results
 
@@ -8,7 +8,7 @@ Monitoring and observability for policy engine results
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `latest` |
+| **Chart Version** | `3.5.0` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [policy-reporter](https://kyverno.github.io/policy-reporter) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
