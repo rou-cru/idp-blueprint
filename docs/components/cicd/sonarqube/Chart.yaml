@@ -1,6 +1,6 @@
 apiVersion: v2
 name: sonarqube
-version: latest
+version: 2025.5.0
 description: Code quality and security analysis platform
 type: application
 home: https://www.sonarsource.com/products/sonarqube

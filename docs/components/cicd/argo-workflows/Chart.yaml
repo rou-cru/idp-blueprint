@@ -1,6 +1,6 @@
 apiVersion: v2
 name: argo-workflows
-version: latest
+version: 0.45.27
 description: Kubernetes-native workflow engine for orchestrating parallel jobs
 type: application
 home: https://argoproj.github.io/workflows

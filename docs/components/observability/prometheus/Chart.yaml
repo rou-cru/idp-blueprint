@@ -1,6 +1,6 @@
 apiVersion: v2
 name: prometheus
-version: latest
+version: 77.14.0
 description: Prometheus monitoring stack with Grafana and Alertmanager
 type: application
 home: https://prometheus.io

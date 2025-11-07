@@ -1,6 +1,6 @@
 apiVersion: v2
 name: policy-reporter
-version: latest
+version: 3.5.0
 description: Monitoring and observability for policy engine results
 type: application
 home: https://kyverno.github.io/policy-reporter

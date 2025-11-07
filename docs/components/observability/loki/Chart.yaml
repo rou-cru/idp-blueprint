@@ -1,6 +1,6 @@
 apiVersion: v2
 name: loki
-version: latest
+version: 6.42.0
 description: Log aggregation system designed to store and query logs
 type: application
 home: https://grafana.com/oss/loki

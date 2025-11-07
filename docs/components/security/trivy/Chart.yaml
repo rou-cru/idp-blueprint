@@ -1,6 +1,6 @@
 apiVersion: v2
 name: trivy
-version: latest
+version: 0.31.0
 description: Comprehensive security scanner for vulnerabilities and misconfigurations
 type: application
 home: https://trivy.dev
