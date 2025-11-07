@@ -1,5 +1,29 @@
 # {{ .Name }}
 
-This document lists the configuration parameters for the `{{ .Name }}` component.
+{{ template "chart.versionBadge" . }} {{ template "chart.typeBadge" . }}{{ if .Home }} [![Homepage](https://img.shields.io/badge/Homepage-blue)]({{ .Home }}){{ end }}
+
+{{ .Description }}
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `{{ .Version }}` |
+| **Chart Type** | `{{ .Type }}` |
+| **Upstream Project** | {{ if .Home }}[{{ .Name }}]({{ .Home }}){{ else }}N/A{{ end }} |
+{{ if .Maintainers }}| **Maintainers** | {{ range .Maintainers }}{{ .Name }}{{ if .Url }} ([link]({{ .Url }})){{ end }}{{ end }} |{{ end }}
+
+## Configuration Values
+
+{{ if .Values }}
+The following table lists the configurable parameters:
 
 {{ template "chart.valuesSection" . }}
+{{ else }}
+This component uses default configuration. See upstream documentation for available options.
+{{ end }}
+
+---
+
+**Documentation Auto-generated** by [helm-docs](https://github.com/norwoodj/helm-docs)
+**Last Updated**: This file is regenerated automatically when values change

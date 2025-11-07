@@ -1,0 +1,194 @@
+site_name: IDP Blueprint
+site_description: An Internal Developer Platform (IDP) Blueprint - Complete platform engineering stack with GitOps, Observability, Security & Policy Enforcement
+site_author: Platform Engineering Team
+site_url: https://rou-cru.github.io/idp-blueprint
+
+repo_name: rou-cru/idp-blueprint
+repo_url: https://github.com/rou-cru/idp-blueprint
+edit_uri: edit/main/docs/
+
+# Copyright
+copyright: Copyright &copy; 2024 IDP Blueprint Contributors
+
+# Configuration
+theme:
+  name: material
+  language: en
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: Fira Code
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.tooltips
+    - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
+      auto_caption: false
+      caption_position: bottom
+
+# Customization
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/rou-cru/idp-blueprint
+    - icon: fontawesome/brands/docker
+      link: https://github.com/rou-cru/idp-blueprint/pkgs/container/idp-blueprint
+  version:
+    provider: mike
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/thumb-up-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/thumb-down-outline
+          name: This page could be improved
+          data: 0
+          note: >-
+            Thanks for your feedback! Help us improve by
+            <a href="https://github.com/rou-cru/idp-blueprint/issues/new?title=[Docs Feedback]: {title} - {url}" target="_blank" rel="noopener">opening an issue</a>.
+
+extra_css:
+  - stylesheets/extra.css
+
+# Page tree
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Prerequisites: getting-started/prerequisites.md
+      - Quick Start: getting-started/quickstart.md
+      - Deployment: getting-started/deployment.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Visual Architecture: architecture/visual.md
+      - Infrastructure Layer: architecture/infrastructure.md
+      - Application Layer: architecture/applications.md
+      - Secrets Management: architecture/secrets.md
+  - Components:
+      - Infrastructure:
+          - components/infrastructure/index.md
+          - Cilium CNI: components/infrastructure/cilium.md
+          - Cert Manager: components/infrastructure/cert-manager.md
+          - Vault: components/infrastructure/vault.md
+          - External Secrets: components/infrastructure/external-secrets.md
+          - ArgoCD: components/infrastructure/argocd.md
+      - Policy:
+          - components/policy/index.md
+          - Kyverno: components/policy/kyverno.md
+          - Policy Reporter: components/policy/policy-reporter.md
+      - Observability:
+          - components/observability/index.md
+          - Prometheus: components/observability/prometheus.md
+      - CI/CD:
+          - components/cicd/index.md
+          - Argo Workflows: components/cicd/argo-workflows.md
+          - SonarQube: components/cicd/sonarqube.md
+      - Security:
+          - components/security/index.md
+          - Trivy: components/security/trivy.md
+  - Guides:
+      - Contributing: guides/contributing.md
+      - Labels Standard: guides/labels-standard.md
+  - Reference:
+      - Resource Requirements: reference/resource-requirements.md
+      - Troubleshooting: reference/troubleshooting.md

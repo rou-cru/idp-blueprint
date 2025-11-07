@@ -1,0 +1,15 @@
+apiVersion: v2
+name: prometheus
+version: 77.14.0
+description: Prometheus monitoring stack with Grafana and Alertmanager
+type: application
+home: https://prometheus.io
+sources:
+  - https://github.com/rou-cru/idp-blueprint
+maintainers:
+  - name: Platform Engineering Team
+    url: https://github.com/rou-cru/idp-blueprint
+annotations:
+  idp.blueprint/category: observability
+  idp.blueprint/source: K8s/observability/kube-prometheus-stack/kube-prometheus-stack-values.yaml
+  idp.blueprint/managed-by: helm-docs
