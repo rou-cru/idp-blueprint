@@ -12,7 +12,7 @@ validate_git_repo() {
   fi
 }
 
-# Process each component directory containing Chart.yaml in docs/components/
+# Process each component directory containing Chart.yaml in docs_src/components/
 # Arguments:
 #   $1: callback function to execute (receives: template_path, chart_dir, source_values_path)
 # Returns:
@@ -32,7 +32,7 @@ helm_docs_foreach() {
     return 1
   fi
 
-  # Find all Chart.yaml files in docs/components/ subdirectories
+  # Find all Chart.yaml files in docs_src/components/ subdirectories
   while IFS= read -r chart_file; do
     local chart_dir
     chart_dir=$(dirname "$chart_file")
@@ -88,7 +88,7 @@ helm_docs_foreach() {
       echo "Error: Cannot return to root directory: $root_dir" >&2
       return 1
     }
-  done < <(find "$root_dir/docs/components" -type f -name "Chart.yaml" | sort)
+  done < <(find "$root_dir/docs_src/components" -type f -name "Chart.yaml" | sort)
 
   return $exit_code
 }
