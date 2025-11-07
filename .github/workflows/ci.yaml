@@ -3,8 +3,23 @@ name: CI Pipeline
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '**.md'
+      - '.github/workflows/docs.yaml'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - '**.md'
+      - '.github/workflows/docs.yaml'
+
+# Prevent concurrent runs on same ref
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

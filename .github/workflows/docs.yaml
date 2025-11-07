@@ -1,0 +1,57 @@
+name: Documentation
+
+on:
+  # Trigger after CI completes successfully on main
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types: [completed]
+    branches: [main]
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Prevent concurrent deployments
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write  # Required for gh-pages deployment
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    # Only run if CI was successful (or manual trigger)
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git-revision-date plugin
+
+      - name: Prepare Devbox configuration
+        run: ln -s devbox-minimal.json devbox.json
+        working-directory: .devcontainer
+
+      - name: Install Devbox
+        uses: jetpack-io/devbox-install-action@v0.11.0
+        with:
+          project-path: .devcontainer
+
+      - name: Generate Chart.yaml metadata
+        run: devbox run -- task docs:metadata
+        working-directory: .devcontainer
+
+      - name: Generate component documentation
+        run: devbox run -- task docs:helm
+        working-directory: .devcontainer
+
+      - name: Build MkDocs site
+        run: devbox run -- task docs:build
+        working-directory: .devcontainer
+
+      - name: Deploy to GitHub Pages
+        run: devbox run -- task docs:deploy
+        working-directory: .devcontainer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

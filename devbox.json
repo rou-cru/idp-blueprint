@@ -9,6 +9,7 @@
     "kubernetes-helm@3.19.0",
     "kustomize@5.7.1",
     "helm-docs@1.14.2",
+    "mkdocs@1.6.1",
     "k3d@5.8.3",
     "k9s@0.50.9",
     "cilium-cli@0.18.7",
