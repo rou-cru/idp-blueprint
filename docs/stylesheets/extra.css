@@ -143,100 +143,79 @@ html {
   opacity: 0.8;
 }
 
-/* NAVIGATION TABS - Integrated into single-row header using flexbox */
-.md-tabs {
-  position: static;
-  height: 3rem;
-  background-color: transparent;
-  box-shadow: none;
-  overflow: visible;
-  order: 3; /* Position after logo and title, before search/theme */
+/* VERTICAL NAVIGATION TABS - Left sidebar styled as vertical section tabs */
+
+/* Primary sidebar - wider for vertical tabs */
+.md-sidebar--primary {
+  width: 15rem;
 }
 
-/* Lift tabs into header using negative margin */
-.md-header ~ .md-tabs {
-  margin-top: -3rem;
+/* Top-level navigation items styled as vertical tabs */
+.md-nav--primary > .md-nav__list > .md-nav__item {
+  margin: 0.3rem 0.5rem;
+  border-radius: 0.4rem;
+  transition: all var(--transition-duration) var(--transition-easing);
 }
 
-/* Container for main header - make it use flexbox to accommodate all elements */
-.md-header__inner {
-  display: flex !important;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Logo - fixed size, no shrink */
-.md-logo {
-  flex-shrink: 0;
-  order: 1;
-}
-
-/* Title - can shrink on small screens */
-.md-header__title {
-  order: 2;
-  flex-shrink: 1;
-  min-width: 0; /* Allow shrinking */
-}
-
-/* Tabs list - compact, centered */
-.md-tabs__list {
-  display: flex;
-  gap: 0.2rem;
-  margin: 0;
-  padding: 0 0.5rem;
-  list-style: none;
-  white-space: nowrap;
-}
-
-.md-tabs__item {
-  display: inline-flex;
-  height: 3rem;
-  padding: 0;
-}
-
-.md-tabs__link {
-  font-size: 0.7rem;
-  font-weight: 500;
-  padding: 0 0.6rem;
-  display: flex;
-  align-items: center;
-  height: 3rem;
-  transition: background-color var(--transition-duration) var(--transition-easing);
-  border-radius: 0.2rem;
-}
-
-.md-tabs__link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-[data-md-color-scheme="slate"] .md-tabs__link:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Active tab indicator */
-.md-tabs__item--active .md-tabs__link {
+/* Top-level links - prominent tab style */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link {
   font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.4rem;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.02));
+  border-left: 3px solid transparent;
+  transition: all var(--transition-duration) var(--transition-easing);
+}
+
+/* Top-level links hover - highlight as tab */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link:hover {
+  background: linear-gradient(90deg, rgba(64, 81, 181, 0.08), rgba(64, 81, 181, 0.03));
+  border-left-color: var(--md-accent-fg-color);
+  transform: translateX(2px);
+}
+
+/* Active top-level tab - bold indicator */
+.md-nav--primary > .md-nav__list > .md-nav__item--active > .md-nav__link {
+  background: linear-gradient(90deg, rgba(64, 81, 181, 0.12), rgba(64, 81, 181, 0.04));
+  border-left-color: var(--md-primary-fg-color);
+  color: var(--md-primary-fg-color);
+  font-weight: 700;
+}
+
+/* Dark mode tab styling */
+[data-md-color-scheme="slate"] .md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02));
+}
+
+[data-md-color-scheme="slate"] .md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link:hover {
+  background: linear-gradient(90deg, rgba(92, 107, 192, 0.15), rgba(92, 107, 192, 0.05));
+}
+
+[data-md-color-scheme="slate"] .md-nav--primary > .md-nav__list > .md-nav__item--active > .md-nav__link {
+  background: linear-gradient(90deg, rgba(92, 107, 192, 0.2), rgba(92, 107, 192, 0.08));
   color: var(--md-accent-fg-color);
 }
 
-/* Theme toggle, search, repo link - stay on the right */
-.md-header__option,
-.md-header__source {
-  flex-shrink: 0;
-  order: 10; /* After tabs */
+/* Sub-navigation items - indented and smaller */
+.md-nav--primary .md-nav__item .md-nav__item {
+  margin-left: 0.5rem;
 }
 
-/* Hide tabs on mobile to save space */
-@media screen and (max-width: 76.1875em) {
-  .md-tabs {
-    display: none;
-  }
+.md-nav--primary .md-nav__item .md-nav__item .md-nav__link {
+  font-size: 0.75rem;
+  padding: 0.4rem 1rem;
+}
 
-  /* Restore normal header spacing when tabs are hidden */
-  .md-header ~ .md-tabs {
-    margin-top: 0;
-  }
+/* Nested navigation (level 2+) - subtle styling */
+.md-nav--primary .md-nav__item .md-nav {
+  padding-left: 0.5rem;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  margin-left: 1rem;
+}
+
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__item .md-nav {
+  border-left-color: rgba(255, 255, 255, 0.08);
 }
 
 /* Subtle elevation on scroll */

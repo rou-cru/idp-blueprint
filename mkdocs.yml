@@ -58,8 +58,6 @@ theme:
     - navigation.instant
     - navigation.path
     - navigation.sections
-    - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.top
     - navigation.tracking
     # Search features
