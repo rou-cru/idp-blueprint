@@ -143,11 +143,6 @@ html {
   opacity: 0.8;
 }
 
-/* NAVIGATION TABS - Hide completely to prevent overlap, sidebar navigation is sufficient */
-.md-tabs {
-  display: none;
-}
-
 /* Subtle elevation on scroll */
 .md-header[data-md-state="shadow"] {
   box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
