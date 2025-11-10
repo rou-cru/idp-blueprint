@@ -143,6 +143,102 @@ html {
   opacity: 0.8;
 }
 
+/* NAVIGATION TABS - Integrated into single-row header using flexbox */
+.md-tabs {
+  position: static;
+  height: 3rem;
+  background-color: transparent;
+  box-shadow: none;
+  overflow: visible;
+  order: 3; /* Position after logo and title, before search/theme */
+}
+
+/* Lift tabs into header using negative margin */
+.md-header ~ .md-tabs {
+  margin-top: -3rem;
+}
+
+/* Container for main header - make it use flexbox to accommodate all elements */
+.md-header__inner {
+  display: flex !important;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Logo - fixed size, no shrink */
+.md-logo {
+  flex-shrink: 0;
+  order: 1;
+}
+
+/* Title - can shrink on small screens */
+.md-header__title {
+  order: 2;
+  flex-shrink: 1;
+  min-width: 0; /* Allow shrinking */
+}
+
+/* Tabs list - compact, centered */
+.md-tabs__list {
+  display: flex;
+  gap: 0.2rem;
+  margin: 0;
+  padding: 0 0.5rem;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.md-tabs__item {
+  display: inline-flex;
+  height: 3rem;
+  padding: 0;
+}
+
+.md-tabs__link {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0 0.6rem;
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  transition: background-color var(--transition-duration) var(--transition-easing);
+  border-radius: 0.2rem;
+}
+
+.md-tabs__link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-md-color-scheme="slate"] .md-tabs__link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Active tab indicator */
+.md-tabs__item--active .md-tabs__link {
+  font-weight: 600;
+  color: var(--md-accent-fg-color);
+}
+
+/* Theme toggle, search, repo link - stay on the right */
+.md-header__option,
+.md-header__source {
+  flex-shrink: 0;
+  order: 10; /* After tabs */
+}
+
+/* Hide tabs on mobile to save space */
+@media screen and (max-width: 76.1875em) {
+  .md-tabs {
+    display: none;
+  }
+
+  /* Restore normal header spacing when tabs are hidden */
+  .md-header ~ .md-tabs {
+    margin-top: 0;
+  }
+}
+
 /* Subtle elevation on scroll */
 .md-header[data-md-state="shadow"] {
   box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.1), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
