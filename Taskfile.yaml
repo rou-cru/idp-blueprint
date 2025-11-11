@@ -118,9 +118,12 @@ tasks:
     desc: 'Deploy the entire IDP platform'
     preconditions:
       - sh: test -f {{.CONFIG_FILE}}
-        msg: 'config.toml not found. Please keep the configuration file at the repo root.'
+        msg:
+          'config.toml not found. Please keep the configuration file at the repo root.'
     cmds:
-      - defer: echo '{{if .EXIT_CODE}}⚠️  Deployment failed! Run "task destroy" to clean up and retry.{{else}}Success 😌{{end}}'
+      - defer:
+          echo '{{if .EXIT_CODE}}⚠️  Deployment failed! Run "task destroy" to clean up
+          and retry.{{else}}Success 😌{{end}}'
       # 1. Bootstrap Cluster
       - task: k3d:k3d:create
       - task: bootstrap:it:apply-namespaces
