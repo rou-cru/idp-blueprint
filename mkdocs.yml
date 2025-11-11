@@ -2,21 +2,20 @@ site_name: IDP Blueprint
 site_description: Enterprise-grade Internal Developer Platform Blueprint - Production-ready platform engineering stack with GitOps, observability, security, and policy enforcement for modern cloud-native architectures
 site_author: IDP Blueprint Project
 site_url: https://rou-cru.github.io/idp-blueprint
-site_dir: docs
-docs_dir: docs_src
+site_dir: site
+docs_dir: docs
 
 repo_name: rou-cru/idp-blueprint
 repo_url: https://github.com/rou-cru/idp-blueprint
-edit_uri: edit/main/docs_src/
+edit_uri: edit/main/docs/
 
 # Copyright
-copyright: Copyright &copy; 2024 IDP Blueprint Contributors
+copyright: Copyright &copy; 2024-2025 IDP Blueprint Contributors
 
 # Configuration
 theme:
   name: material
   language: en
-  custom_dir: overrides/
   palette:
     # Palette toggle for dark mode (default)
     - media: "(prefers-color-scheme)"
@@ -186,7 +185,7 @@ nav:
       - Observability:
           - Overview: components/observability/index.md
           - Prometheus: components/observability/prometheus/index.md
-          - Grafana: components/observability/grafana.md
+          - Grafana: components/observability/grafana/index.md
           - Loki: components/observability/loki/index.md
           - Fluent-bit: components/observability/fluent-bit/index.md
       - CI/CD:
