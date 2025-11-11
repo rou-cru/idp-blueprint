@@ -1,57 +1,73 @@
 name: Documentation
 
 on:
-  # Trigger after CI completes successfully on main
-  workflow_run:
-    workflows: ['CI Pipeline']
-    types: [completed]
-    branches: [main]
+  # Trigger on push to main
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
+      - 'Scripts/generate-chart-metadata.sh'
+      - 'Scripts/helm-docs-*.sh'
+      - '.github/workflows/docs.yaml'
 
   # Allow manual trigger
   workflow_dispatch:
+
+  # Trigger on PR for validation (no deploy)
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
 
 # Prevent concurrent deployments
 concurrency:
   group: docs-${{ github.ref }}
   cancel-in-progress: true
 
+# Required permissions for GitHub Pages
 permissions:
-  contents: write # Required to commit and push built docs
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  build:
+    name: Build Documentation
     runs-on: ubuntu-latest
-    # Only run if CI was successful (or manual trigger)
-    if:
-      ${{ github.event.workflow_run.conclusion == 'success' || github.event_name ==
-      'workflow_dispatch' }}
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Full history for git-revision-date plugin
+          fetch-depth: 0  # Full history for git-revision-date plugin
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
 
       - name: Restore MkDocs cache
         uses: actions/cache@v4
         with:
           path: .cache
-          key: mkdocs-${{ hashFiles('mkdocs.yml', 'docs_src/**') }}
+          key: mkdocs-${{ hashFiles('mkdocs.yml', 'requirements.txt') }}-${{ hashFiles('docs/**') }}
           restore-keys: |
+            mkdocs-${{ hashFiles('mkdocs.yml', 'requirements.txt') }}-
             mkdocs-
 
       - name: Prepare Devbox configuration
-        run: ln -s devbox-minimal.json devbox.json
+        run: ln -sf devbox-minimal.json devbox.json
         working-directory: .devcontainer
 
       - name: Install Devbox
         uses: jetpack-io/devbox-install-action@v0.11.0
         with:
           project-path: .devcontainer
+          enable-cache: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -66,7 +82,7 @@ jobs:
         run: devbox run -- task docs:metadata
         working-directory: .devcontainer
 
-      - name: Generate component documentation
+      - name: Generate Helm documentation
         run: devbox run -- task docs:helm
         working-directory: .devcontainer
 
@@ -76,24 +92,39 @@ jobs:
 
       - name: Validate build output
         run: |
-          test -d docs/ || { echo "Error: docs/ directory not found"; exit 1; }
-          test -f docs/index.html || { echo "Error: docs/index.html not found"; exit 1; }
-          test -f docs/sitemap.xml || { echo "Error: docs/sitemap.xml not found"; exit 1; }
-          echo "✅ Build output validated"
+          test -d site/ || { echo "❌ Error: site/ directory not found"; exit 1; }
+          test -f site/index.html || { echo "❌ Error: site/index.html not found"; exit 1; }
+          test -f site/sitemap.xml || { echo "❌ Error: site/sitemap.xml not found"; exit 1; }
+          echo "✅ Build output validated successfully"
 
       - name: Check for broken links
         run: devbox run -- task docs:linkcheck
         working-directory: .devcontainer
         continue-on-error: true
 
-      - name: Commit and push built documentation
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f docs/
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "docs: update built documentation [skip ci]"
-            git push origin main
-          fi
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+      - name: Upload build artifact (PR preview)
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-preview-${{ github.event.pull_request.number }}
+          path: site/
+          retention-days: 7
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
