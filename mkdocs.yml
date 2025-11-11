@@ -117,16 +117,10 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  - social:
-      cards: true
-      cards_layout_options:
-        background_color: "#455a64"  # Blue Grey 700 - matches theme
-        color: "#ffffff"
-  # - minify:  # Temporarily disabled due to Python dependency issues
-  #     minify_html: true
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
+      fallback_to_build_date: true
   - glightbox:
       touchNavigation: true
       loop: false
