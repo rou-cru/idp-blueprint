@@ -41,13 +41,13 @@ jobs:
           project-path: .devcontainer
 
       - name: Run Linting Tasks
-        run: devbox run -- task lint
+        run: devbox run -- task quality:lint
         working-directory: .devcontainer
 
       - name: Run Security Scans
-        run: devbox run -- task security
+        run: devbox run -- task quality:security
         working-directory: .devcontainer
 
-      - name: Run validations
-        run: devbox run -- task validate
+      - name: Run Validations
+        run: devbox run -- task quality:validate
         working-directory: .devcontainer
