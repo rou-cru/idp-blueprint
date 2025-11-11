@@ -1,6 +1,6 @@
 site_name: IDP Blueprint
-site_description: An Internal Developer Platform (IDP) Blueprint - Complete platform engineering stack with GitOps, Observability, Security & Policy Enforcement
-site_author: Platform Engineering Team
+site_description: Enterprise-grade Internal Developer Platform Blueprint - Production-ready platform engineering stack with GitOps, observability, security, and policy enforcement for modern cloud-native architectures
+site_author: IDP Blueprint Project
 site_url: https://rou-cru.github.io/idp-blueprint
 site_dir: docs
 docs_dir: docs_src
@@ -21,24 +21,24 @@ theme:
     # Palette toggle for dark mode (default)
     - media: "(prefers-color-scheme)"
       scheme: slate
-      primary: indigo
-      accent: blue
+      primary: blue grey
+      accent: light blue
       toggle:
         icon: material/brightness-auto
         name: Switch to light mode
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: blue
+      primary: blue grey
+      accent: light blue
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: blue
+      primary: blue grey
+      accent: light blue
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
@@ -52,20 +52,20 @@ theme:
     - content.code.copy
     - content.tabs.link
     - content.tooltips
-    # Navigation features - simplified for cleaner UX
+    # Navigation features - collapsible tree navigation
     - navigation.footer
     - navigation.indexes
     - navigation.instant
+    - navigation.instant.progress
     - navigation.path
-    - navigation.sections
-    - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.top
     - navigation.tracking
     # Search features
     - search.highlight
+    - search.share
     - search.suggest
     - toc.follow
+    - toc.integrate
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
@@ -146,25 +146,12 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/rou-cru/idp-blueprint
+      name: GitHub Repository
     - icon: fontawesome/brands/docker
       link: https://github.com/rou-cru/idp-blueprint/pkgs/container/idp-blueprint
+      name: Container Registry
   version:
     provider: mike
-  analytics:
-    feedback:
-      title: Was this page helpful?
-      ratings:
-        - icon: material/thumb-up-outline
-          name: This page was helpful
-          data: 1
-          note: >-
-            Thanks for your feedback!
-        - icon: material/thumb-down-outline
-          name: This page could be improved
-          data: 0
-          note: >-
-            Thanks for your feedback! Help us improve by
-            <a href="https://github.com/rou-cru/idp-blueprint/issues/new?title=[Docs Feedback]: {title} - {url}" target="_blank" rel="noopener">opening an issue</a>.
 
 extra_css:
   - stylesheets/extra.css
