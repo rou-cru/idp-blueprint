@@ -117,13 +117,6 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  # - social:  # Disabled due to cffi version conflicts between pip and Nix
-  #     cards: true
-  #     cards_layout_options:
-  #       background_color: "#455a64"
-  #       color: "#ffffff"
-  # - minify:  # Temporarily disabled due to Python dependency issues
-  #     minify_html: true
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
