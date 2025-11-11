@@ -6,8 +6,9 @@ GEMINI.md
 .claude
 CLAUDE.md
 
-# MkDocs cache
+# MkDocs build output and cache
+/site/
 .cache/
 
 # Generated Chart.yaml files (created by generate-chart-metadata.sh)
-docs_src/components/**/Chart.yaml
+docs/components/**/Chart.yaml
