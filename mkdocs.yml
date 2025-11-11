@@ -52,13 +52,12 @@ theme:
     - content.code.copy
     - content.tabs.link
     - content.tooltips
-    # Navigation features - collapsible sections, professional UX
+    # Navigation features - collapsible tree navigation
     - navigation.footer
     - navigation.indexes
     - navigation.instant
     - navigation.instant.progress
     - navigation.path
-    - navigation.sections
     - navigation.top
     - navigation.tracking
     # Search features
