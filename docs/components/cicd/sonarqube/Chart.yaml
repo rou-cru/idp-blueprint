@@ -1,0 +1,15 @@
+apiVersion: v2
+name: sonarqube
+version: 2025.5.0
+description: Code quality and security analysis platform
+type: application
+home: https://www.sonarsource.com/products/sonarqube
+sources:
+  - https://github.com/rou-cru/idp-blueprint
+maintainers:
+  - name: Platform Engineering Team
+    url: https://github.com/rou-cru/idp-blueprint
+annotations:
+  idp.blueprint/category: cicd
+  idp.blueprint/source: K8s/cicd/sonarqube/sonarqube-values.yaml
+  idp.blueprint/managed-by: helm-docs
