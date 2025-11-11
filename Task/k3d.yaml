@@ -1,0 +1,14 @@
+version: '3'
+
+tasks:
+  k3d:create:
+    desc: 'Create a k3d cluster with 3 nodes'
+    status:
+      - k3d cluster list | grep -q "idp-demo"
+    cmds:
+      - k3d cluster create idp-demo -c {{.K3D_CONFIG}}
+
+  k3d:destroy:
+    desc: 'Remove the k3d cluster'
+    cmds:
+      - k3d cluster delete idp-demo
