@@ -219,8 +219,8 @@ commonLabels:
   # -- (string) Part of platform
   app.kubernetes.io/part-of: idp
   # -- (string) Owner
-  owner: platform-engineer
+  owner: platform-team
   # -- (string) Business unit
-  business-unit: engineering
+  business-unit: infrastructure
   # -- (string) Environment
   environment: demo

@@ -3,7 +3,7 @@ kind: Kustomization
 
 commonAnnotations:
   contact: platform-team
-  documentation: None
+  documentation: https://github.com/rou-cru/idp-blueprint
 
 resources:
   - eso-argocd.yaml
@@ -12,6 +12,6 @@ labels:
   - includeSelectors: true
     pairs:
       app.kubernetes.io/part-of: idp
-      business-unit: engineering
+      business-unit: infrastructure
       environment: demo
-      owner: platform-engineer
+      owner: platform-team

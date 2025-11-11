@@ -3,15 +3,16 @@ set -euo pipefail
 
 # Vault secret generator - Production-ready utility
 # Generates or stores provided passwords in Vault KV engine
+# Requires: htpasswd (from apacheHttpd package) for bcrypt hashing
 #
 # Usage:
 #   ./vault-generate.sh <vault-path> <key-name> [password] [format] [hashing]
 #
 # Examples:
-#   # Generate random password
+#   # Generate random password with bcrypt hashing
 #   ./vault-generate.sh secret/argocd/admin admin.password "" base64 bcrypt
 #
-#   # Use provided password
+#   # Use provided password without hashing
 #   ./vault-generate.sh secret/grafana/admin password "MySecurePass123" base64 none
 
 # shellcheck disable=SC2155
@@ -149,11 +150,16 @@ hash_password() {
 
     if [[ "$hashing_method" == "bcrypt" ]]; then
         log "Hashing password with bcrypt..."
-        if ! command -v bcrypt-tool &> /dev/null; then
-            error "bcrypt-tool could not be found. Please ensure it is installed and in the PATH."
+        if ! command -v htpasswd &> /dev/null; then
+            error "htpasswd could not be found. Please ensure apacheHttpd is installed via devbox."
         fi
         local hashed_password
-        hashed_password=$(bcrypt-tool hash "$password")
+        if ! hashed_password=$(htpasswd -nbBC 10 admin "$password" 2>/dev/null | head -1 | cut -d: -f2); then
+            error "Failed to hash password with htpasswd"
+        fi
+        if [[ -z "$hashed_password" ]]; then
+            error "Failed to hash password with htpasswd - empty result"
+        fi
         log "✅ Password hashed successfully"
         echo "$hashed_password"
     else

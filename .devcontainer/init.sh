@@ -9,15 +9,11 @@ if [ -f ".env" ]; then
 fi
 
 
-# Add Bcrypt
-go install github.com/shoenig/bcrypt-tool@latest
-
 # -- CNI
 helm repo add cilium https://helm.cilium.io/
 # -- GitOps & Event-Driven Automation
 helm repo add argo https://argoproj.github.io/argo-helm
 # -- Observability
-prometheus-community
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add kube-prometheus-stack https://prometheus-community.github.io/helm-charts
 helm repo add grafana https://grafana.github.io/helm-charts

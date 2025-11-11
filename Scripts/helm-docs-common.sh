@@ -12,9 +12,9 @@ validate_git_repo() {
   fi
 }
 
-# Process each component directory containing Chart.yaml in docs_src/components/
+# Process each directory containing *-values.yaml files
 # Arguments:
-#   $1: callback function to execute (receives: template_path, chart_dir, source_values_path)
+#   $1: callback function to execute (receives: template_path, values_file_name)
 # Returns:
 #   0 on success, 1 if any callback failed
 helm_docs_foreach() {
@@ -32,63 +32,58 @@ helm_docs_foreach() {
     return 1
   fi
 
-  # Find all Chart.yaml files in docs_src/components/ subdirectories
-  while IFS= read -r chart_file; do
-    local chart_dir
-    chart_dir=$(dirname "$chart_file")
+  # Find all directories containing *-values.yaml files
+  # Using dirname instead of -printf for macOS compatibility
+  while read -r dir; do
+    local values_file
+    values_file=$(find "$dir" -maxdepth 1 -name '*-values.yaml' -type f | head -1)
 
-    # Extract source path from Chart.yaml annotations
-    local source_path
-    source_path=$(grep "idp.blueprint/source:" "$chart_file" | awk '{print $2}' | tr -d '"')
+    if [ -n "$values_file" ]; then
+      local chart_name
+      chart_name=$(basename "$dir")
+      local values_name
+      values_name=$(basename "$values_file")
 
-    if [ -z "$source_path" ]; then
-      echo "⚠️  Warning: No source path found in $chart_file, skipping..." >&2
-      continue
+      # Setup cleanup trap for temporary files
+      cleanup_temp_files() {
+        rm -f "$dir/Chart.yaml" "$dir/values.yaml"
+      }
+      trap cleanup_temp_files EXIT INT TERM
+
+      # Navigate to target directory
+      cd "$dir" || {
+        echo "Error: Cannot change to directory: $dir" >&2
+        cleanup_temp_files
+        trap - EXIT INT TERM
+        return 1
+      }
+
+      # Create temporary Chart.yaml
+      cat > Chart.yaml <<EOF
+apiVersion: v2
+name: $chart_name
+version: 0.1.0
+EOF
+
+      # Create symlink to values file
+      ln -sf "$values_name" values.yaml
+
+      # Execute callback
+      if ! "$callback" "$template" "$values_name"; then
+        exit_code=1
+      fi
+
+      # Cleanup temporary files
+      cleanup_temp_files
+      trap - EXIT INT TERM
+
+      # Return to root directory
+      cd "$root_dir" || {
+        echo "Error: Cannot return to root directory: $root_dir" >&2
+        return 1
+      }
     fi
-
-    local source_values="$root_dir/$source_path"
-
-    if [ ! -f "$source_values" ]; then
-      echo "⚠️  Warning: Source values file not found: $source_values, skipping..." >&2
-      continue
-    fi
-
-    # Navigate to component directory
-    cd "$chart_dir" || {
-      echo "Error: Cannot change to directory: $chart_dir" >&2
-      return 1
-    }
-
-    # Validate symlink doesn't exist before creating
-    if [ -e values.yaml ] && [ ! -L values.yaml ]; then
-      echo "Error: values.yaml already exists and is not a symlink in $chart_dir" >&2
-      return 1
-    fi
-
-    # Create temporary symlink to source values file
-    ln -sf "$source_values" values.yaml
-
-    # Setup cleanup trap for temporary symlink
-    cleanup_temp_symlink() {
-      rm -f "$chart_dir/values.yaml"
-    }
-    trap cleanup_temp_symlink EXIT INT TERM
-
-    # Execute callback
-    if ! "$callback" "$template" "$chart_dir" "$source_values"; then
-      exit_code=1
-    fi
-
-    # Cleanup temporary symlink
-    cleanup_temp_symlink
-    trap - EXIT INT TERM
-
-    # Return to root directory
-    cd "$root_dir" || {
-      echo "Error: Cannot return to root directory: $root_dir" >&2
-      return 1
-    }
-  done < <(find "$root_dir/docs_src/components" -type f -name "Chart.yaml" | sort)
+  done < <(find . -type f -name '*-values.yaml' -exec dirname {} \; | sort -u)
 
   return $exit_code
 }

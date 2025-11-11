@@ -6,7 +6,7 @@ metadata:
 spec:
   description: Observability stack (Prometheus, Grafana, Loki, Fluent-bit)
   sourceRepos:
-    - 'https://github.com/rou-cru/idp-blueprint.git'
+    - '${REPO_URL}'
   destinations:
     - namespace: observability
       server: https://kubernetes.default.svc

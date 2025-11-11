@@ -7,6 +7,6 @@ metadata:
     platform.idp.com/protected: 'true'
     # Add standard common labels
     app.kubernetes.io/part-of: idp
-    business-unit: engineering
-    owner: platform-engineer
+    business-unit: infrastructure
+    owner: platform-team
     environment: demo

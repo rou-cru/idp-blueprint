@@ -260,7 +260,7 @@ flowchart TB
   Secrets Operator
 
 📖 For detailed architecture documentation, see
-[Architecture Overview](./docs/architecture/overview.md)
+[docs/architecture/visual.md](docs/architecture/visual.md)
 
 ## 📊 Resource Requirements
 
@@ -321,7 +321,42 @@ task deploy
 # task deploy KUBECTL_TIMEOUT=600s
 ```
 
+> Need to tweak chart versions, passwords, or NodePorts? Edit `config.toml` before running
+> `task` and the new values will propagate automatically.
+>
+> Not using Dev Containers? Install the toolchain listed in `.devcontainer/Dockerfile`
+> (k3d, kubectl, helm, task, dasel, etc.) before running any commands locally.
+
 That's it! Your IDP is ready.
+
+### Documentation Portal
+
+- Run `mkdocs serve` to browse the full architecture/reference site locally.
+- Highlights:
+  - `docs/architecture/visual.md` – master system map + diagrams.
+  - `docs/architecture/bootstrap.md` – Helm/Kustomize boot choreography.
+  - `docs/architecture/gitops.md` – App-of-AppSets and namespace conventions.
+  - `docs/architecture/observability.md` – metrics + logging pipelines, dashboards.
+  - `docs/architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
+  - `docs/architecture/policies.md` – Kyverno layers, Policy Reporter flow.
+  - `docs/architecture/cicd.md` – Argo Workflows + SonarQube integration.
+  - `docs/reference/labels-standard.md` – canonical labels, sync waves, priority classes.
+  - `docs/reference/finops-tags.md` – tag-to-cost mapping for FinOps dashboards.
+
+Keep this README open for commands; flip to the MkDocs site when you need the conceptual “why”.
+
+### Validate & Clean Up
+
+```bash
+# Run linters + validations + security scanners
+task check
+
+# Tear everything down when you finish experimenting
+task destroy
+```
+
+Use `task lint` or `task lint:yaml` / `task lint:shell` for faster inner loops, and rerun
+`task check` before opening a pull request.
 
 ## 📚 What's Included
 
@@ -368,7 +403,7 @@ Contributions are welcome! Here's how you can help:
   - Integration with other tools
   - Translations
 
-See [Contributing Guide](./docs/guides/contributing.md) for detailed guidelines.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 ## 🗺️ Roadmap
 

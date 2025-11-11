@@ -6,7 +6,7 @@ metadata:
 spec:
   description: CI/CD stack (Jenkins, SonarQube)
   sourceRepos:
-    - 'https://github.com/rou-cru/idp-blueprint.git'
+    - '${REPO_URL}'
   destinations:
     - namespace: cicd
       server: https://kubernetes.default.svc

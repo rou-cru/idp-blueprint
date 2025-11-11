@@ -22,13 +22,13 @@ prometheus:
     scrapeTimeout: 40s
 
 resources:
-  # -- Resource requests
+  # Resource requests
   requests:
     # -- (string) CPU request
     cpu: 250m
     # -- (string) Memory request
     memory: 256Mi
-  # -- Resource limits
+  # Resource limits
   limits:
     # -- (string) CPU limit
     cpu: 500m
@@ -38,15 +38,15 @@ resources:
 # -- Webhook configuration
 # @section -- Webhook
 webhook:
-  # -- Resource settings for the webhook
+  # Resource settings for the webhook
   resources:
-    # -- Resource requests
+    # Resource requests
     requests:
       # -- (string) CPU request
       cpu: 100m
       # -- (string) Memory request
       memory: 128Mi
-    # -- Resource limits
+    # Resource limits
     limits:
       # -- (string) CPU limit
       cpu: 200m
@@ -96,15 +96,15 @@ webhook:
 # -- CA injector configuration
 # @section -- CA Injector
 cainjector:
-  # -- Resource settings for cainjector
+  # Resource settings for cainjector
   resources:
-    # -- Resource requests
+    # Resource requests
     requests:
       # -- (string) CPU request
       cpu: 100m
       # -- (string) Memory request
       memory: 128Mi
-    # -- Resource limits
+    # Resource limits
     limits:
       # -- (string) CPU limit
       cpu: 200m

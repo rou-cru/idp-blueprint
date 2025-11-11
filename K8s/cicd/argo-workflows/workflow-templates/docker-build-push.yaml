@@ -30,6 +30,9 @@ spec:
     - name: docker-config
       secret:
         secretName: docker-registry-credentials
+        items:
+          - key: .dockerconfigjson
+            path: config.json
     - name: workspace
       emptyDir: {}
   templates:
