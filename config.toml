@@ -1,0 +1,54 @@
+# IDP Blueprint Configuration
+# Adjust values as needed; defaults mirror a fresh clone.
+
+[images]
+docker_image_name = "roucru/idp-blueprint"
+docker_image_tag = "latest"
+docker_image_tag_minimal = "minimal"
+
+[network]
+# Leave lan_ip empty to auto-detect the primary interface IP.
+lan_ip = ""
+nodeport_http = 30080
+nodeport_https = 30443
+
+[versions]
+cilium = "1.18.2"
+cert_manager = "v1.19.0"
+prometheus_crds = "77.14.0"
+gateway_api = "v1.2.1"
+external_secrets = "0.20.2"
+vault = "0.31.0"
+argocd = "8.6.0"
+
+[operational]
+kubectl_timeout = "300s"
+k3d_config = "IT/k3d-cluster-cached.yaml"
+registry_cache_path = "$HOME/.k3d-registry"
+
+[git]
+# Optional overrides; leave empty to use the current repo/branch.
+repo_url = ""
+target_revision = ""
+
+[argocd]
+sync_timeout = "10m"
+backoff_duration = "10s"
+backoff_factor = 2
+backoff_max_duration = "10m"
+retry_limit = 10
+
+[gateway]
+wait_timeout = "60s"
+
+[passwords]
+# Empty strings instruct Vault helpers to generate random secrets.
+argocd_admin = "argo"
+grafana_admin = ""
+sonarqube_admin = ""
+sonarqube_monitoring = ""
+
+[registry]
+url = "docker.io"
+username = ""
+password = ""
