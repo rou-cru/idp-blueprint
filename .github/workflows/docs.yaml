@@ -16,9 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write # Required to commit and push built docs
 
 jobs:
   build-and-deploy:
@@ -31,13 +29,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Full history for git-revision-date plugin
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v4
 
       - name: Restore MkDocs cache
         uses: actions/cache@v4
@@ -89,11 +86,14 @@ jobs:
         working-directory: .devcontainer
         continue-on-error: true
 
-      - name: Upload documentation artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Commit and push built documentation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f docs/
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "docs: update built documentation [skip ci]"
+            git push origin main
+          fi
