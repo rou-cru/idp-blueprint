@@ -1,0 +1,78 @@
+version: '3'
+
+tasks:
+  image:build:
+    desc: 'Build the Dev Container image (full variant)'
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG}}'
+    cmds:
+      - docker bake dev --progress=tty
+
+  image:build:minimal:
+    desc: 'Build minimal image for CI/Jobs'
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
+    cmds:
+      - docker bake minimal --progress=tty
+
+  image:release:
+    desc: 'Build and push full image to Registry'
+    requires:
+      vars:
+        - DOCKER_REGISTRY_URL
+        - DOCKER_REGISTRY_USERNAME
+        - DOCKER_REGISTRY_PASSWORD
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG}}'
+    cmds:
+      - docker bake release --progress=tty
+
+  image:release:minimal:
+    desc: 'Build and push minimal image to Registry'
+    requires:
+      vars:
+        - DOCKER_REGISTRY_URL
+        - DOCKER_REGISTRY_USERNAME
+        - DOCKER_REGISTRY_PASSWORD
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
+    cmds:
+      - docker bake release-minimal --progress=tty
+
+  image:release:all:
+    desc: 'Build and push both full and minimal images'
+    cmds:
+      - task: image:release:minimal
+      - task: image:release
+
+  registry:clean:
+    desc: 'Remove registry cache data'
+    silent: true
+    requires:
+      vars:
+        - REGISTRY_CACHE_PATH
+    cmds:
+      - rm -rf {{.REGISTRY_CACHE_PATH}}
+      - echo "✅ Registry cache cleaned"
+
+  registry:info:
+    desc: 'Show registry status and cache size'
+    cmds:
+      - |
+        if docker ps --filter "name=k3d-registry.localhost" --format "{{'{{'}}.Names{{'}}'}}" | grep -q registry;
+        then
+          echo "✅ Registry container running"
+          if [ -d "{{.REGISTRY_CACHE_PATH}}" ]; then
+            echo "📦 Cache size: $(du -sh {{.REGISTRY_CACHE_PATH}} 2>/dev/null | cut -f1)"
+          else
+            echo "📦 Cache size: empty"
+          fi
+          echo "📂 Location: {{.REGISTRY_CACHE_PATH}}"
+          echo "🔗 Endpoint: localhost:5000"
+        else
+          echo "⚠️  Registry not running (using config: {{.K3D_CONFIG}})"
+        fi

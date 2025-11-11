@@ -1,0 +1,93 @@
+version: '3'
+
+tasks:
+  cleanup:
+    desc: 'Remove temporary chart directories'
+    cmds:
+      - find . -type d -name charts -exec rm -rf {} +
+
+  lint:
+    desc: 'Run all linters'
+    cmds:
+      - task: lint:yaml
+      - task: lint:shell
+      - task: lint:dockerfile
+      - task: lint:markdown
+      - task: lint:helm
+
+  lint:yaml:
+    desc: 'Lint all YAML files'
+    cmds:
+      - yamllint .
+
+  lint:shell:
+    desc: 'Lint all shell scripts'
+    cmds:
+      - find . -name '*.sh' -type f | grep -v '/.devbox/' | xargs -r shellcheck
+
+  lint:dockerfile:
+    desc: 'Lint all Dockerfiles'
+    cmds:
+      - find . -name Dockerfile -exec hadolint {} +
+
+  lint:markdown:
+    desc: 'Lint all Markdown files'
+    cmds:
+      - markdownlint-cli2 .
+
+  lint:helm:
+    desc: 'Validate Helm values documentation completeness'
+    cmds:
+      - ./Scripts/helm-docs-lint.sh
+
+  lint:commit:
+    desc: 'Lint the last commit message'
+    cmds:
+      - commitlint-rs from HEAD~1
+
+  validate:
+    desc: 'Run all validation tasks'
+    cmds:
+      - task: validate:kubeval
+
+  validate:kustomize:
+    desc: 'Validate all Kustomize overlays by building them'
+    cmds:
+      - defer: find . -type d -name charts -exec rm -rf {} +
+      - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
+        kustomize build $dir --enable-helm > /dev/null; done
+
+  validate:kubeval:
+    desc: 'Validate Kubernetes manifests - build Kustomize overlays and check schemas'
+    cmds:
+      - defer: find . -type d -name charts -exec rm -rf {} +
+      - |
+        echo "Validating Kustomize overlays and Kubernetes schemas..."
+        for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
+          echo "  Building and validating: $dir"
+          kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -
+        done
+
+  security:
+    desc: 'Run all security scanners'
+    cmds:
+      - task: security:iac
+      - task: security:secrets
+
+  security:iac:
+    desc: 'Scan Infrastructure as Code for misconfigurations'
+    cmds:
+      - checkov --directory . --quiet
+
+  security:secrets:
+    desc: 'Scan for hardcoded secrets'
+    cmds:
+      - trufflehog filesystem . --exclude-paths .trufflehog-ignore --log-level=-1
+
+  check:
+    desc: 'Run all checks (lint, validation, security)'
+    cmds:
+      - task: cleanup
+      - task: lint
+      - task: validate
+      - task: security
