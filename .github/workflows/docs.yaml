@@ -3,7 +3,7 @@ name: Documentation
 on:
   # Trigger after CI completes successfully on main
   workflow_run:
-    workflows: ["CI Pipeline"]
+    workflows: ['CI Pipeline']
     types: [completed]
     branches: [main]
 
@@ -16,13 +16,15 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write  # Required to commit and push built docs
+  contents: write # Required to commit and push built docs
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     # Only run if CI was successful (or manual trigger)
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    if:
+      ${{ github.event.workflow_run.conclusion == 'success' || github.event_name ==
+      'workflow_dispatch' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -32,7 +34,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for git-revision-date plugin
+          fetch-depth: 0 # Full history for git-revision-date plugin
 
       - name: Restore MkDocs cache
         uses: actions/cache@v4
@@ -50,6 +52,15 @@ jobs:
         uses: jetpack-io/devbox-install-action@v0.11.0
         with:
           project-path: .devcontainer
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install MkDocs and dependencies
+        run: pip install -r requirements.txt
 
       - name: Generate Chart.yaml metadata
         run: devbox run -- task docs:metadata
