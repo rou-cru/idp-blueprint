@@ -1,0 +1,66 @@
+version: '3'
+
+tasks:
+  policies:
+    desc: 'Deploy the Kyverno Policy Engine and policies via ArgoCD'
+    dir: Policies
+    preconditions:
+      - sh: command -v envsubst
+        msg: 'envsubst is required but not installed. Run: brew install gettext'
+      - sh: command -v kubectl
+        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    env:
+      REPO_URL: '{{.REPO_URL}}'
+      TARGET_REVISION: '{{.TARGET_REVISION}}'
+    cmds:
+      - envsubst < app-kyverno.yaml | kubectl apply -f -
+
+  observability:
+    desc: 'Deploy the Observability Stack via ArgoCD'
+    dir: K8s/observability
+    preconditions:
+      - sh: command -v envsubst
+        msg: 'envsubst is required but not installed. Run: brew install gettext'
+      - sh: command -v kubectl
+        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    env:
+      REPO_URL: '{{.REPO_URL}}'
+      TARGET_REVISION: '{{.TARGET_REVISION}}'
+    cmds:
+      - envsubst < applicationset-observability.yaml | kubectl apply -f -
+
+  cicd:
+    desc: 'Deploy the CICD Stack via ArgoCD'
+    dir: K8s/cicd
+    preconditions:
+      - sh: command -v envsubst
+        msg: 'envsubst is required but not installed. Run: brew install gettext'
+      - sh: command -v kubectl
+        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    env:
+      REPO_URL: '{{.REPO_URL}}'
+      TARGET_REVISION: '{{.TARGET_REVISION}}'
+    cmds:
+      - envsubst < applicationset-cicd.yaml | kubectl apply -f -
+
+  security:
+    desc: 'Deploy the Security Stack via ArgoCD (Trivy Operator)'
+    dir: K8s/security
+    preconditions:
+      - sh: command -v envsubst
+        msg: 'envsubst is required but not installed. Run: brew install gettext'
+      - sh: command -v kubectl
+        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    env:
+      REPO_URL: '{{.REPO_URL}}'
+      TARGET_REVISION: '{{.TARGET_REVISION}}'
+    cmds:
+      - envsubst < applicationset-security.yaml | kubectl apply -f -
+
+  deploy:
+    desc: 'Deploy all application stacks via ArgoCD ApplicationSets'
+    deps:
+      - observability
+      - cicd
+      # Trivy (security) must come last
+      - security

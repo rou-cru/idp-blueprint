@@ -1,0 +1,21 @@
+version: '3'
+
+tasks:
+  docs:
+    desc: 'Generate all automatic documentation'
+    cmds:
+      - task: docs:helm
+
+  docs:helm:
+    desc: 'Generate documentation for Helm charts'
+    cmds:
+      - ./Scripts/helm-docs-generate.sh
+
+  ca:export:
+    desc: 'Export CA certificate for browser import (optional)'
+    cmds:
+      - |
+        kubectl get secret idp-demo-ca-secret -n cert-manager \
+          -o jsonpath='{.data.tls\.crt}' | base64 -d > $HOME/idp-demo-ca.crt
+        echo "✅ CA exported to: $HOME/idp-demo-ca.crt"
+        echo "   Import in browser to remove security warnings"
