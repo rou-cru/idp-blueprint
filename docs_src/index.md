@@ -1,6 +1,6 @@
-# Welcome to IDP Blueprint Documentation
+# IDP Blueprint Documentation
 
-**IDP Blueprint** is a production-ready Internal Developer Platform that runs entirely on your local machine. Deploy a complete platform engineering stack with GitOps, observability, security scanning, and policy enforcement using a single command.
+**IDP Blueprint** is an enterprise-grade Internal Developer Platform reference architecture designed for modern cloud-native environments. This comprehensive platform engineering solution provides a complete stack including GitOps, observability, security, and policy enforcement, deployable for development, testing, and production environments.
 
 ---
 
@@ -8,35 +8,35 @@
 
 <div class="grid cards" markdown>
 
--   :rocket: **Getting Started**
+-   **Getting Started**
 
     ---
 
-    New to IDP Blueprint? Start here to deploy your platform in minutes.
+    Comprehensive deployment documentation for platform engineers and architects.
 
     [:octicons-arrow-right-24: Quick Start Guide](getting-started/quickstart.md)
 
--   :material-architecture: **Architecture**
+-   **Architecture**
 
     ---
 
-    Understand the platform's design, components, and how they work together.
+    Detailed platform design, architectural patterns, and component integration strategies.
 
     [:octicons-arrow-right-24: Architecture Overview](architecture/overview.md)
 
--   :material-cube-outline: **Components**
+-   **Components**
 
     ---
 
-    Deep dive into each component: ArgoCD, Kyverno, Prometheus, Vault, and more.
+    Technical specifications for ArgoCD, Kyverno, Prometheus, Vault, and integrated services.
 
     [:octicons-arrow-right-24: Browse Components](components/infrastructure/index.md)
 
--   :material-book-open-variant: **Guides**
+-   **Guides**
 
     ---
 
-    Step-by-step guides for common tasks and advanced configurations.
+    Implementation guides, best practices, and advanced configuration procedures.
 
     [:octicons-arrow-right-24: View Guides](guides/overview.md)
 
@@ -44,127 +44,120 @@
 
 ---
 
-## What You'll Find in This Documentation
+## Documentation Structure
 
-### :fontawesome-solid-play: [Getting Started](getting-started/overview.md)
-Everything you need to deploy and run IDP Blueprint:
+### [Getting Started](getting-started/overview.md)
+Deployment and configuration documentation:
 
-- **[Prerequisites](getting-started/prerequisites.md)** - System requirements and dependencies
-- **[Quick Start](getting-started/quickstart.md)** - Deploy in 5-10 minutes
-- **[Deployment Guide](getting-started/deployment.md)** - Detailed deployment process
+- **[Prerequisites](getting-started/prerequisites.md)** - Infrastructure requirements and system dependencies
+- **[Quick Start](getting-started/quickstart.md)** - Rapid deployment procedures
+- **[Deployment Guide](getting-started/deployment.md)** - Comprehensive deployment process
 
-### :fontawesome-solid-sitemap: [Architecture](architecture/overview.md)
-Understand how the platform works:
+### [Architecture](architecture/overview.md)
+Platform architecture and design patterns:
 
-- **[Visual Architecture](architecture/visual.md)** - Diagrams and component relationships
-- **[Infrastructure Layer](architecture/infrastructure.md)** - Core platform components
-- **[Application Layer](architecture/applications.md)** - GitOps-managed workloads
-- **[Secrets Management](architecture/secrets.md)** - Vault and External Secrets integration
+- **[Visual Architecture](architecture/visual.md)** - System diagrams and component relationships
+- **[Infrastructure Layer](architecture/infrastructure.md)** - Core platform infrastructure
+- **[Application Layer](architecture/applications.md)** - GitOps-managed application workloads
+- **[Secrets Management](architecture/secrets.md)** - HashiCorp Vault and External Secrets integration
 
-### :fontawesome-solid-cubes: [Components](components/infrastructure/index.md)
-Detailed documentation for each technology:
+### [Components](components/infrastructure/index.md)
+Component-level technical documentation:
 
-- **[Infrastructure](components/infrastructure/index.md)** - Cilium, Cert-Manager, Vault, ArgoCD
-- **[Policy Enforcement](components/policy/index.md)** - Kyverno and Policy Reporter
-- **[Observability](components/observability/index.md)** - Prometheus, Grafana, Loki
-- **[CI/CD](components/cicd/index.md)** - Argo Workflows and SonarQube
-- **[Security](components/security/index.md)** - Trivy security scanning
+- **[Infrastructure](components/infrastructure/index.md)** - Cilium CNI, Cert-Manager, Vault, ArgoCD
+- **[Policy Enforcement](components/policy/index.md)** - Kyverno policy engine and reporting
+- **[Observability](components/observability/index.md)** - Prometheus, Grafana, Loki stack
+- **[CI/CD](components/cicd/index.md)** - Argo Workflows and SonarQube integration
+- **[Security](components/security/index.md)** - Trivy vulnerability scanning
 
-### :fontawesome-solid-book: [Guides](guides/overview.md)
-Practical how-to guides:
+### [Guides](guides/overview.md)
+Implementation guides and best practices:
 
-- **[Contributing](guides/contributing.md)** - How to contribute to the project
-- **[Policy Tagging](guides/policy-tagging.md)** - Working with Kyverno policies
+- **[Contributing](guides/contributing.md)** - Contribution guidelines and development workflow
+- **[Policy Tagging](guides/policy-tagging.md)** - Kyverno policy management
 
-### :fontawesome-solid-info-circle: [Reference](reference/overview.md)
-Technical reference material:
+### [Reference](reference/overview.md)
+Technical specifications and reference material:
 
-- **[Resource Requirements](reference/resource-requirements.md)** - CPU, memory, and storage specs
-- **[Troubleshooting](reference/troubleshooting.md)** - Common issues and solutions
-- **[Label Standards](reference/labels-standard.md)** - Kubernetes labeling conventions
-
----
-
-## Platform at a Glance
-
-IDP Blueprint demonstrates modern **Platform Engineering** best practices:
-
-| Layer | Technologies | Purpose |
-|-------|--------------|---------|
-| **GitOps** | ArgoCD, ApplicationSets | Declarative infrastructure and application management |
-| **Policy** | Kyverno, Policy Reporter | Security and compliance enforcement as code |
-| **Observability** | Prometheus, Grafana, Loki, Fluent-bit | Comprehensive metrics, logs, and visualization |
-| **Networking** | Cilium CNI | eBPF-based networking and service mesh |
-| **Security** | Vault, External Secrets, Trivy | Secret management and vulnerability scanning |
-| **CI/CD** | Argo Workflows, SonarQube | Continuous integration and code quality |
-| **Certificates** | Cert-Manager | Automated TLS certificate management |
+- **[Resource Requirements](reference/resource-requirements.md)** - Compute, memory, and storage specifications
+- **[Troubleshooting](reference/troubleshooting.md)** - Diagnostic procedures and solutions
+- **[Label Standards](reference/labels-standard.md)** - Kubernetes resource labeling standards
 
 ---
 
-## Why IDP Blueprint?
+## Platform Technology Stack
 
-!!! success "Local-First Platform Engineering"
-    Run a complete production-grade platform stack on your laptop. Perfect for:
+Enterprise-grade platform engineering stack with production-ready components:
 
-    - **Learning** cloud-native technologies in a realistic environment
-    - **Prototyping** infrastructure changes before production
-    - **Training** team members on platform engineering concepts
-    - **Validating** policies, workflows, and configurations locally
+| Layer | Technologies | Capabilities |
+|-------|--------------|--------------|
+| **GitOps** | ArgoCD, ApplicationSets | Declarative infrastructure and application lifecycle management |
+| **Policy Engine** | Kyverno, Policy Reporter | Policy-as-code enforcement and compliance reporting |
+| **Observability** | Prometheus, Grafana, Loki, Fluent-bit | Metrics aggregation, visualization, and centralized logging |
+| **Networking** | Cilium CNI | eBPF-based networking, load balancing, and service mesh |
+| **Security** | HashiCorp Vault, External Secrets, Trivy | Secrets management and vulnerability scanning |
+| **CI/CD** | Argo Workflows, SonarQube | Continuous integration pipelines and code quality analysis |
+| **PKI** | Cert-Manager | Automated certificate lifecycle management |
 
-!!! tip "Single Command Deployment"
+---
+
+## Platform Capabilities
+
+!!! abstract "Production-Ready Platform Engineering"
+    Complete platform engineering stack suitable for development, staging, and production environments. Designed for:
+
+    - **Enterprise Architecture** - Evaluate cloud-native technologies in realistic deployment scenarios
+    - **Infrastructure Prototyping** - Validate infrastructure changes before production rollout
+    - **Team Enablement** - Platform engineering training and knowledge transfer
+    - **Policy Validation** - Test and validate policies, workflows, and configurations
+
+!!! example "Automated Deployment"
     ```bash
     task deploy
     ```
-    That's all you need. The platform handles the rest - cluster creation, component installation, GitOps sync, and validation.
+    Fully automated deployment orchestration including cluster provisioning, component installation, GitOps synchronization, and validation.
 
-!!! info "Resource Optimized"
-    Designed to run on developer laptops with minimal resources:
+!!! info "Resource Requirements"
+    Optimized resource allocation for various deployment scenarios:
 
-    - **Minimum**: 4 CPU cores, 8GB RAM
-    - **Recommended**: 6 CPU cores, 12GB RAM
-    - **Storage**: ~20GB
+    - **Minimum Configuration**: 4 CPU cores, 8GB RAM
+    - **Recommended Configuration**: 6 CPU cores, 12GB RAM
+    - **Storage Requirements**: ~20GB persistent storage
 
 ---
 
-## Ready to Get Started?
+## Getting Started
 
 <div class="grid" markdown>
 
 <div markdown>
-### :material-lightning-bolt: Deploy Now
+### Platform Deployment
 
-Follow the quick start guide to have your platform running in minutes.
+Comprehensive deployment documentation for platform engineers.
 
-[Get Started :octicons-arrow-right-24:](getting-started/quickstart.md){ .md-button .md-button--primary }
+[Deployment Guide](getting-started/quickstart.md){ .md-button .md-button--primary }
 </div>
 
 <div markdown>
-### :material-github: Source Code
+### Source Repository
 
-Explore the code, open issues, or contribute to the project.
+Access source code, documentation, and issue tracking.
 
-[View on GitHub :octicons-arrow-right-24:](https://github.com/rou-cru/idp-blueprint){ .md-button }
+[GitHub Repository](https://github.com/rou-cru/idp-blueprint){ .md-button }
 </div>
 
 </div>
 
 ---
 
-## Community & Support
+## Support & Resources
 
-!!! question "Need Help?"
-    - **Issues**: [Report bugs or request features](https://github.com/rou-cru/idp-blueprint/issues)
-    - **Discussions**: [Ask questions and share ideas](https://github.com/rou-cru/idp-blueprint/discussions)
-    - **Contributing**: See our [Contributing Guide](guides/contributing.md)
+For technical support and contributions:
+
+- **Issue Tracking**: [Report bugs or request features](https://github.com/rou-cru/idp-blueprint/issues)
+- **Documentation**: [Complete technical documentation](https://rou-cru.github.io/idp-blueprint)
+- **Contributing**: See our [Contributing Guide](guides/contributing.md) for development guidelines
 
 ---
-
-<div align="center" markdown>
 
 **IDP Blueprint** is open source software licensed under the [MIT License](https://github.com/rou-cru/idp-blueprint/blob/main/LICENSE).
-
-Made with :heart: by the Platform Engineering community
-
-[Star on GitHub :octicons-star-24:](https://github.com/rou-cru/idp-blueprint){ .md-button }
-
-</div>
