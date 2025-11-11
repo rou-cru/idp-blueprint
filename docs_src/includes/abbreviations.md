@@ -1,7 +1,6 @@
 *[IDP]: Internal Developer Platform - A self-service platform for developers to deploy and manage applications
 *[CNI]: Container Network Interface - Specification and libraries for configuring network interfaces in Linux containers
 *[GitOps]: Git Operations - Infrastructure and application management using Git as single source of truth
-*[CICD]: Continuous Integration Continuous Delivery
 *[CI/CD]: Continuous Integration / Continuous Delivery - Automated software delivery pipeline
 *[RBAC]: Role-Based Access Control - Method of regulating access based on user roles
 *[TLS]: Transport Layer Security - Cryptographic protocol for secure communications
@@ -35,7 +34,6 @@
 *[mTLS]: Mutual TLS - Two-way authentication using TLS certificates
 *[SPIFFE]: Secure Production Identity Framework For Everyone
 *[SPIRE]: SPIFFE Runtime Environment - Production-ready implementation of SPIFFE
-*[CRD]: Custom Resource Definition - Kubernetes API extension mechanism
 *[CRI]: Container Runtime Interface - Plugin interface for container runtimes
 *[CSI]: Container Storage Interface - Standard for exposing storage systems to containers
 *[Ingress]: Kubernetes resource that manages external access to services

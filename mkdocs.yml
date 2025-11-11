@@ -117,29 +117,27 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  # - social:
-  #     cards: true
-  #     cards_layout_options:
-  #       background_color: "#4051b5"
-  #       color: "#ffffff"
-  # - sitemap:
-  #     sitemap_filename: sitemap.xml
+  - social:
+      cards: true
+      cards_layout_options:
+        background_color: "#455a64"  # Blue Grey 700 - matches theme
+        color: "#ffffff"
   - minify:
       minify_html: true
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
-  # - glightbox:
-  #     touchNavigation: true
-  #     loop: false
-  #     effect: zoom
-  #     slide_effect: slide
-  #     width: 100%
-  #     height: auto
-  #     zoomable: true
-  #     draggable: true
-  #     auto_caption: false
-  #     caption_position: bottom
+  - glightbox:
+      touchNavigation: true
+      loop: false
+      effect: zoom
+      slide_effect: slide
+      width: 100%
+      height: auto
+      zoomable: true
+      draggable: true
+      auto_caption: false
+      caption_position: bottom
 
 # Customization
 extra:
@@ -170,6 +168,9 @@ nav:
       - Infrastructure Layer: architecture/infrastructure.md
       - Application Layer: architecture/applications.md
       - Secrets Management: architecture/secrets.md
+      - CI/CD Pipeline: architecture/cicd.md
+      - Policy Enforcement: architecture/policies.md
+      - Bootstrap Process: architecture/bootstrap.md
   - Components:
       - Infrastructure:
           - Overview: components/infrastructure/index.md
@@ -204,3 +205,4 @@ nav:
       - Resource Requirements: reference/resource-requirements.md
       - Troubleshooting: reference/troubleshooting.md
       - Label Standards: reference/labels-standard.md
+      - FinOps Tags: reference/finops-tags.md
