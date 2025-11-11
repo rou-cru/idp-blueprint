@@ -23,11 +23,11 @@ tasks:
       - mkdocs build --strict
     sources:
       - mkdocs.yml
-      - docs_src/**/*.md
-      - docs_src/**/*.css
+      - docs/**/*.md
+      - docs/**/*.css
     generates:
-      - docs/index.html
-      - docs/sitemap.xml
+      - site/index.html
+      - site/sitemap.xml
 
   docs:serve:
     desc: 'Serve documentation locally for development'
@@ -42,12 +42,12 @@ tasks:
   docs:lint:
     desc: 'Lint documentation markdown files'
     cmds:
-      - markdownlint-cli2 "docs_src/**/*.md"
+      - markdownlint-cli2 "docs/**/*.md"
 
   docs:clean:
     desc: 'Clean built documentation'
     cmds:
-      - rm -rf docs/
+      - rm -rf site/
       - rm -rf .cache/
 
   docs:all:
