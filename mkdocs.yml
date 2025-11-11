@@ -122,8 +122,8 @@ plugins:
       cards_layout_options:
         background_color: "#455a64"  # Blue Grey 700 - matches theme
         color: "#ffffff"
-  - minify:
-      minify_html: true
+  # - minify:  # Temporarily disabled due to Python dependency issues
+  #     minify_html: true
   - git-revision-date-localized:
       enable_creation_date: true
       type: timeago
