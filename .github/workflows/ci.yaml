@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Prepare Devbox configuration
-        run: ln -s devbox-minimal.json devbox.json
+        run: ln -sf devbox-minimal.json devbox.json
         working-directory: .devcontainer
 
       - name: Install Devbox
