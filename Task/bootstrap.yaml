@@ -258,9 +258,7 @@ tasks:
           }
     cmds:
       - for: { var: SECRETS, as: SECRET }
-        cmd:
-          ./Scripts/vault-generate.sh {{.SECRET.path}} {{.SECRET.key}} "{{index .
-          .SECRET.var}}" {{.SECRET.enc}} {{.SECRET.hash}}
+        cmd: ./Scripts/vault-generate.sh {{.SECRET.path}} {{.SECRET.key}} "{{index . .SECRET.var}}" {{.SECRET.enc}} {{.SECRET.hash}}
 
   vault:deploy:
     desc: 'Deploy HashiCorp Vault'
