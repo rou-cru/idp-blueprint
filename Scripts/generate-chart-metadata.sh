@@ -71,21 +71,28 @@ get_version_from_kustomize() {
   return 1
 }
 
-# Get version from Taskfile for infrastructure components
-get_version_from_taskfile() {
+# Get version from config.toml for infrastructure components
+get_version_from_config() {
   local version_var=$1
 
   if [ -z "$version_var" ]; then
     return 1
   fi
 
-  # Extract version from Taskfile using yq (more robust than grep/awk)
+  # Convert version_var from UPPER_SNAKE_CASE to lowercase with underscores
+  # CILIUM_VERSION -> cilium
+  local config_key=$(echo "$version_var" | sed 's/_VERSION$//' | tr '[:upper:]' '[:lower:]')
+
+  # Extract version from config.toml using dasel
   local version
-  if command -v yq &> /dev/null; then
-    version=$(yq eval ".vars.${version_var}" Taskfile.yaml 2>/dev/null | sed 's/{{.*default "\(.*\)"}}/\1/')
+  if command -v dasel &> /dev/null; then
+    version=$(dasel -r toml -f config.toml "versions.${config_key}" 2>/dev/null | tr -d '"')
+  elif command -v yq &> /dev/null; then
+    # Fallback to yq if dasel not available (requires toml support)
+    version=$(yq -r ".versions.${config_key}" config.toml 2>/dev/null)
   else
-    # Fallback to grep/awk if yq not available
-    version=$(grep -E "^\s+${version_var}:" Taskfile.yaml | awk -F'"' '{print $2}')
+    # Fallback to grep if neither dasel nor yq available
+    version=$(grep "^${config_key}\s*=" config.toml | cut -d'"' -f2 2>/dev/null)
   fi
 
   if [ -n "$version" ] && [ "$version" != "null" ]; then
@@ -114,11 +121,11 @@ get_version() {
     fi
   fi
 
-  # Strategy 2: Try Taskfile.yaml (for infrastructure components)
+  # Strategy 2: Try config.toml (for infrastructure components)
   if [ -n "$version_var" ]; then
-    local taskfile_version
-    if taskfile_version=$(get_version_from_taskfile "$version_var"); then
-      echo "$taskfile_version"
+    local config_version
+    if config_version=$(get_version_from_config "$version_var"); then
+      echo "$config_version"
       return
     fi
   fi
@@ -166,10 +173,14 @@ EOF
   # Determine source for version
   local version_source="kustomization.yaml"
   if [ -n "$version_var" ]; then
-    version_source="Taskfile.yaml"
+    version_source="config.toml"
   fi
 
-  echo "✅ Generated: $output_file (version: $version from $version_source)"
+  if [ "$version" = "latest" ]; then
+    echo "⚠️  Generated: $output_file (version: $version - WARNING: Could not extract version from $version_source)"
+  else
+    echo "✅ Generated: $output_file (version: $version from $version_source)"
+  fi
 }
 
 # Main execution

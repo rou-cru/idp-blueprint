@@ -4,12 +4,58 @@ tasks:
   docs:
     desc: 'Generate all automatic documentation'
     cmds:
+      - task: docs:metadata
       - task: docs:helm
+
+  docs:metadata:
+    desc: 'Generate Chart.yaml metadata for all components'
+    cmds:
+      - ./Scripts/generate-chart-metadata.sh
 
   docs:helm:
     desc: 'Generate documentation for Helm charts'
     cmds:
       - ./Scripts/helm-docs-generate.sh
+
+  docs:build:
+    desc: 'Build MkDocs documentation site'
+    cmds:
+      - mkdocs build --strict
+    sources:
+      - mkdocs.yml
+      - docs_src/**/*.md
+      - docs_src/**/*.css
+    generates:
+      - docs/index.html
+      - docs/sitemap.xml
+
+  docs:serve:
+    desc: 'Serve documentation locally for development'
+    cmds:
+      - mkdocs serve
+
+  docs:linkcheck:
+    desc: 'Check for broken links in documentation'
+    cmds:
+      - ./Scripts/docs-linkcheck.sh
+
+  docs:lint:
+    desc: 'Lint documentation markdown files'
+    cmds:
+      - markdownlint-cli2 "docs_src/**/*.md"
+
+  docs:clean:
+    desc: 'Clean built documentation'
+    cmds:
+      - rm -rf docs/
+      - rm -rf .cache/
+
+  docs:all:
+    desc: 'Full documentation pipeline: generate, build, and validate'
+    cmds:
+      - task: docs
+      - task: docs:build
+      - task: docs:linkcheck
 
   ca:export:
     desc: 'Export CA certificate for browser import (optional)'
