@@ -14,3 +14,18 @@ rules:
 
   # Disable the truthy check, as it conflicts with GitHub Actions syntax (e.g., `on:`).
   truthy: disable
+
+  # Allow Prettier's formatting of braces (spaces inside braces)
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Allow Prettier's formatting of brackets (spaces inside brackets)
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Relax quoted-strings to allow Prettier's choice
+  quoted-strings:
+    quote-type: any
+    required: false
