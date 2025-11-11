@@ -6,7 +6,7 @@ metadata:
 spec:
   description: Platform governance (Kyverno, Policy Reporter)
   sourceRepos:
-    - 'https://github.com/rou-cru/idp-blueprint.git'
+    - '${REPO_URL}'
   destinations:
     - namespace: kyverno-system
       server: https://kubernetes.default.svc

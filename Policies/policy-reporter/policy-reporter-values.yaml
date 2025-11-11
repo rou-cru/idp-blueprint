@@ -7,10 +7,14 @@ policyReporter:
   # -- Resource requests and limits for the core engine.
   resources:
     requests:
+      # -- (string) CPU request for Policy Reporter
       cpu: 50m
+      # -- (string) Memory request for Policy Reporter
       memory: 64Mi
     limits:
+      # -- (string) CPU limit for Policy Reporter
       cpu: 200m
+      # -- (string) Memory limit for Policy Reporter
       memory: 128Mi
 
 # @section -- Policy Reporter UI
@@ -20,8 +24,12 @@ ui:
   # -- Resource requests and limits for the UI.
   resources:
     requests:
+      # -- (string) CPU request for the UI
       cpu: 50m
+      # -- (string) Memory request for the UI
       memory: 64Mi
     limits:
+      # -- (string) CPU limit for the UI
       cpu: 100m
+      # -- (string) Memory limit for the UI
       memory: 128Mi

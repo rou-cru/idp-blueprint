@@ -12,8 +12,8 @@ metadata:
 spec:
   generators:
     - git:
-        repoURL: https://github.com/rou-cru/idp-blueprint.git
-        revision: HEAD
+        repoURL: ${REPO_URL}
+        revision: ${TARGET_REVISION}
         directories:
           - path: K8s/cicd/*
           - path: K8s/cicd/jenkins.disabled
@@ -24,8 +24,8 @@ spec:
     spec:
       project: cicd
       source:
-        repoURL: https://github.com/rou-cru/idp-blueprint.git
-        targetRevision: HEAD
+        repoURL: ${REPO_URL}
+        targetRevision: ${TARGET_REVISION}
         path: '{{path}}'
         kustomize: {}
       destination:

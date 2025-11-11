@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
-   "env": {
+  "env": {
     "NIXPKGS_ALLOW_UNFREE": "1"
   },
   "packages": [
@@ -9,13 +9,6 @@
     "kubernetes-helm@3.19.0",
     "kustomize@5.7.1",
     "helm-docs@1.14.2",
-    "mkdocs@1.6.1",
-    "python313Packages.mkdocs-material@latest",
-    "python313Packages.mkdocs-material-extensions@latest",
-    "python313Packages.pygments@latest",
-    "python313Packages.pymdown-extensions@latest",
-    "python313Packages.mkdocs-minify-plugin@latest",
-    "python313Packages.mkdocs-git-revision-date-localized-plugin@latest",
     "k3d@5.8.3",
     "k9s@0.50.9",
     "cilium-cli@0.18.7",
@@ -39,7 +32,11 @@
     "prettier@3.6.2",
     "jq@1.8.1",
     "yq@3.4.3",
-    "vault-bin@1.20.4"
+    "vault-bin@1.20.4",
+    "gettext@0.22.5",
+    "dasel@2.7.0",
+    "apacheHttpd@latest",
+    "mkdocs@latest"
   ],
   "shell": {
     "init_hook": ["echo 'Preparing Env...'", ". .devcontainer/init.sh"]

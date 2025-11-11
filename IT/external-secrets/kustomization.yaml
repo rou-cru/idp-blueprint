@@ -13,6 +13,6 @@ labels:
   - includeSelectors: true
     pairs:
       app.kubernetes.io/part-of: idp
-      business-unit: engineering
+      business-unit: infrastructure
       environment: demo
-      owner: platform-engineer
+      owner: platform-team
