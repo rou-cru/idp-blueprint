@@ -16,6 +16,7 @@ copyright: Copyright &copy; 2024-2025 IDP Blueprint Contributors
 theme:
   name: material
   language: en
+  custom_dir: overrides
   palette:
     # Palette toggle for dark mode (default)
     - media: "(prefers-color-scheme)"
