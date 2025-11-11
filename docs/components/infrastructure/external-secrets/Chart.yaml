@@ -1,0 +1,15 @@
+apiVersion: v2
+name: external-secrets
+version: latest
+description: Synchronize secrets from external sources into Kubernetes
+type: application
+home: https://external-secrets.io
+sources:
+  - https://github.com/rou-cru/idp-blueprint
+maintainers:
+  - name: Platform Engineering Team
+    url: https://github.com/rou-cru/idp-blueprint
+annotations:
+  idp.blueprint/category: infrastructure
+  idp.blueprint/source: IT/external-secrets/eso-values.yaml
+  idp.blueprint/managed-by: helm-docs
