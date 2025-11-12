@@ -37,9 +37,15 @@
     "dasel@2.7.0",
     "apacheHttpd@latest",
     "python312",
-    "uv@0.5.11"
+    "uv@0.5.11",
+    "d2@latest"
   ],
   "shell": {
-    "init_hook": ["echo 'Preparing Env...'", ". .devcontainer/init.sh"]
+    "init_hook": [
+      "echo 'Preparing Env...'",
+      ". .devcontainer/init.sh",
+      "uv sync",
+      "clear"
+    ]
   }
 }

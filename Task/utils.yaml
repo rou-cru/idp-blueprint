@@ -26,7 +26,7 @@ tasks:
     desc: 'Build MkDocs documentation site'
     cmds:
       - task: docs:deps
-      - uv run mkdocs build --strict
+      - uv run python -E -m mkdocs build --strict
     sources:
       - mkdocs.yml
       - Docs/**/*.md
@@ -39,7 +39,7 @@ tasks:
     desc: 'Serve documentation locally for development'
     cmds:
       - task: docs:deps
-      - uv run mkdocs serve
+      - uv run python -E -m mkdocs serve
 
   docs:linkcheck:
     desc: 'Check for broken links in documentation'

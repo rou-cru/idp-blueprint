@@ -66,6 +66,65 @@ With Cilium, Envoy needs explicit permission to read the TLS Secret:
 
 ## Gateway Flow (Diagram)
 
+=== "D2"
+
+```d2
+direction: down
+
+External: {
+  Browser
+}
+
+KubeSystem: {
+  label: "Namespace: kube-system"
+  SVC: "Service: cilium-gateway-idp-gateway\nNodePort 30080/30443"
+  GW: "Gateway: idp-gateway\nTLS terminate"
+}
+
+Routes: {
+  label: "HTTPRoutes"
+  HR1: argocd
+  HR2: grafana
+  HR3: vault
+  HR4: workflows
+  HR5: sonarqube
+}
+
+Backends: {
+  label: "Backend Services"
+  S1: "argocd-server:80"
+  S2: "prometheus-grafana:80"
+  S3: "vault:8200"
+  S4: "argo-workflows-server:2746"
+  S5: "sonarqube:9000"
+}
+
+Certificates: {
+  label: "cert-manager"
+  SSI: "ClusterIssuer: self-signed"
+  CA: "Certificate: idp-demo-ca\nsecret idp-demo-ca-secret"
+  ISS: "ClusterIssuer: ca-issuer"
+  CERT: "Certificate: idp-wildcard-cert\nsecret idp-wildcard-cert"
+}
+
+External.Browser -> KubeSystem.SVC: "HTTPS nip.io"
+KubeSystem.SVC -> KubeSystem.GW
+KubeSystem.GW -> Routes.HR1: "hostname match"
+KubeSystem.GW -> Routes.HR2
+KubeSystem.GW -> Routes.HR3
+KubeSystem.GW -> Routes.HR4
+KubeSystem.GW -> Routes.HR5
+Routes.HR1 -> Backends.S1
+Routes.HR2 -> Backends.S2
+Routes.HR3 -> Backends.S3
+Routes.HR4 -> Backends.S4
+Routes.HR5 -> Backends.S5
+KubeSystem.GW -> Certificates.CERT: "uses TLS"
+Certificates.CERT <- Certificates.ISS <- Certificates.CA <- Certificates.SSI
+```
+
+=== "Mermaid"
+
 ```mermaid
 graph TB
   subgraph External

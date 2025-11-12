@@ -65,6 +65,54 @@ Other stacks follow the same pattern:
 
 ## GitOps Flow (Diagram)
 
+=== "D2"
+
+```d2
+direction: right
+
+Git: {
+  label: "Git Repository\nREPO_URL @ TARGET_REVISION"
+  REPO: "REPO_URL @ TARGET_REVISION"
+  OBS: "K8s/observability/*"
+  CICD: "K8s/cicd/*"
+  SEC: "K8s/security/*"
+}
+
+ArgoCD: {
+  AP1: "AppProject: observability"
+  AP2: "AppProject: cicd"
+  AP3: "AppProject: security"
+  AS1: "ApplicationSet: observability"
+  AS2: "ApplicationSet: cicd"
+  AS3: "ApplicationSet: security"
+}
+
+Cluster: {
+  NSO: "ns: observability"
+  NSC: "ns: cicd"
+  NSS: "ns: security"
+  APPs: "Applications + Workloads"
+}
+
+Git.REPO -> ArgoCD.AS1
+Git.REPO -> ArgoCD.AS2
+Git.REPO -> ArgoCD.AS3
+ArgoCD.AS1 -> Git.OBS: "dir generator"
+ArgoCD.AS2 -> Git.CICD: "dir generator"
+ArgoCD.AS3 -> Git.SEC: "dir generator"
+ArgoCD.AS1 -> Cluster.NSO: "template"
+ArgoCD.AS2 -> Cluster.NSC: "template"
+ArgoCD.AS3 -> Cluster.NSS: "template"
+ArgoCD.AS1 -> Cluster.APPs
+ArgoCD.AS2 -> Cluster.APPs
+ArgoCD.AS3 -> Cluster.APPs
+ArgoCD.AP1 -> ArgoCD.AS1: "scopes"
+ArgoCD.AP2 -> ArgoCD.AS2: "scopes"
+ArgoCD.AP3 -> ArgoCD.AS3: "scopes"
+```
+
+=== "Mermaid"
+
 ```mermaid
 graph LR
   subgraph Git[Git Repository]
@@ -105,10 +153,6 @@ graph LR
   AP1 -. scopes .-> AS1
   AP2 -. scopes .-> AS2
   AP3 -. scopes .-> AS3
-
-  classDef faded fill:#f6f8fa,stroke:#d0d7de,color:#24292f;
-  classDef strong fill:#e7f5ff,stroke:#74c0fc,color:#0b7285;
-  class AP1,AP2,AP3 strong;
 ```
 
 ## Variables: repo and revision
