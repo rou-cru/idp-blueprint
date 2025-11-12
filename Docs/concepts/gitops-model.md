@@ -63,6 +63,54 @@ Other stacks follow the same pattern:
 - `K8s/cicd/applicationset-cicd.yaml` (excludes `jenkins.disabled`)
 - `K8s/security/applicationset-security.yaml`
 
+## GitOps Flow (Diagram)
+
+```mermaid
+graph LR
+  subgraph Git[Git Repository]
+    REPO[REPO_URL @ TARGET_REVISION]
+    OBS[K8s/observability/*]
+    CICD[K8s/cicd/*]
+    SEC[K8s/security/*]
+  end
+
+  subgraph ArgoCD[ArgoCD]
+    AP1[AppProject: observability]
+    AP2[AppProject: cicd]
+    AP3[AppProject: security]
+    AS1[ApplicationSet: observability]
+    AS2[ApplicationSet: cicd]
+    AS3[ApplicationSet: security]
+  end
+
+  subgraph Cluster[Kubernetes]
+    NSO[ns: observability]
+    NSC[ns: cicd]
+    NSS[ns: security]
+    APPs[Applications + Workloads]
+  end
+
+  REPO --> AS1
+  REPO --> AS2
+  REPO --> AS3
+  AS1 -->|dir generator| OBS
+  AS2 -->|dir generator| CICD
+  AS3 -->|dir generator| SEC
+  AS1 -->|template| NSO
+  AS2 -->|template| NSC
+  AS3 -->|template| NSS
+  AS1 --> APPs
+  AS2 --> APPs
+  AS3 --> APPs
+  AP1 -. scopes .-> AS1
+  AP2 -. scopes .-> AS2
+  AP3 -. scopes .-> AS3
+
+  classDef faded fill:#f6f8fa,stroke:#d0d7de,color:#24292f;
+  classDef strong fill:#e7f5ff,stroke:#74c0fc,color:#0b7285;
+  class AP1,AP2,AP3 strong;
+```
+
 ## Variables: repo and revision
 
 - `REPO_URL` and `TARGET_REVISION` are read from `config.toml` by tasks (preferred),
