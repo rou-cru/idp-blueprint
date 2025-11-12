@@ -16,21 +16,21 @@
 
     [:octicons-arrow-right-24: Explore Concepts](architecture/overview.md)
 
--   **How-to Guides**
+-   **Get Started**
 
     ---
 
-    Deploy, operate, and extend the platform with opinionated runbooks and day-2 guidance.
+    Install, verify and take your first steps with the platform.
 
     [:octicons-arrow-right-24: Start Building](getting-started/quickstart.md)
 
--   **Platform Operations**
+-   **Components**
 
     ---
 
-    Dive into each subsystem (infra, policy, observability, CI/CD) with component-level docs and tuning tips.
+    Dive into infrastructure, policy, observability and CI/CD components.
 
-    [:octicons-arrow-right-24: Operate the Stack](components/infrastructure/index.md)
+    [:octicons-arrow-right-24: Explore Components](components/infrastructure/index.md)
 
 -   **Reference**
 

@@ -1,55 +1,97 @@
-# Getting Started - Quick Start
+# Quickstart
 
-Get your IDP Blueprint up and running in minutes with this quick start guide.
+Spin up the full IDP Blueprint locally with one command, then validate access and credentials.
 
-## Step 1: Clone the Repository
+## Prerequisites
+
+- Recommended: VS Code Dev Containers (repo already includes tooling), or Devbox
+- Or install locally: Docker, k3d, kubectl, helm, kustomize, envsubst (gettext), dasel
+- Review [Prerequisites](prerequisites.md) and ensure `docker login` to avoid rate limits
+
+## 1) Clone the repository
 
 ```bash
 git clone https://github.com/rou-cru/idp-blueprint
 cd idp-blueprint
 ```
 
-## Step 2: Open in VS Code Dev Container
+Optional: open in VS Code and “Reopen in Container”, or run with Devbox.
 
-```bash
-code .
-```
+!!! note
+    Run `docker login` before deploying to avoid Docker Hub rate limiting during image pulls.
 
-When prompted, click **"Reopen in Container"** to start the development environment.
-
-> **Note**: The first time you do this, it will take a few minutes to download and set up the development environment.
-
-## Step 3: Deploy the Platform
-
-Once inside the Dev Container, run:
+## 2) Deploy
 
 ```bash
 task deploy
 ```
 
-> **Time**: Deployment takes approximately 5-10 minutes depending on your system and internet connection.
+- Creates k3d cluster `idp-demo`
+- Bootstraps Cilium, cert-manager, Vault, External Secrets, ArgoCD, Gateway
+- Deploys stacks via ArgoCD ApplicationSets (observability, CI/CD, security, policies)
 
-## Step 4: Access the Platform
+Time: ~5–10 minutes depending on network and hardware.
 
-After deployment completes, you can access the platform components:
+!!! tip
+    The task prints the service URLs when Gateway is ready (e.g., `https://argocd.<ip>.nip.io`). Copy from the output.
 
-- **ArgoCD**: `https://argocd.<your-ip>.nip.io`
-- **Grafana**: `https://grafana.<your-ip>.nip.io`
-- **Vault**: `https://vault.<your-ip>.nip.io`
-- **SonarQube**: `https://sonarqube.<your-ip>.nip.io`
-- **Argo Workflows**: `https://workflows.<your-ip>.nip.io`
+!!! warning
+    The Gateway uses NodePorts `30080` (HTTP) and `30443` (HTTPS). Ensure they are not in use by other services.
 
-Default credentials will be available in your local Vault instance.
+## 3) Access endpoints
 
-## Step 5: Explore
+Endpoints follow your LAN IP as a nip.io wildcard.
 
-- Check the running components in ArgoCD
-- View metrics and logs in Grafana
-- Run a sample workflow in Argo Workflows
-- Try out SonarQube analysis
+- ArgoCD: `https://argocd.<ip-dashed>.nip.io`
+- Grafana: `https://grafana.<ip-dashed>.nip.io`
+- Vault: `https://vault.<ip-dashed>.nip.io`
+- Workflows: `https://workflows.<ip-dashed>.nip.io`
+- SonarQube: `https://sonarqube.<ip-dashed>.nip.io`
 
-## What's Next?
+Compute the suffix if needed:
 
-- Visit the [Deployment](deployment.md) guide for more detailed information about the deployment process
-- Check out the [Architecture](../architecture/overview.md) to understand how the platform is structured
-- Explore the platform [Components](../architecture/overview.md#components) including infrastructure, observability, and security stacks
+```bash
+DNS_SUFFIX="$(ip route get 1.1.1.1 | awk '{print $7; exit}' | sed 's/\./-/g').nip.io"
+echo "https://argocd.$DNS_SUFFIX"
+```
+
+## 4) Credentials
+
+ArgoCD admin password comes from Vault via External Secrets. By default it’s configured in `config.toml`:
+
+- Username: `admin`
+- Password: value of `passwords.argocd_admin` (default: `argo`)
+
+Retrieve it from Kubernetes if you changed defaults:
+
+```bash
+kubectl -n argocd get secret argocd-secret -o jsonpath='{.data.admin\.password}' | base64 -d; echo
+```
+
+Vault is initialized automatically during deploy. Local-only root/unseal material is managed by `task vault:init` and helper scripts.
+
+## 5) Verify
+
+Run basic checks and confirm healthy sync:
+
+```bash
+kubectl get nodes
+kubectl get pods -A
+kubectl get applications -n argocd
+```
+
+See [Verify Installation](verify.md) for expected results and smoke tests.
+
+## 6) Clean up
+
+Tear everything down when you’re done:
+
+```bash
+task destroy
+```
+
+## Next steps
+
+- [First Steps](first-steps.md): Explore GitOps, policies, observability and secrets
+- [Onboard an Application](../tutorials/onboard-app.md)
+- [Add a Policy (Kyverno)](../tutorials/add-policy.md)

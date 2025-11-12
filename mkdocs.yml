@@ -122,6 +122,13 @@ extra_css:
 # Page tree
 nav:
   - Home: index.md
+  - Get Started:
+      - Overview: getting-started/overview.md
+      - Prerequisites: getting-started/prerequisites.md
+      - Quickstart: getting-started/quickstart.md
+      - Install & Deployment: getting-started/deployment.md
+      - Verify Installation: getting-started/verify.md
+      - First Steps: getting-started/first-steps.md
   - Concepts:
       - Overview: concepts/index.md
       - Architecture:
@@ -129,27 +136,28 @@ nav:
           - Visual Map: architecture/visual.md
           - Infrastructure Layer: architecture/infrastructure.md
           - Application Layer: architecture/applications.md
-          - Observability Stack: architecture/observability.md
-          - Secrets Management: architecture/secrets.md
-          - CI/CD Pipeline: architecture/cicd.md
-          - Policy Enforcement: architecture/policies.md
+      - GitOps Model: concepts/gitops-model.md
+      - Networking & Gateway: concepts/networking-gateway.md
+      - Secrets Management: architecture/secrets.md
+      - Security & Policy Model: architecture/policies.md
+      - Observability Model: architecture/observability.md
+      - CI/CD Model: architecture/cicd.md
+      - Scheduling & Node Pools: concepts/scheduling-nodepools.md
       - Bootstrap Process: architecture/bootstrap.md
-  - How-to Guides:
-      - Overview: how-to/index.md
-      - Getting Started:
-          - Overview: getting-started/overview.md
-          - Prerequisites: getting-started/prerequisites.md
-          - Quick Start: getting-started/quickstart.md
-          - Deployment Guide: getting-started/deployment.md
-      - Operations:
-          - Platform Checklist: reference/resource-requirements.md
-          - Troubleshooting Playbook: reference/troubleshooting.md
-      - Contribution & Governance:
-          - Overview: guides/overview.md
-          - Contributing Guide: guides/contributing.md
-          - Policy Tagging: guides/policy-tagging.md
-  - Platform Operations:
+  - Tutorials:
+      - Onboard an Application: tutorials/onboard-app.md
+      - Add a Policy (Kyverno): tutorials/add-policy.md
+      - Consume a Secret from Vault: tutorials/consume-secret.md
+      - Add an Observability Dashboard: tutorials/add-dashboard.md
+  - Operate:
       - Overview: operations/index.md
+      - Operations Checklist: reference/resource-requirements.md
+      - Troubleshooting Playbook: reference/troubleshooting.md
+      - Backup & Restore: operate/backup-restore.md
+      - Upgrades: operate/upgrades.md
+      - Scaling & Tuning: operate/scaling-tuning.md
+      - Disaster Recovery: operate/disaster-recovery.md
+  - Components:
       - Infrastructure:
           - Overview: components/infrastructure/index.md
           - Cilium CNI: components/infrastructure/cilium/index.md
@@ -157,6 +165,7 @@ nav:
           - Vault: components/infrastructure/vault/index.md
           - External Secrets: components/infrastructure/external-secrets/index.md
           - ArgoCD: components/infrastructure/argocd/index.md
+          - Gateway API: components/infrastructure/gateway-api/index.md
       - Policy & Security:
           - Overview: components/policy/index.md
           - Kyverno: components/policy/kyverno/index.md
@@ -173,7 +182,29 @@ nav:
           - Overview: components/cicd/index.md
           - Argo Workflows: components/cicd/argo-workflows/index.md
           - SonarQube: components/cicd/sonarqube/index.md
+  - Extend:
+      - Overview: guides/overview.md
+      - Add a New Component: extend/add-component.md
+      - ApplicationSets Patterns: extend/application-sets.md
+      - Helm-docs Conventions: extend/helm-docs-conventions.md
+      - Labels & Metadata: extend/labels-metadata.md
+      - Policy Tagging: guides/policy-tagging.md
   - Reference:
       - Overview: reference/overview.md
+      - Resource Requirements: reference/resource-requirements.md
+      - Ports & Endpoints: reference/ports-endpoints.md
+      - URLs & Initial Credentials: reference/urls-credentials.md
+      - Taskfile Commands: reference/taskfile-commands.md
       - Label Standards: reference/labels-standard.md
       - FinOps Tags: reference/finops-tags.md
+      - Glossary: reference/glossary.md
+  - Release:
+      - Overview: release/index.md
+      - Versioning & Support Policy: release/versioning.md
+      - Release Notes & Changelog: release/changelog.md
+      - Upgrade Notes: release/upgrade-notes.md
+  - Contribute:
+      - Contributing Guide: guides/contributing.md
+      - Docs Style Guide: guides/docs-style.md
+      - Dev Environment: guides/dev-environment.md
+      - Checks & Linting: guides/checks.md
