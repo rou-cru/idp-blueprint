@@ -38,12 +38,14 @@ theme:
     - content.code.copy
     - content.tabs.link
     - content.tooltips
-    # Navigation features - collapsible tree navigation
+    # Navigation features
     - navigation.footer
     - navigation.indexes
     - navigation.instant
     - navigation.instant.progress
     - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.path
     - navigation.top
     - navigation.tracking
@@ -52,7 +54,6 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-    - toc.integrate
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
