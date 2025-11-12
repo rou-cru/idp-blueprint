@@ -43,6 +43,7 @@ theme:
     - navigation.indexes
     - navigation.instant
     - navigation.instant.progress
+    - navigation.sections
     - navigation.path
     - navigation.top
     - navigation.tracking
