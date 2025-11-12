@@ -123,52 +123,6 @@ KubeSystem.GW -> Certificates.CERT: "uses TLS"
 Certificates.CERT <- Certificates.ISS <- Certificates.CA <- Certificates.SSI
 ```
 
-=== "Mermaid"
-
-```mermaid
-graph TB
-  subgraph External
-    Browser[Browser]
-  end
-
-  subgraph KubeSystem[Namespace: kube-system]
-    SVC[Service: cilium-gateway-idp-gateway\nNodePort 30080/30443]
-    GW[Gateway: idp-gateway\nTLS terminate]
-  end
-
-  subgraph Routes[HTTPRoutes]
-    HR1[argocd]
-    HR2[grafana]
-    HR3[vault]
-    HR4[workflows]
-    HR5[sonarqube]
-  end
-
-  subgraph Backends[Backend Services]
-    S1[argocd-server:80]
-    S2[prometheus-grafana:80]
-    S3[vault:8200]
-    S4[argo-workflows-server:2746]
-    S5[sonarqube:9000]
-  end
-
-  subgraph Certificates[cert-manager]
-    SSI[ClusterIssuer: self-signed]
-    CA[Certificate: idp-demo-ca\nsecret idp-demo-ca-secret]
-    ISS[ClusterIssuer: ca-issuer]
-    CERT[Certificate: idp-wildcard-cert\nsecret idp-wildcard-cert]
-  end
-
-  Browser -->|HTTPS nip.io| SVC --> GW
-  GW -->|hostname match| HR1 & HR2 & HR3 & HR4 & HR5
-  HR1 --> S1
-  HR2 --> S2
-  HR3 --> S3
-  HR4 --> S4
-  HR5 --> S5
-  GW -. uses TLS .-> CERT
-  CERT <- ISS <- CA <- SSI
-```
 
 ## DNS Suffix and Domains
 

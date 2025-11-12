@@ -105,7 +105,12 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  - d2
+  - d2:
+      layout: elk
+      theme: 200
+      dark_theme: 300
+      sketch: false
+      pad: 16
 
 # Customization
 extra:

@@ -42,39 +42,52 @@ Kustomize and apply them with `kustomize build <dir>/ | kubectl apply -f -`.
 
 ## Visual Structure
 
-```mermaid
-graph TD
-    A[IT/] --> B(cilium-values.yaml);
-    A --> C(eso-values.yaml);
-    A --> D(k3d-cluster.yaml);
-    A --> E(vault-values.yaml);
-    A --> AA(cert-manager-values.yaml);
-    A --> AB(argocd-values.yaml);
-    A --> AC(kustomization.yaml);
+```d2
+direction: right
 
-    A --> F[cert-manager/];
-    A --> G[external-secrets/];
-    A --> N[namespaces/];
-    A --> V[vault/];
-    A --> X[argocd/];
+IT: {
+  label: "IT/"
+  B: "cilium-values.yaml"
+  C: "eso-values.yaml"
+  D: "k3d-cluster.yaml"
+  E: "vault-values.yaml"
+  AA: "cert-manager-values.yaml"
+  AB: "argocd-values.yaml"
+  AC: "kustomization.yaml"
 
-    subgraph Raw Manifests & Kustomize
-        F --> H(ca-issuer.yaml);
-        G --> K(argocd-secretstore.yaml);
-        G --> L(argocd-admin-externalsecret.yaml);
-        N --> N1(kustomization.yaml);
-        V --> V1(vault-manual-init.sh);
-        X --> X1(kustomization.yaml);
-    end
+  F: "cert-manager/"
+  G: "external-secrets/"
+  N: "namespaces/"
+  V: "vault/"
+  X: "argocd/"
+}
 
-    subgraph Helm Values
-        B
-        C
-        D
-        E
-        AA
-        AB
-    end
+Raw: {
+  label: "Raw Manifests & Kustomize"
+  H: "ca-issuer.yaml"
+  K: "argocd-secretstore.yaml"
+  L: "argocd-admin-externalsecret.yaml"
+  N1: "kustomization.yaml"
+  V1: "vault-init.sh"
+  X1: "kustomization.yaml"
+}
+
+Values: {
+  label: "Helm Values"
+  B
+  C
+  D
+  E
+  AA
+  AB
+}
+
+IT.F -> Raw.H
+IT.G -> Raw.K
+IT.G -> Raw.L
+IT.N -> Raw.N1
+IT.V -> Raw.V1
+IT.X -> Raw.X1
 ```
 
 ## Quick Reference
@@ -94,25 +107,32 @@ graph TD
 
 ### Bootstrap Timeline
 
-```mermaid
-gantt
-    dateFormat  X
-    axisFormat  %s
-    section Provision
-      Create k3d cluster            :0, 1
-      Apply namespaces              :1, 2
-    section Networking & CRDs
-      Cilium                        :2, 3
-      Prometheus CRDs               :3, 4
-      Cert-Manager (Helm + manifests) :4, 5
-    section Secrets & GitOps
-      Vault deploy + init           :5, 6
-      External Secrets Operator     :6, 7
-      ArgoCD                        :7, 8
-      Gateway API                   :8, 9
-    section Post-Bootstrap
-      Policies (Kyverno)            :9, 10
-      Application stacks (AppSets)  :10, 11
+```d2
+shape: sequence_diagram
+Task: task deploy
+K3d: k3d cluster
+NS: Namespaces
+Cilium: Cilium
+CRDs: Prometheus CRDs
+CM: cert-manager
+Vault: Vault (deploy + init)
+ESO: External Secrets Operator
+Argo: ArgoCD
+GW: Gateway API
+Kyverno: Policies (Kyverno)
+Stacks: Application stacks (AppSets)
+
+Task -> K3d: Create cluster
+Task -> NS: Apply namespaces
+Task -> Cilium: Install CNI
+Task -> CRDs: Install operator CRDs
+Task -> CM: Install + apply issuers/certs
+Task -> Vault: Deploy and init
+Task -> ESO: Install ESO
+Task -> Argo: Deploy ArgoCD
+Task -> GW: Apply Gateway
+Task -> Kyverno: Deploy policies
+Task -> Stacks: Sync stacks (observability, cicd, security)
 ```
 
 ### Expanded Steps

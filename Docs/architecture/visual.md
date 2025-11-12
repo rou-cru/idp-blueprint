@@ -9,68 +9,66 @@ This diagram shows the high-level view of the workflow, from the definition in a
 repository to the deployment and operation of the components within the Kubernetes
 cluster.
 
-```mermaid
-graph TD
-    GitRepo[Git Repository]
+```d2
+direction: right
 
-    subgraph K8sCluster [Kubernetes Cluster]
-        direction TB
-        
-        subgraph CoreInfrastructure [Core Infrastructure]
-            direction LR
-            Cilium[Cilium]
-            CertManager[Cert-Manager]
-            Vault[Vault]
-            ESO[External Secrets Operator]
-        end
+GitRepo: "Git Repository"
 
-        subgraph GitOpsPolicyEngine [GitOps and Policy Engine]
-            direction LR
-            ArgoCD[ArgoCD]
-            Kyverno[Kyverno]
-            PolicyReporter[Policy Reporter]
-        end
+K8sCluster: {
+  label: "Kubernetes Cluster"
 
-        subgraph AppStacks [Application Stacks]
-            direction TB
-            
-            subgraph ObservabilityStack [Observability Stack]
-                direction LR
-                Prometheus[Prometheus]
-                Grafana[Grafana]
-                Loki[Loki]
-                FluentBit[Fluent-bit]
-            end
+  Core: {
+    label: "Core Infrastructure"
+    Cilium
+    CertManager: "Cert-Manager"
+    Vault
+    ESO: "External Secrets Operator"
+  }
 
-            subgraph CICDStack [CI/CD Stack]
-                direction LR
-                Workflows[Argo Workflows]
-                SonarQube[SonarQube]
-            end
+  Engines: {
+    label: "GitOps and Policy Engine"
+    ArgoCD
+    Kyverno
+    PolicyReporter: "Policy Reporter"
+  }
 
-            subgraph SecurityStack [Security Stack]
-                direction LR
-                Trivy[Trivy Operator]
-            end
-        end
-        
-        K8sApi[Kubernetes API Server]
-    end
+  AppStacks: {
+    label: "Application Stacks"
+    Observability: {
+      label: "Observability"
+      Prometheus
+      Grafana
+      Loki
+      FluentBit: "Fluent-bit"
+    }
+    CICD: {
+      label: "CI/CD"
+      Workflows: "Argo Workflows"
+      SonarQube
+    }
+    Security: {
+      label: "Security"
+      Trivy: "Trivy Operator"
+    }
+  }
 
-    GitRepo -->|Defines State| ArgoCD
-    ArgoCD -->|Applies Manifests| AppStacks
-    ArgoCD -->|Creates Resources| K8sApi
-    K8sApi -->|Validates Requests| Kyverno
-    Kyverno -->|Enforces Policies| K8sApi
-    Kyverno -->|Reports Status| PolicyReporter
-    Vault -->|Provides Secrets| ESO
-    ESO -->|Syncs Secrets| K8sApi
-    FluentBit -->|Collects Logs| Loki
-    Prometheus -->|Scrapes Metrics| Grafana
-    Loki -->|Provides Logs| Grafana
-    Workflows -->|Triggers analysis in| SonarQube
-    Trivy -->|Scans Resources| K8sApi
-    CertManager -->|Manages Certificates| K8sApi
+  K8sApi: "Kubernetes API Server"
+}
+
+GitRepo -> K8sCluster.Engines.ArgoCD: "Defines State"
+K8sCluster.Engines.ArgoCD -> K8sCluster.AppStacks: "Applies Manifests"
+K8sCluster.Engines.ArgoCD -> K8sCluster.K8sApi: "Creates Resources"
+K8sCluster.K8sApi -> K8sCluster.Engines.Kyverno: "Validates Requests"
+K8sCluster.Engines.Kyverno -> K8sCluster.K8sApi: "Enforces Policies"
+K8sCluster.Engines.Kyverno -> K8sCluster.Engines.PolicyReporter: "PolicyReports"
+K8sCluster.Core.Vault -> K8sCluster.Core.ESO: "Secrets"
+K8sCluster.Core.ESO -> K8sCluster.K8sApi: "Syncs"
+K8sCluster.AppStacks.Observability.FluentBit -> K8sCluster.AppStacks.Observability.Loki: "Logs"
+K8sCluster.AppStacks.Observability.Prometheus -> K8sCluster.AppStacks.Observability.Grafana: "Metrics"
+K8sCluster.AppStacks.Observability.Loki -> K8sCluster.AppStacks.Observability.Grafana: "Logs"
+K8sCluster.AppStacks.CICD.Workflows -> K8sCluster.AppStacks.CICD.SonarQube: "Analysis"
+K8sCluster.AppStacks.Security.Trivy -> K8sCluster.K8sApi: "Scans"
+K8sCluster.Core.CertManager -> K8sCluster.K8sApi: "Certificates"
 ```
 
 ## 2. Helm to Pods Deployment Flow
@@ -78,83 +76,63 @@ graph TD
 This diagram shows the complete deployment chain from Helm charts to running pods,
 illustrating how different layers (Bootstrap, GitOps) interact.
 
-```mermaid
-graph TB
-    subgraph Bootstrap [Bootstrap Layer - IT/]
-        H1[Helm: cilium v1.18.2]
-        H2[Helm: vault v0.31.0]
-        H3[Helm: argocd v8.5.8]
-        H4[Helm: cert-manager v1.18.2]
-        H5[Helm: external-secrets v0.20.2]
-    end
+```d2
+direction: down
 
-    subgraph GitOps [GitOps Layer - K8s/]
-        direction TB
+Bootstrap: {
+  label: "Bootstrap Layer - IT/"
+  H1: "Helm: cilium v1.18.2"
+  H2: "Helm: vault v0.31.0"
+  H3: "Helm: argocd v8.6.0"
+  H4: "Helm: cert-manager v1.19.0"
+  H5: "Helm: external-secrets v0.20.2"
+}
 
-        subgraph ArgoCD_Core [ArgoCD Applications]
-            APP1[App: observability-fluent-bit]
-            APP2[App: observability-loki]
-            APP3[App: observability-kube-prometheus-stack]
-            APP4[App: cicd-argo-workflows]
-            APP5[App: security-trivy]
-            APP6[App: platform-policies]
-        end
+GitOps: {
+  label: "GitOps Layer - K8s/"
+  Apps: {
+    APP1: "observability-fluent-bit"
+    APP2: "observability-loki"
+    APP3: "observability-kube-prometheus-stack"
+    APP4: "cicd-argo-workflows"
+    APP5: "security-trivy"
+    APP6: "platform-policies"
+  }
+}
 
-        subgraph Kustomize [Kustomize + Helm Charts]
-            K1[Kustomize: fluent-bit<br/>helmCharts: fluent-bit v0.54.0]
-            K2[Kustomize: loki<br/>helmCharts: loki v6.42.0]
-            K3[Kustomize: kube-prometheus-stack<br/>helmCharts: v77.14.0]
-            K4[Kustomize: argo-workflows<br/>helmCharts: argo-workflows v0.45.11]
-            K5[Kustomize: trivy<br/>helmCharts: trivy-operator v0.31.0]
-            K6[Kustomize: kyverno<br/>helmCharts: kyverno v3.5.2]
-        end
-    end
+K8s: {
+  label: "Kubernetes Resources"
+  DS1: "DaemonSet: cilium-agent"
+  STS1: "StatefulSet: vault-0"
+  DEP1: "Deployment: argocd-server"
+  DS2: "DaemonSet: fluent-bit"
+  STS2: "StatefulSet: loki"
+  STS3: "StatefulSet: prometheus"
+  DEP2: "Deployment: grafana"
+  DEP3: "Deployment: argo-workflows-server"
+  DEP4: "Deployment: argo-workflows-controller"
+  DEP5: "Deployment: trivy-operator"
+  DEP6: "Deployment: kyverno-admission-controller"
+}
 
-    subgraph K8s [Kubernetes Resources]
-        direction TB
+Bootstrap.H1 -> K8s.DS1: "task deploy"
+Bootstrap.H2 -> K8s.STS1: "task deploy"
+Bootstrap.H3 -> K8s.DEP1: "task deploy"
 
-        subgraph Workloads [Running Workloads]
-            DS1[DaemonSet: cilium-agent]
-            STS1[StatefulSet: vault-0]
-            DEP1[Deployment: argocd-server]
+K8s.DEP1 -> GitOps.Apps.APP1: "manages"
+K8s.DEP1 -> GitOps.Apps.APP2
+K8s.DEP1 -> GitOps.Apps.APP3
+K8s.DEP1 -> GitOps.Apps.APP4
+K8s.DEP1 -> GitOps.Apps.APP5
+K8s.DEP1 -> GitOps.Apps.APP6
 
-            DS2[DaemonSet: fluent-bit]
-            STS2[StatefulSet: loki]
-            STS3[StatefulSet: prometheus-prometheus]
-            DEP2[Deployment: prometheus-grafana]
-
-            DEP3[Deployment: argo-workflows-server]
-            DEP4[Deployment: argo-workflows-controller]
-            DEP5[Deployment: trivy-operator]
-            DEP6[Deployment: kyverno-admission-controller]
-        end
-    end
-
-    H1 -->|Deployed via Taskfile| DS1
-    H2 -->|Deployed via Taskfile| STS1
-    H3 -->|Deployed via Taskfile| DEP1
-
-    DEP1 -->|Manages| APP1
-    DEP1 -->|Manages| APP2
-    DEP1 -->|Manages| APP3
-    DEP1 -->|Manages| APP4
-    DEP1 -->|Manages| APP5
-    DEP1 -->|Manages| APP6
-
-    APP1 -->|Builds| K1
-    APP2 -->|Builds| K2
-    APP3 -->|Builds| K3
-    APP4 -->|Builds| K4
-    APP5 -->|Builds| K5
-    APP6 -->|Builds| K6
-
-    K1 -->|Renders Helm + Applies| DS2
-    K2 -->|Renders Helm + Applies| STS2
-    K3 -->|Renders Helm + Applies| STS3
-    K3 -->|Renders Helm + Applies| DEP2
-    K4 -->|Renders Helm + Applies| STS4
-    K5 -->|Renders Helm + Applies| DEP3
-    K6 -->|Renders Helm + Applies| DEP4
+GitOps.Apps.APP1 -> K8s.DS2
+GitOps.Apps.APP2 -> K8s.STS2
+GitOps.Apps.APP3 -> K8s.STS3
+GitOps.Apps.APP3 -> K8s.DEP2
+GitOps.Apps.APP4 -> K8s.DEP3
+GitOps.Apps.APP5 -> K8s.DEP5
+GitOps.Apps.APP6 -> K8s.DEP6
 ```
 
 ## 3. Node Pools and Workload Deployment
@@ -163,51 +141,49 @@ Within the Hub cluster, nodes are segmented into logical "Node Pools" using
 labels to isolate workloads. This classification is the basis for future
 scheduling rules with `tolerations` and `affinity`.
 
-```mermaid
-graph TD
-    subgraph IDPHubCluster [IDP Hub Cluster - k3d-idp-demo]
-        subgraph NodePool_Infra [Node Pool: IT Infrastructure]
-            direction TB
-            infra_node[k3d-idp-demo-agent-0<br/>Label: node-role=it-infra]
-        end
+```d2
+direction: right
 
-        subgraph NodePool_Apps [Node Pool: GitOps Workloads]
-            direction TB
-            apps_node[k3d-idp-demo-agent-1<br/>Label: node-role=k8s-workloads]
-        end
+Cluster: {
+  label: "IDP Hub Cluster - k3d-idp-demo"
+  Infra: "Node Pool: IT Infrastructure\nagent-0 (node-role=it-infra)"
+  Apps: "Node Pool: GitOps Workloads\nagent-1 (node-role=k8s-workloads)"
+  CP: "Node Pool: Control Plane\nserver-0"
+}
 
-        subgraph NodePool_CP [Node Pool: Control Plane]
-            direction TB
-            cp_node[k3d-idp-demo-server-0<br/>Control Plane + etcd]
-        end
+Platform: {
+  Argo: ArgoCD
+  Vault: Vault
+  Prom: Prometheus
+  Kyv: Kyverno
+}
 
-        subgraph Workloads_Platform [Platform Services]
-            direction LR
-            argo[ArgoCD]
-            vault[Vault]
-            prom[Prometheus]
-            kyv[Kyverno]
-        end
+AppWorkloads: {
+  Workflows: "Argo Workflows"
+  Sonar: SonarQube
+}
 
-        subgraph Workloads_Apps [Application Workloads]
-            direction LR
-            workflows[Argo Workflows]
-            sonar[SonarQube]
-        end
+DS: {
+  Cilium: "Cilium Agent"
+  Fluent: "Fluent-bit"
+  NodeExp: "Node Exporter"
+}
 
-        subgraph DaemonSets_AllNodes [DaemonSets - All Nodes]
-            direction LR
-            cilium[Cilium Agent]
-            fluent[Fluent-bit]
-            node_exp[Node Exporter]
-        end
-    end
-
-    Workloads_Platform -.->|Scheduled on| NodePool_Infra
-    Workloads_Apps -.->|Scheduled on| NodePool_Apps
-    DaemonSets_AllNodes -->|Runs on| NodePool_CP
-    DaemonSets_AllNodes -->|Runs on| NodePool_Infra
-    DaemonSets_AllNodes -->|Runs on| NodePool_Apps
+Platform.Argo -> Cluster.Infra: "scheduled on"
+Platform.Vault -> Cluster.Infra
+Platform.Prom -> Cluster.Infra
+Platform.Kyv -> Cluster.Infra
+AppWorkloads.Workflows -> Cluster.Apps: "scheduled on"
+AppWorkloads.Sonar -> Cluster.Apps
+DS.Cilium -> Cluster.CP
+DS.Cilium -> Cluster.Infra
+DS.Cilium -> Cluster.Apps
+DS.Fluent -> Cluster.CP
+DS.Fluent -> Cluster.Infra
+DS.Fluent -> Cluster.Apps
+DS.NodeExp -> Cluster.CP
+DS.NodeExp -> Cluster.Infra
+DS.NodeExp -> Cluster.Apps
 ```
 
 ## 3. Certificate Management Flow
@@ -215,23 +191,21 @@ graph TD
 This flow shows how a Gateway resource automatically obtains a TLS certificate
 via cert-manager annotation.
 
-```mermaid
-sequenceDiagram
-    participant GW as Gateway Resource
-    participant CM as cert-manager
-    participant CI as ClusterIssuer
-    participant CAS as CA Secret
-    participant FinalTLS as TLS Certificate Secret
+```d2
+shape: sequence_diagram
+GW: Gateway Resource
+CM: cert-manager
+CI: ClusterIssuer
+CAS: CA Secret
+TLS: TLS Certificate Secret
 
-    GW->>+CM: 1. Requests certificate via annotation
-    Note over GW,CM: cert-manager.io/cluster-issuer: ca-issuer
-    CM->>+CI: 2. Reads the ClusterIssuer configuration
-    CI-->>-CM: spec.ca.secretName: idp-demo-ca-secret
-    CM->>+CAS: 3. Loads the root CA from the Secret
-    CAS-->>-CM: CA private key and certificate
-    CM-->>CM: 4. Signs wildcard certificate (*.127-0-0-1.sslip.io)
-    CM->>+FinalTLS: 5. Creates Certificate Secret (idp-wildcard-cert)
-    FinalTLS-->>-GW: 6. Referenced in Gateway spec.listeners.tls
+GW -> CM: Requests certificate (annotation\ncert-manager.io/cluster-issuer: ca-issuer)
+CM -> CI: Read ClusterIssuer
+CI -> CM: ca.secretName: idp-demo-ca-secret
+CM -> CAS: Load root CA
+CAS -> CM: CA key + cert
+CM -> TLS: Create idp-wildcard-cert (*.nip.io)
+TLS -> GW: Referenced in listeners.tls
 ```
 
 ## 4. Secret Management Flow
@@ -239,25 +213,25 @@ sequenceDiagram
 This flow details how an application securely consumes a secret from Vault
 without having direct credentials.
 
-```mermaid
-sequenceDiagram
-    participant App as Application Pod
-    participant K8S_Secret as Kubernetes Secret
-    participant ES_CR as ExternalSecret CR
-    participant ESO as External Secrets Operator
-    participant CSS as ClusterSecretStore
-    participant Vault
+```d2
+shape: sequence_diagram
+App: Application Pod
+K8S: Kubernetes Secret
+ES: ExternalSecret CR
+ESO: External Secrets Operator
+SS: SecretStore
+Vault
 
-    App->>+K8S_Secret: 1. Needs to mount a K8s Secret
-    K8S_Secret-->>-App: Not found or needs update
-    ESO->>+ES_CR: 2. Watches the ExternalSecret resource
-    ES_CR-->>-ESO: spec.secretStoreRef: vault-secretstore
-    ESO->>+CSS: 3. Reads the referenced ClusterSecretStore
-    CSS-->>-ESO: provider: vault, auth: kubernetes
-    ESO->>+Vault: 4. Authenticates and requests the secret
-    Vault-->>-ESO: Returns the secret data
-    ESO->>+K8S_Secret: 5. Creates/Updates the Kubernetes Secret
-    K8S_Secret-->>App: 6. The Secret is mounted in the Pod
+App -> K8S: Needs Secret
+K8S -> App: Not found / outdated
+ESO -> ES: Watch ExternalSecret
+ES -> ESO: secretStoreRef: vault-*
+ESO -> SS: Read SecretStore (vault, k8s auth)
+SS -> ESO: Provider config
+ESO -> Vault: Request secret
+Vault -> ESO: Secret data
+ESO -> K8S: Create/Update Secret
+K8S -> App: Mounted in Pod
 ```
 
 ## 5. Observability Data Flow
@@ -265,37 +239,33 @@ sequenceDiagram
 This diagram details how metrics and logs are collected, processed, and visualized on
 the platform.
 
-```mermaid
-graph TD
-    subgraph Kubernetes Nodes
-        direction LR
-        AppPod[App Pod]
-        Kubelet[Kubelet]
-        NodeExporter[Node Exporter]
-        ContainerLogs[Container Log Files]
-    end
+```d2
+direction: right
 
-    subgraph Observability Namespace
-        direction LR
-        Prometheus[Prometheus]
-        Loki[Loki]
-        Grafana[Grafana]
-        KSM[Kube-State-Metrics]
-        FluentBit[Fluent-bit DaemonSet]
-    end
+Nodes: {
+  App: "App Pod"
+  Kubelet
+  NodeExporter
+  LogFiles: "Container Logs"
+}
 
-    AppPod -->|Generates Logs| ContainerLogs
-    AppPod -->|Exposes Metrics| Prometheus
-    Kubelet -->|Exposes Metrics| Prometheus
-    
-    ContainerLogs -->|Tailed by| FluentBit
-    FluentBit -->|Forwards Logs| Loki
+Obs: {
+  Prom: Prometheus
+  Loki
+  Graf: Grafana
+  KSM: "Kube-State-Metrics"
+  FB: "Fluent-bit"
+}
 
-    NodeExporter -->|Scrapes Node Metrics| Prometheus
-    KSM -->|Scrapes Cluster Metrics| Prometheus
-
-    Prometheus -->|Data Source| Grafana
-    Loki -->|Data Source| Grafana
+Nodes.App -> Nodes.LogFiles: "Logs"
+Nodes.App -> Obs.Prom: "Metrics"
+Nodes.Kubelet -> Obs.Prom: "Metrics"
+Nodes.LogFiles -> Obs.FB: "Tailed"
+Obs.FB -> Obs.Loki: "Forwards"
+Nodes.NodeExporter -> Obs.Prom: "Node metrics"
+Obs.KSM -> Obs.Prom: "Cluster metrics"
+Obs.Prom -> Obs.Graf: "Datasource"
+Obs.Loki -> Obs.Graf: "Datasource"
 ```
 
 ## 6. Security Scanning Flow with Trivy
@@ -303,20 +273,20 @@ graph TD
 This diagram illustrates how the Trivy operator scans cluster workloads for
 vulnerabilities.
 
-```mermaid
-sequenceDiagram
-    participant User as User/ArgoCD
-    participant K8sApi as Kubernetes API
-    participant TrivyOp as Trivy Operator
-    participant Workload as e.g., Deployment, Pod
-    participant Report as VulnerabilityReport CRD
+```d2
+shape: sequence_diagram
+User: User/ArgoCD
+K8s: Kubernetes API
+TrivyOp: Trivy Operator
+Workload: Deployment/Pod
+Report: VulnerabilityReport
 
-    User->>K8sApi: 1. Creates/Updates a Workload
-    K8sApi-->>TrivyOp: 2. Watches resource changes
-    TrivyOp->>Workload: 3. Discovers container images
-    TrivyOp->>TrivyOp: 4. Scans images for vulnerabilities
-    TrivyOp->>K8sApi: 5. Creates/Updates VulnerabilityReport
-    K8sApi-->>Report: 6. Stores the report
+User -> K8s: Create/Update Workload
+K8s -> TrivyOp: Watch changes
+TrivyOp -> Workload: Discover images
+TrivyOp -> TrivyOp: Scan images
+TrivyOp -> K8s: Create/Update VulnerabilityReport
+K8s -> Report: Store CRD
 ```
 
 ## 7. GitOps Structure with ApplicationSets
@@ -326,36 +296,35 @@ ArgoCD monitor directories in Git. When they find subdirectories that match thei
 generator, they automatically create child `Application` resources, one for each
 stack component.
 
-```mermaid
-graph LR
-    subgraph Git Repository
-        direction TB
-        RepoDir[K8s/ Directory]
-        ObsDir[observability/]
-        SecDir[security/]
-        CiCdDir[cicd/]
-    end
+```d2
+direction: right
 
-    subgraph ArgoCD
-        direction TB
-        AppSetObs[ApplicationSet observability]
-        AppSetSec[ApplicationSet security]
-        AppSetCiCd[ApplicationSet cicd]
+Git: {
+  label: "Git Repository"
+  K8sDir: "K8s/ Directory"
+  Obs: "observability/"
+  Sec: "security/"
+  CiCd: "cicd/"
+}
 
-        AppPrometheus[App: obs-prometheus]
-        AppGrafana[App: obs-grafana]
-        AppLoki[App: obs-loki]
-        AppTrivy[App: sec-trivy]
-    end
+Argo: {
+  label: "ArgoCD"
+  ASObs: "ApplicationSet observability"
+  ASSec: "ApplicationSet security"
+  ASCi: "ApplicationSet cicd"
+  AppProm: "App: obs-prometheus"
+  AppGraf: "App: obs-grafana"
+  AppLoki: "App: obs-loki"
+  AppTrivy: "App: sec-trivy"
+}
 
-    GitRepo -->|Monitored by| AppSetObs
-    GitRepo -->|Monitored by| AppSetSec
-    GitRepo -->|Monitored by| AppSetCiCd
-
-    AppSetObs -->|Generates| AppPrometheus
-    AppSetObs -->|Generates| AppGrafana
-    AppSetObs -->|Generates| AppLoki
-    AppSetSec -->|Generates| AppTrivy
+Git.K8sDir -> Argo.ASObs: Monitored
+Git.K8sDir -> Argo.ASSec: Monitored
+Git.K8sDir -> Argo.ASCi: Monitored
+Argo.ASObs -> Argo.AppProm: Generates
+Argo.ASObs -> Argo.AppGraf
+Argo.ASObs -> Argo.AppLoki
+Argo.ASSec -> Argo.AppTrivy
 ```
 
 ## 8. Gateway API Service Exposure
@@ -363,47 +332,48 @@ graph LR
 This diagram shows how services are exposed via Gateway API with wildcard TLS
 and sslip.io DNS (zero configuration required).
 
-```mermaid
-graph TB
-    subgraph External Access
-        Browser[Browser: https://grafana.127-0-0-1.sslip.io]
-    end
+```d2
+direction: down
 
-    subgraph Gateway API Layer - Namespace: kube-system
-        Gateway[Gateway: idp-gateway<br/>Listener: HTTPS:443<br/>TLS: idp-wildcard-cert]
-        Cert[Certificate: idp-wildcard-cert<br/>*.127-0-0-1.sslip.io<br/>Issuer: ca-issuer]
-    end
+External: {
+  Browser: "Browser: https://grafana.<ip>.nip.io"
+}
 
-    subgraph HTTPRoutes - Distributed
-        HR1[HTTPRoute: argocd<br/>argocd.127-0-0-1.sslip.io]
-        HR2[HTTPRoute: grafana<br/>grafana.127-0-0-1.sslip.io]
-        HR3[HTTPRoute: vault<br/>vault.127-0-0-1.sslip.io]
-        HR4[HTTPRoute: workflows<br/>workflows.127-0-0-1.sslip.io]
-        HR5[HTTPRoute: sonarqube<br/>sonarqube.127-0-0-1.sslip.io]
-    end
+GatewayNS: {
+  label: "Gateway API Layer - kube-system"
+  Gateway: "Gateway: idp-gateway\nHTTPS:443\nTLS: idp-wildcard-cert"
+  Cert: "Certificate: idp-wildcard-cert\n*.nip.io\nIssuer: ca-issuer"
+}
 
-    subgraph Backend Services
-        S1[argocd-server:80]
-        S2[prometheus-grafana:80]
-        S3[vault:8200]
-        S4[argo-workflows-server:2746]
-        S5[sonarqube-sonarqube:9000]
-    end
+Routes: {
+  label: "HTTPRoutes"
+  HR1: "argocd"
+  HR2: "grafana"
+  HR3: "vault"
+  HR4: "workflows"
+  HR5: "sonarqube"
+}
 
-    Browser -->|HTTPS Request| Gateway
-    Gateway -->|Routes by hostname| HR1
-    Gateway -->|Routes by hostname| HR2
-    Gateway -->|Routes by hostname| HR3
-    Gateway -->|Routes by hostname| HR4
-    Gateway -->|Routes by hostname| HR5
+Backends: {
+  S1: "argocd-server:80"
+  S2: "prometheus-grafana:80"
+  S3: "vault:8200"
+  S4: "argo-workflows-server:2746"
+  S5: "sonarqube:9000"
+}
 
-    HR1 --> S1
-    HR2 --> S2
-    HR3 --> S3
-    HR4 --> S4
-    HR5 --> S5
-
-    Cert -.->|Provides TLS| Gateway
+External.Browser -> GatewayNS.Gateway: HTTPS
+GatewayNS.Gateway -> Routes.HR1: hostname route
+GatewayNS.Gateway -> Routes.HR2
+GatewayNS.Gateway -> Routes.HR3
+GatewayNS.Gateway -> Routes.HR4
+GatewayNS.Gateway -> Routes.HR5
+Routes.HR1 -> Backends.S1
+Routes.HR2 -> Backends.S2
+Routes.HR3 -> Backends.S3
+Routes.HR4 -> Backends.S4
+Routes.HR5 -> Backends.S5
+GatewayNS.Cert -> GatewayNS.Gateway: TLS
 ```
 
 ## 9. Control Loop Overview
@@ -414,23 +384,21 @@ Each component watches the Kubernetes API server for changes and acts to align t
 cluster's actual state with the desired state defined in Git, policies, or
 external secret stores.
 
-```mermaid
-graph LR
-    K8sApi[Kubernetes API Server]
+```d2
+direction: right
 
-    subgraph GitOps
-        ArgoCD[ArgoCD]
-    end
+K8s: "Kubernetes API Server"
+GitOps: {
+  Argo: ArgoCD
+}
+Policy: {
+  Kyverno
+}
+Secrets: {
+  ESO: "External Secrets Operator"
+}
 
-    subgraph Policy
-        Kyverno[Kyverno]
-    end
-
-    subgraph Secrets
-        ESO[External Secrets Operator]
-    end
-
-    ArgoCD <-->|Reconciles Git State| K8sApi
-    Kyverno <-->|Validates & Mutates Resources| K8sApi
-    ESO <-->|Syncs External Secrets| K8sApi
+GitOps.Argo <-> K8s: "Reconciles Git State"
+Policy.Kyverno <-> K8s: "Validates & Mutates"
+Secrets.ESO <-> K8s: "Syncs Secrets"
 ```

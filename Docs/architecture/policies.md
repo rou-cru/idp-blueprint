@@ -12,19 +12,33 @@ Governance lives under `Policies/` and is deployed before any workload stacks sy
 
 ## Deployment Path
 
-```mermaid
-flowchart LR
-    Git[Policies/ Directory] -->|kustomize build| KyvernoApp[ArgoCD Application]
-    KyvernoApp --> Kyverno[Kyverno Helm Release]
-    Kyverno --> Policies[ClusterPolicy + Policy]
-    KyvernoApp --> Reporter[Policy Reporter]
-    Policies --> Reporter
-    Reporter --> Dashboards[Grafana & UI]
+```d2
+direction: right
+
+Git: "Policies/ Directory"
+KyvernoApp: "ArgoCD Application"
+Kyverno: "Kyverno Helm Release"
+Policies: "ClusterPolicy + Policy"
+Reporter: "Policy Reporter"
+Dash: "Grafana & UI"
+
+Git -> KyvernoApp: kustomize build
+KyvernoApp -> Kyverno
+Kyverno -> Policies
+KyvernoApp -> Reporter
+Policies -> Reporter
+Reporter -> Dash
 ```
 
 - `Policies/app-kyverno.yaml` – ArgoCD Application applied during bootstrap.
 - `Policies/kustomization.yaml` – Installs both the Kyverno Helm release and all policy manifests.
 - `Policies/policy-reporter/` – Deploys Policy Reporter + UI for at-a-glance status.
+
+### Repo wiring & tasks
+
+- Bootstrap runs `task stacks:policies` after ArgoCD, applying `Policies/app-kyverno.yaml` with `REPO_URL`/`TARGET_REVISION` envsubst.
+- To redeploy policies only: `task stacks:policies`.
+- Lint/check before pushing: `task quality:lint` and `task quality:check`.
 
 ## Sync Waves & Priority
 
@@ -37,21 +51,27 @@ flowchart LR
 
 ## Policy Lifecycle
 
-```mermaid
-sequenceDiagram
-    participant Author as Platform Engineer
-    participant Git as Policies Repo
-    participant Argo as ArgoCD
-    participant Kyverno as Kyverno Controller
-    participant Reporter as Policy Reporter
+```d2
+shape: sequence_diagram
+Author: Platform Engineer
+Git: Policies Repo
+Argo: ArgoCD
+Kyverno: Kyverno Controller
+Reporter: Policy Reporter
 
-    Author->>Git: 1. Add/modify policy YAML
-    Git-->>Argo: 2. Commit pushed
-    Argo->>Kyverno: 3. Apply ClusterPolicy/Policy
-    Kyverno->>K8s: 4. Enforce/monitor resources
-    Kyverno-->>Reporter: 5. Emit PolicyReports
-    Reporter-->>Author: 6. UI & metrics show pass/fail
+Author -> Git: Add/modify policy YAML
+Git -> Argo: Commit pushed
+Argo -> Kyverno: Apply ClusterPolicy/Policy
+Kyverno -> K8s: Enforce/monitor resources
+Kyverno -> Reporter: Emit PolicyReports
+Reporter -> Author: UI & metrics show pass/fail
 ```
+
+### Verify
+
+- Kyverno ready: `kubectl -n kyverno-system get deploy kyverno-admission-controller`
+- Reporter UI: check Service/Ingress in `kyverno-system` and the dashboards
+- Policy reports: `kubectl get policyreport,clusterpolicyreport -A`
 
 ## Writing Good Policies
 
@@ -59,6 +79,11 @@ sequenceDiagram
 2. **Test locally** – use `kyverno apply` or `kyverno test` against manifests before pushing.
 3. **Annotate severity** – add `policies.kyverno.io/severity` so Policy Reporter can filter.
 4. **Document remediation** – set `policies.kyverno.io/description` and `documentation` annotations so the UI links back to internal runbooks.
+
+### Local tests
+
+- `kyverno apply` on a manifest to see allow/deny
+- `kyverno test` on a curated set of cases under a `tests/` folder (optional pattern)
 
 ## Policy Reporter Dashboards
 

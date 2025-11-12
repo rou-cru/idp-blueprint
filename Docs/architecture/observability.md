@@ -11,33 +11,41 @@ The observability stack covers metrics, logs, and dashboards with minimal footpr
 | Loki | `K8s/observability/loki/` | Stores logs in boltDB shipper mode (single replica for k3d). |
 | Grafana | Bundled via Prometheus stack | Serves dashboards, integrates with Prometheus + Loki datasources automatically. |
 
+### Repo wiring & tasks
+
+- ApplicationSet: `K8s/observability/applicationset-observability.yaml` watches `K8s/observability/*`.
+- Deploy only observability stack: `task stacks:observability`.
+- Grafana admin credentials are synced from Vault via `ExternalSecret` (see `kube-prometheus-stack/grafana-admin-externalsecret.yaml`).
+
 ## Data Flow
 
-```mermaid
-flowchart LR
-    subgraph Nodes
-        Pods((App Pods))
-        FluentBit[[Fluent-bit DaemonSet]]
-        NodeExporter[(Node Exporter)]
-        Kubelet[(Kubelet / cAdvisor)]
-        KSM[(Kube-State-Metrics)]
-    end
+```d2
+direction: right
 
-    subgraph Observability
-        Prometheus[(Prometheus)]
-        Loki[(Loki)]
-        Grafana[[Grafana]]
-        Alertmanager{{Alertmanager}}
-    end
+Nodes: {
+  Pods: "App Pods"
+  FluentBit: "Fluent-bit DaemonSet"
+  NodeExporter: "Node Exporter"
+  Kubelet: "Kubelet / cAdvisor"
+  KSM: "Kube-State-Metrics"
+}
 
-    Pods -->|Logs| FluentBit -->|Loki HTTP API| Loki
-    Pods -->|Metrics| Prometheus
-    NodeExporter -->|Node metrics| Prometheus
-    Kubelet -->|cAdvisor metrics| Prometheus
-    KSM -->|Workload metrics| Prometheus
-    Prometheus -->|Alerts| Alertmanager
-    Prometheus -->|Datasource| Grafana
-    Loki -->|Datasource| Grafana
+Observability: {
+  Prometheus
+  Loki
+  Grafana
+  Alertmanager
+}
+
+Nodes.Pods -> Nodes.FluentBit: "Logs"
+Nodes.FluentBit -> Observability.Loki: "HTTP API"
+Nodes.Pods -> Observability.Prometheus: "Metrics"
+Nodes.NodeExporter -> Observability.Prometheus: "Node metrics"
+Nodes.Kubelet -> Observability.Prometheus: "cAdvisor"
+Nodes.KSM -> Observability.Prometheus: "Workload metrics"
+Observability.Prometheus -> Observability.Alertmanager: "Alerts"
+Observability.Prometheus -> Observability.Grafana: "Datasource"
+Observability.Loki -> Observability.Grafana: "Datasource"
 ```
 
 ## Instrumentation Strategy
@@ -55,19 +63,25 @@ The Prometheus stack enables Alertmanager but does not send notifications by def
 2. Update `alertmanager.config` in `kube-prometheus-stack-values.yaml` to reference the secret or inline config.
 3. Commit and let ArgoCD roll out the change.
 
+### Verify
+
+- Grafana UI: `https://grafana.<ip-dashed>.nip.io` via Gateway
+- Prometheus targets: check `Status → Targets` and confirm `kubernetes-apiservers`, `node-exporter`, etc.
+- Loki logs: Explore → Loki → `{namespace="observability"}` to see stack logs
+
 ## Custom Dashboards Workflow
 
-```mermaid
-sequenceDiagram
-    participant Dev as Platform Engineer
-    participant Git as Repo (K8s/observability)
-    participant Argo as ArgoCD
-    participant Grafana as Grafana Pod
+```d2
+shape: sequence_diagram
+Dev: Platform Engineer
+Git: Repo (K8s/observability)
+Argo: ArgoCD
+Grafana: Grafana Pod
 
-    Dev->>Git: 1. Add dashboard JSON under dashboards/
-    Git-->>Argo: 2. Commit pushed
-    Argo->>Grafana: 3. Sync configMap/secret
-    Grafana-->>Dev: 4. Dashboard appears in UI
+Dev -> Git: Add dashboard JSON under dashboards/
+Git -> Argo: Commit pushed
+Argo -> Grafana: Sync ConfigMap/Secret
+Grafana -> Dev: Dashboard appears in UI
 ```
 
 ## Extending the Stack

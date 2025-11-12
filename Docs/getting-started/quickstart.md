@@ -59,6 +59,28 @@ echo "https://argocd.$DNS_SUFFIX"
 Accessible on your LAN: open these URLs from other devices using your
 workstation IP. Ensure OS firewall allows NodePorts `30080`/`30443`.
 
+### Quick Map
+
+```d2
+shape: sequence_diagram
+User: You
+Repo: GitHub (this repo)
+Task: task deploy
+K3d: k3d cluster
+IT: IT/ bootstrap
+Stacks: K8s/ stacks (AppSets)
+GW: Gateway (nip.io)
+UIs: ArgoCD / Grafana / Vault / Workflows / SonarQube
+
+User -> Repo: Clone
+User -> Task: Run deploy
+Task -> K3d: Create cluster
+Task -> IT: Cilium, cert-manager, Vault, ESO, ArgoCD, Gateway
+Task -> Stacks: Observability, CI/CD, Security, Policies
+User -> GW: Open https://<service>.<ip-dashed>.nip.io
+GW -> UIs: Route to services
+```
+
 ## 4) Credentials
 
 ArgoCD admin password comes from Vault via External Secrets. By default it’s configured in `config.toml`:

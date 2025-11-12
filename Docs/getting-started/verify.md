@@ -16,6 +16,22 @@ kubectl get applications -n argocd
     `k9s` is available in the Devbox/Dev Container. Run `k9s -A` for a
     curses UI to inspect pods, logs and events across namespaces.
 
+### Visual Guide
+
+```d2
+shape: sequence_diagram
+User: You
+Kubectl: kubectl
+Argo: ArgoCD
+Gateway: Gateway
+Services: UIs (argocd/grafana/vault/...)
+
+User -> Kubectl: get nodes / pods -A
+Kubectl -> Argo: get applications -n argocd
+User -> Gateway: Open https://<service>.<ip-dashed>.nip.io
+Gateway -> Services: Route
+```
+
 ## Access Endpoints
 
 Endpoints follow your LAN IP as a nip.io wildcard. Example if your IP is 127.0.0.1:
