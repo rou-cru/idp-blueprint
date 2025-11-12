@@ -17,34 +17,21 @@ theme:
   name: material
   language: en
   palette:
-    # Palette toggle for dark mode (default)
-    - media: "(prefers-color-scheme)"
-      scheme: slate
-      primary: blue grey
+    - scheme: default
+      primary: indigo
       accent: light blue
       toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
-    # Palette toggle for light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: blue grey
-      accent: light blue
-      toggle:
-        icon: material/brightness-7
+        icon: material/weather-sunny
         name: Switch to dark mode
-    # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue grey
+    - scheme: slate
+      primary: indigo
       accent: light blue
       toggle:
-        icon: material/brightness-4
-        name: Switch to system preference
+        icon: material/weather-night
+        name: Switch to light mode
   font:
     text: Inter
-    code: Fira Code
-    # Note: Space Grotesk for headings is loaded via extra.css
+    code: "JetBrains Mono"
   features:
     # Content features
     - content.action.edit
