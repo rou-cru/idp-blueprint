@@ -134,6 +134,7 @@ extra_css:
 nav:
   - Home: index.md
   - Concepts:
+      - Overview: concepts/index.md
       - Platform Overview: architecture/overview.md
       - Visual Architecture: architecture/visual.md
       - Infrastructure Layer: architecture/infrastructure.md
@@ -144,6 +145,7 @@ nav:
       - Policy Enforcement: architecture/policies.md
       - Bootstrap Process: architecture/bootstrap.md
   - How-to Guides:
+      - Overview: how-to/index.md
       - Getting Started:
           - Overview: getting-started/overview.md
           - Prerequisites: getting-started/prerequisites.md
@@ -157,6 +159,7 @@ nav:
           - Contributing: guides/contributing.md
           - Policy Tagging: guides/policy-tagging.md
   - Platform Operations:
+      - Overview: operations/index.md
       - Infrastructure:
           - Overview: components/infrastructure/index.md
           - Cilium CNI: components/infrastructure/cilium/index.md
@@ -181,5 +184,6 @@ nav:
           - Argo Workflows: components/cicd/argo-workflows/index.md
           - SonarQube: components/cicd/sonarqube/index.md
   - Reference:
+      - Overview: reference/overview.md
       - Label Standards: reference/labels-standard.md
       - FinOps Tags: reference/finops-tags.md
