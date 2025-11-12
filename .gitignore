@@ -1,5 +1,7 @@
 .devbox
 .env
+.task/
+.venv/
 **/charts
 devbox.lock
 GEMINI.md
@@ -11,4 +13,4 @@ CLAUDE.md
 .cache/
 
 # Generated Chart.yaml files (created by generate-chart-metadata.sh)
-docs/components/**/Chart.yaml
+Docs/components/**/Chart.yaml

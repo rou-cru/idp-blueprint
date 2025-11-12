@@ -828,14 +828,27 @@ mark,
   /* Optimize code blocks for smaller screens */
   .md-typeset pre > code {
     font-size: 0.75rem;
-  }
+}
 
-  /* Make tables scrollable on mobile */
-  .md-typeset table:not([class]) {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+/* Make tables scrollable on mobile */
+.md-typeset table:not([class]) {
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 404 helpers */
+.not-found__grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.not-found__grid ul,
+.not-found__grid ol {
+  margin: 0;
+  padding-left: 1rem;
+}
 }
 
 /* Mobile phones (< 600px) */

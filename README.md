@@ -260,7 +260,7 @@ flowchart TB
   Secrets Operator
 
 📖 For detailed architecture documentation, see
-[docs/architecture/visual.md](docs/architecture/visual.md)
+[Docs/architecture/visual.md](Docs/architecture/visual.md)
 
 ## 📊 Resource Requirements
 
@@ -333,15 +333,15 @@ That's it! Your IDP is ready.
 
 - Run `mkdocs serve` to browse the full architecture/reference site locally.
 - Highlights:
-  - `docs/architecture/visual.md` – master system map + diagrams.
-  - `docs/architecture/bootstrap.md` – Helm/Kustomize boot choreography.
-  - `docs/architecture/gitops.md` – App-of-AppSets and namespace conventions.
-  - `docs/architecture/observability.md` – metrics + logging pipelines, dashboards.
-  - `docs/architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
-  - `docs/architecture/policies.md` – Kyverno layers, Policy Reporter flow.
-  - `docs/architecture/cicd.md` – Argo Workflows + SonarQube integration.
-  - `docs/reference/labels-standard.md` – canonical labels, sync waves, priority classes.
-  - `docs/reference/finops-tags.md` – tag-to-cost mapping for FinOps dashboards.
+  - `Docs/architecture/visual.md` – master system map + diagrams.
+  - `Docs/architecture/bootstrap.md` – Helm/Kustomize boot choreography.
+  - `Docs/architecture/gitops.md` – App-of-AppSets and namespace conventions.
+  - `Docs/architecture/observability.md` – metrics + logging pipelines, dashboards.
+  - `Docs/architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
+  - `Docs/architecture/policies.md` – Kyverno layers, Policy Reporter flow.
+  - `Docs/architecture/cicd.md` – Argo Workflows + SonarQube integration.
+  - `Docs/reference/labels-standard.md` – canonical labels, sync waves, priority classes.
+  - `Docs/reference/finops-tags.md` – tag-to-cost mapping for FinOps dashboards.
 
 Keep this README open for commands; flip to the MkDocs site when you need the conceptual “why”.
 

@@ -7,7 +7,7 @@ set -euo pipefail
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
-DOCS_DIR="docs"
+DOCS_DIR="Docs"
 DOCS_BUILD_DIR="site"
 EXIT_CODE=0
 

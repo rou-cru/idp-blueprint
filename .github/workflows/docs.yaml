@@ -6,9 +6,10 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**'
+      - 'Docs/**'
       - 'mkdocs.yml'
-      - 'requirements.txt'
+      - 'pyproject.toml'
+      - 'uv.lock'
       - 'Scripts/generate-chart-metadata.sh'
       - 'Scripts/helm-docs-*.sh'
       - '.github/workflows/docs.yaml'
@@ -21,9 +22,10 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**'
+      - 'Docs/**'
       - 'mkdocs.yml'
-      - 'requirements.txt'
+      - 'pyproject.toml'
+      - 'uv.lock'
 
 # Prevent concurrent deployments
 concurrency:
@@ -54,9 +56,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache
-          key: mkdocs-${{ hashFiles('mkdocs.yml', 'requirements.txt') }}-${{ hashFiles('docs/**') }}
+          key: mkdocs-${{ hashFiles('mkdocs.yml', 'pyproject.toml', 'uv.lock') }}-${{ hashFiles('Docs/**') }}
           restore-keys: |
-            mkdocs-${{ hashFiles('mkdocs.yml', 'requirements.txt') }}-
+            mkdocs-${{ hashFiles('mkdocs.yml', 'pyproject.toml', 'uv.lock') }}-
             mkdocs-
 
       - name: Prepare Devbox configuration
@@ -69,14 +71,13 @@ jobs:
           project-path: .devcontainer
           enable-cache: true
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Install uv toolchain
+        uses: astral-sh/setup-uv@v3
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          uv-version: 'latest'
 
-      - name: Install MkDocs and dependencies
-        run: pip install -r requirements.txt
+      - name: Sync documentation dependencies
+        run: uv sync --locked
 
       - name: Generate Chart.yaml metadata
         run: devbox run -- task utils:docs:metadata

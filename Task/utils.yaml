@@ -1,6 +1,11 @@
 version: '3'
 
 tasks:
+  docs:deps:
+    desc: 'Install MkDocs tooling via uv'
+    cmds:
+      - uv sync --locked
+
   docs:
     desc: 'Generate all automatic documentation'
     cmds:
@@ -20,11 +25,12 @@ tasks:
   docs:build:
     desc: 'Build MkDocs documentation site'
     cmds:
-      - mkdocs build --strict
+      - task: docs:deps
+      - uv run mkdocs build --strict
     sources:
       - mkdocs.yml
-      - docs/**/*.md
-      - docs/**/*.css
+      - Docs/**/*.md
+      - Docs/**/*.css
     generates:
       - site/index.html
       - site/sitemap.xml
@@ -32,7 +38,8 @@ tasks:
   docs:serve:
     desc: 'Serve documentation locally for development'
     cmds:
-      - mkdocs serve
+      - task: docs:deps
+      - uv run mkdocs serve
 
   docs:linkcheck:
     desc: 'Check for broken links in documentation'
@@ -42,7 +49,7 @@ tasks:
   docs:lint:
     desc: 'Lint documentation markdown files'
     cmds:
-      - markdownlint-cli2 "docs/**/*.md"
+      - markdownlint-cli2 "Docs/**/*.md"
 
   docs:clean:
     desc: 'Clean built documentation'

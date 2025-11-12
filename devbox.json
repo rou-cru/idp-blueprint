@@ -36,7 +36,8 @@
     "gettext@0.22.5",
     "dasel@2.7.0",
     "apacheHttpd@latest",
-    "mkdocs@latest"
+    "python312",
+    "uv@0.5.11"
   ],
   "shell": {
     "init_hook": ["echo 'Preparing Env...'", ". .devcontainer/init.sh"]

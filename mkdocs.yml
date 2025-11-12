@@ -3,11 +3,11 @@ site_description: Enterprise-grade Internal Developer Platform Blueprint - Produ
 site_author: IDP Blueprint Project
 site_url: https://rou-cru.github.io/idp-blueprint
 site_dir: site
-docs_dir: docs
+docs_dir: Docs
 
 repo_name: rou-cru/idp-blueprint
 repo_url: https://github.com/rou-cru/idp-blueprint
-edit_uri: edit/main/docs/
+edit_uri: edit/main/Docs/
 
 # Copyright
 copyright: Copyright &copy; 2024-2025 IDP Blueprint Contributors
@@ -16,7 +16,6 @@ copyright: Copyright &copy; 2024-2025 IDP Blueprint Contributors
 theme:
   name: material
   language: en
-  custom_dir: overrides
   palette:
     # Palette toggle for dark mode (default)
     - media: "(prefers-color-scheme)"
@@ -101,7 +100,7 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.snippets:
       auto_append:
-        - includes/abbreviations.md
+        - .includes/abbreviations.md
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -117,21 +116,6 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  - git-revision-date-localized:
-      enable_creation_date: true
-      type: timeago
-      fallback_to_build_date: true
-  - glightbox:
-      touchNavigation: true
-      loop: false
-      effect: zoom
-      slide_effect: slide
-      width: 100%
-      height: auto
-      zoomable: true
-      draggable: true
-      auto_caption: false
-      caption_position: bottom
 
 # Customization
 extra:
@@ -142,8 +126,6 @@ extra:
     - icon: fontawesome/brands/docker
       link: https://github.com/rou-cru/idp-blueprint/pkgs/container/idp-blueprint
       name: Container Registry
-  version:
-    provider: mike
 
 extra_css:
   - assets/stylesheets/extra.css
@@ -160,6 +142,7 @@ nav:
       - Overview: architecture/overview.md
       - Visual Architecture: architecture/visual.md
       - Infrastructure Layer: architecture/infrastructure.md
+      - Observability Stack: architecture/observability.md
       - Application Layer: architecture/applications.md
       - Secrets Management: architecture/secrets.md
       - CI/CD Pipeline: architecture/cicd.md
