@@ -107,8 +107,8 @@ plugins:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
   - d2:
       layout: elk
-      theme: 300
-      dark_theme: 300
+      theme: 200  # Dark Mauve theme
+      dark_theme: 200
       sketch: false
       pad: 24
 
