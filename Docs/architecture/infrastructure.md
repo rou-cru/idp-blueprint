@@ -44,39 +44,52 @@ These use Kustomize for composition and are deployed via
 
 ## Visual Structure
 
-```mermaid
-graph TD
-    A[IT/] --> B(cilium-values.yaml);
-    A --> C(eso-values.yaml);
-    A --> D(k3d-cluster.yaml);
-    A --> E(vault-values.yaml);
-    A --> AA(cert-manager-values.yaml);
-    A --> AB(argocd-values.yaml);
-    A --> AC(kustomization.yaml);
+```d2
+direction: right
 
-    A --> F[cert-manager/];
-    A --> G[external-secrets/];
-    A --> N[namespaces/];
-    A --> V[vault/];
-    A --> X[argocd/];
+IT: {
+  label: "IT/"
+  B: "cilium-values.yaml"
+  C: "eso-values.yaml"
+  D: "k3d-cluster.yaml"
+  E: "vault-values.yaml"
+  AA: "cert-manager-values.yaml"
+  AB: "argocd-values.yaml"
+  AC: "kustomization.yaml"
 
-    subgraph Raw Manifests & Kustomize
-        F --> H(ca-issuer.yaml);
-        G --> K(argocd-secretstore.yaml);
-        G --> L(argocd-admin-externalsecret.yaml);
-        N --> N1(kustomization.yaml);
-        V --> V1(vault-manual-init.sh);
-        X --> X1(kustomization.yaml);
-    end
+  F: "cert-manager/"
+  G: "external-secrets/"
+  N: "namespaces/"
+  V: "vault/"
+  X: "argocd/"
+}
 
-    subgraph Helm Values
-        B
-        C
-        D
-        E
-        AA
-        AB
-    end
+Raw: {
+  label: "Raw Manifests & Kustomize"
+  H: "ca-issuer.yaml"
+  K: "argocd-secretstore.yaml"
+  L: "argocd-admin-externalsecret.yaml"
+  N1: "kustomization.yaml"
+  V1: "vault-init.sh"
+  X1: "kustomization.yaml"
+}
+
+Values: {
+  label: "Helm Values"
+  B
+  C
+  D
+  E
+  AA
+  AB
+}
+
+IT.F -> Raw.H
+IT.G -> Raw.K
+IT.G -> Raw.L
+IT.N -> Raw.N1
+IT.V -> Raw.V1
+IT.X -> Raw.X1
 ```
 
 ## Quick Reference

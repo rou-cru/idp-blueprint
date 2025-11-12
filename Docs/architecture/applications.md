@@ -23,30 +23,39 @@ reduces the blast radius of any configuration errors.
 This diagram illustrates the entire flow, from the Git repository to the deployed
 applications in their respective namespaces.
 
-```mermaid
-graph LR
-    subgraph Git Repository (K8s/)
-        A(Root App) -- deploys --> B(AppSet-CICD);
-        A -- deploys --> C(AppSet-Observability);
-        A -- deploys --> D(AppSet-Security);
-    end
+```d2
+direction: right
 
-    subgraph ArgoCD
-        B -- discovers --> E(argo-workflows/);
-        C -- discovers --> F(loki/);
-        C -- discovers --> G(prometheus/);
-    end
+Git: {
+  label: "Git Repository (K8s/)"
+  Root: "Root App"
+}
 
-    subgraph Kubernetes Cluster
-        E -- deploys to --> H(Namespace: cicd);
-        F -- deploys to --> I(Namespace: observability);
-        G -- deploys to --> I;
-    end
+Argo: {
+  label: "ArgoCD"
+  AppSetCICD: "AppSet-CICD"
+  AppSetObs: "AppSet-Observability"
+  AppSetSec: "AppSet-Security"
+  DiscWF: "argo-workflows/"
+  DiscLoki: "loki/"
+  DiscProm: "prometheus/"
+}
 
-    style A fill:#d4a2e8
-    style B fill:#f9d4a8
-    style C fill:#f9d4a8
-    style D fill:#f9d4a8
+Cluster: {
+  label: "Kubernetes Cluster"
+  NSCICD: "Namespace: cicd"
+  NSOBS: "Namespace: observability"
+}
+
+Git.Root -> Argo.AppSetCICD: deploys
+Git.Root -> Argo.AppSetObs: deploys
+Git.Root -> Argo.AppSetSec: deploys
+Argo.AppSetCICD -> Argo.DiscWF: discovers
+Argo.AppSetObs -> Argo.DiscLoki: discovers
+Argo.AppSetObs -> Argo.DiscProm: discovers
+Argo.DiscWF -> Cluster.NSCICD: deploys to
+Argo.DiscLoki -> Cluster.NSOBS: deploys to
+Argo.DiscProm -> Cluster.NSOBS: deploys to
 ```
 
 ## Bootstrap and Standalone Applications
@@ -69,23 +78,38 @@ exception to the general "App of AppSets" pattern.
 The structure is designed to be semantic, self-documenting, and to directly reflect the
 namespace strategy.
 
-```mermaid
-graph TD
-    subgraph K8s Directory Structure
-        A(K8s/) --> B(cicd/);
-        A --> C(observability/);
-        A --> D(security/);
+```d2
+direction: right
 
-        B --> B1(applicationset-cicd.yaml);
-        B --> B2(namespace.yaml);
-        B --> B3(argo-workflows/);
-        B3 --> B3a(kustomization.yaml);
+K8s: {
+  label: "K8s Directory Structure"
+  CICD: "cicd/"
+  OBS: "observability/"
+  SEC: "security/"
+}
 
-        C --> C1(applicationset-observability.yaml);
-        C --> C2(namespace.yaml);
-        C --> C3(loki/);
-        C3 --> C3a(kustomization.yaml);
-    end
+CICD: {
+  AppSet: "applicationset-cicd.yaml"
+  NS: "namespace.yaml"
+  WF: "argo-workflows/"
+  WFK: "kustomization.yaml"
+}
+
+OBS: {
+  AppSet: "applicationset-observability.yaml"
+  NS: "namespace.yaml"
+  Loki: "loki/"
+  LokiK: "kustomization.yaml"
+}
+
+K8s.CICD -> CICD.AppSet
+K8s.CICD -> CICD.NS
+K8s.CICD -> CICD.WF
+CICD.WF -> CICD.WFK
+K8s.OBS -> OBS.AppSet
+K8s.OBS -> OBS.NS
+K8s.OBS -> OBS.Loki
+OBS.Loki -> OBS.LokiK
 ```
 
 - **`namespace.yaml`**: Defines the Kubernetes `Namespace` for the entire stack and
@@ -104,21 +128,27 @@ for defining and composing application manifests. Our philosophy is based on
 
 Two primary patterns for Kustomize are established in this project.
 
-```mermaid
-graph TD
-    subgraph Pattern 1: Local Resource Aggregation
-        Kustomization_P1["kustomization.yaml"] -- "resources:" --> Resource1["resource-a.yaml"];
-        Kustomization_P1 -- "resources:" --> Resource2["resource-b.yaml"];
-    end
+```d2
+direction: right
 
-    subgraph Pattern 2: Helm Chart Orchestration
-        Kustomization_P2["kustomization.yaml"] -- "valuesFile:" --> Values["values.yaml"];
-        Kustomization_P2 -- "repo:" --> HelmRepo["Remote Helm Repo"];
-    end
+Pattern1: {
+  label: "Pattern 1: Local Resource Aggregation"
+  K1: "kustomization.yaml"
+  R1: "resource-a.yaml"
+  R2: "resource-b.yaml"
+}
 
-    style Kustomization_P1 fill:#cde4ff
-    style Kustomization_P2 fill:#cde4ff
-    style HelmRepo fill:#d5f0d5
+Pattern2: {
+  label: "Pattern 2: Helm Chart Orchestration"
+  K2: "kustomization.yaml"
+  Values: "values.yaml"
+  Repo: "Remote Helm Repo"
+}
+
+Pattern1.K1 -> Pattern1.R1: resources
+Pattern1.K1 -> Pattern1.R2: resources
+Pattern2.K2 -> Pattern2.Values: valuesFile
+Pattern2.K2 -> Pattern2.Repo: repo
 ```
 
 ### Pattern 1: Local Resource Aggregation
