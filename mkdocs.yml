@@ -133,22 +133,30 @@ extra_css:
 # Page tree
 nav:
   - Home: index.md
-  - Getting Started:
-      - Overview: getting-started/overview.md
-      - Prerequisites: getting-started/prerequisites.md
-      - Quick Start: getting-started/quickstart.md
-      - Deployment: getting-started/deployment.md
-  - Architecture:
-      - Overview: architecture/overview.md
+  - Concepts:
+      - Platform Overview: architecture/overview.md
       - Visual Architecture: architecture/visual.md
       - Infrastructure Layer: architecture/infrastructure.md
-      - Observability Stack: architecture/observability.md
       - Application Layer: architecture/applications.md
+      - Observability Stack: architecture/observability.md
       - Secrets Management: architecture/secrets.md
       - CI/CD Pipeline: architecture/cicd.md
       - Policy Enforcement: architecture/policies.md
       - Bootstrap Process: architecture/bootstrap.md
-  - Components:
+  - How-to Guides:
+      - Getting Started:
+          - Overview: getting-started/overview.md
+          - Prerequisites: getting-started/prerequisites.md
+          - Quick Start: getting-started/quickstart.md
+          - Deployment: getting-started/deployment.md
+      - Operations:
+          - Platform Checklist: reference/resource-requirements.md
+          - Troubleshooting Playbook: reference/troubleshooting.md
+      - Contribution & Governance:
+          - Overview: guides/overview.md
+          - Contributing: guides/contributing.md
+          - Policy Tagging: guides/policy-tagging.md
+  - Platform Operations:
       - Infrastructure:
           - Overview: components/infrastructure/index.md
           - Cilium CNI: components/infrastructure/cilium/index.md
@@ -156,10 +164,12 @@ nav:
           - Vault: components/infrastructure/vault/index.md
           - External Secrets: components/infrastructure/external-secrets/index.md
           - ArgoCD: components/infrastructure/argocd/index.md
-      - Policy:
-          - Overview: components/policy/index.md
+      - Policy & Security:
+          - Policy Overview: components/policy/index.md
           - Kyverno: components/policy/kyverno/index.md
           - Policy Reporter: components/policy/policy-reporter/index.md
+          - Security Overview: components/security/index.md
+          - Trivy: components/security/trivy/index.md
       - Observability:
           - Overview: components/observability/index.md
           - Prometheus: components/observability/prometheus/index.md
@@ -170,16 +180,6 @@ nav:
           - Overview: components/cicd/index.md
           - Argo Workflows: components/cicd/argo-workflows/index.md
           - SonarQube: components/cicd/sonarqube/index.md
-      - Security:
-          - Overview: components/security/index.md
-          - Trivy: components/security/trivy/index.md
-  - Guides:
-      - Overview: guides/overview.md
-      - Contributing: guides/contributing.md
-      - Policy Tagging: guides/policy-tagging.md
   - Reference:
-      - Overview: reference/overview.md
-      - Resource Requirements: reference/resource-requirements.md
-      - Troubleshooting: reference/troubleshooting.md
       - Label Standards: reference/labels-standard.md
       - FinOps Tags: reference/finops-tags.md

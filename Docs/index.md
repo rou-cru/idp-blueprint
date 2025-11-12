@@ -4,41 +4,73 @@
 
 ---
 
-## Quick Navigation
+## Choose Your Journey
 
 <div class="grid cards" markdown>
 
--   **Getting Started**
+-   **Concepts**
 
     ---
 
-    Comprehensive deployment documentation for platform engineers and architects.
+    Learn the platform architecture, design tenets, and control planes that make up the IDP Blueprint.
 
-    [:octicons-arrow-right-24: Quick Start Guide](getting-started/quickstart.md)
+    [:octicons-arrow-right-24: Explore Concepts](architecture/overview.md)
 
--   **Architecture**
-
-    ---
-
-    Detailed platform design, architectural patterns, and component integration strategies.
-
-    [:octicons-arrow-right-24: Architecture Overview](architecture/overview.md)
-
--   **Components**
+-   **How-to Guides**
 
     ---
 
-    Technical specifications for ArgoCD, Kyverno, Prometheus, Vault, and integrated services.
+    Deploy, operate, and extend the platform with opinionated runbooks and day-2 guidance.
 
-    [:octicons-arrow-right-24: Browse Components](components/infrastructure/index.md)
+    [:octicons-arrow-right-24: Start Building](getting-started/quickstart.md)
 
--   **Guides**
+-   **Platform Operations**
 
     ---
 
-    Implementation guides, best practices, and advanced configuration procedures.
+    Dive into each subsystem (infra, policy, observability, CI/CD) with component-level docs and tuning tips.
 
-    [:octicons-arrow-right-24: View Guides](guides/overview.md)
+    [:octicons-arrow-right-24: Operate the Stack](components/infrastructure/index.md)
+
+-   **Reference**
+
+    ---
+
+    Access canonical labels, FinOps mapping, resource requirements, and troubleshooting matrices.
+
+    [:octicons-arrow-right-24: View Reference](reference/labels-standard.md)
+
+</div>
+
+---
+
+## Who Is This For?
+
+<div class="grid cards" markdown>
+
+-   **Platform Engineers**
+
+    ---
+
+    Focus on the bootstrap layer, GitOps workflows, and operational guides under *How-to Guides → Operations*.
+
+-   **Security & Policy Teams**
+
+    ---
+
+    Review Kyverno, Trivy, and governance references within *Platform Operations → Policy & Security*.
+
+-   **Observability & SRE**
+
+    ---
+
+    Jump to *Platform Operations → Observability* for dashboards, alerts, and data flow diagrams.
+
+-   **Application Teams**
+
+    ---
+
+    Use the quick-start and CI/CD sections to understand how workloads onboard to the platform.
 
 </div>
 
@@ -53,35 +85,28 @@ Deployment and configuration documentation:
 - **[Quick Start](getting-started/quickstart.md)** - Rapid deployment procedures
 - **[Deployment Guide](getting-started/deployment.md)** - Comprehensive deployment process
 
-### [Architecture](architecture/overview.md)
-Platform architecture and design patterns:
+- ### Concepts
+  - [Platform Overview](architecture/overview.md)
+  - [Visual Architecture](architecture/visual.md)
+  - [Platform Layers](architecture/infrastructure.md)
 
-- **[Visual Architecture](architecture/visual.md)** - System diagrams and component relationships
-- **[Infrastructure Layer](architecture/infrastructure.md)** - Core platform infrastructure
-- **[Application Layer](architecture/applications.md)** - GitOps-managed application workloads
-- **[Secrets Management](architecture/secrets.md)** - HashiCorp Vault and External Secrets integration
+- ### How-to Guides
+  - [Prerequisites](getting-started/prerequisites.md)
+  - [Quick Start](getting-started/quickstart.md)
+  - [Deployment Guide](getting-started/deployment.md)
+  - [Operations Checklist](reference/resource-requirements.md)
+  - [Troubleshooting Playbook](reference/troubleshooting.md)
 
-### [Components](components/infrastructure/index.md)
-Component-level technical documentation:
+- ### Platform Operations
+  - [Infrastructure Stack](components/infrastructure/index.md)
+  - [Policy & Security](components/policy/index.md)
+  - [Observability](components/observability/index.md)
+  - [CI/CD](components/cicd/index.md)
 
-- **[Infrastructure](components/infrastructure/index.md)** - Cilium CNI, Cert-Manager, Vault, ArgoCD
-- **[Policy Enforcement](components/policy/index.md)** - Kyverno policy engine and reporting
-- **[Observability](components/observability/index.md)** - Prometheus, Grafana, Loki stack
-- **[CI/CD](components/cicd/index.md)** - Argo Workflows and SonarQube integration
-- **[Security](components/security/index.md)** - Trivy vulnerability scanning
-
-### [Guides](guides/overview.md)
-Implementation guides and best practices:
-
-- **[Contributing](guides/contributing.md)** - Contribution guidelines and development workflow
-- **[Policy Tagging](guides/policy-tagging.md)** - Kyverno policy management
-
-### [Reference](reference/overview.md)
-Technical specifications and reference material:
-
-- **[Resource Requirements](reference/resource-requirements.md)** - Compute, memory, and storage specifications
-- **[Troubleshooting](reference/troubleshooting.md)** - Diagnostic procedures and solutions
-- **[Label Standards](reference/labels-standard.md)** - Kubernetes resource labeling standards
+- ### Reference
+  - [Label Standards](reference/labels-standard.md)
+  - [FinOps Tags](reference/finops-tags.md)
+  - [Contributing](guides/contributing.md)
 
 ---
 
