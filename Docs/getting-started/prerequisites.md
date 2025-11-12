@@ -5,12 +5,14 @@ Before deploying the IDP Blueprint, ensure your system meets the following requi
 ## System Requirements
 
 ### Minimum Hardware
+
 - **CPU**: 4 cores (6+ recommended)
 - **Memory**: 8GB RAM (12GB+ recommended)
 - **Storage**: 20GB available disk space
 - **OS**: Linux, macOS, or Windows with WSL2
 
 ### Software Dependencies
+
 The following software must be installed:
 
 - **Docker**: With Docker Hub login (`docker login`)
@@ -18,7 +20,8 @@ The following software must be installed:
 - **Visual Studio Code**: With Dev Containers extension
 - **Docker Desktop**: For macOS/Windows users
 
-> **Note**: This project uses VS Code Dev Containers to provide a pre-configured environment with all required tools (kubectl, helm, k3d, task, etc.).
+> **Note**: This project uses VS Code Dev Containers to provide a pre-configured
+> environment with all required tools (kubectl, helm, k3d, task, etc.).
 
 ## Docker Hub Authentication
 
@@ -35,5 +38,6 @@ To avoid severe rate limiting from Docker Hub:
 ## Optional Requirements
 
 For enhanced functionality:
+
 - A modern web browser with developer tools
 - An IDE or text editor of your choice

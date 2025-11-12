@@ -16,4 +16,3 @@ Frequently used automation tasks.
 
 - `task check` – Run linters, schema validation and security scans
 - `task lint` / `task validate:kubeval` – Targeted checks
-

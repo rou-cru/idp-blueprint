@@ -15,4 +15,3 @@ Plan and execute upgrades for platform components and the cluster.
 - Observability stack
 - Kyverno and Policy Reporter
 - Trivy Operator
-

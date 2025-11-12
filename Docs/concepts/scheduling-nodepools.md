@@ -11,10 +11,6 @@ Workloads are organized using node labels to steer scheduling and isolation.
 Kubernetes labels and taints/tolerations can be used to enforce separation.
 See the [Node Pools diagram](../architecture/visual.md#3-node-pools-and-workload-deployment).
 
-## Node Pools
-
-=== "D2"
-
 ```d2
 direction: right
 

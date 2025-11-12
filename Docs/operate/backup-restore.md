@@ -15,4 +15,3 @@ Guidance for backing up and restoring critical platform data.
 
 !!! note
     Detailed, component-specific steps will be added with tested commands.
-

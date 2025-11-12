@@ -12,4 +12,3 @@ Baseline practices to recover core platform capabilities after failures.
 ## Runbooks
 
 - To be expanded with verified playbooks and test scenarios.
-

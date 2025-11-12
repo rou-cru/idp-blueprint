@@ -15,4 +15,3 @@ See [Ports & Endpoints](ports-endpoints.md) for the full list.
 - ArgoCD: admin password via `argocd-initial-admin-secret` or configured value
 - Grafana: bootstrap admin password from values or secret
 - Vault: unseal keys and root token via `task vault:init` (local only)
-

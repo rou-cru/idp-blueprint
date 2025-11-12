@@ -12,4 +12,3 @@ Key terms and abbreviations used across the documentation.
 - Gateway API – Kubernetes API for service exposure and routing
 - ESO – External Secrets Operator
 - mTLS – Mutual TLS
-

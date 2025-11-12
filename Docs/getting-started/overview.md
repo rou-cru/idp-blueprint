@@ -1,6 +1,7 @@
 # Getting Started Overview
 
-Welcome to the IDP Blueprint! This section will help you get up and running with your own Internal Developer Platform.
+Welcome to the IDP Blueprint! This section will help you get up and running with your
+own Internal Developer Platform.
 
 ## What You'll Learn
 
@@ -12,4 +13,5 @@ In this getting started section, you'll learn:
 
 ## Next Steps
 
-Start with the [Prerequisites](prerequisites.md) to ensure your environment is ready, then move on to the [Quick Start](quickstart.md) guide to deploy your first IDP instance.
+Start with the [Prerequisites](prerequisites.md) to ensure your environment is ready,
+then move on to the [Quick Start](quickstart.md) guide to deploy your first IDP instance.

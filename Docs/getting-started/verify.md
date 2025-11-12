@@ -56,7 +56,8 @@ kubectl -n cert-manager get secret idp-demo-ca-secret \
   -o jsonpath='{.data.tls\.crt}' | base64 -d > idp-demo-ca.crt
 ```
 
-- macOS: open Keychain Access → System → Certificates → import `idp-demo-ca.crt` and set “Always Trust”.
+- macOS: open Keychain Access → System → Certificates → import `idp-demo-ca.crt` and
+set “Always Trust”.
 - Linux (Debian/Ubuntu): `sudo cp idp-demo-ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`
 - Windows: run `certmgr.msc`, import into “Trusted Root Certification Authorities”.
 

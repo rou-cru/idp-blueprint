@@ -16,4 +16,3 @@ Guidelines for right-sizing and tuning IDP Blueprint components.
 
 - Component enablement choices for demos vs. production
 - FinOps labels and tracking
-
