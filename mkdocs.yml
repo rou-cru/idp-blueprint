@@ -2,61 +2,50 @@ site_name: IDP Blueprint
 site_description: Enterprise-grade Internal Developer Platform Blueprint - Production-ready platform engineering stack with GitOps, observability, security, and policy enforcement for modern cloud-native architectures
 site_author: IDP Blueprint Project
 site_url: https://rou-cru.github.io/idp-blueprint
-site_dir: docs
-docs_dir: docs_src
+site_dir: site
+docs_dir: Docs
 
 repo_name: rou-cru/idp-blueprint
 repo_url: https://github.com/rou-cru/idp-blueprint
-edit_uri: edit/main/docs_src/
+edit_uri: edit/main/Docs/
 
 # Copyright
-copyright: Copyright &copy; 2024 IDP Blueprint Contributors
+copyright: Copyright &copy; 2024-2025 IDP Blueprint Contributors
 
 # Configuration
 theme:
   name: material
   language: en
-  custom_dir: overrides/
   palette:
-    # Palette toggle for dark mode (default)
-    - media: "(prefers-color-scheme)"
-      scheme: slate
-      primary: blue grey
+    - scheme: default
+      primary: indigo
       accent: light blue
       toggle:
-        icon: material/brightness-auto
-        name: Switch to light mode
-    # Palette toggle for light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: blue grey
-      accent: light blue
-      toggle:
-        icon: material/brightness-7
+        icon: material/weather-sunny
         name: Switch to dark mode
-    # Palette toggle for dark mode
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue grey
+    - scheme: slate
+      primary: indigo
       accent: light blue
       toggle:
-        icon: material/brightness-4
-        name: Switch to system preference
+        icon: material/weather-night
+        name: Switch to light mode
   font:
     text: Inter
-    code: Fira Code
-    # Note: Space Grotesk for headings is loaded via extra.css
+    code: "JetBrains Mono"
   features:
     # Content features
     - content.action.edit
     - content.code.copy
     - content.tabs.link
     - content.tooltips
-    # Navigation features - collapsible tree navigation
+    # Navigation features
     - navigation.footer
     - navigation.indexes
     - navigation.instant
     - navigation.instant.progress
+    - navigation.sections
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.path
     - navigation.top
     - navigation.tracking
@@ -65,7 +54,6 @@ theme:
     - search.share
     - search.suggest
     - toc.follow
-    - toc.integrate
   icon:
     repo: fontawesome/brands/github
     edit: material/pencil
@@ -101,7 +89,7 @@ markdown_extensions:
   - pymdownx.smartsymbols
   - pymdownx.snippets:
       auto_append:
-        - includes/abbreviations.md
+        - .includes/abbreviations.md
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -117,27 +105,12 @@ markdown_extensions:
 plugins:
   - search:
       separator: '[\s\-,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
-  - social:
-      cards: true
-      cards_layout_options:
-        background_color: "#455a64"  # Blue Grey 700 - matches theme
-        color: "#ffffff"
-  - minify:
-      minify_html: true
-  - git-revision-date-localized:
-      enable_creation_date: true
-      type: timeago
-  - glightbox:
-      touchNavigation: true
-      loop: false
-      effect: zoom
-      slide_effect: slide
-      width: 100%
-      height: auto
-      zoomable: true
-      draggable: true
-      auto_caption: false
-      caption_position: bottom
+  - d2:
+      layout: elk
+      theme: 200  # Dark Mauve theme
+      dark_theme: 200
+      sketch: true
+      pad: 24
 
 # Customization
 extra:
@@ -148,29 +121,48 @@ extra:
     - icon: fontawesome/brands/docker
       link: https://github.com/rou-cru/idp-blueprint/pkgs/container/idp-blueprint
       name: Container Registry
-  version:
-    provider: mike
 
 extra_css:
-  - stylesheets/extra.css
+  - assets/stylesheets/extra.css
 
 # Page tree
 nav:
   - Home: index.md
-  - Getting Started:
+  - Get Started:
       - Overview: getting-started/overview.md
       - Prerequisites: getting-started/prerequisites.md
-      - Quick Start: getting-started/quickstart.md
-      - Deployment: getting-started/deployment.md
-  - Architecture:
-      - Overview: architecture/overview.md
-      - Visual Architecture: architecture/visual.md
-      - Infrastructure Layer: architecture/infrastructure.md
-      - Application Layer: architecture/applications.md
-      - Secrets Management: architecture/secrets.md
-      - CI/CD Pipeline: architecture/cicd.md
-      - Policy Enforcement: architecture/policies.md
+      - Quickstart: getting-started/quickstart.md
+      - Install & Deployment: getting-started/deployment.md
+      - Verify Installation: getting-started/verify.md
+      - First Steps: getting-started/first-steps.md
+  - Concepts:
+      - Overview: concepts/index.md
+      - Architecture:
+          - Platform Overview: architecture/overview.md
+          - Visual Map: architecture/visual.md
+          - Infrastructure Layer: architecture/infrastructure.md
+          - Application Layer: architecture/applications.md
+      - GitOps Model: concepts/gitops-model.md
+      - Networking & Gateway: concepts/networking-gateway.md
+      - Secrets Management: concepts/secrets-management.md
+      - Security & Policy Model: architecture/policies.md
+      - Observability Model: architecture/observability.md
+      - CI/CD Model: architecture/cicd.md
+      - Scheduling & Node Pools: concepts/scheduling-nodepools.md
       - Bootstrap Process: architecture/bootstrap.md
+  - Tutorials:
+      - Onboard an Application: tutorials/onboard-app.md
+      - Add a Policy (Kyverno): tutorials/add-policy.md
+      - Consume a Secret from Vault: tutorials/consume-secret.md
+      - Add an Observability Dashboard: tutorials/add-dashboard.md
+  - Operate:
+      - Overview: operations/index.md
+      - Operations Checklist: reference/resource-requirements.md
+      - Troubleshooting Playbook: reference/troubleshooting.md
+      - Backup & Restore: operate/backup-restore.md
+      - Upgrades: operate/upgrades.md
+      - Scaling & Tuning: operate/scaling-tuning.md
+      - Disaster Recovery: operate/disaster-recovery.md
   - Components:
       - Infrastructure:
           - Overview: components/infrastructure/index.md
@@ -179,30 +171,46 @@ nav:
           - Vault: components/infrastructure/vault/index.md
           - External Secrets: components/infrastructure/external-secrets/index.md
           - ArgoCD: components/infrastructure/argocd/index.md
-      - Policy:
+          - Gateway API: components/infrastructure/gateway-api/index.md
+      - Policy & Security:
           - Overview: components/policy/index.md
           - Kyverno: components/policy/kyverno/index.md
           - Policy Reporter: components/policy/policy-reporter/index.md
+          - Security Stack: components/security/index.md
+          - Trivy: components/security/trivy/index.md
       - Observability:
           - Overview: components/observability/index.md
           - Prometheus: components/observability/prometheus/index.md
-          - Grafana: components/observability/grafana.md
+          - Grafana: components/observability/grafana/index.md
           - Loki: components/observability/loki/index.md
           - Fluent-bit: components/observability/fluent-bit/index.md
       - CI/CD:
           - Overview: components/cicd/index.md
           - Argo Workflows: components/cicd/argo-workflows/index.md
           - SonarQube: components/cicd/sonarqube/index.md
-      - Security:
-          - Overview: components/security/index.md
-          - Trivy: components/security/trivy/index.md
-  - Guides:
+  - Extend:
       - Overview: guides/overview.md
-      - Contributing: guides/contributing.md
+      - Add a New Component: extend/add-component.md
+      - ApplicationSets Patterns: extend/application-sets.md
+      - Helm-docs Conventions: extend/helm-docs-conventions.md
+      - Labels & Metadata: extend/labels-metadata.md
       - Policy Tagging: guides/policy-tagging.md
   - Reference:
       - Overview: reference/overview.md
       - Resource Requirements: reference/resource-requirements.md
-      - Troubleshooting: reference/troubleshooting.md
+      - Ports & Endpoints: reference/ports-endpoints.md
+      - URLs & Initial Credentials: reference/urls-credentials.md
+      - Taskfile Commands: reference/taskfile-commands.md
       - Label Standards: reference/labels-standard.md
       - FinOps Tags: reference/finops-tags.md
+      - Glossary: reference/glossary.md
+  - Release:
+      - Overview: release/index.md
+      - Versioning & Support Policy: release/versioning.md
+      - Release Notes & Changelog: release/changelog.md
+      - Upgrade Notes: release/upgrade-notes.md
+  - Contribute:
+      - Contributing Guide: guides/contributing.md
+      - Docs Style Guide: guides/docs-style.md
+      - Dev Environment: guides/dev-environment.md
+      - Checks & Linting: guides/checks.md

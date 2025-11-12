@@ -81,7 +81,8 @@ get_version_from_config() {
 
   # Convert version_var from UPPER_SNAKE_CASE to lowercase with underscores
   # CILIUM_VERSION -> cilium
-  local config_key=$(echo "$version_var" | sed 's/_VERSION$//' | tr '[:upper:]' '[:lower:]')
+  local config_key
+  config_key=$(echo "$version_var" | sed 's/_VERSION$//' | tr '[:upper:]' '[:lower:]')
 
   # Extract version from config.toml using dasel
   local version
@@ -147,7 +148,7 @@ generate_chart_yaml() {
   local version
   version=$(get_version "$version_var" "$helm_chart_name" "$source_path")
 
-  local output_dir="docs_src/components/${category}/${component}"
+  local output_dir="Docs/components/${category}/${component}"
   local output_file="${output_dir}/Chart.yaml"
 
   mkdir -p "$output_dir"

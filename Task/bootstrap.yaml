@@ -207,60 +207,44 @@ tasks:
     desc: 'Generate initial secrets for all services using Vault'
     vars:
       SECRETS:
-        - {
-            path: 'secret/argocd/admin',
-            key: 'admin.password',
-            var: 'ARGOCD_ADMIN_PASSWORD',
-            enc: 'base64',
-            hash: 'bcrypt',
-          }
-        - {
-            path: 'secret/grafana/admin',
-            key: 'admin-password',
-            var: 'GRAFANA_ADMIN_PASSWORD',
-            enc: 'base64',
-            hash: 'none',
-          }
-        - {
-            path: 'secret/sonarqube/admin',
-            key: 'password',
-            var: 'SONARQUBE_ADMIN_PASSWORD',
-            enc: 'base64',
-            hash: 'none',
-          }
-        - {
-            path: 'secret/sonarqube/monitoring',
-            key: 'passcode',
-            var: 'SONARQUBE_MONITORING_PASSCODE',
-            enc: 'hex',
-            hash: 'none',
-          }
-        - {
-            path: 'secret/docker/registry',
-            key: 'registry',
-            var: 'DOCKER_REGISTRY_URL',
-            enc: 'base64',
-            hash: 'none',
-          }
-        - {
-            path: 'secret/docker/registry',
-            key: 'username',
-            var: 'DOCKER_REGISTRY_USERNAME',
-            enc: 'base64',
-            hash: 'none',
-          }
-        - {
-            path: 'secret/docker/registry',
-            key: 'password',
-            var: 'DOCKER_REGISTRY_PASSWORD',
-            enc: 'base64',
-            hash: 'none',
-          }
+        - path: 'secret/argocd/admin'
+          key: 'admin.password'
+          var: 'ARGOCD_ADMIN_PASSWORD'
+          enc: 'base64'
+          hash: 'bcrypt'
+        - path: 'secret/grafana/admin'
+          key: 'admin-password'
+          var: 'GRAFANA_ADMIN_PASSWORD'
+          enc: 'base64'
+          hash: 'none'
+        - path: 'secret/sonarqube/admin'
+          key: 'password'
+          var: 'SONARQUBE_ADMIN_PASSWORD'
+          enc: 'base64'
+          hash: 'none'
+        - path: 'secret/sonarqube/monitoring'
+          key: 'passcode'
+          var: 'SONARQUBE_MONITORING_PASSCODE'
+          enc: 'hex'
+          hash: 'none'
+        - path: 'secret/docker/registry'
+          key: 'registry'
+          var: 'DOCKER_REGISTRY_URL'
+          enc: 'base64'
+          hash: 'none'
+        - path: 'secret/docker/registry'
+          key: 'username'
+          var: 'DOCKER_REGISTRY_USERNAME'
+          enc: 'base64'
+          hash: 'none'
+        - path: 'secret/docker/registry'
+          key: 'password'
+          var: 'DOCKER_REGISTRY_PASSWORD'
+          enc: 'base64'
+          hash: 'none'
     cmds:
       - for: { var: SECRETS, as: SECRET }
-        cmd:
-          ./Scripts/vault-generate.sh {{.SECRET.path}} {{.SECRET.key}} "{{index .
-          .SECRET.var}}" {{.SECRET.enc}} {{.SECRET.hash}}
+        cmd: ./Scripts/vault-generate.sh {{.SECRET.path}} {{.SECRET.key}} "{{index . .SECRET.var}}" {{.SECRET.enc}} {{.SECRET.hash}}
 
   vault:deploy:
     desc: 'Deploy HashiCorp Vault'
