@@ -12,13 +12,37 @@ kubectl get pods -A
 kubectl get applications -n argocd
 ```
 
+!!! tip
+    `k9s` is available in the Devbox/Dev Container. Run `k9s -A` for a
+    curses UI to inspect pods, logs and events across namespaces.
+
 ## Access Endpoints
 
-- ArgoCD: https://argocd.127-0-0-1.sslip.io
-- Grafana: https://grafana.127-0-0-1.sslip.io
-- Vault: https://vault.127-0-0-1.sslip.io
-- Argo Workflows: https://workflows.127-0-0-1.sslip.io
-- SonarQube: https://sonarqube.127-0-0-1.sslip.io
+Endpoints follow your LAN IP as a nip.io wildcard. Example if your IP is 127.0.0.1:
+
+- ArgoCD: https://argocd.127-0-0-1.nip.io
+- Grafana: https://grafana.127-0-0-1.nip.io
+- Vault: https://vault.127-0-0-1.nip.io
+- Argo Workflows: https://workflows.127-0-0-1.nip.io
+- SonarQube: https://sonarqube.127-0-0-1.nip.io
+
+Accessible from other devices on the same LAN using your workstation IP. Ensure
+your OS firewall allows inbound NodePorts `30080` and `30443`.
+
+## Certificate Warnings
+
+TLS is signed by a local, self‑signed root CA for demo purposes. Browsers will
+warn on first visit. You can proceed temporarily or import the CA to trust it:
+
+```bash
+# Export the root CA from cert-manager
+kubectl -n cert-manager get secret idp-demo-ca-secret \
+  -o jsonpath='{.data.tls\.crt}' | base64 -d > idp-demo-ca.crt
+```
+
+- macOS: open Keychain Access → System → Certificates → import `idp-demo-ca.crt` and set “Always Trust”.
+- Linux (Debian/Ubuntu): `sudo cp idp-demo-ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`
+- Windows: run `certmgr.msc`, import into “Trusted Root Certification Authorities”.
 
 !!! tip
     Certificates are issued automatically by cert-manager using a wildcard
@@ -35,4 +59,3 @@ kubectl get applications -n argocd
 
 - Continue to [First Steps](first-steps.md)
 - Or explore [Components](../components/infrastructure/index.md)
-

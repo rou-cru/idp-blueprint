@@ -7,6 +7,7 @@ Spin up the full IDP Blueprint locally with one command, then validate access an
 - Recommended: VS Code Dev Containers (repo already includes tooling), or Devbox
 - Or install locally: Docker, k3d, kubectl, helm, kustomize, envsubst (gettext), dasel
 - Review [Prerequisites](prerequisites.md) and ensure `docker login` to avoid rate limits
+- Configure settings in `config.toml` (preferred method): LAN IP override, NodePorts, versions, passwords
 
 ## 1) Clone the repository
 
@@ -55,6 +56,9 @@ DNS_SUFFIX="$(ip route get 1.1.1.1 | awk '{print $7; exit}' | sed 's/\./-/g').ni
 echo "https://argocd.$DNS_SUFFIX"
 ```
 
+Accessible on your LAN: open these URLs from other devices using your
+workstation IP. Ensure OS firewall allows NodePorts `30080`/`30443`.
+
 ## 4) Credentials
 
 ArgoCD admin password comes from Vault via External Secrets. By default it’s configured in `config.toml`:
@@ -70,6 +74,11 @@ kubectl -n argocd get secret argocd-secret -o jsonpath='{.data.admin\.password}'
 
 Vault is initialized automatically during deploy. Local-only root/unseal material is managed by `task vault:init` and helper scripts.
 
+!!! note
+    Prefer managing configuration via `config.toml`. Direct environment
+    overrides are supported by tasks for testing, but the TOML file is the
+    canonical source.
+
 ## 5) Verify
 
 Run basic checks and confirm healthy sync:
@@ -81,6 +90,11 @@ kubectl get applications -n argocd
 ```
 
 See [Verify Installation](verify.md) for expected results and smoke tests.
+
+!!! warning
+    Browsers will show a warning because the demo uses a self‑signed root CA.
+    You may proceed temporarily or import the CA into your OS trust store
+    (see Verify Installation for steps).
 
 ## 6) Clean up
 
