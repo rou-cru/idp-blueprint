@@ -63,7 +63,6 @@ workstation IP. Ensure OS firewall allows NodePorts `30080`/`30443`.
 
 ```d2
 shape: sequence_diagram
-sketch=true
 User: You
 Repo: GitHub (this repo)
 Task: task deploy

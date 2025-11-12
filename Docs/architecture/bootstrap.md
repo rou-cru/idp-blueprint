@@ -44,7 +44,6 @@ Kustomize and apply them with `kustomize build <dir>/ | kubectl apply -f -`.
 
 ```d2
 direction: right
-sketch=true
 
 IT: {
   label: "IT/"
@@ -110,7 +109,6 @@ IT.X -> Raw.X1
 
 ```d2
 shape: sequence_diagram
-sketch=true
 Task: task deploy
 K3d: k3d cluster
 NS: Namespaces

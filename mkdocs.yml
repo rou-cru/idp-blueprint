@@ -109,7 +109,7 @@ plugins:
       layout: elk
       theme: 200  # Dark Mauve theme
       dark_theme: 200
-      sketch: false
+      sketch: true
       pad: 24
 
 # Customization

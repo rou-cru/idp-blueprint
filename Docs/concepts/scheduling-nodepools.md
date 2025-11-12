@@ -17,7 +17,6 @@ See the [Node Pools diagram](../architecture/visual.md#3-node-pools-and-workload
 
 ```d2
 direction: right
-sketch=true
 
 Cluster: {
   label: "k3d-idp-demo"

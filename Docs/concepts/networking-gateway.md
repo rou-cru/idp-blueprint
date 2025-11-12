@@ -68,7 +68,6 @@ With Cilium, Envoy needs explicit permission to read the TLS Secret:
 
 ```d2
 direction: down
-sketch=true
 
 External: {
   Browser

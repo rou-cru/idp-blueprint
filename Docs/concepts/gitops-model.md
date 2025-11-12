@@ -67,7 +67,6 @@ Other stacks follow the same pattern:
 
 ```d2
 direction: right
-sketch=true
 
 Git: {
   label: "Git (REPO_URL @ TARGET_REVISION)"
