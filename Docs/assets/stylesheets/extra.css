@@ -165,3 +165,20 @@
   font-weight: 600;
   padding: 0.35rem 1.3rem;
 }
+
+[data-md-color-scheme="slate"] .md-button {
+  color: #0f172a;
+}
+
+/* Content width adjustments */
+@media screen and (min-width: 76.25em) {
+  .md-main__inner {
+    max-width: 90%;
+  }
+
+  .md-content__inner {
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
