@@ -35,11 +35,12 @@ quality gates.
 To maintain a clear and scalable structure, the project follows specific architectural
 conventions. Before adding or modifying files, please read the following documents:
 
-- **[docs/architecture/bootstrap.md](docs/architecture/bootstrap.md)**: Describes the structure of the
-  **bootstrap layer**, which includes core components like the CNI and secret
-  management.
-- **[docs/architecture/gitops.md](docs/architecture/gitops.md)**: Describes the **GitOps structure** for
-  all application stacks managed by ArgoCD, including the "App of AppSets" pattern.
+- **[Architecture Bootstrap](Docs/architecture/bootstrap.md)** –
+  Describes the structure of the **bootstrap layer**, which includes core
+  components like the CNI and secret management.
+- **[GitOps Topology](Docs/architecture/gitops.md)** – Describes the **GitOps
+  structure** for all application stacks managed by ArgoCD, including the "App
+  of AppSets" pattern.
 
 ## Kubernetes Manifest Conventions
 
@@ -127,8 +128,8 @@ and resource discoverability across all Kubernetes resources.
 
 All contributors **MUST** read and follow the standards defined in:
 
-- **[docs/reference/labels-standard.md](docs/reference/labels-standard.md)**: Complete label standards, canonical
-  values, and conventions
+- **[Label Standards Reference](Docs/reference/labels-standard.md)** – Complete
+  label standards, canonical values, and conventions
 
 ### Quick Reference
 
