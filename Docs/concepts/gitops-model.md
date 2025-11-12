@@ -67,46 +67,37 @@ Other stacks follow the same pattern:
 
 ```d2
 direction: right
+sketch=true
 
 Git: {
-  label: "Git Repository\nREPO_URL @ TARGET_REVISION"
-  REPO: "REPO_URL @ TARGET_REVISION"
-  OBS: "K8s/observability/*"
-  CICD: "K8s/cicd/*"
-  SEC: "K8s/security/*"
+  label: "Git (REPO_URL @ TARGET_REVISION)"
+  ObsDir: "K8s/observability/*"
+  CicdDir: "K8s/cicd/*"
+  SecDir: "K8s/security/*"
 }
 
-ArgoCD: {
-  AP1: "AppProject: observability"
-  AP2: "AppProject: cicd"
-  AP3: "AppProject: security"
-  AS1: "ApplicationSet: observability"
-  AS2: "ApplicationSet: cicd"
-  AS3: "ApplicationSet: security"
+Argo: {
+  label: "ArgoCD"
+  Obs: observability
+  Cicd: cicd
+  Sec: security
 }
 
 Cluster: {
-  NSO: "ns: observability"
-  NSC: "ns: cicd"
-  NSS: "ns: security"
-  APPs: "Applications + Workloads"
+  ObsNS: observability
+  CicdNS: cicd
+  SecNS: security
 }
 
-Git.REPO -> ArgoCD.AS1
-Git.REPO -> ArgoCD.AS2
-Git.REPO -> ArgoCD.AS3
-ArgoCD.AS1 -> Git.OBS: "dir generator"
-ArgoCD.AS2 -> Git.CICD: "dir generator"
-ArgoCD.AS3 -> Git.SEC: "dir generator"
-ArgoCD.AS1 -> Cluster.NSO: "template"
-ArgoCD.AS2 -> Cluster.NSC: "template"
-ArgoCD.AS3 -> Cluster.NSS: "template"
-ArgoCD.AS1 -> Cluster.APPs
-ArgoCD.AS2 -> Cluster.APPs
-ArgoCD.AS3 -> Cluster.APPs
-ArgoCD.AP1 -> ArgoCD.AS1: "scopes"
-ArgoCD.AP2 -> ArgoCD.AS2: "scopes"
-ArgoCD.AP3 -> ArgoCD.AS3: "scopes"
+Git -> Argo.Obs
+Git -> Argo.Cicd
+Git -> Argo.Sec
+Argo.Obs -> Git.ObsDir: discover
+Argo.Cicd -> Git.CicdDir: discover
+Argo.Sec -> Git.SecDir: discover
+Argo.Obs -> Cluster.ObsNS: sync
+Argo.Cicd -> Cluster.CicdNS: sync
+Argo.Sec -> Cluster.SecNS: sync
 ```
 
 ## Variables: repo and revision

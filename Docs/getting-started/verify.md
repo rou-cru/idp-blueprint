@@ -20,6 +20,7 @@ kubectl get applications -n argocd
 
 ```d2
 shape: sequence_diagram
+sketch=true
 User: You
 Kubectl: kubectl
 Argo: ArgoCD

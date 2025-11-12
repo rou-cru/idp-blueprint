@@ -11,6 +11,7 @@ cluster.
 
 ```d2
 direction: right
+sketch=true
 
 GitRepo: "Git Repository"
 
@@ -78,6 +79,7 @@ illustrating how different layers (Bootstrap, GitOps) interact.
 
 ```d2
 direction: down
+sketch=true
 
 Bootstrap: {
   label: "Bootstrap Layer - IT/"
@@ -143,6 +145,7 @@ scheduling rules with `tolerations` and `affinity`.
 
 ```d2
 direction: right
+sketch=true
 
 Cluster: {
   label: "IDP Hub Cluster - k3d-idp-demo"
@@ -193,6 +196,7 @@ via cert-manager annotation.
 
 ```d2
 shape: sequence_diagram
+sketch=true
 GW: Gateway Resource
 CM: cert-manager
 CI: ClusterIssuer
@@ -215,6 +219,7 @@ without having direct credentials.
 
 ```d2
 shape: sequence_diagram
+sketch=true
 App: Application Pod
 K8S: Kubernetes Secret
 ES: ExternalSecret CR
@@ -241,6 +246,7 @@ the platform.
 
 ```d2
 direction: right
+sketch=true
 
 Nodes: {
   App: "App Pod"
@@ -334,6 +340,7 @@ and sslip.io DNS (zero configuration required).
 
 ```d2
 direction: down
+sketch=true
 
 External: {
   Browser: "Browser: https://grafana.<ip>.nip.io"
@@ -386,6 +393,7 @@ external secret stores.
 
 ```d2
 direction: right
+sketch=true
 
 K8s: "Kubernetes API Server"
 GitOps: {

@@ -64,12 +64,11 @@ With Cilium, Envoy needs explicit permission to read the TLS Secret:
 
 - `IT/gateway/gateway-tls-permission.yaml` (CiliumClusterwideEnvoyConfig → Secret access)
 
-## Gateway Flow (Diagram)
-
-=== "D2"
+## Gateway Flow
 
 ```d2
 direction: down
+sketch=true
 
 External: {
   Browser
