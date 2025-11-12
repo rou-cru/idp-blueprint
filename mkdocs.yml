@@ -135,54 +135,47 @@ nav:
   - Home: index.md
   - Concepts:
       - Overview: concepts/index.md
-      - Platform Overview: architecture/overview.md
-      - Visual Architecture: architecture/visual.md
-      - Infrastructure Layer: architecture/infrastructure.md
-      - Application Layer: architecture/applications.md
-      - Observability Stack: architecture/observability.md
-      - Secrets Management: architecture/secrets.md
-      - CI/CD Pipeline: architecture/cicd.md
-      - Policy Enforcement: architecture/policies.md
+      - Architecture · Platform Overview: architecture/overview.md
+      - Architecture · Visual Map: architecture/visual.md
+      - Architecture · Infrastructure Layer: architecture/infrastructure.md
+      - Architecture · Application Layer: architecture/applications.md
+      - Architecture · Observability Stack: architecture/observability.md
+      - Architecture · Secrets Management: architecture/secrets.md
+      - Architecture · CI/CD Pipeline: architecture/cicd.md
+      - Architecture · Policy Enforcement: architecture/policies.md
       - Bootstrap Process: architecture/bootstrap.md
   - How-to Guides:
       - Overview: how-to/index.md
-      - Getting Started:
-          - Overview: getting-started/overview.md
-          - Prerequisites: getting-started/prerequisites.md
-          - Quick Start: getting-started/quickstart.md
-          - Deployment: getting-started/deployment.md
-      - Operations:
-          - Platform Checklist: reference/resource-requirements.md
-          - Troubleshooting Playbook: reference/troubleshooting.md
-      - Contribution & Governance:
-          - Overview: guides/overview.md
-          - Contributing: guides/contributing.md
-          - Policy Tagging: guides/policy-tagging.md
+      - Getting Started · Overview: getting-started/overview.md
+      - Getting Started · Prerequisites: getting-started/prerequisites.md
+      - Getting Started · Quick Start: getting-started/quickstart.md
+      - Getting Started · Deployment Guide: getting-started/deployment.md
+      - Operations · Platform Checklist: reference/resource-requirements.md
+      - Operations · Troubleshooting Playbook: reference/troubleshooting.md
+      - Contribution · Overview: guides/overview.md
+      - Contribution · Contributing Guide: guides/contributing.md
+      - Contribution · Policy Tagging: guides/policy-tagging.md
   - Platform Operations:
       - Overview: operations/index.md
-      - Infrastructure:
-          - Overview: components/infrastructure/index.md
-          - Cilium CNI: components/infrastructure/cilium/index.md
-          - Cert Manager: components/infrastructure/cert-manager/index.md
-          - Vault: components/infrastructure/vault/index.md
-          - External Secrets: components/infrastructure/external-secrets/index.md
-          - ArgoCD: components/infrastructure/argocd/index.md
-      - Policy & Security:
-          - Policy Overview: components/policy/index.md
-          - Kyverno: components/policy/kyverno/index.md
-          - Policy Reporter: components/policy/policy-reporter/index.md
-          - Security Overview: components/security/index.md
-          - Trivy: components/security/trivy/index.md
-      - Observability:
-          - Overview: components/observability/index.md
-          - Prometheus: components/observability/prometheus/index.md
-          - Grafana: components/observability/grafana/index.md
-          - Loki: components/observability/loki/index.md
-          - Fluent-bit: components/observability/fluent-bit/index.md
-      - CI/CD:
-          - Overview: components/cicd/index.md
-          - Argo Workflows: components/cicd/argo-workflows/index.md
-          - SonarQube: components/cicd/sonarqube/index.md
+      - Infrastructure · Overview: components/infrastructure/index.md
+      - Infrastructure · Cilium CNI: components/infrastructure/cilium/index.md
+      - Infrastructure · Cert Manager: components/infrastructure/cert-manager/index.md
+      - Infrastructure · Vault: components/infrastructure/vault/index.md
+      - Infrastructure · External Secrets: components/infrastructure/external-secrets/index.md
+      - Infrastructure · ArgoCD: components/infrastructure/argocd/index.md
+      - Policy & Security · Overview: components/policy/index.md
+      - Policy & Security · Kyverno: components/policy/kyverno/index.md
+      - Policy & Security · Policy Reporter: components/policy/policy-reporter/index.md
+      - Policy & Security · Security Stack: components/security/index.md
+      - Policy & Security · Trivy: components/security/trivy/index.md
+      - Observability · Overview: components/observability/index.md
+      - Observability · Prometheus: components/observability/prometheus/index.md
+      - Observability · Grafana: components/observability/grafana/index.md
+      - Observability · Loki: components/observability/loki/index.md
+      - Observability · Fluent-bit: components/observability/fluent-bit/index.md
+      - CI/CD · Overview: components/cicd/index.md
+      - CI/CD · Argo Workflows: components/cicd/argo-workflows/index.md
+      - CI/CD · SonarQube: components/cicd/sonarqube/index.md
   - Reference:
       - Overview: reference/overview.md
       - Label Standards: reference/labels-standard.md
