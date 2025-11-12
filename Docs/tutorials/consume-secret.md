@@ -14,5 +14,4 @@ Use External Secrets Operator to sync a secret from Vault to your workload.
 
 - [Vault Component](../components/infrastructure/vault/index.md)
 - [External Secrets](../components/infrastructure/external-secrets/index.md)
-- [Secret Management Flow](../architecture/visual.md#_4-secret-management-flow)
-
+- [Secret Management Flow](../architecture/visual.md#4-secret-management-flow)

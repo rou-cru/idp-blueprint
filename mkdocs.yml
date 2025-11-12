@@ -139,7 +139,7 @@ nav:
           - Application Layer: architecture/applications.md
       - GitOps Model: concepts/gitops-model.md
       - Networking & Gateway: concepts/networking-gateway.md
-      - Secrets Management: architecture/secrets.md
+      - Secrets Management: concepts/secrets-management.md
       - Security & Policy Model: architecture/policies.md
       - Observability Model: architecture/observability.md
       - CI/CD Model: architecture/cicd.md

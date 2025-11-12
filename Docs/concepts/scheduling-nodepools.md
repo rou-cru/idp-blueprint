@@ -9,7 +9,7 @@ Workloads are organized using node labels to steer scheduling and isolation.
 - Workloads: GitOps-managed stacks (observability, security, CI/CD)
 
 Kubernetes labels and taints/tolerations can be used to enforce separation.
-See the [Node Pools diagram](../architecture/visual.md#_3-node-pools-and-workload-deployment).
+See the [Node Pools diagram](../architecture/visual.md#3-node-pools-and-workload-deployment).
 
 ## Diagram
 

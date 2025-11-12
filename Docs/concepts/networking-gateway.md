@@ -9,7 +9,7 @@ Inbound traffic is handled via Gateway API on top of Cilium’s Gateway Controll
 - HTTPRoutes: one route per service (ArgoCD, Grafana, Vault, Workflows, SonarQube)
 - DNS: `*.<ip-dashed>.nip.io` generated from your detected LAN IP or `network.lan_ip` in `config.toml`
 
-See the [Gateway API diagram](../architecture/visual.md#_8-gateway-api-service-exposure) for a visual flow.
+See the [Gateway API diagram](../architecture/visual.md#8-gateway-api-service-exposure) for a visual flow.
 
 ## Prerequisites (installed by bootstrap tasks)
 
