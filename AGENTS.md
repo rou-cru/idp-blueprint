@@ -1,5 +1,7 @@
 # Repository Guidelines
 
+<!-- markdownlint-disable MD013 MD022 MD032 -->
+
 ## Project Structure & Module Organization
 Bootstrap assets live in `IT/`, covering namespaces, service accounts, priority classes, Cilium, Vault, External Secrets, and Gateway definitions; treat this folder as the source of truth for anything that must exist before ArgoCD starts. GitOps workload specs sit under `K8s/` (`observability`, `cicd`, `security`, `vault`) and are wired through ApplicationSets referenced in `K8s/argocd`. Kyverno rules, Policy Reporter manifests, and supporting docs live in `Policies/`. Task automation resides in `Taskfile.yaml`, helper utilities in `Scripts/`, and background material (architecture, label standards) now lives under `Docs/` (see `Docs/architecture/visual.md`, `Docs/reference/labels-standard.md`). Co-locate new Helm values and overlays beside their owning stack to keep App-of-AppSets diffs localized.
 
@@ -21,3 +23,5 @@ Match the existing history: short, imperative subjects (`Add Kyverno pod-securit
 
 ## Security & Configuration Tips
 Never hard-code secrets; instead, document expected keys in `Docs/architecture/secrets.md` and rely on the Vault helper scripts (`Scripts/vault-init.sh`, `Scripts/vault-generate.sh`). If you introduce new external endpoints or credentials, update the relevant Kyverno rules in `Policies/rules/` and the label source of truth in `IT/kustomization.yaml` so automation and Policy Reporter remain consistent.
+
+<!-- markdownlint-enable MD013 MD022 MD032 -->

@@ -81,7 +81,8 @@ get_version_from_config() {
 
   # Convert version_var from UPPER_SNAKE_CASE to lowercase with underscores
   # CILIUM_VERSION -> cilium
-  local config_key=$(echo "$version_var" | sed 's/_VERSION$//' | tr '[:upper:]' '[:lower:]')
+  local config_key
+  config_key=$(echo "$version_var" | sed 's/_VERSION$//' | tr '[:upper:]' '[:lower:]')
 
   # Extract version from config.toml using dasel
   local version

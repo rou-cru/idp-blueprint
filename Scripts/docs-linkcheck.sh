@@ -50,7 +50,8 @@ check_internal_links() {
       local link_path="${link%%#*}"
 
       # Resolve relative path
-      local file_dir=$(dirname "$file")
+      local file_dir
+      file_dir=$(dirname "$file")
       local full_path="$file_dir/$link_path"
 
       # Normalize path
@@ -80,17 +81,17 @@ check_internal_links() {
 check_external_links() {
   echo "🌐 Checking external links (this may take a while)..."
   local broken_links=0
-  local checked_links=()
+  local -A checked_links=()
 
   # Extract all HTTP/HTTPS links from markdown files
   while IFS= read -r file; do
     while IFS= read -r url; do
       # Skip if already checked
-      if [[ " ${checked_links[@]} " =~ " ${url} " ]]; then
+      if [[ -n "${checked_links[$url]:-}" ]]; then
         continue
       fi
 
-      checked_links+=("$url")
+      checked_links["$url"]=1
 
       # Check if URL is reachable (timeout 10s)
       if curl -s -f -L --max-time 10 --retry 2 --head "$url" > /dev/null 2>&1; then

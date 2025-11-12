@@ -341,9 +341,11 @@ That's it! Your IDP is ready.
   - `Docs/architecture/policies.md` – Kyverno layers, Policy Reporter flow.
   - `Docs/architecture/cicd.md` – Argo Workflows + SonarQube integration.
   - `Docs/reference/labels-standard.md` – canonical labels, sync waves, priority classes.
-  - `Docs/reference/finops-tags.md` – tag-to-cost mapping for FinOps dashboards.
+  - **[FinOps Tags](Docs/reference/finops-tags.md)** – tag-to-cost mapping for
+    FinOps dashboards.
 
-Keep this README open for commands; flip to the MkDocs site when you need the conceptual “why”.
+Keep this README open for commands; flip to the MkDocs site when you need the
+conceptual “why”.
 
 ### Validate & Clean Up
 

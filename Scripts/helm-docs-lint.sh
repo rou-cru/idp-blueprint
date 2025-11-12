@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=scripts/helm-docs-common.sh
+# shellcheck source=Scripts/helm-docs-common.sh
 source "$SCRIPT_DIR/helm-docs-common.sh"
 
 # Callback function for linting documentation
