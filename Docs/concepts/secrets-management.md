@@ -14,7 +14,7 @@ Vault is the single source of truth for secrets. External Secrets Operator (ESO)
 ```d2
 direction: right
 
-VaultNS: {
+VaultSystem: {
   label: "vault-system"
   Vault: "Vault (KV v2: secret/*)"
 }
@@ -24,40 +24,36 @@ ESOSystem: {
   ESO: "External Secrets Operator"
 }
 
-Argocd: {
-  label: "argocd"
-  SAa: "ServiceAccount: external-secrets"
-  SSa: "SecretStore: vault-backend"
-  ESa: "ExternalSecret: argocd-admin-password → argocd-secret (Merge)"
+Namespaces: {
+  Argocd: {
+    label: "argocd"
+    SA: "ServiceAccount: external-secrets"
+    Store: "SecretStore: vault-backend"
+    ES: "ExternalSecret: argocd-admin-password → argocd-secret (Merge)"
+  }
+  Observability: {
+    label: "observability"
+    SA: "ServiceAccount: external-secrets"
+    Store: "SecretStore: observability"
+    ES: "ExternalSecret: grafana-admin-credentials"
+  }
+  CICD: {
+    label: "cicd"
+    SA: "ServiceAccount: external-secrets"
+    Store: "SecretStore: cicd"
+    ES1: "ExternalSecret: sonarqube-admin"
+    ES2: "ExternalSecret: sonarqube-monitoring-passcode"
+  }
 }
 
-Observability: {
-  label: "observability"
-  SAo: "ServiceAccount: external-secrets"
-  SSo: "SecretStore: observability"
-  ESo: "ExternalSecret: grafana-admin-credentials"
-}
+ESOSystem.ESO -> Namespaces.Argocd.ES: watches
+ESOSystem.ESO -> Namespaces.Observability.ES
+ESOSystem.ESO -> Namespaces.CICD.ES1
+ESOSystem.ESO -> Namespaces.CICD.ES2
 
-CICD: {
-  label: "cicd"
-  SAc: "ServiceAccount: external-secrets"
-  SSc: "SecretStore: cicd"
-  ESc1: "ExternalSecret: sonarqube-admin"
-  ESc2: "ExternalSecret: sonarqube-monitoring-passcode"
-}
-
-VaultNS.Vault -> ESOSystem.ESO: "Kubernetes auth"
-ESOSystem.ESO -> Argocd.ESa: "watches"
-ESOSystem.ESO -> Observability.ESo
-ESOSystem.ESO -> CICD.ESc1
-ESOSystem.ESO -> CICD.ESc2
-Argocd.ESa -> Argocd.SSa: "secretStoreRef"
-Observability.ESo -> Observability.SSo
-CICD.ESc1 -> CICD.SSc
-CICD.ESc2 -> CICD.SSc
-Argocd.SSa -> VaultNS.Vault
-Observability.SSo -> VaultNS.Vault
-CICD.SSc -> VaultNS.Vault
+Namespaces.Argocd.Store -> VaultSystem.Vault
+Namespaces.Observability.Store -> VaultSystem.Vault
+Namespaces.CICD.Store -> VaultSystem.Vault
 ```
 
 ## Repo wiring
@@ -91,4 +87,3 @@ CICD.SSc -> VaultNS.Vault
 - Demo defaults can be set via `config.toml`; empty values trigger random generation
 - Restrict ServiceAccounts and Vault roles in production; prefer TLS for Vault endpoint
 - Use `creationPolicy: Merge` when updating existing Secrets with internal keys (ArgoCD)
-

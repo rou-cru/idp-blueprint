@@ -1,6 +1,18 @@
 # kube-prometheus-stack
 
-This document lists the configuration parameters for the `kube-prometheus-stack` component.
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `0.1.0` |
+| **Chart Type** | `` |
+| **Upstream Project** | N/A |
+
+## Configuration Values
+
+The following table lists the configurable parameters:
 
 ## Values
 
@@ -53,3 +65,4 @@ This document lists the configuration parameters for the `kube-prometheus-stack`
 | prometheusOperator.resources.requests.cpu | string | `"25m"` | CPU request |
 | prometheusOperator.resources.requests.memory | string | `"32Mi"` | Memory request |
 | windows-exporter | object | `{"enabled":false}` | Disables unnecessary components. |
+

@@ -2,6 +2,40 @@
 
 Spin up the full IDP Blueprint locally with one command, then validate access and credentials.
 
+## Context at a Glance
+
+```d2
+direction: right
+
+You: {
+  label: "You"
+  shape: person
+}
+Repo: {
+  label: "GitHub Repository"
+  shape: cloud
+}
+Cluster: {
+  label: "Local IDP Cluster (k3d)"
+  Gateway: {
+    label: "Gateway (nip.io)"
+    shape: cloud
+  }
+  UIs: {
+    label: "UIs"
+    ArgoCD: "ArgoCD"
+    Grafana: "Grafana"
+    Vault: "Vault"
+  }
+}
+
+You -> Repo: clone
+You -> Cluster.Gateway: open URLs
+Cluster.Gateway -> Cluster.UIs.ArgoCD
+Cluster.Gateway -> Cluster.UIs.Grafana
+Cluster.Gateway -> Cluster.UIs.Vault
+```
+
 ## Prerequisites
 
 - Recommended: VS Code Dev Containers (repo already includes tooling), or Devbox
@@ -34,55 +68,19 @@ task deploy
 
 Time: ~5–10 minutes depending on network and hardware.
 
+!!! tip "Heads-up: eventual consistency"
+    ArgoCD will keep syncing after the task completes. It’s normal for Applications to become Healthy/Synced gradually as images download and pods become Ready.
+
 !!! tip
-    The task prints the service URLs when Gateway is ready (e.g., `https://argocd.<ip>.nip.io`).
-    Copy from the output.
+    The task prints the service URLs when Gateway is ready (for example `https://argocd.<ip>.nip.io`). Copy them from the output.
 
 !!! warning
     The Gateway uses NodePorts `30080` (HTTP) and `30443` (HTTPS).
     Ensure they are not in use by other services.
 
-## 3. Access endpoints
+## 3. First access
 
-Endpoints follow your LAN IP as a nip.io wildcard.
-
-- ArgoCD: `https://argocd.<ip-dashed>.nip.io`
-- Grafana: `https://grafana.<ip-dashed>.nip.io`
-- Vault: `https://vault.<ip-dashed>.nip.io`
-- Workflows: `https://workflows.<ip-dashed>.nip.io`
-- SonarQube: `https://sonarqube.<ip-dashed>.nip.io`
-
-Compute the suffix if needed:
-
-```bash
-DNS_SUFFIX="$(ip route get 1.1.1.1 | awk '{print $7; exit}' | sed 's/\./-/g').nip.io"
-echo "https://argocd.$DNS_SUFFIX"
-```
-
-Accessible on your LAN: open these URLs from other devices using your
-workstation IP. Ensure OS firewall allows NodePorts `30080`/`30443`.
-
-### Quick Map
-
-```d2
-shape: sequence_diagram
-User: You
-Repo: GitHub (this repo)
-Task: task deploy
-K3d: k3d cluster
-IT: IT/ bootstrap
-Stacks: K8s/ stacks (AppSets)
-GW: Gateway (nip.io)
-UIs: ArgoCD / Grafana / Vault / Workflows / SonarQube
-
-User -> Repo: Clone
-User -> Task: Run deploy
-Task -> K3d: Create cluster
-Task -> IT: Cilium, cert-manager, Vault, ESO, ArgoCD, Gateway
-Task -> Stacks: Observability, CI/CD, Security, Policies
-User -> GW: Open https://<service>.<ip-dashed>.nip.io
-GW -> UIs: Route to services
-```
+When the Gateway is ready, open the printed URLs. They use a nip.io wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`). Ensure NodePorts `30080`/`30443` are allowed by your OS firewall.
 
 ## 4. Credentials
 

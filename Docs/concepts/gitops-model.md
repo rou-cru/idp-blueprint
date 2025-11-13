@@ -70,33 +70,53 @@ direction: right
 
 Git: {
   label: "Git (REPO_URL @ TARGET_REVISION)"
-  ObsDir: "K8s/observability/*"
-  CicdDir: "K8s/cicd/*"
-  SecDir: "K8s/security/*"
+  K8sDir: {
+    label: "K8s/"
+    Obs: "observability/*"
+    Cicd: "cicd/*"
+    Sec: "security/*"
+  }
 }
 
 Argo: {
   label: "ArgoCD"
-  Obs: observability
-  Cicd: cicd
-  Sec: security
+  ApplicationSets: {
+    ASObs: "ApplicationSet: observability"
+    ASCicd: "ApplicationSet: cicd"
+    ASSec: "ApplicationSet: security"
+  }
+  Applications: {
+    AppProm: "obs-prometheus"
+    AppGraf: "obs-grafana"
+    AppLoki: "obs-loki"
+    AppWF: "cicd-argo-workflows"
+    AppTrivy: "sec-trivy"
+  }
 }
 
 Cluster: {
-  ObsNS: observability
-  CicdNS: cicd
-  SecNS: security
+  Namespaces: {
+    ObsNS: "Namespace: observability"
+    CicdNS: "Namespace: cicd"
+    SecNS: "Namespace: security"
+  }
 }
 
-Git -> Argo.Obs
-Git -> Argo.Cicd
-Git -> Argo.Sec
-Argo.Obs -> Git.ObsDir: discover
-Argo.Cicd -> Git.CicdDir: discover
-Argo.Sec -> Git.SecDir: discover
-Argo.Obs -> Cluster.ObsNS: sync
-Argo.Cicd -> Cluster.CicdNS: sync
-Argo.Sec -> Cluster.SecNS: sync
+Git.K8sDir.Obs -> Argo.ApplicationSets.ASObs: monitors
+Git.K8sDir.Cicd -> Argo.ApplicationSets.ASCicd: monitors
+Git.K8sDir.Sec -> Argo.ApplicationSets.ASSec: monitors
+
+Argo.ApplicationSets.ASObs -> Argo.Applications.AppProm: generates
+Argo.ApplicationSets.ASObs -> Argo.Applications.AppGraf
+Argo.ApplicationSets.ASObs -> Argo.Applications.AppLoki
+Argo.ApplicationSets.ASCicd -> Argo.Applications.AppWF
+Argo.ApplicationSets.ASSec -> Argo.Applications.AppTrivy
+
+Argo.Applications.AppProm -> Cluster.Namespaces.ObsNS: sync
+Argo.Applications.AppGraf -> Cluster.Namespaces.ObsNS
+Argo.Applications.AppLoki -> Cluster.Namespaces.ObsNS
+Argo.Applications.AppWF -> Cluster.Namespaces.CicdNS
+Argo.Applications.AppTrivy -> Cluster.Namespaces.SecNS
 ```
 
 ## Variables: repo and revision

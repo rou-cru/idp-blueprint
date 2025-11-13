@@ -1,69 +1,75 @@
-# Getting Started - Deployment
+# Getting Started — Install & Deployment
 
-This guide provides detailed information about the deployment process and what happens during platform setup.
+This is your guided tour of what “task deploy” actually does. Expect a smooth, mostly automated bootstrap that converges to a working platform in a few minutes.
 
-## Deployment Process
+## What Happens During Deploy
 
-The `task deploy` command executes the following phases:
+- Create cluster and namespaces
+- Install core infrastructure (Cilium, CRDs, cert-manager, Vault, ESO)
+- Install GitOps (ArgoCD) and expose endpoints via Gateway + TLS
+- Apply policies and let ApplicationSets sync the stacks
 
-### Phase 1: Bootstrap Cluster
-1. **Create K3d Cluster**: Creates a 3-node k3d cluster with optimized configuration
-2. **Apply Namespaces**: Creates all required namespaces for different components
-3. **Bootstrap Infrastructure**: Deploys core infrastructure components
-4. **Deploy Cilium**: Sets up eBPF-based networking and service mesh
+### Platform Components
 
-### Phase 2: Secrets & Certificates Management
-1. **Deploy Cert-Manager**: Sets up certificate automation system
-2. **Deploy Vault**: Configures secrets management backend
-3. **Deploy External Secrets**: Establishes synchronization between Vault and Kubernetes
+```d2
+direction: right
 
-### Phase 3: GitOps Engine
-1. **Deploy ArgoCD**: Sets up the GitOps engine that will manage the rest of the platform
-
-### Phase 4: Gateway and Policy
-1. **Deploy Gateway**: Configures ingress for external access
-2. **Deploy Policy Engine**: Sets up Kyverno for policy enforcement
-
-### Phase 5: Application Stacks
-1. **Deploy Observability Stack**: Prometheus, Grafana, Loki, and Fluent-bit
-2. **Deploy CI/CD Stack**: Argo Workflows and SonarQube
-3. **Deploy Security Stack**: Trivy for vulnerability scanning
-
-## Deployment Customization
-
-You can customize the deployment using environment variables:
-
-```bash
-# Increase timeout for slower systems
-task deploy KUBECTL_TIMEOUT=600s
-
-# Use different k3d configuration (without registry cache)
-task deploy:nocache
+Cluster: {
+  label: "Local IDP Cluster (k3d)"
+  Core: "Core (Cilium, cert-manager, Vault, ESO)"
+  GitOps: "ArgoCD (GitOps)"
+  Gateway: {
+    label: "Gateway (nip.io + TLS)"
+    shape: cloud
+  }
+  Policies: "Kyverno (Policies)"
+  Stacks: {
+    label: "Stacks (Observability, CI/CD, Security)"
+    style: {
+      multiple: true
+    }
+  }
+}
 ```
 
-## Resource Allocation
+## Configure via config.toml
 
-The platform intelligently allocates resources using PriorityClasses:
-- `platform-infrastructure`: For core infrastructure components
-- `platform-observability`: For monitoring and observability tools
-- `platform-cicd`: For CI/CD workloads
-- `platform-security`: For security tools
-- `platform-policy`: For policy enforcement
-- `platform-dashboards`: For dashboard tools
+Prefer editing `config.toml` in the repo root; tasks read all settings from there. Example:
 
-## Post-Deployment
+```toml
+[network]
+lan_ip = "192.168.1.20"   # override auto-detected IP
+nodeport_http = 30080
+nodeport_https = 30443
 
-After successful deployment:
-1. All components will be visible in ArgoCD
-2. Services will be accessible via the nip.io addresses
-3. Default credentials will be available in Vault
-4. Monitoring dashboards will start showing metrics
-5. Security scanning will begin automatically
+[git]
+repo_url = "https://github.com/rou-cru/idp-blueprint"
+target_revision = "main"
 
-## Troubleshooting
+[versions]
+cilium = "1.18.2"
+cert_manager = "1.19.0"
+vault = "0.31.0"
 
-If you encounter issues during deployment:
-1. Check the [Troubleshooting Reference](../reference/troubleshooting.md)
-2. Verify your prerequisites are met
-3. Ensure Docker is running and not rate-limited
-4. Check that sufficient resources are available on your system
+[passwords]
+argocd_admin = "argo"
+grafana_admin = "admin"
+```
+
+Note: CLI overrides exist for testing, but `config.toml` is the canonical source.
+
+## After Deploy (What “Good” Looks Like)
+
+- ArgoCD UI reachable via Gateway (nip.io hostnames)
+  
+  ![ArgoCD Applications — expected convergence to Healthy/Synced](../assets/images/after-deploy/argocd-apps-healthy.jpg)
+
+- Core pods ready across namespaces (k9s view)
+  
+  ![k9s — pods across namespaces settling after deploy](../assets/images/after-deploy/k9s-overview.jpg)
+
+- Observability online (Grafana with Prometheus and Loki datasources)
+  
+  ![Grafana — home with Prometheus/Loki datasources available](../assets/images/after-deploy/grafana-home.jpg)
+
+<!-- Troubleshooting intentionally omitted in this page to avoid redundancy. Use the dedicated reference when needed. -->

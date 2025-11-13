@@ -4,11 +4,194 @@
 
 ---
 
+## IDP Blueprint (Conceptual)
+
+```d2
+direction: right
+
+classes: {
+  aux:  { style: { fill: "#F7F9FC" } }
+  main: { style: { fill: "#FFFFFF" } }
+  band: { style: { fill: "#EEF3F7" } }
+  pill: { style: { fill: "#E9F0FF" } }
+}
+
+Canvas: {
+  grid: {
+    columns: 3
+    gap: 24
+  }
+
+  LeftCol: {
+    class: aux
+    label: "IDP Platform"
+    grid: { row: 1 col: 1 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+
+    A1: { label: "Platform Elements" }
+    A2: { label: "System Core" }
+  }
+
+  Main: {
+    class: main
+    label: "IDP"
+    grid: { row: 1 col: 2 }
+    grid: {
+      columns: 6
+      gap: 12
+    }
+
+    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
+
+    Quality: { class: pill label: "Quality" grid: { row: 2 col: 1 } }
+    Policy:  { class: pill label: "Policy"  grid: { row: 2 col: 2 } }
+    Sec:     { class: pill label: "Security" grid: { row: 2 col: 3 } }
+    CICD:    { class: pill label: "CI/CD"   grid: { row: 2 col: 4 } }
+    Obs:     { class: pill label: "Observability" grid: { row: 2 col: 5 } }
+
+    Secrets: { class: pill label: "Secrets"      grid: { row: 3 col: 2 } }
+    Certs:   { class: pill label: "Certificates" grid: { row: 3 col: 3 } }
+    Engine:  { class: band label: "GitOps Engine" grid: { row: 3 col: 4 colspan: 3 } }
+
+    Cilium:  { class: band label: "Cilium"      grid: { row: 4 col: 1 colspan: 6 } }
+    K8s:     { class: band label: "Kubernetes"  grid: { row: 5 col: 1 colspan: 6 } }
+    Infra:   { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
+  }
+
+  RightCol: {
+    class: aux
+    grid: { row: 1 col: 3 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+    P1: { label: "Dev Portal" }
+  }
+
+  BottomLeft: {
+    class: aux
+    grid: { row: 2 col: 1 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+    C: { label: "Costs" }
+    O: { label: "Opex" }
+  }
+
+  BottomRight: {
+    class: aux
+    grid: { row: 2 col: 3 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+    HA: { label: "Hardware Abstr." }
+    HW: { label: "Hardware" }
+  }
+}
+```
+
+## IDP Blueprint (Implementation)
+
+```d2
+direction: right
+
+classes: {
+  aux:  { style: { fill: "#F7F9FC" } }
+  main: { style: { fill: "#FFFFFF" } }
+  band: { style: { fill: "#EEF3F7" } }
+  pill: { style: { fill: "#E9F0FF" } }
+}
+
+Canvas: {
+  grid: {
+    columns: 3
+    gap: 24
+  }
+
+  LeftCol: {
+    class: aux
+    label: "IDP Platform"
+    grid: { row: 1 col: 1 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+    A1: { label: "Platform Elements" }
+    A2: { label: "System Core" }
+  }
+
+  Main: {
+    class: main
+    label: "IDP"
+    grid: { row: 1 col: 2 }
+    grid: {
+      columns: 6
+      gap: 12
+    }
+
+    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
+
+    GitHub:     { class: pill label: "GitHub"     grid: { row: 2 col: 1 } }
+    Backstage:  { class: pill label: "Backstage"  grid: { row: 2 col: 2 } }
+    Kyverno:    { class: pill label: "Kyverno"    grid: { row: 2 col: 3 } }
+    Workflows:  { class: pill label: "Workflows"  grid: { row: 2 col: 4 } }
+    Grafana:    { class: pill label: "Grafana"    grid: { row: 2 col: 5 } }
+
+    Vault:      { class: pill label: "Vault"         grid: { row: 3 col: 2 } }
+    CertMgr:    { class: pill label: "Cert-Manager"  grid: { row: 3 col: 3 } }
+    ArgoCD:     { class: band label: "ArgoCD / AppSets" grid: { row: 3 col: 4 colspan: 3 } }
+
+    Cilium:     { class: band label: "Cilium"     grid: { row: 4 col: 1 colspan: 6 } }
+    K8s:        { class: band label: "Kubernetes" grid: { row: 5 col: 1 colspan: 6 } }
+    Infra:      { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
+  }
+
+  RightCol: {
+    class: aux
+    grid: { row: 1 col: 3 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+    P1: { label: "Dev Portal" }
+  }
+
+  BottomLeft: {
+    class: aux
+    grid: { row: 2 col: 1 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+    C: { label: "Costs" }
+    O: { label: "Opex" }
+  }
+
+  BottomRight: {
+    class: aux
+    grid: { row: 2 col: 3 }
+    grid: {
+      columns: 1
+      gap: 8
+    }
+    HA: { label: "Hardware Abstr." }
+    HW: { label: "Hardware" }
+  }
+}
+```
+
+---
+
 ## Choose Your Journey
 
 <div class="grid cards" markdown>
 
--   **Concepts**
+- **Concepts**
 
     ---
 
@@ -52,19 +235,19 @@
 
     ---
 
-    Focus on the bootstrap layer, GitOps workflows, and operational guides under *How-to Guides → Operations*.
+    Focus on the bootstrap layer, GitOps workflows, and operational guides under *Operate*.
 
 -   **Security & Policy Teams**
 
     ---
 
-    Review Kyverno, Trivy, and governance references within *Platform Operations → Policy & Security*.
+    Review Kyverno, Trivy, and governance references within *Components → Policy & Security*.
 
 -   **Observability & SRE**
 
     ---
 
-    Jump to *Platform Operations → Observability* for dashboards, alerts, and data flow diagrams.
+    Jump to *Components → Observability* for dashboards, alerts, and data flow diagrams.
 
 -   **Application Teams**
 

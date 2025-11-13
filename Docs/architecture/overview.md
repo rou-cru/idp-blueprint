@@ -9,7 +9,7 @@ The platform architecture is organized into distinct layers:
 - **[Visual Architecture](visual.md)**: Graphical representation of the platform architecture
 - **[Infrastructure Layer](infrastructure.md)**: Static bootstrap components and core infrastructure
 - **[Application Layer](applications.md)**: GitOps-managed application stacks
-- **[Secrets Management](secrets.md)**: Architecture for secrets management and synchronization
+- **[Secrets Management](../concepts/secrets-management.md)**: Architecture for secrets management and synchronization
 
 ## Components
 

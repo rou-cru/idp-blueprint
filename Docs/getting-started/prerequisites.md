@@ -1,43 +1,66 @@
 # Getting Started - Prerequisites
 
-Before deploying the IDP Blueprint, ensure your system meets the following requirements.
+Before deploying the IDP Blueprint, verify your environment with this quick checklist.
 
 ## System Requirements
 
-### Minimum Hardware
+<div class="grid cards" markdown>
 
-- **CPU**: 4 cores (6+ recommended)
-- **Memory**: 8GB RAM (12GB+ recommended)
-- **Storage**: 20GB available disk space
-- **OS**: Linux, macOS, or Windows with WSL2
+-   **Hardware**
 
-### Software Dependencies
+    ---
 
-The following software must be installed:
+    - CPU: 4 cores (6+ recommended)
+    - Memory: 8 GB (12+ GB recommended)
+    - Storage: 20+ GB free
 
-- **Docker**: With Docker Hub login (`docker login`)
-- **Git**: Version 2.0 or higher
-- **Visual Studio Code**: With Dev Containers extension
-- **Docker Desktop**: For macOS/Windows users
+-   **Operating System**
 
-> **Note**: This project uses VS Code Dev Containers to provide a pre-configured
-> environment with all required tools (kubectl, helm, k3d, task, etc.).
+    ---
+
+    - Linux, macOS, or Windows (WSL2)
+
+-   **Network & Ports**
+
+    ---
+
+    - Internet to pull images
+    - NodePorts free: 30080/30443
+
+</div>
+
+## Software Dependencies
+
+<div class="grid cards" markdown>
+
+-   **Core Tools**
+
+    ---
+
+    - Docker (and `docker login`)
+    - Git (2.0+)
+    - VS Code + Dev Containers (recommended) or Devbox
+
+-   **CLI Tooling (if no Dev Container)**
+
+    ---
+
+    - k3d, kubectl, helm, kustomize
+    - envsubst (gettext), dasel, task
+
+</div>
+
+!!! note
+    Dev Containers already include all required tooling (kubectl, helm, k3d, task, etc.). Opening the repo in VS Code and choosing “Reopen in Container” is the easiest path.
 
 ## Docker Hub Authentication
 
-To avoid severe rate limiting from Docker Hub:
+To avoid Docker Hub rate limiting:
 
-1. Create a Docker Hub account if you don't have one
-2. Run `docker login` and authenticate with your credentials
+1. Create an account if you don’t have one
+2. Run `docker login` before `task deploy`
 
-## Network Requirements
+## Optional
 
-- Internet access for pulling container images
-- Port availability for services (80, 443, 30080, 30443 by default)
-
-## Optional Requirements
-
-For enhanced functionality:
-
-- A modern web browser with developer tools
-- An IDE or text editor of your choice
+- Modern browser with DevTools
+- Your preferred editor/IDE

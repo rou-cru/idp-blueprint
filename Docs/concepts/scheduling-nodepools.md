@@ -16,42 +16,33 @@ direction: right
 
 Cluster: {
   label: "k3d-idp-demo"
-  CP: "Control Plane\nserver-0"
-  INFRA: "Node Pool: IT Infrastructure\nagent-0\nlabel: node-role=it-infra"
-  WORK: "Node Pool: GitOps Workloads\nagent-1\nlabel: node-role=k8s-workloads"
-}
 
-Platform: {
-  Argo: ArgoCD
-  Vault: Vault
-  Kyverno: Kyverno
-  Prom: Prometheus
-}
+  ControlPlane: {
+    label: "Control Plane"
+    node: "server-0"
+  }
 
-Apps: {
-  Workflows: "Argo Workflows"
-  Sonar: SonarQube
-}
+  InfraPool: {
+    label: "Node Pool: IT Infrastructure (label: node-role=it-infra)"
+    node: "agent-0"
+    ArgoCD
+    Vault
+    Kyverno
+    Prometheus
+  }
 
-DaemonSets: {
-  Cilium: "Cilium Agent"
-  Fluent: "Fluent-bit"
-  NodeExp: "Node Exporter"
-}
+  WorkloadPool: {
+    label: "Node Pool: GitOps Workloads (label: node-role=k8s-workloads)"
+    node: "agent-1"
+    ArgoWorkflows: "Argo Workflows"
+    SonarQube
+  }
 
-Platform.Argo -> Cluster.INFRA: "scheduled on"
-Platform.Vault -> Cluster.INFRA
-Platform.Kyverno -> Cluster.INFRA
-Platform.Prom -> Cluster.INFRA
-Apps.Workflows -> Cluster.WORK: "scheduled on"
-Apps.Sonar -> Cluster.WORK
-DaemonSets.Cilium -> Cluster.CP
-DaemonSets.Cilium -> Cluster.INFRA
-DaemonSets.Cilium -> Cluster.WORK
-DaemonSets.Fluent -> Cluster.CP
-DaemonSets.Fluent -> Cluster.INFRA
-DaemonSets.Fluent -> Cluster.WORK
-DaemonSets.NodeExp -> Cluster.CP
-DaemonSets.NodeExp -> Cluster.INFRA
-DaemonSets.NodeExp -> Cluster.WORK
+  DaemonSets: {
+    label: "DaemonSets (run on all nodes)"
+    Cilium: "Cilium Agent"
+    FluentBit: "Fluent-bit"
+    NodeExporter: "Node Exporter"
+  }
+}
 ```

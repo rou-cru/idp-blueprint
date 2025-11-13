@@ -1,6 +1,18 @@
 # cilium
 
-This document lists the configuration parameters for the `cilium` component.
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `0.1.0` |
+| **Chart Type** | `` |
+| **Upstream Project** | N/A |
+
+## Configuration Values
+
+The following table lists the configurable parameters:
 
 ## Values
 
@@ -86,3 +98,4 @@ This document lists the configuration parameters for the `cilium` component.
 | prometheus.serviceMonitor.enabled | bool | `true` | Create ServiceMonitor CRD |
 | prometheus.serviceMonitor.interval | string | `"30s"` | Scrape interval for eBPF events and network flows |
 | prometheus.serviceMonitor.scrapeTimeout | string | `"25s"` | Scrape timeout |
+

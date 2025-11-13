@@ -1,6 +1,18 @@
 # vault
 
-This document lists the configuration parameters for the `vault` component.
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `0.1.0` |
+| **Chart Type** | `` |
+| **Upstream Project** | N/A |
+
+## Configuration Values
+
+The following table lists the configurable parameters:
 
 ## Values
 
@@ -31,3 +43,4 @@ This document lists the configuration parameters for the `vault` component.
 | server.standalone.enabled | bool | `true` | Enables standalone server configuration |
 | ui.enabled | bool | `true` | Enable Vault UI |
 | ui.service.type | string | `"ClusterIP"` | Service type |
+
