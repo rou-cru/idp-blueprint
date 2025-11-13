@@ -21,10 +21,9 @@ direction: right
 
 classes: {
   context: { style: { fill: "#fafafa"; font-color: "#424242"; stroke: "#bdbdbd" } }
-  main: { style: { fill: "#ffffff"; font-color: "#212121"; stroke: "#90a4ae" } }
   infra: { style: { fill: "#263238"; font-color: "#ffffff"; stroke: "#37474f" } }
   network: { style: { fill: "#006064"; font-color: "#ffffff"; stroke: "#00838f" } }
-  gitops: { style: { fill: "#1b5e20"; font-color: "#ffffff"; stroke: "#2e7d32" } }
+  gitops: { style: { fill: "#1b5e20"; font-color: "#ffffff"; stroke: "#2e7d32"; stroke-width: 2 } }
   platform: { style: { fill: "#4a148c"; font-color: "#ffffff"; stroke: "#6a1b9a" } }
   observe: { style: { fill: "#e65100"; font-color: "#ffffff"; stroke: "#ef6c00" } }
   policy: { style: { fill: "#b71c1c"; font-color: "#ffffff"; stroke: "#c62828" } }
@@ -34,219 +33,230 @@ classes: {
   conceptual: { style: { fill: "#e0e0e0"; font-color: "#757575"; stroke: "#9e9e9e"; stroke-dash: 3 } }
 }
 
-# Main Grid Layout
-Grid: {
+# Main 3-column layout
+MainGrid: {
   grid-columns: 3
-  grid-gap: 20
+  grid-gap: 16
 
-  # Column 1: Context & Source
+  # ============================================================================
+  # LEFT COLUMN: Context & Source
+  # ============================================================================
   LeftContext: {
     class: context
-    grid-column: 1
-    grid-row: 1
+    grid-columns: 1
+    grid-gap: 12
 
     GitRepo: {
       label: "Git Repository\nSource of Truth"
-      RepoFiles: { label: "K8s/ IT/ Policies/" }
+      RepoFiles: { label: "K8s/\nIT/\nPolicies/" }
     }
 
     Taxonomy: {
       label: "Platform Layers"
-      Layer1: { label: "• DevExp" }
-      Layer2: { label: "• Platform" }
-      Layer3: { label: "• Infrastructure" }
+      Layer1: { label: "DevExp" }
+      Layer2: { label: "Platform" }
+      Layer3: { label: "Infrastructure" }
     }
   }
 
-  # Column 2: Main Architecture (8 rows)
-  MainArchitecture: {
-    class: main
+  # ============================================================================
+  # MIDDLE COLUMN: Main Architecture (stacked rows)
+  # ============================================================================
+  Architecture: {
     label: "IDP Blueprint Architecture"
-    grid-column: 2
-    grid-row: 1
-    grid-columns: 6
+    grid-columns: 1
     grid-gap: 8
 
-    # Row 1: Developer Experience
+    # Row 1: Software Catalog (full width)
     Catalog: {
       class: conceptual
-      label: "Software Catalog\n[conceptual]"
-      grid-row: 1
-      grid-column: 1-7
+      label: "Software Catalog / Service Registry\n[conceptual - Backstage]"
     }
 
-    # Row 2: Developer Interfaces
-    ArgoUI: { class: devexp; label: "ArgoCD"; grid-column: 1; grid-row: 2 }
-    GrafanaUI: { class: devexp; label: "Grafana"; grid-column: 2; grid-row: 2 }
-    VaultUI: { class: devexp; label: "Vault"; grid-column: 3; grid-row: 2 }
-    SonarUI: { class: quality; label: "SonarQube"; grid-column: 4; grid-row: 2 }
-    KyvernoUI: { class: policy; label: "Kyverno"; grid-column: 5; grid-row: 2 }
+    # Row 2: Developer Interfaces (5 columns)
+    DevInterfaces: {
+      grid-columns: 5
+      grid-gap: 6
 
-    # Row 3: Platform Capabilities
-    Observability: {
-      class: observe
-      label: "Observability"
-      grid-row: 3
-      grid-column: 1-3
-
-      Prom: { label: "Prometheus" }
-      Graf: { label: "Grafana" }
-      Loki: { label: "Loki" }
+      ArgoUI: { class: devexp; label: "ArgoCD\nUI" }
+      GrafanaUI: { class: devexp; label: "Grafana\nUI" }
+      VaultUI: { class: devexp; label: "Vault\nUI" }
+      SonarUI: { class: quality; label: "SonarQube\nUI" }
+      KyvernoUI: { class: policy; label: "Kyverno\nUI" }
     }
 
-    PolicySec: {
-      class: policy
-      label: "Policy & Security"
-      grid-row: 3
-      grid-column: 3-5
+    # Row 3: Platform Capabilities (3 major blocks)
+    Capabilities: {
+      grid-columns: 3
+      grid-gap: 6
 
-      Kyv: { label: "Kyverno" }
-      Triv: { label: "Trivy" }
+      Observability: {
+        class: observe
+        label: "Observability\n(Transversal)"
+        Prom: { label: "Prometheus" }
+        Graf: { label: "Grafana" }
+        Loki: { label: "Loki" }
+        Fluent: { label: "Fluent-bit" }
+      }
+
+      PolicySec: {
+        class: policy
+        label: "Policy & Security"
+        Kyv: { label: "Kyverno" }
+        Triv: { label: "Trivy" }
+        Rep: { label: "Reporter" }
+      }
+
+      CICD: {
+        class: cicd
+        label: "CI/CD & Quality"
+        Wf: { label: "Argo\nWorkflows" }
+        Sonar: { label: "SonarQube" }
+      }
     }
 
-    CICD: {
-      class: cicd
-      label: "CI/CD"
-      grid-column: 5
-      grid-row: 3
-
-      Wf: { label: "Workflows" }
-    }
-
-    # Row 4: GitOps Engine
+    # Row 4: GitOps Engine (full width)
     GitOpsEngine: {
       class: gitops
-      label: "ArgoCD GitOps Engine"
-      grid-row: 4
-      grid-column: 1-7
+      label: "ArgoCD - GitOps Orchestration Engine"
+      grid-columns: 3
+      grid-gap: 8
 
-      Core: { label: "ArgoCD Core" }
-      AppSets: { label: "ApplicationSets" }
-      Sync: { label: "Sync Engine" }
+      Core: { label: "ArgoCD Core\nCD Controller" }
+      AppSets: { label: "ApplicationSets\nMulti-tenant" }
+      Sync: { label: "Sync & Health\nStatus Engine" }
     }
 
-    # Row 5: Platform Services
-    Vault: {
-      class: platform
-      label: "Vault"
-      grid-row: 5
-      grid-column: 1-3
+    # Row 5: Platform Infrastructure Services (4 columns)
+    PlatformServices: {
+      grid-columns: 4
+      grid-gap: 6
 
-      KV: { label: "KV Store" }
-      PKI: { label: "PKI Engine" }
+      Vault: {
+        class: platform
+        label: "Vault"
+        KV: { label: "KV Store" }
+        PKI: { label: "PKI" }
+      }
+
+      ExtSecrets: {
+        class: platform
+        label: "External\nSecrets"
+        Sync: { label: "Sync Loop" }
+      }
+
+      CertMgr: {
+        class: platform
+        label: "Cert\nManager"
+        Issuers: { label: "Issuers" }
+      }
+
+      Gateway: {
+        class: platform
+        label: "Gateway\nAPI"
+        Routes: { label: "HTTPRoute" }
+      }
     }
 
-    ExtSecrets: {
-      class: platform
-      label: "External Secrets"
-      grid-column: 3
-      grid-row: 5
-    }
-
-    CertMgr: {
-      class: platform
-      label: "Cert Manager"
-      grid-column: 4
-      grid-row: 5
-    }
-
-    Gateway: {
-      class: platform
-      label: "Gateway API"
-      grid-column: 5
-      grid-row: 5
-    }
-
-    # Row 6: Cilium
-    Cilium: {
+    # Row 6: Cilium Network Stack (full width)
+    CiliumStack: {
       class: network
-      label: "Cilium CNI + Service Mesh + Gateway"
-      grid-row: 6
-      grid-column: 1-7
+      label: "Cilium - Converged Network Stack"
+      grid-columns: 4
+      grid-gap: 6
 
-      CNI: { label: "CNI Plugin" }
-      Mesh: { label: "Service Mesh" }
-      LB: { label: "Load Balancer" }
-      Policy: { label: "Network Policy" }
+      CNI: { label: "CNI Plugin\nPod Network\nIPAM" }
+      Mesh: { label: "Service Mesh\nL7 Proxy\nmTLS" }
+      GW: { label: "Gateway\nLoad Balancer" }
+      NetPol: { label: "Network Policy\nL3/L4/L7" }
     }
 
-    # Row 7: Kubernetes
-    K8s: {
+    # Row 7: Kubernetes (full width)
+    Kubernetes: {
       class: infra
-      label: "Kubernetes Control Plane + Worker Nodes"
-      grid-row: 7
-      grid-column: 1-7
+      label: "Kubernetes - Orchestration Runtime"
+      grid-columns: 6
+      grid-gap: 4
 
-      API: { label: "API Server" }
+      API: { label: "API\nServer" }
       Sched: { label: "Scheduler" }
-      Ctrl: { label: "Controller" }
+      Ctrl: { label: "Controller\nManager" }
       Etcd: { label: "etcd" }
       Kubelet: { label: "Kubelet" }
       Pods: { label: "Pods" }
     }
 
-    # Row 8: Container Runtime
+    # Row 8: Container Runtime (full width)
     Runtime: {
       class: infra
-      label: "K3d Cluster + Docker + Storage"
-      grid-row: 8
-      grid-column: 1-7
+      label: "Container Runtime & Compute Infrastructure"
+      grid-columns: 4
+      grid-gap: 6
 
-      K3d: { label: "K3d" }
-      Docker: { label: "Containerd" }
-      Storage: { label: "Storage" }
+      K3d: { label: "K3d Cluster" }
+      Docker: { label: "Docker/\nContainerd" }
+      Storage: { label: "Local\nStorage" }
+      Network: { label: "Host\nNetwork" }
     }
   }
 
-  # Column 3: Abstractions & Portal
+  # ============================================================================
+  # RIGHT COLUMN: Portal & Abstractions
+  # ============================================================================
   RightContext: {
     class: context
-    grid-column: 3
-    grid-row: 1
+    grid-columns: 1
+    grid-gap: 12
 
     DevPortal: {
       class: conceptual
       label: "Developer Portal\n[conceptual]"
       Backstage: { label: "Backstage" }
+      Templates: { label: "Templates" }
+      Docs: { label: "Docs" }
     }
 
     Abstractions: {
-      label: "Abstractions"
-      API: { label: "Gateway API" }
-      K8sAPI: { label: "K8s API" }
+      label: "Abstractions\n& APIs"
+      GW: { label: "Gateway API" }
+      K8s: { label: "K8s API" }
       CNI: { label: "CNI" }
+      CSI: { label: "Storage CSI" }
     }
   }
+}
 
-  # Bottom Row: Cross-cutting Concerns
+# Bottom row: Cross-cutting concerns
+CrossCutting: {
+  grid-columns: 3
+  grid-gap: 12
+
   FinOps: {
     class: context
-    label: "FinOps: owner | business-unit | environment"
-    grid-column: 1
-    grid-row: 2
+    label: "FinOps Tagging Layer"
+    Tags: { label: "owner | business-unit | environment\nKustomize → Kyverno → Prometheus" }
   }
 
-  CrossCutting: {
+  Security: {
     class: context
-    label: "Security & Compliance Overlay"
-    grid-column: 2
-    grid-row: 2
+    label: "Security Posture"
+    Flow: { label: "Policy ↔ Scanning ↔ Secrets ↔ Certs" }
   }
 
   Interchange: {
     class: context
-    label: "Interchange Points: Runtime | K8s | CNI | GitOps"
-    grid-column: 3
-    grid-row: 2
+    label: "Interchange Points"
+    Points: { label: "Runtime | K8s | CNI | GitOps\nObservability | Portal" }
   }
 }
 
 # Key Relationships
-Grid.LeftContext.GitRepo -> Grid.MainArchitecture.GitOpsEngine: "feeds"
-Grid.MainArchitecture.GitOpsEngine -> Grid.MainArchitecture.Cilium: "reconciles"
-Grid.MainArchitecture.Observability -> Grid.MainArchitecture.K8s: "monitors"
-Grid.MainArchitecture.Vault -> Grid.MainArchitecture.ExtSecrets: "secrets"
-Grid.RightContext.DevPortal -> Grid.MainArchitecture.Catalog: "surfaces"
+MainGrid.LeftContext.GitRepo -> MainGrid.Architecture.GitOpsEngine: "feeds"
+MainGrid.Architecture.GitOpsEngine -> MainGrid.Architecture.CiliumStack: "reconciles"
+MainGrid.Architecture.GitOpsEngine -> MainGrid.Architecture.Kubernetes: "manages"
+MainGrid.Architecture.Capabilities.Observability -> MainGrid.Architecture.Kubernetes: "monitors"
+MainGrid.Architecture.PlatformServices.Vault -> MainGrid.Architecture.PlatformServices.ExtSecrets: "secrets"
+MainGrid.RightContext.DevPortal -> MainGrid.Architecture.Catalog: "surfaces"
 ```
 
 ### Architecture Principles
