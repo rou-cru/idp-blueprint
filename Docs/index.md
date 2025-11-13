@@ -44,7 +44,7 @@ GitRepo: {
   RepoStructure: {
     shape: text
     label: "├─ K8s/\n├─ IT/\n├─ Policies/"
-    style: { font-size: 11; font-family: mono }
+    style: { font-size: 11 }
   }
 }
 
