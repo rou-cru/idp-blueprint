@@ -17,280 +17,236 @@ This diagram represents the IDP Blueprint as a **modular, treemap-style architec
 Components marked as *[conceptual]* are planned but not yet implemented.
 
 ```d2
-direction: down
+direction: right
 
 classes: {
-  infra: { style: { fill: "#1a237e"; font-color: "#ffffff"; stroke: "#0d47a1" } }
-  runtime: { style: { fill: "#01579b"; font-color: "#ffffff"; stroke: "#0277bd" } }
+  context: { style: { fill: "#fafafa"; font-color: "#424242"; stroke: "#bdbdbd" } }
+  main: { style: { fill: "#ffffff"; font-color: "#212121"; stroke: "#90a4ae" } }
+  infra: { style: { fill: "#263238"; font-color: "#ffffff"; stroke: "#37474f" } }
   network: { style: { fill: "#006064"; font-color: "#ffffff"; stroke: "#00838f" } }
+  gitops: { style: { fill: "#1b5e20"; font-color: "#ffffff"; stroke: "#2e7d32" } }
   platform: { style: { fill: "#4a148c"; font-color: "#ffffff"; stroke: "#6a1b9a" } }
-  secrets: { style: { fill: "#311b92"; font-color: "#ffffff"; stroke: "#512da8" } }
-  gitops: { style: { fill: "#1b5e20"; font-color: "#ffffff"; stroke: "#2e7d32"; stroke-width: 3 } }
   observe: { style: { fill: "#e65100"; font-color: "#ffffff"; stroke: "#ef6c00" } }
   policy: { style: { fill: "#b71c1c"; font-color: "#ffffff"; stroke: "#c62828" } }
-  security: { style: { fill: "#880e4f"; font-color: "#ffffff"; stroke: "#ad1457" } }
   quality: { style: { fill: "#f57f17"; font-color: "#000000"; stroke: "#f9a825" } }
   cicd: { style: { fill: "#ff6f00"; font-color: "#ffffff"; stroke: "#ff8f00" } }
   devexp: { style: { fill: "#0d47a1"; font-color: "#ffffff"; stroke: "#1565c0" } }
   conceptual: { style: { fill: "#e0e0e0"; font-color: "#757575"; stroke: "#9e9e9e"; stroke-dash: 3 } }
-  context: { style: { fill: "#fafafa"; font-color: "#424242"; stroke: "#bdbdbd" } }
-  taxonomy: { style: { fill: "#f5f5f5"; font-color: "#616161"; stroke: "#9e9e9e"; font-size: 12 } }
 }
 
-GitRepo: {
-  class: context
-  label: "Git Repository\nSource of Truth"
+# Main Grid Layout
+Grid: {
+  grid-columns: 3
+  grid-gap: 20
 
-  RepoStructure: {
-    shape: text
-    label: "├─ K8s/\n├─ IT/\n├─ Policies/"
-    style: { font-size: 11 }
+  # Column 1: Context & Source
+  LeftContext: {
+    class: context
+    grid-column: 1
+    grid-row: 1
+
+    GitRepo: {
+      label: "Git Repository\nSource of Truth"
+      RepoFiles: { label: "K8s/ IT/ Policies/" }
+    }
+
+    Taxonomy: {
+      label: "Platform Layers"
+      Layer1: { label: "• DevExp" }
+      Layer2: { label: "• Platform" }
+      Layer3: { label: "• Infrastructure" }
+    }
   }
-}
 
-Architecture: {
-  label: "IDP Blueprint - Modular Architecture"
+  # Column 2: Main Architecture (8 rows)
+  MainArchitecture: {
+    class: main
+    label: "IDP Blueprint Architecture"
+    grid-column: 2
+    grid-row: 1
+    grid-columns: 6
+    grid-gap: 8
 
-  DevExpPlane: {
-    class: devexp
-    label: "Developer Experience Plane"
-
+    # Row 1: Developer Experience
     Catalog: {
       class: conceptual
-      label: "Software Catalog / Service Registry\n[conceptual - Backstage]"
+      label: "Software Catalog\n[conceptual]"
+      grid-row: 1
+      grid-column: 1-7
     }
 
-    Interfaces: {
-      class: devexp
-      label: "Developer Interfaces"
+    # Row 2: Developer Interfaces
+    ArgoUI: { class: devexp; label: "ArgoCD"; grid-column: 1; grid-row: 2 }
+    GrafanaUI: { class: devexp; label: "Grafana"; grid-column: 2; grid-row: 2 }
+    VaultUI: { class: devexp; label: "Vault"; grid-column: 3; grid-row: 2 }
+    SonarUI: { class: quality; label: "SonarQube"; grid-column: 4; grid-row: 2 }
+    KyvernoUI: { class: policy; label: "Kyverno"; grid-column: 5; grid-row: 2 }
 
-      ArgoUI: { label: "ArgoCD UI" }
-      GrafanaUI: { label: "Grafana" }
-      VaultUI: { label: "Vault UI" }
-      SonarUI: { label: "SonarQube" }
-      KyvernoUI: { label: "Kyverno" }
-    }
-  }
-
-  Capabilities: {
-    label: "Platform Capabilities"
-
+    # Row 3: Platform Capabilities
     Observability: {
       class: observe
-      label: "Observability\n(Transversal)"
+      label: "Observability"
+      grid-row: 3
+      grid-column: 1-3
 
-      Prometheus: { label: "Prometheus" }
-      Grafana: { label: "Grafana" }
+      Prom: { label: "Prometheus" }
+      Graf: { label: "Grafana" }
       Loki: { label: "Loki" }
-      FluentBit: { label: "Fluent-bit" }
-      Alertmanager: { label: "Alertmanager" }
     }
 
-    PolicySecurity: {
-      label: "Policy, Security & Quality"
+    PolicySec: {
+      class: policy
+      label: "Policy & Security"
+      grid-row: 3
+      grid-column: 3-5
 
-      Kyverno: {
-        class: policy
-        label: "Kyverno\nPolicy Engine"
-      }
-      Trivy: {
-        class: security
-        label: "Trivy\nVuln Scanner"
-      }
-      PolicyReporter: {
-        class: policy
-        label: "Policy\nReporter"
-      }
-      SonarQube: {
-        class: quality
-        label: "SonarQube\nQuality"
-      }
+      Kyv: { label: "Kyverno" }
+      Triv: { label: "Trivy" }
     }
 
     CICD: {
       class: cicd
-      label: "CI/CD & Workflows"
+      label: "CI/CD"
+      grid-column: 5
+      grid-row: 3
 
-      Workflows: { label: "Argo\nWorkflows" }
+      Wf: { label: "Workflows" }
     }
-  }
 
-  GitOpsEngine: {
-    class: gitops
-    label: "GitOps Orchestration Engine"
+    # Row 4: GitOps Engine
+    GitOpsEngine: {
+      class: gitops
+      label: "ArgoCD GitOps Engine"
+      grid-row: 4
+      grid-column: 1-7
 
-    ArgoCDCore: { label: "ArgoCD Core\nCD Controller" }
-    AppSets: { label: "ApplicationSets\nMulti-tenant" }
-    SyncEngine: { label: "Sync & Health\nStatus Engine" }
-
-    Note: {
-      shape: text
-      label: "▼ reconciles everything below"
-      style: { font-size: 14; font-color: "#2e7d32"; bold: true }
+      Core: { label: "ArgoCD Core" }
+      AppSets: { label: "ApplicationSets" }
+      Sync: { label: "Sync Engine" }
     }
-  }
 
-  PlatformServices: {
-    label: "Platform Infrastructure Services"
-
+    # Row 5: Platform Services
     Vault: {
-      class: secrets
-      label: "Vault"
-
-      VaultKV: { label: "KV Store" }
-      VaultPKI: { label: "PKI" }
-      VaultDynamic: { label: "Dynamic\nSecrets" }
-    }
-
-    ExternalSecrets: {
       class: platform
-      label: "External Secrets\nOperator"
+      label: "Vault"
+      grid-row: 5
+      grid-column: 1-3
 
-      ESO: { label: "Sync Loop" }
+      KV: { label: "KV Store" }
+      PKI: { label: "PKI Engine" }
     }
 
-    CertManager: {
+    ExtSecrets: {
+      class: platform
+      label: "External Secrets"
+      grid-column: 3
+      grid-row: 5
+    }
+
+    CertMgr: {
       class: platform
       label: "Cert Manager"
-
-      Issuers: { label: "Issuers\nACME/CA" }
+      grid-column: 4
+      grid-row: 5
     }
 
-    GatewayAPI: {
+    Gateway: {
       class: platform
-      label: "Gateway API\n& Ingress"
-
-      Gateway: { label: "HTTPRoute\nTLS" }
+      label: "Gateway API"
+      grid-column: 5
+      grid-row: 5
     }
-  }
 
-  CiliumStack: {
-    class: network
-    label: "Cilium - Converged Network Stack"
+    # Row 6: Cilium
+    Cilium: {
+      class: network
+      label: "Cilium CNI + Service Mesh + Gateway"
+      grid-row: 6
+      grid-column: 1-7
 
-    CNI: { label: "CNI Plugin\nPod Network\nIPAM" }
-    ServiceMesh: { label: "Service Mesh\nL7 Proxy\nmTLS" }
-    GatewayLB: { label: "Gateway\nLoad Balancer" }
-    NetworkPolicy: { label: "Network Policy\nL3/L4/L7" }
-
-    eBPF: {
-      shape: text
-      label: "eBPF Datapath (Kernel-level)"
-      style: { font-size: 12; font-color: "#00e5ff"; bold: true }
+      CNI: { label: "CNI Plugin" }
+      Mesh: { label: "Service Mesh" }
+      LB: { label: "Load Balancer" }
+      Policy: { label: "Network Policy" }
     }
-  }
 
-  CiliumNote: {
-    shape: text
-    label: "[INTERCAMBIABLE: Calico, Flannel, Weave]"
-    style: { font-size: 10; font-color: "#00838f"; italic: true }
-  }
+    # Row 7: Kubernetes
+    K8s: {
+      class: infra
+      label: "Kubernetes Control Plane + Worker Nodes"
+      grid-row: 7
+      grid-column: 1-7
 
-  Kubernetes: {
-    class: runtime
-    label: "Kubernetes - Orchestration Runtime"
-
-    ControlPlane: {
-      label: "Control Plane"
-
-      APIServer: { label: "API Server" }
-      Scheduler: { label: "Scheduler" }
-      ControllerMgr: { label: "Controller\nManager" }
+      API: { label: "API Server" }
+      Sched: { label: "Scheduler" }
+      Ctrl: { label: "Controller" }
       Etcd: { label: "etcd" }
-    }
-
-    WorkerNodes: {
-      label: "Worker Nodes"
-
       Kubelet: { label: "Kubelet" }
-      KubeProxy: { label: "Kube-proxy" }
+      Pods: { label: "Pods" }
+    }
 
-      PodsGroup: {
-        label: "Pods"
+    # Row 8: Container Runtime
+    Runtime: {
+      class: infra
+      label: "K3d Cluster + Docker + Storage"
+      grid-row: 8
+      grid-column: 1-7
 
-        Pod1: { label: "Pod\nC1\nC2" }
-        Pod2: { label: "Pod\nC1" }
-        Pod3: { label: "Pod\nC1\nC2" }
-      }
+      K3d: { label: "K3d" }
+      Docker: { label: "Containerd" }
+      Storage: { label: "Storage" }
     }
   }
 
-  K8sNote: {
-    shape: text
-    label: "[INTERCAMBIABLE: K3s, Kind, EKS, GKE, AKS, OpenShift]"
-    style: { font-size: 10; font-color: "#0277bd"; italic: true }
+  # Column 3: Abstractions & Portal
+  RightContext: {
+    class: context
+    grid-column: 3
+    grid-row: 1
+
+    DevPortal: {
+      class: conceptual
+      label: "Developer Portal\n[conceptual]"
+      Backstage: { label: "Backstage" }
+    }
+
+    Abstractions: {
+      label: "Abstractions"
+      API: { label: "Gateway API" }
+      K8sAPI: { label: "K8s API" }
+      CNI: { label: "CNI" }
+    }
   }
 
-  Runtime: {
-    class: infra
-    label: "Container Runtime & Compute Infrastructure"
-
-    K3d: { label: "K3d Cluster" }
-    ContainerRuntime: { label: "Docker/\nContainerd" }
-    Storage: { label: "Local Storage" }
-    Network: { label: "Host Network" }
+  # Bottom Row: Cross-cutting Concerns
+  FinOps: {
+    class: context
+    label: "FinOps: owner | business-unit | environment"
+    grid-column: 1
+    grid-row: 2
   }
 
-  RuntimeNote: {
-    shape: text
-    label: "[INTERCAMBIABLE: Docker, Podman, CRI-O, Cloud VMs, Bare Metal]"
-    style: { font-size: 10; font-color: "#1a237e"; italic: true }
-  }
-}
-
-DeveloperPortal: {
-  class: conceptual
-  label: "Developer Portal\n[conceptual]"
-
-  Backstage: { label: "Backstage" }
-  Templates: { label: "Templates" }
-  Docs: { label: "Docs" }
-}
-
-Abstractions: {
-  class: context
-  label: "Abstractions"
-
-  APIs: {
-    shape: text
-    label: "• Gateway API\n• K8s API\n• CNI\n• Storage CSI"
-    style: { font-size: 11 }
+  CrossCutting: {
+    class: context
+    label: "Security & Compliance Overlay"
+    grid-column: 2
+    grid-row: 2
   }
 
-  WorkloadSpec: {
-    class: conceptual
-    label: "Workload Spec\n[Score/OAM]"
+  Interchange: {
+    class: context
+    label: "Interchange Points: Runtime | K8s | CNI | GitOps"
+    grid-column: 3
+    grid-row: 2
   }
 }
 
-FinOps: {
-  class: context
-  label: "FinOps Tagging (Overlay)"
-
-  Tags: {
-    shape: text
-    label: "owner: platform-team | business-unit: infrastructure | environment: demo\nEnforcement: Kustomize → Kyverno → Prometheus"
-    style: { font-size: 10; italic: true }
-  }
-}
-
-SecurityOverlay: {
-  class: context
-  label: "Security Posture (Overlay)"
-
-  SecurityFlow: {
-    shape: text
-    label: "Policy Enforcement ↔ Vuln Scanning ↔ Secrets Mgmt ↔ Cert Lifecycle"
-    style: { font-size: 10; italic: true }
-  }
-}
-
-GitRepo -> Architecture.GitOpsEngine: "feeds"
-Architecture.GitOpsEngine -> Architecture.CiliumStack: "reconciles"
-Architecture.GitOpsEngine -> Architecture.Kubernetes: "manages"
-Architecture.Capabilities.Observability -> Architecture.Kubernetes: "monitors"
-Architecture.PlatformServices.Vault -> Architecture.PlatformServices.ExternalSecrets: "secrets"
-DeveloperPortal -> Architecture.DevExpPlane: "surfaces"
+# Key Relationships
+Grid.LeftContext.GitRepo -> Grid.MainArchitecture.GitOpsEngine: "feeds"
+Grid.MainArchitecture.GitOpsEngine -> Grid.MainArchitecture.Cilium: "reconciles"
+Grid.MainArchitecture.Observability -> Grid.MainArchitecture.K8s: "monitors"
+Grid.MainArchitecture.Vault -> Grid.MainArchitecture.ExtSecrets: "secrets"
+Grid.RightContext.DevPortal -> Grid.MainArchitecture.Catalog: "surfaces"
 ```
 
 ### Architecture Principles
