@@ -1,6 +1,18 @@
 # cert-manager
 
-This document lists the configuration parameters for the `cert-manager` component.
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `0.1.0` |
+| **Chart Type** | `` |
+| **Upstream Project** | N/A |
+
+## Configuration Values
+
+The following table lists the configurable parameters:
 
 ## Values
 
@@ -71,3 +83,4 @@ This document lists the configuration parameters for the `cert-manager` componen
 | webhook.resources.limits.memory | string | `"256Mi"` | Memory limit |
 | webhook.resources.requests.cpu | string | `"100m"` | CPU request |
 | webhook.resources.requests.memory | string | `"128Mi"` | Memory request |
+

@@ -67,34 +67,37 @@ With Cilium, Envoy needs explicit permission to read the TLS Secret:
 ## Gateway Flow
 
 ```d2
-direction: down
+direction: right
 
-External: {
-  Browser
+Client: {
+  Browser: "Browser"
 }
 
-KubeSystem: {
-  label: "Namespace: kube-system"
+GatewayAPI: {
+  label: "Gateway API (kube-system)"
   SVC: "Service: cilium-gateway-idp-gateway\nNodePort 30080/30443"
-  GW: "Gateway: idp-gateway\nTLS terminate"
-}
-
-Routes: {
-  label: "HTTPRoutes"
-  HR1: argocd
-  HR2: grafana
-  HR3: vault
-  HR4: workflows
-  HR5: sonarqube
+  Gateway: {
+    label: "Gateway: idp-gateway"
+    Listener: "HTTPS:443 (hostname: *.nip.io)"
+    TLS: "TLS: idp-wildcard-cert"
+    Routes: {
+      label: "HTTPRoutes"
+      argocd: "argocd → argocd-server:80"
+      grafana: "grafana → prometheus-grafana:80"
+      vault: "vault → vault:8200"
+      workflows: "workflows → argo-workflows-server:2746"
+      sonarqube: "sonarqube → sonarqube:9000"
+    }
+  }
 }
 
 Backends: {
   label: "Backend Services"
-  S1: "argocd-server:80"
-  S2: "prometheus-grafana:80"
-  S3: "vault:8200"
-  S4: "argo-workflows-server:2746"
-  S5: "sonarqube:9000"
+  argocd: "argocd-server:80"
+  grafana: "prometheus-grafana:80"
+  vault: "vault:8200"
+  workflows: "argo-workflows-server:2746"
+  sonarqube: "sonarqube:9000"
 }
 
 Certificates: {
@@ -105,20 +108,8 @@ Certificates: {
   CERT: "Certificate: idp-wildcard-cert\nsecret idp-wildcard-cert"
 }
 
-External.Browser -> KubeSystem.SVC: "HTTPS nip.io"
-KubeSystem.SVC -> KubeSystem.GW
-KubeSystem.GW -> Routes.HR1: "hostname match"
-KubeSystem.GW -> Routes.HR2
-KubeSystem.GW -> Routes.HR3
-KubeSystem.GW -> Routes.HR4
-KubeSystem.GW -> Routes.HR5
-Routes.HR1 -> Backends.S1
-Routes.HR2 -> Backends.S2
-Routes.HR3 -> Backends.S3
-Routes.HR4 -> Backends.S4
-Routes.HR5 -> Backends.S5
-KubeSystem.GW -> Certificates.CERT: "uses TLS"
-Certificates.CERT <- Certificates.ISS <- Certificates.CA <- Certificates.SSI
+Client.Browser -> GatewayAPI.SVC: "HTTPS nip.io"
+GatewayAPI.Gateway -> Certificates.CERT: uses
 ```
 
 

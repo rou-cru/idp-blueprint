@@ -1,6 +1,18 @@
 # loki
 
-This document lists the configuration parameters for the `loki` component.
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `0.1.0` |
+| **Chart Type** | `` |
+| **Upstream Project** | N/A |
+
+## Configuration Values
+
+The following table lists the configurable parameters:
 
 ## Values
 
@@ -24,3 +36,4 @@ This document lists the configuration parameters for the `loki` component.
 | singleBinary.resources | object | `{"limits":{"cpu":"500m","memory":"1Gi"},"requests":{"cpu":"100m","memory":"512Mi"}}` | Resource limits and requests for Loki. |
 | test | object | `{"enabled":false}` | Disable test (not needed for demo, requires canary to be enabled). |
 | write | object | `{"replicas":0}` | Disable write replicas (not used in single-binary mode). |
+

@@ -83,33 +83,28 @@ direction: right
 
 K8s: {
   label: "K8s Directory Structure"
-  CICD: "cicd/"
-  OBS: "observability/"
-  SEC: "security/"
+  CICD: {
+    label: "cicd/"
+    AppSet: "applicationset-cicd.yaml"
+    NS: "namespace.yaml"
+    WF: {
+      label: "argo-workflows/"
+      WFK: "kustomization.yaml"
+    }
+  }
+  OBS: {
+    label: "observability/"
+    AppSet: "applicationset-observability.yaml"
+    NS: "namespace.yaml"
+    Loki: {
+      label: "loki/"
+      LokiK: "kustomization.yaml"
+    }
+  }
+  SEC: {
+    label: "security/"
+  }
 }
-
-CICD: {
-  AppSet: "applicationset-cicd.yaml"
-  NS: "namespace.yaml"
-  WF: "argo-workflows/"
-  WFK: "kustomization.yaml"
-}
-
-OBS: {
-  AppSet: "applicationset-observability.yaml"
-  NS: "namespace.yaml"
-  Loki: "loki/"
-  LokiK: "kustomization.yaml"
-}
-
-K8s.CICD -> CICD.AppSet
-K8s.CICD -> CICD.NS
-K8s.CICD -> CICD.WF
-CICD.WF -> CICD.WFK
-K8s.OBS -> OBS.AppSet
-K8s.OBS -> OBS.NS
-K8s.OBS -> OBS.Loki
-OBS.Loki -> OBS.LokiK
 ```
 
 - **`namespace.yaml`**: Defines the Kubernetes `Namespace` for the entire stack and

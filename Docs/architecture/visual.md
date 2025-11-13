@@ -145,48 +145,37 @@ scheduling rules with `tolerations` and `affinity`.
 direction: right
 
 Cluster: {
-  label: "IDP Hub Cluster - k3d-idp-demo"
-  Infra: "Node Pool: IT Infrastructure\nagent-0 (node-role=it-infra)"
-  Apps: "Node Pool: GitOps Workloads\nagent-1 (node-role=k8s-workloads)"
-  CP: "Node Pool: Control Plane\nserver-0"
-}
+  label: "IDP Hub Cluster — k3d-idp-demo"
 
-Platform: {
-  Argo: ArgoCD
-  Vault: Vault
-  Prom: Prometheus
-  Kyv: Kyverno
-}
+  ControlPlane: {
+    label: "Control Plane"
+    node: "server-0"
+  }
 
-AppWorkloads: {
-  Workflows: "Argo Workflows"
-  Sonar: SonarQube
-}
+  InfraPool: {
+    label: "Node Pool: IT Infrastructure (agent-0)"
+    ArgoCD
+    Vault
+    Kyverno
+    Prometheus
+  }
 
-DS: {
-  Cilium: "Cilium Agent"
-  Fluent: "Fluent-bit"
-  NodeExp: "Node Exporter"
-}
+  WorkloadPool: {
+    label: "Node Pool: GitOps Workloads (agent-1)"
+    ArgoWorkflows: "Argo Workflows"
+    SonarQube
+  }
 
-Platform.Argo -> Cluster.Infra: "scheduled on"
-Platform.Vault -> Cluster.Infra
-Platform.Prom -> Cluster.Infra
-Platform.Kyv -> Cluster.Infra
-AppWorkloads.Workflows -> Cluster.Apps: "scheduled on"
-AppWorkloads.Sonar -> Cluster.Apps
-DS.Cilium -> Cluster.CP
-DS.Cilium -> Cluster.Infra
-DS.Cilium -> Cluster.Apps
-DS.Fluent -> Cluster.CP
-DS.Fluent -> Cluster.Infra
-DS.Fluent -> Cluster.Apps
-DS.NodeExp -> Cluster.CP
-DS.NodeExp -> Cluster.Infra
-DS.NodeExp -> Cluster.Apps
+  DaemonSets: {
+    label: "DaemonSets (run on all nodes)"
+    Cilium: "Cilium Agent"
+    FluentBit: "Fluent-bit"
+    NodeExporter: "Node Exporter"
+  }
+}
 ```
 
-## 3. Certificate Management Flow
+## 4. Certificate Management Flow
 
 This flow shows how a Gateway resource automatically obtains a TLS certificate
 via cert-manager annotation.
@@ -208,7 +197,7 @@ CM -> TLS: Create idp-wildcard-cert (*.nip.io)
 TLS -> GW: Referenced in listeners.tls
 ```
 
-## 4. Secret Management Flow
+## 5. Secret Management Flow
 
 This flow details how an application securely consumes a secret from Vault
 without having direct credentials.
@@ -234,7 +223,7 @@ ESO -> K8S: Create/Update Secret
 K8S -> App: Mounted in Pod
 ```
 
-## 5. Observability Data Flow
+## 6. Observability Data Flow
 
 This diagram details how metrics and logs are collected, processed, and visualized on
 the platform.
@@ -268,7 +257,7 @@ Obs.Prom -> Obs.Graf: "Datasource"
 Obs.Loki -> Obs.Graf: "Datasource"
 ```
 
-## 6. Security Scanning Flow with Trivy
+## 7. Security Scanning Flow with Trivy
 
 This diagram illustrates how the Trivy operator scans cluster workloads for
 vulnerabilities.
@@ -289,7 +278,7 @@ TrivyOp -> K8s: Create/Update VulnerabilityReport
 K8s -> Report: Store CRD
 ```
 
-## 7. GitOps Structure with ApplicationSets
+## 8. GitOps Structure with ApplicationSets
 
 This diagram explains the "App of Apps" pattern. The `ApplicationSet` resources in
 ArgoCD monitor directories in Git. When they find subdirectories that match their
@@ -327,10 +316,10 @@ Argo.ASObs -> Argo.AppLoki
 Argo.ASSec -> Argo.AppTrivy
 ```
 
-## 8. Gateway API Service Exposure
+## 9. Gateway API Service Exposure
 
 This diagram shows how services are exposed via Gateway API with wildcard TLS
-and sslip.io DNS (zero configuration required).
+and nip.io DNS (zero configuration required).
 
 ```d2
 direction: down
@@ -376,7 +365,7 @@ Routes.HR5 -> Backends.S5
 GatewayNS.Cert -> GatewayNS.Gateway: TLS
 ```
 
-## 9. Control Loop Overview
+## 10. Control Loop Overview
 
 This diagram illustrates the continuous, cross-reconciling control loops between
 the core GitOps components, forming the heart of the "Platform as a System."
