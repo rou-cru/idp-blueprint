@@ -10,8 +10,7 @@ This diagram represents the IDP Blueprint as a **modular, treemap-style architec
 
 - **Position** indicates semantic relationships and dependencies
 - **Size** reflects importance and surface area of impact
-- **Nesting** shows containment and provision
-- **Color** groups components by domain concern
+- **Color** groups components by domain concern and shows transversality
 - **Adjacency** indicates collaboration and complementarity
 
 Components marked as *[conceptual]* are planned but not yet implemented.
@@ -20,7 +19,6 @@ Components marked as *[conceptual]* are planned but not yet implemented.
 direction: right
 
 classes: {
-  context: { style: { fill: "#fafafa"; font-color: "#424242"; stroke: "#bdbdbd" } }
   infra: { style: { fill: "#263238"; font-color: "#ffffff"; stroke: "#37474f" } }
   network: { style: { fill: "#006064"; font-color: "#ffffff"; stroke: "#00838f" } }
   gitops: { style: { fill: "#1b5e20"; font-color: "#ffffff"; stroke: "#2e7d32"; stroke-width: 3 } }
@@ -28,105 +26,131 @@ classes: {
   observe: { style: { fill: "#e65100"; font-color: "#ffffff"; stroke: "#ef6c00" } }
   policy: { style: { fill: "#b71c1c"; font-color: "#ffffff"; stroke: "#c62828" } }
   quality: { style: { fill: "#f57f17"; font-color: "#000000"; stroke: "#f9a825" } }
-  cicd: { style: { fill: "#ff6f00"; font-color: "#ffffff"; stroke: "#ff8f00" } }
   devexp: { style: { fill: "#0d47a1"; font-color: "#ffffff"; stroke: "#1565c0" } }
   conceptual: { style: { fill: "#e0e0e0"; font-color: "#757575"; stroke: "#9e9e9e"; stroke-dash: 3 } }
 }
 
 IDP Blueprint Architecture: {
-  grid-rows: 8
-  grid-columns: 6
-  grid-gap: 8
+  grid-rows: 12
+  grid-columns: 12
+  grid-gap: 4
 
-  # Row 1: Software Catalog (full width)
-  catalog: {
-    label: "Software Catalog / Service Registry\n[conceptual - Backstage]"
-    class: conceptual
-    width: 1200
-  }
+  # Row 0-1: Software Catalog (conceptual, spans 2 rows)
+  0,0: { label: "Software Catalog\n[conceptual]"; class: conceptual; height: 100 }
+  0,1: { label: ""; class: conceptual; style.opacity: 0 }
+  0,2: { label: ""; class: conceptual; style.opacity: 0 }
+  0,3: { label: ""; class: conceptual; style.opacity: 0 }
+  0,4: { label: ""; class: conceptual; style.opacity: 0 }
+  0,5: { label: ""; class: conceptual; style.opacity: 0 }
+  0,6: { label: ""; class: conceptual; style.opacity: 0 }
+  0,7: { label: ""; class: conceptual; style.opacity: 0 }
+  0,8: { label: ""; class: conceptual; style.opacity: 0 }
+  0,9: { label: ""; class: conceptual; style.opacity: 0 }
+  0,10: { label: ""; class: conceptual; style.opacity: 0 }
+  0,11: { label: ""; class: conceptual; style.opacity: 0 }
 
-  # Row 2: Developer Interfaces
-  argoui: { label: "ArgoCD UI"; class: devexp }
-  grafanaui: { label: "Grafana UI"; class: devexp }
-  vaultui: { label: "Vault UI"; class: devexp }
-  sonarui: { label: "SonarQube UI"; class: quality }
-  kyvernoui: { label: "Kyverno UI"; class: policy }
-  spacer1: { label: ""; style.opacity: 0 }
+  # Row 2: Developer UIs
+  2,0: { label: "ArgoCD"; class: devexp }
+  2,1: { label: "Grafana"; class: devexp }
+  2,2: { label: "Vault"; class: devexp }
+  2,3: { label: "SonarQube"; class: quality }
+  2,4: { label: "Kyverno"; class: policy }
+  2,5: { label: ""; style.opacity: 0 }
+  2,6: { label: ""; style.opacity: 0 }
+  2,7: { label: ""; style.opacity: 0 }
+  2,8: { label: ""; style.opacity: 0 }
+  2,9: { label: ""; style.opacity: 0 }
+  2,10: { label: ""; style.opacity: 0 }
+  2,11: { label: ""; style.opacity: 0 }
 
-  # Row 3: Platform Capabilities
-  observability: {
-    label: "Observability (Transversal)\nPrometheus | Grafana | Loki | Fluent-bit"
-    class: observe
-    width: 400
-  }
-  policysec: {
-    label: "Policy & Security\nKyverno | Trivy | Reporter"
-    class: policy
-    width: 400
-  }
-  cicdquality: {
-    label: "CI/CD & Quality\nArgo Workflows | SonarQube"
-    class: cicd
-    width: 400
-  }
+  # Row 3-4: Observability (spans 2 rows, shows transversality by repetition across columns)
+  3,0: { label: "Prometheus"; class: observe; height: 100 }
+  3,1: { label: "Grafana"; class: observe; height: 100 }
+  3,2: { label: "Loki"; class: observe; height: 100 }
+  3,3: { label: "Fluent-bit"; class: observe; height: 100 }
 
-  # Row 4: GitOps Engine (full width)
-  gitops: {
-    label: "ArgoCD - GitOps Orchestration Engine\nCore | ApplicationSets | Sync & Health"
-    class: gitops
-    width: 1200
-  }
+  # Row 3-4: Policy & Security (same row level as Observability)
+  3,4: { label: "Kyverno"; class: policy; height: 100 }
+  3,5: { label: "Trivy"; class: policy; height: 100 }
+  3,6: { label: "Reporter"; class: policy; height: 100 }
 
-  # Row 5: Platform Services
-  vault: {
-    label: "Vault\nKV Store | PKI"
-    class: platform
-    width: 300
-  }
-  extsecrets: {
-    label: "External Secrets\nSync Loop"
-    class: platform
-    width: 300
-  }
-  certmgr: {
-    label: "Cert Manager\nIssuers | ACME"
-    class: platform
-    width: 300
-  }
-  gateway: {
-    label: "Gateway API\nHTTPRoute | TLS"
-    class: platform
-    width: 300
-  }
+  # Row 3-4: Quality & CI/CD
+  3,7: { label: "Workflows"; class: quality; height: 100 }
+  3,8: { label: "SonarQube"; class: quality; height: 100 }
+  3,9: { label: ""; style.opacity: 0 }
+  3,10: { label: ""; style.opacity: 0 }
+  3,11: { label: ""; style.opacity: 0 }
 
-  # Row 6: Cilium (full width)
-  cilium: {
-    label: "Cilium - Converged Network Stack\nCNI | Service Mesh | Gateway | Network Policy"
-    class: network
-    width: 1200
-  }
+  # Row 5-6: GitOps Engine (spans 2 rows, full width)
+  5,0: { label: "ArgoCD\nCore"; class: gitops; height: 100 }
+  5,1: { label: ""; class: gitops; style.opacity: 0 }
+  5,2: { label: ""; class: gitops; style.opacity: 0 }
+  5,3: { label: "Application\nSets"; class: gitops; height: 100 }
+  5,4: { label: ""; class: gitops; style.opacity: 0 }
+  5,5: { label: ""; class: gitops; style.opacity: 0 }
+  5,6: { label: "Sync\nEngine"; class: gitops; height: 100 }
+  5,7: { label: ""; class: gitops; style.opacity: 0 }
+  5,8: { label: ""; class: gitops; style.opacity: 0 }
+  5,9: { label: ""; class: gitops; style.opacity: 0 }
+  5,10: { label: ""; class: gitops; style.opacity: 0 }
+  5,11: { label: ""; class: gitops; style.opacity: 0 }
 
-  # Row 7: Kubernetes (full width)
-  kubernetes: {
-    label: "Kubernetes - Orchestration Runtime\nAPI Server | Scheduler | Controller | etcd | Kubelet | Pods"
-    class: infra
-    width: 1200
-  }
+  # Row 7: Platform Services
+  7,0: { label: "Vault"; class: platform }
+  7,1: { label: "KV Store"; class: platform }
+  7,2: { label: "PKI"; class: platform }
+  7,3: { label: "External\nSecrets"; class: platform }
+  7,4: { label: "Sync"; class: platform }
+  7,5: { label: "Cert\nManager"; class: platform }
+  7,6: { label: "Issuers"; class: platform }
+  7,7: { label: "Gateway\nAPI"; class: platform }
+  7,8: { label: "HTTPRoute"; class: platform }
+  7,9: { label: ""; style.opacity: 0 }
+  7,10: { label: ""; style.opacity: 0 }
+  7,11: { label: ""; style.opacity: 0 }
 
-  # Row 8: Container Runtime (full width)
-  runtime: {
-    label: "Container Runtime & Compute\nK3d Cluster | Docker/Containerd | Storage | Network"
-    class: infra
-    width: 1200
-  }
+  # Row 8-9: Cilium (spans 2 rows)
+  8,0: { label: "CNI"; class: network; height: 100 }
+  8,1: { label: "Pod\nNetwork"; class: network; height: 100 }
+  8,2: { label: "IPAM"; class: network; height: 100 }
+  8,3: { label: "Service\nMesh"; class: network; height: 100 }
+  8,4: { label: "L7 Proxy"; class: network; height: 100 }
+  8,5: { label: "mTLS"; class: network; height: 100 }
+  8,6: { label: "Gateway"; class: network; height: 100 }
+  8,7: { label: "Load\nBalancer"; class: network; height: 100 }
+  8,8: { label: "Network\nPolicy"; class: network; height: 100 }
+  8,9: { label: "L3/L4/L7"; class: network; height: 100 }
+  8,10: { label: ""; class: network; style.opacity: 0 }
+  8,11: { label: ""; class: network; style.opacity: 0 }
+
+  # Row 10: Kubernetes
+  10,0: { label: "API\nServer"; class: infra }
+  10,1: { label: "Scheduler"; class: infra }
+  10,2: { label: "Controller"; class: infra }
+  10,3: { label: "etcd"; class: infra }
+  10,4: { label: "Kubelet"; class: infra }
+  10,5: { label: "Pods"; class: infra }
+  10,6: { label: ""; class: infra; style.opacity: 0 }
+  10,7: { label: ""; class: infra; style.opacity: 0 }
+  10,8: { label: ""; class: infra; style.opacity: 0 }
+  10,9: { label: ""; class: infra; style.opacity: 0 }
+  10,10: { label: ""; class: infra; style.opacity: 0 }
+  10,11: { label: ""; class: infra; style.opacity: 0 }
+
+  # Row 11: Container Runtime
+  11,0: { label: "K3d"; class: infra }
+  11,1: { label: "Containerd"; class: infra }
+  11,2: { label: "Storage"; class: infra }
+  11,3: { label: "Network"; class: infra }
+  11,4: { label: ""; class: infra; style.opacity: 0 }
+  11,5: { label: ""; class: infra; style.opacity: 0 }
+  11,6: { label: ""; class: infra; style.opacity: 0 }
+  11,7: { label: ""; class: infra; style.opacity: 0 }
+  11,8: { label: ""; class: infra; style.opacity: 0 }
+  11,9: { label: ""; class: infra; style.opacity: 0 }
+  11,10: { label: ""; class: infra; style.opacity: 0 }
+  11,11: { label: ""; class: infra; style.opacity: 0 }
 }
-
-# Key relationships
-catalog -> gitops: "managed by"
-gitops -> cilium: "reconciles"
-gitops -> kubernetes: "manages"
-observability -> kubernetes: "monitors"
-vault -> extsecrets: "secrets"
 ```
 
 ### Architecture Principles
@@ -134,10 +158,9 @@ vault -> extsecrets: "secrets"
 **Visual Grammar:**
 
 - **Position**: Elements lower in the diagram are dependencies of those above
-- **Size**: Larger blocks indicate greater surface area of impact
-- **Nesting**: Inner blocks are provided/contained by outer blocks
-- **Color**: Groups components by domain concern
-- **Adjacency**: Side-by-side components collaborate or complement each other
+- **Size**: Larger blocks (multi-row) indicate greater surface area of impact
+- **Color**: Groups components by domain concern - same color = related functionality
+- **Transversality**: Shown by color repetition across rows (e.g., orange observe blocks span multiple columns)
 
 **Interchange Points** - Clear abstraction boundaries for swappable components:
 
