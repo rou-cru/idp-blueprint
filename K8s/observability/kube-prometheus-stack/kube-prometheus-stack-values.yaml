@@ -26,6 +26,19 @@ alertmanager:
 prometheus:
   priorityClassName: platform-observability
   prometheusSpec:
+    # -- Select ServiceMonitors with label prometheus=kube-prometheus across all namespaces
+    serviceMonitorSelector:
+      matchLabels:
+        prometheus: kube-prometheus
+    serviceMonitorNamespaceSelector: {}
+    # -- Select PodMonitors similarly (if used by components)
+    podMonitorSelector:
+      matchLabels:
+        prometheus: kube-prometheus
+    podMonitorNamespaceSelector: {}
+    # -- Select PrometheusRules from any namespace (needed for Pyrra rules)
+    ruleSelector: {}
+    ruleNamespaceSelector: {}
     # -- Global scrape interval for all ServiceMonitors (unless overridden).
     scrapeInterval: 60s
     # -- Global scrape timeout for all ServiceMonitors (unless overridden).
