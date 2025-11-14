@@ -1,9 +1,38 @@
-# Getting Started Overview
 
-Welcome to the IDP Blueprint! This section will help you get up and running with your
-own Internal Developer Platform.
+---
+# Getting Started — Read this before you run anything
 
-## System Context
+Welcome. You’re about to stand up an IDP you can understand and change. Keep this mental model in mind while you follow the steps.
+
+## The mental model
+
+```d2
+direction: right
+
+Desired: {
+  label: "Desired State (Git)"
+}
+
+Actionable: {
+  label: "Actionable State"
+  GitOps: "ArgoCD"
+  Policy: "Kyverno"
+}
+
+Observed: {
+  label: "Observed State"
+  Metrics: "Prometheus"
+  Logs: "Loki"
+}
+
+Desired -> Actionable.GitOps: reconcile
+Desired -> Actionable.Policy: govern
+Actionable.GitOps -> Observed.Metrics: deploy → measure
+```
+
+You’ll see these loops in action during deploy and verification.
+
+## What you'll build
 
 ```d2
 direction: right
@@ -53,7 +82,7 @@ Cluster.Gateway -> Cluster.UIs.Grafana
 Cluster.Gateway -> Cluster.UIs.Vault
 ```
 
-## What You'll Learn
+## What you'll learn
 
 In this getting started section, you'll learn:
 
@@ -61,7 +90,7 @@ In this getting started section, you'll learn:
 - **Quick Start**: How to deploy the platform with a single command
 - **Deployment Process**: Understanding what happens during the deployment
 
-## Next Steps
+## Next steps
 
 Start with the [Prerequisites](prerequisites.md) to ensure your environment is ready,
 then move on to the [Quick Start](quickstart.md) guide to deploy your first IDP instance.

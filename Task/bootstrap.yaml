@@ -2,6 +2,15 @@ version: '3'
 
 vars:
   CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
+  # Fuses
+  FUSE_PROD:
+    sh: |
+      v=$( (dasel -r toml -f '{{.CONFIG_FILE}}' fuses.prod 2>/dev/null || true) | tr -d '"' ); [ -z "$v" ] && v=false; echo "$v"
+  # Cluster name (for components that need it)
+  CLUSTER_NAME:
+    sh: |
+      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' cluster.name 2>/dev/null || true) | tr -d '"' )
+      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
 
   # Network Configuration
   LAN_IP:
@@ -97,7 +106,7 @@ tasks:
     cmds:
       - |
         helm upgrade --install prometheus-crds prometheus-community/prometheus-operator-crds \
-          --version 23.0.0 \
+          --version {{.PROMETHEUS_CRDS_VERSION}} \
           --namespace kube-system \
           --hide-notes
 
@@ -128,6 +137,7 @@ tasks:
           --version {{.CILIUM_VERSION}} \
           --namespace kube-system \
           --values cilium-values.yaml \
+          --set cluster.name={{.CLUSTER_NAME}} \
           --hide-notes
       - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system
         --timeout={{.KUBECTL_TIMEOUT}}
@@ -284,10 +294,15 @@ tasks:
       REPO_URL: '{{.REPO_URL}}'
     cmds:
       - |
+        EXTRA_ARGS=""
+        if [ "{{.FUSE_PROD}}" = "true" ]; then
+          EXTRA_ARGS="--set ha.enabled=true"
+        fi
         helm upgrade --install argocd argo/argo-cd \
           --version {{.ARGOCD_VERSION}} \
           --namespace argocd \
           --values argocd-values.yaml \
+          $EXTRA_ARGS \
           --hide-notes
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd
         --timeout={{.KUBECTL_TIMEOUT}}

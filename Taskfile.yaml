@@ -47,7 +47,7 @@ vars:
   CERT_MANAGER_VERSION:
     sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.cert_manager | tr -d '"'
   PROMETHEUS_CRDS_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.prometheus_crds | tr -d '"'
+    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.prometheus_operator_crds | tr -d '"'
   GATEWAY_API_VERSION:
     sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.gateway_api | tr -d '"'
   EXTERNAL_SECRETS_VERSION:
@@ -64,6 +64,12 @@ vars:
     sh: dasel -r toml -f '{{.CONFIG_FILE}}' operational.k3d_config | tr -d '"'
   REGISTRY_CACHE_PATH:
     sh: dasel -r toml -f '{{.CONFIG_FILE}}' operational.registry_cache_path | tr -d '"'
+
+  # Cluster
+  CLUSTER_NAME:
+    sh: |
+      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' cluster.name 2>/dev/null || true) | tr -d '"' )
+      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
 
   # ArgoCD Configuration
   ARGOCD_SYNC_TIMEOUT:
@@ -98,6 +104,23 @@ vars:
     sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.username | tr -d '"'
   DOCKER_REGISTRY_PASSWORD:
     sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.password | tr -d '"'
+
+  # Fuses (feature toggles)
+  FUSE_POLICIES:
+    sh: |
+      v=$( (dasel -r toml -f '{{.CONFIG_FILE}}' fuses.policies 2>/dev/null || true) | tr -d '"' ); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_SECURITY:
+    sh: |
+      v=$( (dasel -r toml -f '{{.CONFIG_FILE}}' fuses.security 2>/dev/null || true) | tr -d '"' ); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_OBSERVABILITY:
+    sh: |
+      v=$( (dasel -r toml -f '{{.CONFIG_FILE}}' fuses.observability 2>/dev/null || true) | tr -d '"' ); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_CICD:
+    sh: |
+      v=$( (dasel -r toml -f '{{.CONFIG_FILE}}' fuses.cicd 2>/dev/null || true) | tr -d '"' ); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_PROD:
+    sh: |
+      v=$( (dasel -r toml -f '{{.CONFIG_FILE}}' fuses.prod 2>/dev/null || true) | tr -d '"' ); [ -z "$v" ] && v=false; echo "$v"
 
 includes:
   k3d:

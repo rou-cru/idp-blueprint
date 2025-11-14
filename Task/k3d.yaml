@@ -1,14 +1,21 @@
 version: '3'
 
+vars:
+  CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
+  CLUSTER_NAME:
+    sh: |
+      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' cluster.name 2>/dev/null || true) | tr -d '"' )
+      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
+
 tasks:
   k3d:create:
     desc: 'Create a k3d cluster with 3 nodes'
     status:
-      - k3d cluster list | grep -q "idp-demo"
+      - k3d cluster list | grep -q "{{.CLUSTER_NAME}}"
     cmds:
-      - k3d cluster create idp-demo -c {{.K3D_CONFIG}}
+      - k3d cluster create {{.CLUSTER_NAME}} -c {{.K3D_CONFIG}}
 
   k3d:destroy:
     desc: 'Remove the k3d cluster'
     cmds:
-      - k3d cluster delete idp-demo
+      - k3d cluster delete {{.CLUSTER_NAME}}

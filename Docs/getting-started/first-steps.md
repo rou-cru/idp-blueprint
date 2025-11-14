@@ -1,4 +1,4 @@
-# First Steps
+# First Steps — What to explore right away
 
 This guide highlights what to do right after a successful installation.
 

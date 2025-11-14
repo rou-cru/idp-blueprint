@@ -1,31 +1,60 @@
-# Platform Operations Overview
+---
+# Operate — Run it like a product
 
-Operate every subsystem of the IDP Blueprint—from bootstrap infrastructure to
-observability and CI/CD—using the component guides in this section.
+Operating this IDP is about tight feedback loops. Treat SLOs as the scoreboard, events as the nervous system, and runbooks as code you can execute and evolve.
 
-## Layers
+## The loop: Detect → Decide → Act → Learn
 
-- **Infrastructure** – Cilium, Cert-Manager, Vault, External Secrets, ArgoCD,
-  and supporting namespaces.
-- **Policy & Security** – Kyverno policies, Policy Reporter, Trivy scanning, and
-  governance guidance.
-- **Observability** – Prometheus, Grafana, Loki, Fluent Bit, dashboards, and
-  alerting hooks.
-- **CI/CD** – Argo Workflows, SonarQube, and the supporting automation that
-  project teams touch daily.
+```d2
+direction: right
 
-## How To Use
+Detect: {
+  Observability: "Prometheus (metrics)\nLoki (logs)\nPyrra (SLOs)"
+}
 
-Each component page includes:
+Decide: {
+  label: "Routes"
+  Alerts: "Alertmanager/Grafana UA"
+  Events: "Argo Events (planned)"
+}
 
-1. **Summary & diagrams** – Why the component exists and how it fits into the
-   flow.
-2. **Values & configuration** – Helm/Kustomize knobs maintained by GitOps.
-3. **Operational guidance** – Scaling tips, dashboards, and health checks.
+Act: {
+  Workflows: "Argo Workflows"
+  GitOps: "ArgoCD sync/refresh"
+  HTTP: "Webhooks / APIs"
+}
 
-## Quick Links
+Learn: {
+  Dashboards: "Grafana"
+  Reports: "Policy Reporter"
+}
 
-- [Infrastructure Stack](../components/infrastructure/index.md)
-- [Policy & Security](../components/policy/index.md)
-- [Observability](../components/observability/index.md)
-- [CI/CD](../components/cicd/index.md)
+Detect -> Decide: signals
+Decide -> Act: triggers
+Act -> Learn: outcomes
+Learn -> Detect: new baselines
+```
+
+![Alerts pipeline](../assets/images/operate/alerts-pipeline.jpg){ loading=lazy }
+
+## What “good operations” looks like here
+
+- SLOs as code (Pyrra) define expectations; burn rates trigger playbooks.
+- GitOps and policies keep intent and reality aligned; drift is fixed automatically.
+- Events (planned) connect alerts and changes to reproducible actions.
+- Dashboards are the narrative of the last incident; they evolve with runbooks.
+
+## Runbooks you will rely on
+
+- Backup/Restore: know your sources of truth and what to regenerate.
+- Upgrades: orchestration order, gates, and rollbacks.
+- Scaling & Tuning: knobs that matter (retention, cardinality, priorities).
+- Disaster Recovery: rebuild from Git, restore secrets, re‑issue certs.
+
+Use the guides below to operate with confidence:
+
+- [Backup & Restore](../operate/backup-restore.md)
+- [Upgrades](../operate/upgrades.md)
+- [Scaling & Tuning](../operate/scaling-tuning.md)
+- [Disaster Recovery](../operate/disaster-recovery.md)
+- [Troubleshooting Playbook](../reference/troubleshooting.md)

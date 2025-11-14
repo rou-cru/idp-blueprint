@@ -1,6 +1,7 @@
-# Quickstart
+---
+# Quickstart — A smooth paved road
 
-Spin up the full IDP Blueprint locally with one command, then validate access and credentials.
+Spin up the full IDP locally with one command, then validate access and credentials. Expect eventual consistency for a few minutes while images download.
 
 ## Context at a Glance
 
