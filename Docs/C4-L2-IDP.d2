@@ -1,0 +1,172 @@
+vars: {
+  d2-config: {
+    theme-id: 200
+  }
+}
+
+direction: down
+layout: elk
+
+# ------------------------------------------------------------------------------------
+# 1. Actors & External Systems
+# ------------------------------------------------------------------------------------
+
+platform_engineer: |md
+  ## Platform Engineer
+  [Person]
+
+  Builds, operates, and maintains the IDP.
+| {
+  shape: c4-person
+}
+
+developer: |md
+  ## Application Developer
+  [Person]
+
+  Uses the IDP to ship and run applications.
+| {
+  shape: c4-person
+}
+
+git_provider: |md
+  ## Git Provider
+  [Software System]
+
+  (e.g., GitHub)
+  The single source of truth for all code and configuration.
+| {
+  shape: rectangle
+}
+
+container_registry: |md
+  ## Container Registry
+  [Software System]
+
+  (e.g., GHCR)
+  Stores and serves container images.
+| {
+  shape: rectangle
+}
+
+# ------------------------------------------------------------------------------------
+# 2. The System Boundary (Internal Developer Platform)
+# ------------------------------------------------------------------------------------
+
+idp: |md
+  ## Internal Developer Platform (IDP)
+  [Software System]
+| {
+  shape: rectangle
+  style.stroke-width: 3
+
+  # ----------------------------------------------------------------------------------
+  # 3. Internal Containers
+  # ----------------------------------------------------------------------------------
+
+  argo_cd: |md
+    ## ArgoCD
+    [Container: GitOps Engine]
+
+    Continuously reconciles the cluster state with Git.
+  | {
+    shape: rectangle
+  }
+
+  jenkins: |md
+    ## Jenkins
+    [Container: CI/CD Engine]
+
+    Runs CI/CD pipelines to build, test, and package applications.
+  | {
+    shape: rectangle
+  }
+
+  sonarqube: |md
+    ## SonarQube
+    [Container: Code Quality]
+
+    Analyzes code for quality and security issues during CI.
+  | {
+    shape: rectangle
+  }
+
+  observability: {
+    shape: rectangle
+    style.stroke-width: 2
+    label: "Observability Stack"
+
+    prometheus: |md
+      ## Prometheus
+      [Container: Metrics]
+      Collects and stores metrics.
+    | { shape: rectangle }
+    
+    loki: |md
+      ## Loki
+      [Container: Logs]
+      Collects and stores logs.
+    | { shape: rectangle }
+    
+    grafana: |md
+      ## Grafana
+      [Container: Visualization]
+      Visualizes metrics, logs, and traces.
+    | { shape: rectangle }
+
+    fluent_bit: |md
+      ## Fluent-bit
+      [Container: Log Agent]
+      Forwards logs from all nodes to Loki.
+    | { shape: rectangle }
+  }
+
+  security: {
+    shape: rectangle
+    style.stroke-width: 2
+    label: "Security Stack"
+
+    kyverno: |md
+      ## Kyverno
+      [Container: Policy Engine]
+      Enforces policies on Kubernetes resources.
+    | { shape: rectangle }
+
+    vault: |md
+      ## Vault
+      [Container: Secrets Backend]
+      Manages secrets and sensitive data.
+    | { shape: rectangle }
+
+    external_secrets: |md
+      ## External Secrets Operator
+      [Container: Secret Sync]
+      Syncs secrets from Vault into Kubernetes.
+    | { shape: rectangle }
+  }
+}
+
+# ------------------------------------------------------------------------------------
+# 4. Connections
+# ------------------------------------------------------------------------------------
+
+developer -> git_provider: "Pushes application code"
+platform_engineer -> git_provider: "Pushes platform configuration"
+
+git_provider -> idp.jenkins: "Triggers CI pipelines via webhooks"
+idp.jenkins -> idp.sonarqube: "Sends code for analysis"
+idp.jenkins -> container_registry: "Pushes container image"
+idp.jenkins -> git_provider: "Updates Kubernetes manifests in Git"
+
+git_provider -> idp.argo_cd: "Pulls manifests to sync"
+
+idp.argo_cd -> idp.security.kyverno: "Resource deployments are validated by"
+idp.argo_cd -> idp.security.external_secrets: "Deployed applications consume secrets synced by"
+
+idp.security.external_secrets -> idp.security.vault: "Reads secret data from"
+
+idp.observability.fluent_bit -> idp.observability.loki: "Forwards logs"
+
+developer -> idp.observability.grafana: "Views dashboards and metrics"
+idp.observability.grafana -> idp.observability.prometheus: "Queries metrics"
+idp.observability.grafana -> idp.observability.loki: "Queries logs"

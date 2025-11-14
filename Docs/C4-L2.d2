@@ -1,0 +1,240 @@
+vars: {
+  d2-config: {
+    theme-id: 200 # "Dark mauve"
+  }
+  d2-legend: {
+    banking: Banking {
+      style.fill: "#FFE4E1"
+    }
+    banking -> x: Alerting {
+      style.stroke-dash: 5
+      style.stroke: "#2E8B57"
+    }
+    banking -> y: Authentication {
+      style.stroke-width: 2
+      style.stroke: "#800080"
+    }
+    # Remove unneeded objects
+    x.style.opacity: 0
+    y.style.opacity: 0
+  }
+}
+
+direction: down
+layout: elk
+
+# ------------------------------------------------------------------------------------
+# 1. Actors & External Systems
+# ------------------------------------------------------------------------------------
+
+platform_engineer: |md
+  ## Platform Engineer
+  [Person]
+
+  Builds, operates, and maintains the IDP.
+| {
+  shape: c4-person
+}
+
+developer: |md
+  ## Application Developer
+  [Person]
+
+  Uses the IDP to ship and run applications.
+| {
+  shape: c4-person
+}
+
+git_provider: |md
+  ## Git Provider
+  [Software System]
+
+  (e.g., GitHub)
+  The single source of truth for all code and configuration.
+| {
+  shape: rectangle
+}
+
+container_registry: |md
+  ## Container Registry
+  [Software System]
+
+  (e.g., GHCR)
+  Stores and serves container images.
+| {
+  shape: rectangle
+}
+
+# ------------------------------------------------------------------------------------
+# 2. The System Boundary
+# ------------------------------------------------------------------------------------
+
+idp: |md
+  ## Internal Developer Platform (IDP)
+  [Software System]
+| {
+  shape: rectangle
+  style.stroke-width: 3
+
+  # ----------------------------------------------------------------------------------
+  # 3. Internal Containers
+  # ----------------------------------------------------------------------------------
+
+  backstage: |md
+    ## Backstage
+    [Container: Developer Portal]
+
+    The unified frontend for the IDP.
+    *[Assumed/Planned Component]*
+  | {
+    shape: rectangle
+  }
+
+  argo_events: |md
+    ## Argo Events
+    [Container: Event Bus]
+
+    Triggers workflows from events.
+    *[Assumed/Planned Component]*
+  | {
+    shape: rectangle
+  }
+
+  argo_workflows: |md
+    ## Argo Workflows
+    [Container: CI Engine]
+
+    Kubernetes-native engine for running CI pipelines.
+  | {
+    shape: rectangle
+  }
+
+  argo_cd: |md
+    ## ArgoCD
+    [Container: GitOps Engine]
+
+    Continuously reconciles the cluster state with Git.
+  | {
+    shape: rectangle
+  }
+
+  kyverno: |md
+    ## Kyverno
+    [Container: Policy Engine]
+
+    Enforces security, best practices, and governance.
+  | {
+    shape: rectangle
+  }
+
+  vault: |md
+    ## Vault
+    [Container: Secrets Backend]
+
+    Manages all secrets.
+  | {
+    shape: rectangle
+  }
+
+  external_secrets: |md
+    ## External Secrets Operator
+    [Container: Secret Sync]
+
+    Synchronizes secrets from Vault to K8s.
+  | {
+    shape: rectangle
+  }
+
+  cert_manager: |md
+    ## Cert-Manager
+    [Container: PKI Engine]
+
+    Automates TLS certificate management.
+  | {
+    shape: rectangle
+  }
+  
+  observability_stack: |md
+    ## Observability Stack
+    [Container]
+  | {
+    shape: rectangle
+    style.stroke-width: 2
+    
+    prometheus: |md
+      ## Prometheus
+      [Container: Metrics]
+    | {
+      shape: rectangle
+    }
+    
+    loki: |md
+      ## Loki
+      [Container: Logs]
+    | {
+      shape: rectangle
+    }
+    
+    pyrra: |md
+      ## Pyrra
+      [Container: SLO Engine]
+      *[Assumed/Planned Component]*
+    | {
+      shape: rectangle
+    }
+    
+    grafana: |md
+      ## Grafana
+      [Container: Visualization]
+    | {
+      shape: rectangle
+    }
+  }
+
+  foundation: |md
+    ## Foundational Services
+    [Container]
+  | {
+    shape: rectangle
+    style.stroke-width: 2
+
+    fluent_bit: |md
+      ## Fluent-bit
+      [Container: Log Agent]
+    | {
+      shape: rectangle
+    }
+    k8s_api: |md
+      ## Kubernetes API
+      [Container]
+    | {
+      shape: rectangle
+    }
+  }
+}
+
+# ------------------------------------------------------------------------------------
+# 4. Connections
+# ------------------------------------------------------------------------------------
+
+platform_engineer -> git_provider: "Defines Platform (IaC)"
+developer -> git_provider: "Pushes Application Code"
+developer -> idp.backstage: "Uses"
+
+git_provider -> idp.argo_events: "Triggers 'Git Push' event"
+idp.argo_events -> idp.argo_workflows: "Starts CI Workflow"
+idp.argo_workflows -> container_registry: "Pushes new image"
+idp.argo_workflows -> git_provider: "Pushes manifest update"
+idp.argo_cd -> git_provider: "Pulls manifests"
+
+idp.argo_cd -> idp.foundation.k8s_api: "Deploys & Reconciles Resources"
+idp.argo_cd -> idp.kyverno: "Validates resources on admission"
+idp.external_secrets -> idp.vault: "Pulls secrets"
+
+idp.observability_stack.prometheus -> idp.foundation.k8s_api: "Scrapes metrics"
+idp.foundation.fluent_bit -> idp.observability_stack.loki: "Forwards logs"
+idp.observability_stack.pyrra -> idp.observability_stack.prometheus: "Queries SLOs"
+idp.observability_stack.grafana -> idp.observability_stack.prometheus: "Queries"
+idp.observability_stack.grafana -> idp.observability_stack.loki: "Queries"
+idp.observability_stack.grafana -> idp.observability_stack.pyrra: "Queries"
+developer -> idp.observability_stack.grafana: "Views Dashboards"
