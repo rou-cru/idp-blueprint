@@ -5,10 +5,22 @@ crds:
 
 # @section -- Alertmanager
 alertmanager:
-  # -- Disabled by default. This blueprint uses Grafana Unified Alerting as the
-  # primary platform for managing alerts from all datasources (Prometheus, Loki, etc.),
-  # providing a single, integrated user experience.
-  enabled: false
+  # -- Enable Alertmanager for alert routing (required for Pyrra burn-rate alerts)
+  enabled: true
+  alertmanagerSpec:
+    # -- (string) Priority class for Alertmanager pod
+    priorityClassName: platform-observability
+    resources:
+      requests:
+        # -- (string) CPU request
+        cpu: 25m
+        # -- (string) Memory request
+        memory: 64Mi
+      limits:
+        # -- (string) CPU limit
+        cpu: 100m
+        # -- (string) Memory limit
+        memory: 128Mi
 
 # @section -- Prometheus
 prometheus:

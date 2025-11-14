@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-pyrra-slos
+  namespace: observability
+  labels:
+    grafana_dashboard: "1"
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: dashboards
+    app.kubernetes.io/name: pyrra-slos
+    app.kubernetes.io/instance: pyrra-slos-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+data:
+  pyrra-slos.json: |
+    {
+      "id": null,
+      "uid": "pyrra-slos",
+      "title": "Pyrra SLOs",
+      "tags": ["pyrra", "slo"],
+      "timezone": "",
+      "schemaVersion": 38,
+      "version": 1,
+      "refresh": "30s",
+      "panels": [
+        {
+          "type": "stat",
+          "title": "Example SLO Error Budget (placeholder)",
+          "gridPos": {"h": 6, "w": 12, "x": 0, "y": 0},
+          "targets": [
+            {"expr": "vector(1)", "refId": "A"}
+          ]
+        }
+      ]
+    }
+

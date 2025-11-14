@@ -1,0 +1,26 @@
+# @section -- General
+# -- (string) Priority class for Pyrra pods
+priorityClassName: platform-observability
+
+# @section -- Resources
+resources:
+  requests:
+    # -- (string) CPU request
+    cpu: 50m
+    # -- (string) Memory request
+    memory: 64Mi
+  limits:
+    # -- (string) CPU limit
+    cpu: 200m
+    # -- (string) Memory limit
+    memory: 256Mi
+
+# @section -- ServiceMonitor
+# -- Create a ServiceMonitor for Prometheus Operator
+serviceMonitor:
+  # -- (bool) Enable ServiceMonitor for Pyrra
+  enabled: true
+  additionalLabels:
+    # -- (string) Prometheus selector label
+    prometheus: kube-prometheus
+
