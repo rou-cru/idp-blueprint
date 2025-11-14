@@ -4,186 +4,97 @@
 
 ---
 
-## IDP Blueprint (Conceptual)
+## IDP Blueprint Architecture
 
 ```d2
 direction: right
 
 classes: {
-  aux:  { style: { fill: "#F7F9FC" } }
-  main: { style: { fill: "#FFFFFF" } }
-  band: { style: { fill: "#EEF3F7" } }
-  pill: { style: { fill: "#E9F0FF" } }
+  infra: { style: { fill: "#263238"; font-color: "#ffffff"; stroke: "#37474f" } }
+  network: { style: { fill: "#006064"; font-color: "#ffffff"; stroke: "#00838f" } }
+  gitops: { style: { fill: "#1b5e20"; font-color: "#ffffff"; stroke: "#2e7d32"; stroke-width: 3 } }
+  platform: { style: { fill: "#4a148c"; font-color: "#ffffff"; stroke: "#6a1b9a" } }
+  observe: { style: { fill: "#e65100"; font-color: "#ffffff"; stroke: "#ef6c00" } }
+  policy: { style: { fill: "#b71c1c"; font-color: "#ffffff"; stroke: "#c62828" } }
+  quality: { style: { fill: "#f57f17"; font-color: "#000000"; stroke: "#f9a825" } }
+  conceptual: { style: { fill: "#e0e0e0"; font-color: "#757575"; stroke: "#9e9e9e"; stroke-dash: 3 } }
 }
 
-Canvas: {
-  grid: {
-    columns: 3
-    gap: 24
-  }
+IDP Blueprint Architecture: {
+  grid-rows: 10
+  grid-columns: 10
+  grid-gap: 4
 
-  LeftCol: {
-    class: aux
-    label: "IDP Platform"
-    grid: { row: 1 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
+  # Row 0: Software Catalog (full width, 2-row height)
+  0,0: { label: "Software Catalog [conceptual]"; class: conceptual; width: 2000; height: 120 }
 
-    A1: { label: "Platform Elements" }
-    A2: { label: "System Core" }
-  }
+  # Row 2: Observability (transversal - spanning 2 rows)
+  2,0: { label: "Prometheus"; class: observe; height: 120 }
+  2,1: { label: "Alertmanager"; class: observe; height: 120 }
+  2,2: { label: "Grafana"; class: observe; height: 120 }
+  2,3: { label: "Loki"; class: observe; height: 120 }
+  2,4: { label: "Fluent-bit"; class: observe; height: 120 }
 
-  Main: {
-    class: main
-    label: "IDP"
-    grid: { row: 1 col: 2 }
-    grid: {
-      columns: 6
-      gap: 12
-    }
+  # Row 2: Policy & Security (transversal - spanning 2 rows)
+  2,5: { label: "Kyverno"; class: policy; height: 120 }
+  2,6: { label: "Policy\nReporter"; class: policy; height: 120 }
+  2,7: { label: "Trivy"; class: policy; height: 120 }
 
-    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
+  # Row 2: CI/CD & Quality (transversal - spanning 2 rows)
+  2,8: { label: "Argo\nWorkflows"; class: quality; height: 120 }
+  2,9: { label: "SonarQube"; class: quality; height: 120 }
 
-    Quality: { class: pill label: "Quality" grid: { row: 2 col: 1 } }
-    Policy:  { class: pill label: "Policy"  grid: { row: 2 col: 2 } }
-    Sec:     { class: pill label: "Security" grid: { row: 2 col: 3 } }
-    CICD:    { class: pill label: "CI/CD"   grid: { row: 2 col: 4 } }
-    Obs:     { class: pill label: "Observability" grid: { row: 2 col: 5 } }
+  # Row 4: GitOps Engine (2-row height)
+  4,0: { label: "ArgoCD"; class: gitops; width: 1000; height: 120 }
+  4,5: { label: "Application\nSets"; class: gitops; width: 800; height: 120 }
 
-    Secrets: { class: pill label: "Secrets"      grid: { row: 3 col: 2 } }
-    Certs:   { class: pill label: "Certificates" grid: { row: 3 col: 3 } }
-    Engine:  { class: band label: "GitOps Engine" grid: { row: 3 col: 4 colspan: 3 } }
+  # Row 6: Platform Services
+  6,0: { label: "Vault"; class: platform }
+  6,2: { label: "External\nSecrets"; class: platform }
+  6,5: { label: "Cert\nManager"; class: platform }
+  6,8: { label: "Gateway\nAPI"; class: platform }
 
-    Cilium:  { class: band label: "Cilium"      grid: { row: 4 col: 1 colspan: 6 } }
-    K8s:     { class: band label: "Kubernetes"  grid: { row: 5 col: 1 colspan: 6 } }
-    Infra:   { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
-  }
+  # Row 7: Cilium (full width, 2-row height)
+  7,0: { label: "Cilium"; class: network; width: 2000; height: 120 }
 
-  RightCol: {
-    class: aux
-    grid: { row: 1 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    P1: { label: "Dev Portal" }
-  }
-
-  BottomLeft: {
-    class: aux
-    grid: { row: 2 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    C: { label: "Costs" }
-    O: { label: "Opex" }
-  }
-
-  BottomRight: {
-    class: aux
-    grid: { row: 2 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    HA: { label: "Hardware Abstr." }
-    HW: { label: "Hardware" }
-  }
+  # Row 9: Kubernetes Infrastructure
+  9,0: { label: "API Server"; class: infra }
+  9,1: { label: "Scheduler"; class: infra }
+  9,2: { label: "Controller\nManager"; class: infra }
+  9,3: { label: "etcd"; class: infra }
+  9,5: { label: "Kubelet"; class: infra }
+  9,6: { label: "K3d"; class: infra }
+  9,8: { label: "Containerd"; class: infra }
+  9,9: { label: "Storage"; class: infra }
 }
 ```
 
-## IDP Blueprint (Implementation)
+### Architecture Principles
 
-```d2
-direction: right
+**Visual Grammar:**
 
-classes: {
-  aux:  { style: { fill: "#F7F9FC" } }
-  main: { style: { fill: "#FFFFFF" } }
-  band: { style: { fill: "#EEF3F7" } }
-  pill: { style: { fill: "#E9F0FF" } }
-}
+- **Position**: Elements lower in the diagram are dependencies of those above
+- **Size**: Larger blocks (multi-row) indicate greater surface area of impact
+- **Color**: Groups components by domain concern - same color = related functionality
+- **Transversality**: Shown by color repetition across rows (e.g., orange observe blocks span multiple columns)
 
-Canvas: {
-  grid: {
-    columns: 3
-    gap: 24
-  }
+**Interchange Points** - Clear abstraction boundaries for swappable components:
 
-  LeftCol: {
-    class: aux
-    label: "IDP Platform"
-    grid: { row: 1 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    A1: { label: "Platform Elements" }
-    A2: { label: "System Core" }
-  }
+| Component | Interface Contract | Alternatives |
+|-----------|-------------------|--------------|
+| Container Runtime | K8s CRI | Docker → Podman, CRI-O |
+| Kubernetes | K8s API | K3d → Kind, Minikube, EKS, GKE, AKS |
+| CNI Provider | CNI Plugin | Cilium → Calico, Flannel, Weave |
+| GitOps Engine | Git as Truth | ArgoCD → Flux CD |
+| Observability | Metrics/Logs APIs | Prometheus → Datadog, New Relic |
+| Developer Portal | Service Catalog | Backstage → Port, Humanitec |
 
-  Main: {
-    class: main
-    label: "IDP"
-    grid: { row: 1 col: 2 }
-    grid: {
-      columns: 6
-      gap: 12
-    }
+**Transversal Concerns:**
 
-    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
-
-    GitHub:     { class: pill label: "GitHub"     grid: { row: 2 col: 1 } }
-    Backstage:  { class: pill label: "Backstage"  grid: { row: 2 col: 2 } }
-    Kyverno:    { class: pill label: "Kyverno"    grid: { row: 2 col: 3 } }
-    Workflows:  { class: pill label: "Workflows"  grid: { row: 2 col: 4 } }
-    Grafana:    { class: pill label: "Grafana"    grid: { row: 2 col: 5 } }
-
-    Vault:      { class: pill label: "Vault"         grid: { row: 3 col: 2 } }
-    CertMgr:    { class: pill label: "Cert-Manager"  grid: { row: 3 col: 3 } }
-    ArgoCD:     { class: band label: "ArgoCD / AppSets" grid: { row: 3 col: 4 colspan: 3 } }
-
-    Cilium:     { class: band label: "Cilium"     grid: { row: 4 col: 1 colspan: 6 } }
-    K8s:        { class: band label: "Kubernetes" grid: { row: 5 col: 1 colspan: 6 } }
-    Infra:      { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
-  }
-
-  RightCol: {
-    class: aux
-    grid: { row: 1 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    P1: { label: "Dev Portal" }
-  }
-
-  BottomLeft: {
-    class: aux
-    grid: { row: 2 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    C: { label: "Costs" }
-    O: { label: "Opex" }
-  }
-
-  BottomRight: {
-    class: aux
-    grid: { row: 2 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    HA: { label: "Hardware Abstr." }
-    HW: { label: "Hardware" }
-  }
-}
-```
+- **GitOps**: Orchestrates all platform and application resources declaratively
+- **Observability**: Monitors across all layers from infrastructure to applications
+- **FinOps**: Tags propagate through all resources for cost attribution
+- **Security**: Policy enforcement, scanning, and secrets management span the entire stack
 
 ---
 

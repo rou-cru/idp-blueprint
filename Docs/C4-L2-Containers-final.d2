@@ -1,0 +1,134 @@
+# C4 Debug - Step 5: Add all connections
+direction: down
+
+platform_engineer: {
+  shape: person
+  label: "Platform Engineer"
+}
+
+developer: {
+  shape: person
+  label: "Application Developer"
+}
+
+git_provider: {
+  shape: cloud
+  label: "Git Provider (e.g., GitHub)"
+}
+
+container_registry: {
+  shape: cloud
+  label: "Container Registry (e.g., GHCR)"
+}
+
+idp: "Internal Developer Platform (IDP)" {
+  style.stroke-width: 3
+
+  dev_experience: "Developer Experience" {
+    style.fill: "#f2e6ff"
+    backstage: "Backstage (Developer Portal)" {
+      shape: rectangle
+      style: {
+        stroke-dash: 2
+        opacity: 0.8
+      }
+    }
+  }
+
+  automation: "Automation & CI/CD" {
+    style.fill: "#e6e6e6"
+    argo_events: "Argo Events (Event Bus)" {
+      shape: rectangle
+      style: {
+        stroke-dash: 2
+        opacity: 0.8
+      }
+    }
+    argo_workflows: "Argo Workflows (CI Engine)" {
+      shape: rectangle
+    }
+    sonarqube: "SonarQube (Code Quality)" {
+      shape: rectangle
+    }
+  }
+
+  delivery: "Continuous Delivery" {
+    style.fill: "#d4edda"
+    argo_cd: "ArgoCD (GitOps Engine)" {
+      shape: rectangle
+    }
+  }
+
+  security: "Security & Governance" {
+    style.fill: "#ffe6e6"
+    vault: "Vault (Secrets Backend)" {
+      shape: rectangle
+    }
+    external_secrets: "External Secrets (Sync)" {
+      shape: rectangle
+    }
+    cert_manager: "Cert-Manager (PKI)" {
+      shape: rectangle
+    }
+    kyverno: "Kyverno (Policy Engine)" {
+      shape: rectangle
+    }
+  }
+
+  observability: "Observability Stack" {
+    style.fill: "#e6ffed"
+    prometheus: "Prometheus (Metrics)" {
+      shape: rectangle
+    }
+    loki: "Loki (Logs)" {
+      shape: rectangle
+    }
+    pyrra: "Pyrra (SLO Engine)" {
+      shape: rectangle
+      style: {
+        stroke-dash: 2
+        opacity: 0.8
+      }
+    }
+    grafana: "Grafana (Visualization)" {
+      shape: rectangle
+    }
+  }
+  
+  foundation: "Foundational Services" {
+      style.fill: "#e6f2ff"
+      fluent_bit: "Fluent-bit (Log Agent)" {
+        shape: rectangle
+      }
+      k8s_api: "Kubernetes API" {
+          style.opacity: 0.5
+      }
+  }
+}
+
+# --- Connections ---
+developer -> idp.dev_experience.backstage: "1. Interacts with IDP"
+platform_engineer -> git_provider: "2. Defines Platform (IaC)"
+developer -> git_provider: "3. Pushes App Code"
+
+git_provider -> idp.automation.argo_events: "4. Triggers 'Git Push' event" {
+  style.stroke-dash: 2
+}
+idp.automation.argo_events -> idp.automation.argo_workflows: "5. Orchestrates CI Workflow" {
+  style.stroke-dash: 2
+}
+idp.automation.argo_workflows -> container_registry: "6a. Pushes new image"
+idp.automation.argo_workflows -> git_provider: "6b. Pushes manifest update"
+
+idp.delivery.argo_cd -> git_provider: "Pulls manifests"
+idp.delivery.argo_cd -> idp.foundation.k8s_api: "Deploys & Reconciles Resources"
+
+idp.security.external_secrets -> idp.security.vault: "Pulls secrets"
+idp.observability.grafana -> idp.observability.prometheus: "Queries metrics"
+idp.observability.grafana -> idp.observability.loki: "Queries logs"
+idp.observability.pyrra -> idp.observability.prometheus: "Queries metrics for SLOs"
+idp.foundation.fluent_bit -> idp.observability.loki: "Forwards all node logs"
+
+idp.delivery.argo_cd -> idp.security.kyverno: "Admission requests are validated by"
+idp.delivery.argo_cd -> idp.security.cert_manager: "Creates Certificate CRs"
+idp.observability.prometheus -> idp.foundation.k8s_api: "Scrapes components via ServiceMonitors"
