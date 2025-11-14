@@ -1,134 +1,197 @@
-# C4 Debug - Step 5: Add all connections
+# C4 Model - Level 2: Container Diagram (v19 - Correct Label Syntax)
+#
+# Description:
+#   A C4 Container diagram of the IDP, adapted to the limitations of D2 v0.7.1.
+#   This version uses the correct, simple `label: "string"` syntax as instructed,
+#   along with basic shapes and hardcoded styling to ensure render success.
+
 direction: down
+layout: elk # Use ELK layout engine as requested
+theme: "Dark mauve"
+
+# ------------------------------------------------------------------------------------
+# 1. Actors & External Systems
+# ------------------------------------------------------------------------------------
 
 platform_engineer: {
   shape: person
   label: "Platform Engineer"
+  style.fill: "#6699CC"
 }
 
 developer: {
   shape: person
   label: "Application Developer"
+  style.fill: "#6699CC"
 }
 
 git_provider: {
   shape: cloud
   label: "Git Provider (e.g., GitHub)"
+  style.fill: "#99CCFF"
 }
 
 container_registry: {
   shape: cloud
   label: "Container Registry (e.g., GHCR)"
+  style.fill: "#99CCFF"
 }
+
+# ------------------------------------------------------------------------------------
+# 2. The System Boundary (Emulated with a rectangle)
+# ------------------------------------------------------------------------------------
 
 idp: "Internal Developer Platform (IDP)" {
-  style.stroke-width: 3
+  shape: rectangle
+  style: {
+    stroke-width: 3
+    stroke: "#666666"
+    fill: "#FFFFFF"
+  }
 
-  dev_experience: "Developer Experience" {
-    style.fill: "#f2e6ff"
-    backstage: "Backstage (Developer Portal)" {
-      shape: rectangle
-      style: {
-        stroke-dash: 2
-        opacity: 0.8
-      }
+  # ----------------------------------------------------------------------------------
+  # 3. Internal Containers (Applications & Services)
+  # ----------------------------------------------------------------------------------
+
+  backstage: {
+    shape: rectangle
+    label: "Backstage (Developer Portal)"
+    style: {
+      fill: "#CCEEFF"
+      stroke-dash: 2
+      opacity: 0.8
     }
   }
 
-  automation: "Automation & CI/CD" {
-    style.fill: "#e6e6e6"
-    argo_events: "Argo Events (Event Bus)" {
-      shape: rectangle
-      style: {
-        stroke-dash: 2
-        opacity: 0.8
-      }
-    }
-    argo_workflows: "Argo Workflows (CI Engine)" {
-      shape: rectangle
-    }
-    sonarqube: "SonarQube (Code Quality)" {
-      shape: rectangle
+  argo_events: {
+    shape: rectangle
+    label: "Argo Events (Event Bus)"
+    style: {
+      fill: "#CCEEFF"
+      stroke-dash: 2
+      opacity: 0.8
     }
   }
 
-  delivery: "Continuous Delivery" {
-    style.fill: "#d4edda"
-    argo_cd: "ArgoCD (GitOps Engine)" {
-      shape: rectangle
-    }
+  argo_workflows: {
+    shape: rectangle
+    label: "Argo Workflows (CI Engine)"
+    style.fill: "#CCEEFF"
   }
 
-  security: "Security & Governance" {
-    style.fill: "#ffe6e6"
-    vault: "Vault (Secrets Backend)" {
-      shape: rectangle
-    }
-    external_secrets: "External Secrets (Sync)" {
-      shape: rectangle
-    }
-    cert_manager: "Cert-Manager (PKI)" {
-      shape: rectangle
-    }
-    kyverno: "Kyverno (Policy Engine)" {
-      shape: rectangle
-    }
+  argo_cd: {
+    shape: rectangle
+    label: "ArgoCD (GitOps Engine)"
+    style.fill: "#CCEEFF"
   }
 
-  observability: "Observability Stack" {
-    style.fill: "#e6ffed"
-    prometheus: "Prometheus (Metrics)" {
-      shape: rectangle
-    }
-    loki: "Loki (Logs)" {
-      shape: rectangle
-    }
-    pyrra: "Pyrra (SLO Engine)" {
-      shape: rectangle
-      style: {
-        stroke-dash: 2
-        opacity: 0.8
-      }
-    }
-    grafana: "Grafana (Visualization)" {
-      shape: rectangle
-    }
+  kyverno: {
+    shape: rectangle
+    label: "Kyverno (Policy Engine)"
+    style.fill: "#CCEEFF"
+  }
+
+  vault: {
+    shape: rectangle
+    label: "Vault (Secrets Backend)"
+    style.fill: "#CCEEFF"
+  }
+
+  external_secrets: {
+    shape: rectangle
+    label: "External Secrets Operator (Secret Sync)"
+    style.fill: "#CCEEFF"
+  }
+
+  cert_manager: {
+    shape: rectangle
+    label: "Cert-Manager (PKI Engine)"
+    style.fill: "#CCEEFF"
   }
   
+  observability_stack: "Observability Stack" {
+    shape: rectangle
+    style: {
+      stroke-width: 2
+      stroke: "#666666"
+      fill: "#F0F8FF"
+    }
+    
+    prometheus: {
+      shape: rectangle
+      label: "Prometheus (Metrics)"
+      style.fill: "#CCEEFF"
+    }
+    
+    loki: {
+      shape: rectangle
+      label: "Loki (Logs)"
+      style.fill: "#CCEEFF"
+    }
+    
+    pyrra: {
+      shape: rectangle
+      label: "Pyrra (SLO Engine)"
+      style: {
+        fill: "#CCEEFF"
+        stroke-dash: 2
+        opacity: 0.8
+      }
+    }
+    
+    grafana: {
+      shape: rectangle
+      label: "Grafana (Visualization)"
+      style.fill: "#CCEEFF"
+    }
+  }
+
   foundation: "Foundational Services" {
-      style.fill: "#e6f2ff"
-      fluent_bit: "Fluent-bit (Log Agent)" {
-        shape: rectangle
-      }
-      k8s_api: "Kubernetes API" {
-          style.opacity: 0.5
-      }
+    shape: rectangle
+    style: {
+      stroke-width: 2
+      stroke: "#666666"
+      fill: "#F0F8FF"
+    }
+    fluent_bit: {
+      shape: rectangle
+      label: "Fluent-bit (Log Agent)"
+      style.fill: "#CCEEFF"
+    }
+    k8s_api: {
+      shape: rectangle
+      label: "Kubernetes API"
+      style.opacity: 0.5
+      style.fill: "#CCEEFF"
+    }
   }
 }
 
-# --- Connections ---
-developer -> idp.dev_experience.backstage: "1. Interacts with IDP"
-platform_engineer -> git_provider: "2. Defines Platform (IaC)"
-developer -> git_provider: "3. Pushes App Code"
+# ------------------------------------------------------------------------------------
+# 4. Connections
+# ------------------------------------------------------------------------------------
 
-git_provider -> idp.automation.argo_events: "4. Triggers 'Git Push' event" {
-  style.stroke-dash: 2
-}
-idp.automation.argo_events -> idp.automation.argo_workflows: "5. Orchestrates CI Workflow" {
-  style.stroke-dash: 2
-}
-idp.automation.argo_workflows -> container_registry: "6a. Pushes new image"
-idp.automation.argo_workflows -> git_provider: "6b. Pushes manifest update"
+developer -> idp.backstage: "Uses"
+platform_engineer -> git_provider: "Defines Platform (IaC)"
+developer -> git_provider: "Pushes App Code"
 
-idp.delivery.argo_cd -> git_provider: "Pulls manifests"
-idp.delivery.argo_cd -> idp.foundation.k8s_api: "Deploys & Reconciles Resources"
+# --- Event-Driven CI/CD & GitOps Flow ---
+git_provider -> idp.argo_events: "Triggers 'Git Push' event"
+idp.argo_events -> idp.argo_workflows: "Starts CI Workflow"
+idp.argo_workflows -> container_registry: "Pushes new image"
+idp.argo_workflows -> git_provider: "Pushes manifest update"
+idp.argo_cd -> git_provider: "Pulls manifests"
 
-idp.security.external_secrets -> idp.security.vault: "Pulls secrets"
-idp.observability.grafana -> idp.observability.prometheus: "Queries metrics"
-idp.observability.grafana -> idp.observability.loki: "Queries logs"
-idp.observability.pyrra -> idp.observability.prometheus: "Queries metrics for SLOs"
-idp.foundation.fluent_bit -> idp.observability.loki: "Forwards all node logs"
+# --- Core Platform Interactions ---
+idp.argo_cd -> idp.foundation.k8s_api: "Deploys & Reconciles Resources"
+idp.argo_cd -> idp.kyverno: "Validates resources on admission"
+idp.external_secrets -> idp.vault: "Pulls secrets"
 
-idp.delivery.argo_cd -> idp.security.kyverno: "Admission requests are validated by"
-idp.delivery.argo_cd -> idp.security.cert_manager: "Creates Certificate CRs"
-idp.observability.prometheus -> idp.foundation.k8s_api: "Scrapes components via ServiceMonitors"
+# --- Observability Flow ---
+idp.observability_stack.prometheus -> idp.foundation.k8s_api: "Scrapes metrics"
+idp.foundation.fluent_bit -> idp.observability_stack.loki: "Forwards logs"
+idp.observability_stack.pyrra -> idp.observability_stack.prometheus: "Queries SLOs"
+idp.observability_stack.grafana -> idp.observability_stack.prometheus: "Queries"
+idp.observability_stack.grafana -> idp.observability_stack.loki: "Queries"
+idp.observability_stack.grafana -> idp.observability_stack.pyrra: "Queries"
+developer -> idp.observability_stack.grafana: "Views Dashboards"
