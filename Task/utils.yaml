@@ -64,6 +64,20 @@ tasks:
       - task: docs:build
       - task: docs:linkcheck
 
+  config:print:
+    desc: 'Print effective configuration (fork-friendly)'
+    cmds:
+      - |
+        echo "Configuration (from {{.CONFIG_FILE}}):"
+        echo "  Repo URL:        {{.REPO_URL}}"
+        echo "  Target Revision: {{.TARGET_REVISION}}"
+        echo "  Cluster Name:    {{.CLUSTER_NAME}}"
+        echo "  LAN IP:          {{.LAN_IP}}"
+        echo "  NodePort HTTP:   {{.NODEPORT_HTTP}}"
+        echo "  NodePort HTTPS:  {{.NODEPORT_HTTPS}}"
+        echo "  Prom CRDs Chart: {{.PROMETHEUS_CRDS_VERSION}}"
+        echo "  Fuses: policies={{.FUSE_POLICIES}} observability={{.FUSE_OBSERVABILITY}} cicd={{.FUSE_CICD}} security={{.FUSE_SECURITY}} prod={{.FUSE_PROD}}"
+
   ca:export:
     desc: 'Export CA certificate for browser import (optional)'
     cmds:

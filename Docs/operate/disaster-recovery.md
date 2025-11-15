@@ -1,4 +1,5 @@
-# Disaster Recovery
+---
+# Disaster Recovery — Rebuild fast, restore what matters
 
 This document outlines the disaster recovery strategy for the IDP Blueprint platform, designed specifically for resource-constrained edge environments.
 

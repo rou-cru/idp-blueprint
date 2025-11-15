@@ -150,19 +150,21 @@ nav:
       - CI/CD Model: architecture/cicd.md
       - Scheduling & Node Pools: concepts/scheduling-nodepools.md
       - Bootstrap Process: architecture/bootstrap.md
-  - Tutorials:
-      - Onboard an Application: tutorials/onboard-app.md
-      - Add a Policy (Kyverno): tutorials/add-policy.md
-      - Consume a Secret from Vault: tutorials/consume-secret.md
-      - Add an Observability Dashboard: tutorials/add-dashboard.md
   - Operate:
       - Overview: operations/index.md
       - Operations Checklist: reference/resource-requirements.md
       - Troubleshooting Playbook: reference/troubleshooting.md
+      - Feature Toggles & Profiles: operate/feature-toggles.md
+      - Contracts & Guardrails: operate/contracts.md
       - Backup & Restore: operate/backup-restore.md
       - Upgrades: operate/upgrades.md
       - Scaling & Tuning: operate/scaling-tuning.md
       - Disaster Recovery: operate/disaster-recovery.md
+      - Add or Change a Component: operate/add-component.md
+      - ApplicationSets Patterns: operate/application-sets.md
+      - Helm-docs Conventions: operate/helm-docs-conventions.md
+      - Labels & Metadata: operate/labels-metadata.md
+      - Policy Tagging: guides/policy-tagging.md
   - Components:
       - Infrastructure:
           - Overview: components/infrastructure/index.md
@@ -188,13 +190,6 @@ nav:
           - Overview: components/cicd/index.md
           - Argo Workflows: components/cicd/argo-workflows/index.md
           - SonarQube: components/cicd/sonarqube/index.md
-  - Extend:
-      - Overview: guides/overview.md
-      - Add a New Component: extend/add-component.md
-      - ApplicationSets Patterns: extend/application-sets.md
-      - Helm-docs Conventions: extend/helm-docs-conventions.md
-      - Labels & Metadata: extend/labels-metadata.md
-      - Policy Tagging: guides/policy-tagging.md
   - Reference:
       - Overview: reference/overview.md
       - Resource Requirements: reference/resource-requirements.md
@@ -204,11 +199,6 @@ nav:
       - Label Standards: reference/labels-standard.md
       - FinOps Tags: reference/finops-tags.md
       - Glossary: reference/glossary.md
-  - Release:
-      - Overview: release/index.md
-      - Versioning & Support Policy: release/versioning.md
-      - Release Notes & Changelog: release/changelog.md
-      - Upgrade Notes: release/upgrade-notes.md
   - Contribute:
       - Contributing Guide: guides/contributing.md
       - Docs Style Guide: guides/docs-style.md

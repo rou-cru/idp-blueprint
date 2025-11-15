@@ -1,193 +1,54 @@
-# IDP Blueprint Documentation
+# IDP Blueprint — The platform you can read, reason about, and change
 
-**IDP Blueprint** is an Internal Developer Platform reference architecture designed for modern cloud-native environments. This comprehensive platform engineering solution provides a complete stack including GitOps, observability, security, and policy enforcement, deployable for development, testing, and production environments. Also follows FinOps tagging practices to be prepared in case you add FinOps to the development cycle.
+IDP Blueprint is an Internal Developer Platform you can understand end‑to‑end. It favors declarative intent, strong guardrails, and visual explanations so you can adopt it, extend it, and trust it.
 
----
-
-## IDP Blueprint (Conceptual)
+## One picture: Desired → Observed → Actionable
 
 ```d2
 direction: right
 
-classes: {
-  aux:  { style: { fill: "#F7F9FC" } }
-  main: { style: { fill: "#FFFFFF" } }
-  band: { style: { fill: "#EEF3F7" } }
-  pill: { style: { fill: "#E9F0FF" } }
+Desired: {
+  label: "Desired State (Git)"
+  Code: "Manifests, Values, Policies, SLOs"
 }
 
-Canvas: {
-  grid: {
-    columns: 3
-    gap: 24
-  }
-
-  LeftCol: {
-    class: aux
-    label: "IDP Platform"
-    grid: { row: 1 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-
-    A1: { label: "Platform Elements" }
-    A2: { label: "System Core" }
-  }
-
-  Main: {
-    class: main
-    label: "IDP"
-    grid: { row: 1 col: 2 }
-    grid: {
-      columns: 6
-      gap: 12
-    }
-
-    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
-
-    Quality: { class: pill label: "Quality" grid: { row: 2 col: 1 } }
-    Policy:  { class: pill label: "Policy"  grid: { row: 2 col: 2 } }
-    Sec:     { class: pill label: "Security" grid: { row: 2 col: 3 } }
-    CICD:    { class: pill label: "CI/CD"   grid: { row: 2 col: 4 } }
-    Obs:     { class: pill label: "Observability" grid: { row: 2 col: 5 } }
-
-    Secrets: { class: pill label: "Secrets"      grid: { row: 3 col: 2 } }
-    Certs:   { class: pill label: "Certificates" grid: { row: 3 col: 3 } }
-    Engine:  { class: band label: "GitOps Engine" grid: { row: 3 col: 4 colspan: 3 } }
-
-    Cilium:  { class: band label: "Cilium"      grid: { row: 4 col: 1 colspan: 6 } }
-    K8s:     { class: band label: "Kubernetes"  grid: { row: 5 col: 1 colspan: 6 } }
-    Infra:   { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
-  }
-
-  RightCol: {
-    class: aux
-    grid: { row: 1 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    P1: { label: "Dev Portal" }
-  }
-
-  BottomLeft: {
-    class: aux
-    grid: { row: 2 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    C: { label: "Costs" }
-    O: { label: "Opex" }
-  }
-
-  BottomRight: {
-    class: aux
-    grid: { row: 2 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    HA: { label: "Hardware Abstr." }
-    HW: { label: "Hardware" }
-  }
+Observed: {
+  label: "Observed State"
+  Metrics: "Prometheus"
+  Logs: "Loki"
+  SLOs: "Pyrra"
 }
+
+Actionable: {
+  label: "Actionable State"
+  GitOps: "ArgoCD"
+  Policy: "Kyverno"
+  Events: "Argo Events (planned)"
+  Portal: "Backstage (planned)"
+}
+
+Desired.Code -> Actionable.GitOps: reconcile
+Desired.Code -> Actionable.Policy: govern
+Observed.Metrics -> Actionable.Events: emit → trigger
+Observed.SLOs -> Actionable.Events: burn → playbook
+Actionable.GitOps -> Observed.Metrics: deploy → measure
 ```
 
-## IDP Blueprint (Implementation)
+![ArgoCD Applications](assets/images/after-deploy/argocd-apps-healthy.jpg){ loading=lazy }
 
-```d2
-direction: right
+## The paved road (defaults that matter)
 
-classes: {
-  aux:  { style: { fill: "#F7F9FC" } }
-  main: { style: { fill: "#FFFFFF" } }
-  band: { style: { fill: "#EEF3F7" } }
-  pill: { style: { fill: "#E9F0FF" } }
-}
+- GitOps: everything reconciled from Git, in order, with waves
+- Policies: conventions turned into guarantees (labels, limits, contracts)
+- Observability: metrics, logs, dashboards, SLOs as code
+- Secrets: Vault → ESO → Kubernetes Secrets (never literals)
+- Networking: one Gateway, TLS everywhere (demo CA), nip.io URLs
 
-Canvas: {
-  grid: {
-    columns: 3
-    gap: 24
-  }
-
-  LeftCol: {
-    class: aux
-    label: "IDP Platform"
-    grid: { row: 1 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    A1: { label: "Platform Elements" }
-    A2: { label: "System Core" }
-  }
-
-  Main: {
-    class: main
-    label: "IDP"
-    grid: { row: 1 col: 2 }
-    grid: {
-      columns: 6
-      gap: 12
-    }
-
-    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
-
-    GitHub:     { class: pill label: "GitHub"     grid: { row: 2 col: 1 } }
-    Backstage:  { class: pill label: "Backstage"  grid: { row: 2 col: 2 } }
-    Kyverno:    { class: pill label: "Kyverno"    grid: { row: 2 col: 3 } }
-    Workflows:  { class: pill label: "Workflows"  grid: { row: 2 col: 4 } }
-    Grafana:    { class: pill label: "Grafana"    grid: { row: 2 col: 5 } }
-
-    Vault:      { class: pill label: "Vault"         grid: { row: 3 col: 2 } }
-    CertMgr:    { class: pill label: "Cert-Manager"  grid: { row: 3 col: 3 } }
-    ArgoCD:     { class: band label: "ArgoCD / AppSets" grid: { row: 3 col: 4 colspan: 3 } }
-
-    Cilium:     { class: band label: "Cilium"     grid: { row: 4 col: 1 colspan: 6 } }
-    K8s:        { class: band label: "Kubernetes" grid: { row: 5 col: 1 colspan: 6 } }
-    Infra:      { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
-  }
-
-  RightCol: {
-    class: aux
-    grid: { row: 1 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    P1: { label: "Dev Portal" }
-  }
-
-  BottomLeft: {
-    class: aux
-    grid: { row: 2 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    C: { label: "Costs" }
-    O: { label: "Opex" }
-  }
-
-  BottomRight: {
-    class: aux
-    grid: { row: 2 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    HA: { label: "Hardware Abstr." }
-    HW: { label: "Hardware" }
-  }
-}
-```
+![Grafana](assets/images/after-deploy/grafana-home.jpg){ loading=lazy }
 
 ---
 
-## Choose Your Journey
+## Choose your journey
 
 <div class="grid cards" markdown>
 
@@ -195,7 +56,7 @@ Canvas: {
 
     ---
 
-    Learn the platform architecture, design tenets, and control planes that make up the IDP Blueprint.
+    Learn the platform architecture, design tenets, and control backbone. Written to be read like a technical Medium post.
 
     [:octicons-arrow-right-24: Explore Concepts](architecture/overview.md)
 
@@ -203,7 +64,7 @@ Canvas: {
 
     ---
 
-    Install, verify and take your first steps with the platform.
+    Install, verify, and take your first steps. Expect a smooth paved road.
 
     [:octicons-arrow-right-24: Start Building](getting-started/quickstart.md)
 
@@ -211,7 +72,7 @@ Canvas: {
 
     ---
 
-    Dive into infrastructure, policy, observability and CI/CD components.
+    Dive into infrastructure, policy, observability, and CI/CD components.
 
     [:octicons-arrow-right-24: Explore Components](components/infrastructure/index.md)
 
@@ -227,7 +88,7 @@ Canvas: {
 
 ---
 
-## Who Is This For?
+## Who is this for?
 
 <div class="grid cards" markdown>
 
@@ -259,7 +120,7 @@ Canvas: {
 
 ---
 
-## Documentation Structure
+## Documentation structure
 
 ### [Getting Started](getting-started/overview.md)
 Deployment and configuration documentation:
@@ -273,12 +134,8 @@ Deployment and configuration documentation:
   - [Visual Architecture](architecture/visual.md)
   - [Platform Layers](architecture/infrastructure.md)
 
-- ### How-to Guides
-  - [Prerequisites](getting-started/prerequisites.md)
-  - [Quick Start](getting-started/quickstart.md)
-  - [Deployment Guide](getting-started/deployment.md)
-  - [Operations Checklist](reference/resource-requirements.md)
-  - [Troubleshooting Playbook](reference/troubleshooting.md)
+  
+  
 
 - ### Platform Operations
   - [Infrastructure Stack](components/infrastructure/index.md)
@@ -293,7 +150,7 @@ Deployment and configuration documentation:
 
 ---
 
-## Platform Technology Stack
+## Platform technology stack
 
 Enterprise-grade platform engineering stack with production-ready components:
 
@@ -309,7 +166,7 @@ Enterprise-grade platform engineering stack with production-ready components:
 
 ---
 
-## Platform Capabilities
+## Platform capabilities
 
 !!! abstract "Production-Ready Platform Engineering"
     Complete platform engineering stack suitable for development, staging, and production environments. Designed for:

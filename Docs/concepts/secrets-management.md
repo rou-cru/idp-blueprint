@@ -1,89 +1,41 @@
-# Secrets Management
+# Secrets Management — Source of truth vs. consumption
 
-Vault is the single source of truth for secrets. External Secrets Operator (ESO) fetches from Vault and writes Kubernetes Secrets in each namespace. Workloads only consume Kubernetes Secrets.
+Principle: workloads never talk to Vault. They consume Kubernetes Secrets that are synced from Vault by External Secrets Operator (ESO). This keeps concerns clean and manifests safe to version.
 
-## Components
-
-- Vault (namespace `vault-system`) initialized and configured by `task bootstrap:vault:init`
-- External Secrets Operator (namespace `external-secrets-system`) with cert-manager webhook
-- Per-namespace `ServiceAccount` and `SecretStore` that bind to Vault via Kubernetes auth
-- `ExternalSecret` objects that declare which Vault paths/keys to sync
-
-## Flow
+## The pattern
 
 ```d2
 direction: right
 
-VaultSystem: {
-  label: "vault-system"
-  Vault: "Vault (KV v2: secret/*)"
+Vault: "KV v2 (secret/*)"
+ESO: "External Secrets Operator"
+
+NS: {
+  label: "Namespace"
+  SA: "ServiceAccount: external-secrets"
+  Store: "(Cluster)SecretStore → Vault auth"
+  ES: "ExternalSecret → K8s Secret"
 }
 
-ESOSystem: {
-  label: "external-secrets-system"
-  ESO: "External Secrets Operator"
-}
-
-Namespaces: {
-  Argocd: {
-    label: "argocd"
-    SA: "ServiceAccount: external-secrets"
-    Store: "SecretStore: vault-backend"
-    ES: "ExternalSecret: argocd-admin-password → argocd-secret (Merge)"
-  }
-  Observability: {
-    label: "observability"
-    SA: "ServiceAccount: external-secrets"
-    Store: "SecretStore: observability"
-    ES: "ExternalSecret: grafana-admin-credentials"
-  }
-  CICD: {
-    label: "cicd"
-    SA: "ServiceAccount: external-secrets"
-    Store: "SecretStore: cicd"
-    ES1: "ExternalSecret: sonarqube-admin"
-    ES2: "ExternalSecret: sonarqube-monitoring-passcode"
-  }
-}
-
-ESOSystem.ESO -> Namespaces.Argocd.ES: watches
-ESOSystem.ESO -> Namespaces.Observability.ES
-ESOSystem.ESO -> Namespaces.CICD.ES1
-ESOSystem.ESO -> Namespaces.CICD.ES2
-
-Namespaces.Argocd.Store -> VaultSystem.Vault
-Namespaces.Observability.Store -> VaultSystem.Vault
-Namespaces.CICD.Store -> VaultSystem.Vault
+Vault -> ESO: read
+ESO -> NS.ES: reconcile
+NS.ES -> NS: Secret
 ```
 
-## Repo wiring
+Why it works:
+- Commit ExternalSecret objects (not literal values).
+- ESO authenticates to Vault using per‑namespace roles and writes/update the K8s Secret.
+- Charts can still add their own keys by using `creationPolicy: Merge`.
 
-- ESO install: IT/external-secrets (values in `eso-values.yaml`)
-- Vault install: IT/vault; initialization by `Scripts/vault-init.sh`
-- Vault roles for ESO (created by init script): `eso-argocd-role`, `eso-observability-role`, `eso-cicd-role`
-- ArgoCD namespace:
-  - SecretStore: IT/external-secrets/argocd-secretstore.yaml
-  - ExternalSecret: IT/external-secrets/argocd-admin-externalsecret.yaml (target `argocd-secret`, `creationPolicy: Merge` to preserve `server.secretkey`)
-- Observability namespace:
-  - ServiceAccount + SecretStore: K8s/observability/infrastructure/{eso-observability,observability-secretstore}.yaml
-  - ExternalSecret: K8s/observability/kube-prometheus-stack/grafana-admin-externalsecret.yaml
-- CICD namespace:
-  - ServiceAccount + SecretStore: K8s/cicd/infrastructure/{eso-cicd,cicd-secretstore}.yaml
-  - ExternalSecret: K8s/cicd/sonarqube/*.yaml
+![Vault consumer](../assets/images/verify/grafana-home.jpg){ loading=lazy }
 
-## Operations
+## Contracts and tags
 
-- Initialize Vault (demo): `task bootstrap:vault:init`
-- Generate demo secrets into Vault: `task bootstrap:vault:generate-secrets`
-- Inspect sync status:
-  - `kubectl get externalsecrets,secretstores -A`
-  - `kubectl logs -n external-secrets-system deploy/external-secrets`
-- Read synced secret:
-  - `kubectl -n argocd get secret argocd-secret -o jsonpath='{.data.admin\.password}' | base64 -d; echo`
+- Every Namespace carries labels: `owner`, `business-unit`, `environment`, `app.kubernetes.io/part-of`.
+- Kyverno can enforce presence and propagate common labels to workloads (mutate/generate — planned hardening).
 
-## Security notes
+## Failure modes to think about
 
-- No secret literals in manifests; all values live in Vault
-- Demo defaults can be set via `config.toml`; empty values trigger random generation
-- Restrict ServiceAccounts and Vault roles in production; prefer TLS for Vault endpoint
-- Use `creationPolicy: Merge` when updating existing Secrets with internal keys (ArgoCD)
+- Vault unreachable → last good Secret remains; ESO will retry.
+- Wrong path in ExternalSecret → target Secret not updated (alerts should surface it).
+- Chart writes sensitive fields on first boot → keep `creationPolicy: Merge` to avoid clobbering.

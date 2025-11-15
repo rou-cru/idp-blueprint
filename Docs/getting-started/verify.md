@@ -1,8 +1,8 @@
-# Verify Installation
+# Verify Installation — See the loops in action
 
 Let’s confirm things came up as expected and set realistic expectations for the first minutes after deploy.
 
-## What to Expect (First 5–10 Minutes)
+## What to expect (first 5–10 minutes)
 
 - ArgoCD continues syncing for a bit after “task deploy” finishes
 - Pods roll through Pending → Running → Ready as images download
