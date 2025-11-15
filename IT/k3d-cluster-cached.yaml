@@ -40,6 +40,9 @@ options:
     disableLoadbalancer: false
     wait: true
     timeout: "300s"
+  runtime:
+    serversMemory: "4GB"
+    agentsMemory: "4GB"
   k3s:
     extraArgs:
       - arg: --flannel-backend=none
@@ -49,6 +52,9 @@ options:
         nodeFilters:
           - server:*
       - arg: --disable-network-policy
+        nodeFilters:
+          - server:*
+      - arg: --node-taint=node-role.kubernetes.io/control-plane:NoSchedule
         nodeFilters:
           - server:*
     nodeLabels:

@@ -27,7 +27,7 @@ vars:
   REPO_URL:
     sh: |
       value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' git.repo_url 2>/dev/null || true) | tr -d '"' )
-      if [ -n "$value" ] && [ "$value" != '""' ]; then
+      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
         echo "$value"
       else
         git config --get remote.origin.url 2>/dev/null || echo "https://github.com/rou-cru/idp-blueprint.git"
@@ -35,7 +35,7 @@ vars:
   TARGET_REVISION:
     sh: |
       value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' git.target_revision 2>/dev/null || true) | tr -d '"' )
-      if [ -n "$value" ] && [ "$value" != '""' ]; then
+      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
         echo "$value"
       else
         git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD"
