@@ -1,9 +1,12 @@
 ---
 # Concepts — The Mental Model of This IDP
 
-This section is a technical, narrative walkthrough of the platform, written like a deep Medium post. It explains how pieces fit together so you can reason about changes with confidence and extend the IDP safely.
+This section explains how the main parts of the platform relate to each other so you can reason about changes and extend the IDP safely.
 
-You won’t find tool-by-tool setup here; those live under Components and values. Instead, you’ll get the product‑level concepts, flows, and guardrails that make the whole system coherent.
+You won’t find step‑by‑step setup here; that lives under Getting Started and Components. Instead, this page focuses on product‑level concepts, flows, and guardrails that make the whole system coherent.
+
+!!! note
+    These concepts apply both to the demo environment in this repository and to derived deployments. Cluster size, topology, or tooling may change, but the loops and contracts described here remain the same.
 
 ## The IDP, as a Product
 
@@ -44,7 +47,7 @@ Observed.SLOs -> Actionable.Events: "burn → playbook"
 Actionable.GitOps -> Observed.Metrics: "deploy → measure"
 ```
 
-Reading tip: as you go, map every capability to one of these loops. If it doesn’t fit, it’s either out of scope or needs a new abstraction.
+As you explore the docs, it can be useful to map each capability to one of these loops. If it doesn’t fit, it is either out of scope or signals that a new abstraction might be needed.
 
 ## A Guided Tour (with visuals)
 
@@ -66,8 +69,6 @@ Secrets: "K8s Secret (synced by ESO)"
 NS -> Secrets: "mount/consume"
 ```
 
-Visual: ArgoCD apps healthy (paved road in action).
-
 ![ArgoCD apps](../assets/images/after-deploy/argocd-apps-healthy.jpg){ loading=lazy }
 
 ### 2) Control Planes: GitOps + Policy + Events
@@ -80,7 +81,7 @@ Visual: ArgoCD apps healthy (paved road in action).
 direction: right
 
 Git: {
-  Repo: "Repo (REPO_URL@TARGET_REVISION)"
+  Repo: "Repo: idp-blueprint@HEAD"
   K8sDir: "K8s/* (stacks)"
 }
 
@@ -136,8 +137,6 @@ Observability: {
 }
 ```
 
-Visual: Grafana home (single pane to observe).
-
 ![Grafana](../assets/images/after-deploy/grafana-home.jpg){ loading=lazy }
 
 ### 4) What happens when you change something?
@@ -160,8 +159,6 @@ Visual: Grafana home (single pane to observe).
 - Add SLOs for critical services (Pyrra) → burn alerts → event playbooks.
 - Backstage (planned) offers templates to provision apps and wire recipes.
 
-Visual: K9s overview (everything lives under contracts).
-
 ![Cluster view](../assets/images/after-deploy/k9s-overview.jpg){ loading=lazy }
 
 ---
@@ -170,5 +167,5 @@ Next, dive into specific concepts to see each plane in context:
 
 - [GitOps model](gitops-model.md)
 - [Networking & Gateway](networking-gateway.md)
-- [Secrets management](secrets-management.md)
+- [Secrets management](../architecture/secrets.md)
 - [Scheduling & node pools](scheduling-nodepools.md)

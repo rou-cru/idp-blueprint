@@ -44,6 +44,14 @@ Learn -> Detect: new baselines
 - Events (planned) connect alerts and changes to reproducible actions.
 - Dashboards are the narrative of the last incident; they evolve with runbooks.
 
+!!! example "A first incident, end-to-end"
+    A typical early incident is an SLO burn on the public Gateway (ingress latency or error rate). The flow looks like:
+
+    - Pyrra signals the burn in Grafana (SLO panel turns red).
+    - An alert routes to your on-call channel.
+    - You open the Troubleshooting Playbook, which links dashboards and runbooks for Gateway, Cilium and workloads behind it.
+    - If the issue is config-related, you fix it in Git and let ArgoCD reconcile; if it is capacity-related, you adjust limits/requests or retention and roll forward.
+
 ## Runbooks you will rely on
 
 - Backup/Restore: know your sources of truth and what to regenerate.

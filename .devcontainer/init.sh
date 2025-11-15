@@ -20,7 +20,6 @@ helm repo add grafana https://grafana.github.io/helm-charts
 helm repo add pyrra https://pyrra.dev/charts
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
 helm repo add fluent https://fluent.github.io/helm-charts
-helm repo add pyrra https://pyrra-dev.github.io/helm-charts
 # -- Quality
 helm repo add sonarsource https://SonarSource.github.io/helm-chart-sonarqube
 # -- Security

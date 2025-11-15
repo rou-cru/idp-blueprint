@@ -69,11 +69,9 @@ task deploy
 
 Time: ~5–10 minutes depending on network and hardware.
 
-!!! tip "Heads-up: eventual consistency"
-    ArgoCD will keep syncing after the task completes. It’s normal for Applications to become Healthy/Synced gradually as images download and pods become Ready.
-
-!!! tip
-    The task prints the service URLs when Gateway is ready (for example `https://argocd.<ip>.nip.io`). Copy them from the output.
+!!! tip "Deploy behavior"
+    - ArgoCD will keep syncing after the task completes. It’s normal for Applications to become Healthy/Synced gradually as images download and pods become Ready.
+    - The task prints the service URLs when Gateway is ready (for example `https://argocd.<ip>.nip.io`). Copy them from the output.
 
 !!! warning
     The Gateway uses NodePorts `30080` (HTTP) and `30443` (HTTPS).
@@ -129,9 +127,3 @@ Tear everything down when you’re done:
 ```bash
 task destroy
 ```
-
-## Next steps
-
-- [First Steps](first-steps.md): Explore GitOps, policies, observability and secrets
-- [Onboard an Application](../tutorials/onboard-app.md)
-- [Add a Policy (Kyverno)](../tutorials/add-policy.md)

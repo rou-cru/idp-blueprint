@@ -52,7 +52,7 @@ metadata:
     app.kubernetes.io/component: priority-class
 value: 7500
 globalDefault: false
-description: CI/CD services (Jenkins controller, SonarQube server)
+description: CI/CD services (Argo Workflows controller/server, SonarQube)
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
@@ -85,7 +85,7 @@ metadata:
     app.kubernetes.io/component: priority-class
 value: 2500
 globalDefault: false
-description: CI/CD execution pods (Jenkins agents, ephemeral builds)
+description: CI/CD execution pods (workflow pods, ephemeral builds)
 ---
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass

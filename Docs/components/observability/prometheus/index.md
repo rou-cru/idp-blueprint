@@ -36,7 +36,7 @@ The configuration uses a pull model with ServiceMonitor CRDs for discovery. Scra
 
 Prometheus doesn't currently drive any HorizontalPodAutoscalers (HPAs), meaning metrics are used for passive observability rather than active scaling. This is an opportunity for future optimization.
 
-See [Observability Model](../../../concepts/observability-model.md) for the complete observability architecture.
+See [Observability Model](../../../architecture/observability.md) for the complete observability architecture.
 
 ## Configuration Values
 

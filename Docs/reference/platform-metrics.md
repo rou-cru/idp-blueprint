@@ -271,8 +271,8 @@ For log-based analysis:
 
 ## References
 
-- [Prometheus Component](../components/observability/prometheus/): Metrics collection
-- [Grafana Component](../components/observability/grafana/): Visualization
-- [ArgoCD Component](../components/infrastructure/argocd/): GitOps engine
-- [Kyverno Component](../components/policy/kyverno/): Policy engine
-- [Observability Model](../concepts/observability-model.md): Overall observability architecture
+- [Prometheus Component](../components/observability/prometheus/index.md): Metrics collection
+- [Grafana Component](../components/observability/grafana/index.md): Visualization
+- [ArgoCD Component](../components/infrastructure/argocd/index.md): GitOps engine
+- [Kyverno Component](../components/policy/kyverno/index.md): Policy engine
+- [Observability Model](../architecture/observability.md): Overall observability architecture

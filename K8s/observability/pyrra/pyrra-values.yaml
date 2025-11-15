@@ -23,4 +23,3 @@ serviceMonitor:
   additionalLabels:
     # -- (string) Prometheus selector label
     prometheus: kube-prometheus
-

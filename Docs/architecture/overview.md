@@ -1,16 +1,16 @@
 # Architecture Overview
 
-This document provides a comprehensive view of the IDP Blueprint's architecture. It's designed to give you the mental model you need to understand how the pieces fit together, why they're organized this way, and what makes this platform work in resource-constrained environments.
+This page describes the main architectural elements of IDP Blueprint and how they fit together, with a focus on running in resource-constrained environments. For the product-level mental model and feedback loops (Desired → Observed → Actionable), see the Concepts section.
 
 ## What You're Looking At
 
-This is an Internal Developer Platform designed to run in resource-constrained edge environments. The entire stack deploys with a single command. Everything runs on Kubernetes, which means the underlying infrastructure (bare metal, on-premise, or public cloud) becomes a deployment detail rather than an architectural constraint.
+IDP Blueprint targets resource-constrained clusters, such as small edge deployments. The entire stack deploys with a single command onto Kubernetes, so the underlying infrastructure (bare metal, on-premise, or public cloud) is mostly a deployment detail rather than an architectural constraint.
 
-The approach is straightforward: use CNCF projects and well-established patterns to build a platform without relying on commercial licenses or cloud-specific services. Whether that strategy works for your use case is something you'll determine as you explore the architecture and implementation.
+The platform is assembled from CNCF and widely adopted open source projects, and it deliberately avoids commercial licenses or cloud-specific services. The sections below explain how those pieces are grouped and how they interact.
 
 ## Design Context: Edge Computing Constraints
 
-Before diving into the architecture, it's important to understand the environment this platform is designed for. Unlike traditional cloud or datacenter deployments where resources are virtually unlimited, this IDP operates under edge computing constraints:
+Unlike large cloud or datacenter environments where resources are virtually unlimited, this IDP is designed to operate under edge computing constraints:
 
 | Aspect | Cloud/Datacenter | Edge (This IDP) |
 |--------|-----------------|----------------|
@@ -20,13 +20,14 @@ Before diving into the architecture, it's important to understand the environmen
 | **Recovery Model** | Redundancy and replacement | Resilience and graceful degradation |
 | **Primary Goal** | Maintain performance through scaling | Maintain core functionality in degraded state |
 
+!!! info "When this architecture is a good fit"
+    Use this design when you need to run a complete platform on a small number of Kubernetes nodes (for example 1–3), often in edge or on-prem environments, and you care more about predictable behavior under failure than about elastic horizontal scale.
+
 These constraints inform every architectural decision. Performance matters, but so does resource efficiency. High availability is achieved through intelligent scheduling and tiered criticality, not through throwing more replicas at the problem.
 
 ## System Context
 
-```d2
-../C4-L2.d2
-```
+![C4 Level 2 Container Diagram](../C4-L2.d2)
 
 The diagram above shows the C4 Level 2 Container view of the platform. It illustrates:
 
@@ -40,9 +41,7 @@ The architecture follows a GitOps-first approach. Everything flows from declarat
 
 The platform is organized into five distinct layers, each building on the one below:
 
-```d2
-diagrams/abstraction-layers.d2
-```
+![Platform Abstraction Layers](../diagrams/abstraction-layers.d2)
 
 ### Layer 0: Infrastructure Core
 
@@ -99,7 +98,7 @@ Vault is the source of truth for all secrets. External Secrets Operator synchron
 
 The `creationPolicy: Merge` setting is critical here. It allows both Helm charts and External Secrets to manage the same Secret resource without conflict.
 
-See [Secrets Management](../concepts/secrets-management.md) for detailed flows.
+See [Secrets Management](secrets.md) for detailed flows.
 
 ### 2. Public Key Infrastructure (PKI)
 
@@ -123,7 +122,7 @@ Prometheus discovers metrics exporters via ServiceMonitor CRDs and scrapes them 
 
 This hybrid approach optimizes for resource efficiency. The pull model for metrics allows precise control over cardinality and scrape intervals. The push model for logs ensures they're captured even if a pod crashes immediately.
 
-See [Observability Model](../concepts/observability-model.md) for detailed architecture.
+See [Observability Model](observability.md) for detailed architecture.
 
 ### 4. Policy Enforcement
 
@@ -187,6 +186,6 @@ This overview provides the high-level view. For more detail:
 - **[Infrastructure Layer](infrastructure.md)**: How the bootstrap process works
 - **[Application Layer](applications.md)**: GitOps structure and ApplicationSet patterns
 - **[Bootstrap Process](bootstrap.md)**: The sequence of steps that bring the platform online
-- **[Components](../components/)**: Per-component deep dives, including why each was chosen
+- **Components**: Per-component deep dives in Infrastructure, Policy & Security, Observability, and CI/CD sections
 
 Explore the sections above to understand how the pieces connect.

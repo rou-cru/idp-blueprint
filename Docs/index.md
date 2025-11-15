@@ -1,6 +1,6 @@
 # IDP Blueprint — The platform you can read, reason about, and change
 
-IDP Blueprint is an Internal Developer Platform you can understand end‑to‑end. It favors declarative intent, strong guardrails, and visual explanations so you can adopt it, extend it, and trust it.
+IDP Blueprint is an Internal Developer Platform you can understand end‑to‑end. The docs favor diagrams, concrete workflows, and clear defaults so you can run it locally, adapt it to your environment, and operate it with confidence.
 
 ## One picture: Desired → Observed → Actionable
 
@@ -56,7 +56,7 @@ Actionable.GitOps -> Observed.Metrics: deploy → measure
 
     ---
 
-    Learn the platform architecture, design tenets, and control backbone. Written to be read like a technical Medium post.
+    Learn the platform architecture, design decisions, and control backbone. Written as a technical narrative for engineers.
 
     [:octicons-arrow-right-24: Explore Concepts](architecture/overview.md)
 
@@ -64,7 +64,7 @@ Actionable.GitOps -> Observed.Metrics: deploy → measure
 
     ---
 
-    Install, verify, and take your first steps. Expect a smooth paved road.
+    Install, verify, and take your first steps with reproducible commands and expected outputs.
 
     [:octicons-arrow-right-24: Start Building](getting-started/quickstart.md)
 
@@ -152,7 +152,7 @@ Deployment and configuration documentation:
 
 ## Platform technology stack
 
-Enterprise-grade platform engineering stack with production-ready components:
+The platform is built from the following open source components:
 
 | Layer | Technologies | Capabilities |
 |-------|--------------|--------------|
@@ -169,7 +169,7 @@ Enterprise-grade platform engineering stack with production-ready components:
 ## Platform capabilities
 
 !!! abstract "Production-Ready Platform Engineering"
-    Complete platform engineering stack suitable for development, staging, and production environments. Designed for:
+    Platform engineering stack suitable for realistic development, staging, and smaller production-like environments. Typical uses include:
 
     - **Enterprise Architecture** - Evaluate cloud-native technologies in realistic deployment scenarios
     - **Infrastructure Prototyping** - Validate infrastructure changes before production rollout
@@ -181,13 +181,6 @@ Enterprise-grade platform engineering stack with production-ready components:
     task deploy
     ```
     Fully automated deployment orchestration including cluster provisioning, component installation, GitOps synchronization, and validation.
-
-!!! info "Resource Requirements"
-    Optimized resource allocation for various deployment scenarios:
-
-    - **Minimum Configuration**: 4 CPU cores, 8GB RAM
-    - **Recommended Configuration**: 6 CPU cores, 12GB RAM
-    - **Storage Requirements**: ~20GB persistent storage
 
 ---
 

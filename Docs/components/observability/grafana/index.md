@@ -39,7 +39,7 @@ Key integration points:
 
 The configuration uses Unified Alerting (Grafana's built-in alerting) as the primary alerting interface.
 
-See [Observability Model](../../../concepts/observability-model.md) for the complete observability architecture.
+See [Observability Model](../../../architecture/observability.md) for the complete observability architecture.
 
 ## Configuration Values
 

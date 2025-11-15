@@ -137,6 +137,7 @@ nav:
       - First Steps: getting-started/first-steps.md
   - Concepts:
       - Overview: concepts/index.md
+      - Design Philosophy: concepts/design-philosophy.md
       - Architecture:
           - Platform Overview: architecture/overview.md
           - Visual Map: architecture/visual.md
@@ -144,8 +145,9 @@ nav:
           - Application Layer: architecture/applications.md
       - GitOps Model: concepts/gitops-model.md
       - Networking & Gateway: concepts/networking-gateway.md
-      - Secrets Management: concepts/secrets-management.md
-      - Security & Policy Model: architecture/policies.md
+      - Secrets Management: architecture/secrets.md
+      - Security & Policy Model: concepts/security-policy-model.md
+      - Policy Engine (Kyverno): architecture/policies.md
       - Observability Model: architecture/observability.md
       - CI/CD Model: architecture/cicd.md
       - Scheduling & Node Pools: concepts/scheduling-nodepools.md
@@ -192,6 +194,7 @@ nav:
           - SonarQube: components/cicd/sonarqube/index.md
   - Reference:
       - Overview: reference/overview.md
+      - Platform Metrics: reference/platform-metrics.md
       - Resource Requirements: reference/resource-requirements.md
       - Ports & Endpoints: reference/ports-endpoints.md
       - URLs & Initial Credentials: reference/urls-credentials.md

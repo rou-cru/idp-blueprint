@@ -24,7 +24,7 @@ IT -> K8s: "seed control planes"
 direction: right
 
 Git: {
-  Repo: "${REPO_URL} @ ${TARGET_REVISION}"
+  Repo: "https://github.com/rou-cru/idp-blueprint @ HEAD"
   Folders: {
     Obs: "K8s/observability/*"
     Cicd: "K8s/cicd/*"

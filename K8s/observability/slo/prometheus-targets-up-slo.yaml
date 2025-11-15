@@ -22,4 +22,3 @@ spec:
       total:
         metric: |
           count(up)
-

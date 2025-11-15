@@ -22,4 +22,3 @@ spec:
       total:
         metric: |
           sum(rate(loki_request_duration_seconds_count{route=~"(?i).*(push|ingest).*"}[5m]))
-

@@ -40,7 +40,7 @@ Key integration points:
 
 The `creationPolicy: Merge` setting allows both Helm charts and External Secrets to manage the same Secret resource without conflict. Helm creates the Secret with default values, External Secrets merges in credentials from Vault.
 
-See [Secrets Management](../../../concepts/secrets-management.md) for the complete flow.
+See [Secrets Management](../../../architecture/secrets.md) for the complete flow.
 
 ## Configuration Values
 

@@ -173,7 +173,7 @@ and pushing them to external systems.
 **Examples:**
 
 - Microservices needing database passwords.
-- CI/CD pipelines running in Jenkins pods.
+- CI/CD pipelines running in CI namespaces (for example Argo Workflows pods).
 - Web applications requiring API keys.
 
 ### External Workloads (ESO `PushSecret`)

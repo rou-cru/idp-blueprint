@@ -154,7 +154,7 @@ Areas for future improvement:
 
 ## References
 
-- [Kyverno Component](../components/policy/kyverno/): Policy engine details
-- [Vault Component](../components/infrastructure/vault/): Secrets management
+- [Kyverno Component](../components/policy/kyverno/index.md): Policy engine details
+- [Vault Component](../components/infrastructure/vault/index.md): Secrets management
 - [Disaster Recovery](../operate/disaster-recovery.md): Availability strategy
 - [Feature Toggles](../operate/feature-toggles.md): Policy mode configuration

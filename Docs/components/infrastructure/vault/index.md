@@ -38,7 +38,7 @@ Key integration points:
 
 The configuration here uses `dev` mode for the demo (data stored in memory, auto-unsealed). In production, Vault would run in `ha` mode with persistent storage and external unseal keys. The architecture supports both without changes to dependent components.
 
-See [Secrets Management](../../../concepts/secrets-management.md) for the complete secrets flow.
+See [Secrets Management](../../../architecture/secrets.md) for the complete secrets flow.
 
 ## Configuration Values
 

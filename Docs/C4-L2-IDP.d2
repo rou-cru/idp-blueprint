@@ -73,15 +73,6 @@ idp: |md
     shape: rectangle
   }
 
-  jenkins: |md
-    ## Jenkins
-    [Container: CI/CD Engine]
-
-    Runs CI/CD pipelines to build, test, and package applications.
-  | {
-    shape: rectangle
-  }
-
   sonarqube: |md
     ## SonarQube
     [Container: Code Quality]
@@ -152,11 +143,6 @@ idp: |md
 
 developer -> git_provider: "Pushes application code"
 platform_engineer -> git_provider: "Pushes platform configuration"
-
-git_provider -> idp.jenkins: "Triggers CI pipelines via webhooks"
-idp.jenkins -> idp.sonarqube: "Sends code for analysis"
-idp.jenkins -> container_registry: "Pushes container image"
-idp.jenkins -> git_provider: "Updates Kubernetes manifests in Git"
 
 git_provider -> idp.argo_cd: "Pulls manifests to sync"
 

@@ -33,7 +33,7 @@ Key integration points:
 
 The configuration tails container logs, parses JSON-formatted logs, and forwards them to Loki with appropriate labels.
 
-See [Observability Model](../../../concepts/observability-model.md) for the complete log pipeline.
+See [Observability Model](../../../architecture/observability.md) for the complete log pipeline.
 
 ## Configuration Values
 

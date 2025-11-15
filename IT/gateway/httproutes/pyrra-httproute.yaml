@@ -27,4 +27,3 @@ spec:
       backendRefs:
         - name: pyrra
           port: 9099
-
