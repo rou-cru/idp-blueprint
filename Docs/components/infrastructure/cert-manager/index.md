@@ -13,6 +13,37 @@ Cloud-native certificate management for Kubernetes
 | **Upstream Project** | [cert-manager](https://cert-manager.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Cert-Manager?
+
+Cert-Manager automates TLS certificate issuance and renewal. The alternative is manual certificate generation, distribution, tracking expiration dates, and renewal.
+
+It supports multiple certificate authorities (Let's Encrypt, Venafi, self-signed, enterprise CAs) and challenge types (HTTP-01, DNS-01, TLS-ALPN-01). For this platform, it bootstraps a self-signed CA and uses it to issue certificates for internal services.
+
+Certificates auto-renew before expiration. Services reference certificates via Kubernetes Secrets, which Cert-Manager updates. When mTLS is added in the future, Cert-Manager can issue per-pod certificates and rotate them automatically.
+
+Cert-Manager doesn't depend on provider-specific certificate services, keeping the platform portable.
+
+## Architecture Role
+
+Cert-Manager operates at **Layer 1** of the platform, the Platform Services layer. It's a cross-cutting service that provides PKI for any component that needs TLS.
+
+Key integration points:
+
+- **ClusterIssuers**: Define certificate authorities (self-signed, CA-based, ACME)
+- **Certificates**: Declarative resources that request certificates from issuers
+- **Kubernetes Secrets**: Cert-Manager stores certificates here, making them consumable by any workload
+- **Gateway API**: Uses the `idp-wildcard-cert` certificate for TLS termination
+
+The PKI bootstrap process is fully declarative:
+
+1. Self-signed ClusterIssuer creates a root CA certificate
+2. That CA certificate backs a CA ClusterIssuer
+3. The CA ClusterIssuer issues certificates for applications
+
+This pattern creates a complete, self-contained PKI without external dependencies.
+
+See [Architecture Overview](../../../architecture/overview.md#2-public-key-infrastructure-pki) for the PKI flow diagram.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

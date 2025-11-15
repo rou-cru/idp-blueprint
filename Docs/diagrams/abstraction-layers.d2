@@ -1,0 +1,77 @@
+vars: {
+  d2-config: {
+    theme-id: 200
+  }
+}
+
+direction: down
+layout: elk
+
+# Abstraction Layers of the IDP
+# Shows the hierarchical organization from infrastructure core to developer portal
+
+layer0: |md
+  ## Layer 0: Infrastructure Core
+
+  **Cilium CNI** | **Kubernetes**
+
+  The invisible foundation. Networking, orchestration, and the substrate for everything above.
+| {
+  shape: rectangle
+  style.fill: "#2C3E50"
+  style.stroke-width: 3
+}
+
+layer1: |md
+  ## Layer 1: Platform Services
+
+  **Vault** | **Cert-Manager** | **Gateway API**
+  **Prometheus** | **Loki** | **Fluent-bit**
+
+  Cross-cutting services that enable security, observability, and accessibility.
+| {
+  shape: rectangle
+  style.fill: "#34495E"
+  style.stroke-width: 3
+}
+
+layer2: |md
+  ## Layer 2: Automation & Governance Engines
+
+  **ArgoCD** | **Kyverno** | **External Secrets** | **Argo Workflows**
+
+  The "brains" that translate declarative intent into cluster state.
+| {
+  shape: rectangle
+  style.fill: "#7F8C8D"
+  style.stroke-width: 3
+}
+
+layer3: |md
+  ## Layer 3: Developer-Facing Applications
+
+  **Grafana** | **SonarQube** | **Policy Reporter** | **ArgoCD UI**
+
+  Tools and UIs that developers interact with directly.
+| {
+  shape: rectangle
+  style.fill: "#95A5A6"
+  style.stroke-width: 3
+}
+
+layer4: |md
+  ## Layer 4: Unified Developer Portal
+
+  **Backstage** (planned)
+
+  The single pane of glass. Abstracts the complexity of layers below.
+| {
+  shape: rectangle
+  style.fill: "#BDC3C7"
+  style.stroke-width: 3
+}
+
+layer0 -> layer1: "Provides foundation for"
+layer1 -> layer2: "Enables automation in"
+layer2 -> layer3: "Powers UIs and tools in"
+layer3 -> layer4: "Unified through"

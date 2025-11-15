@@ -13,6 +13,27 @@ Comprehensive security scanner for vulnerabilities and misconfigurations
 | **Upstream Project** | [trivy](https://trivy.dev) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Trivy?
+
+Trivy scans container images for vulnerabilities, misconfigurations, and secrets. It's comprehensive, fast, and can run in CI pipelines or as an operator in-cluster.
+
+Trivy supports multiple scan targets (container images, filesystems, Git repositories, Kubernetes resources) and outputs results in various formats. It integrates with CI/CD workflows to block deployments of vulnerable images.
+
+In this platform, Trivy can scan images during the build phase (in Argo Workflows) and periodically scan running workloads for newly discovered vulnerabilities.
+
+## Architecture Role
+
+Trivy operates at **Layer 3** of the platform, part of the security tooling.
+
+Key integration points:
+
+- **Argo Workflows**: Workflows can trigger Trivy scans as part of CI
+- **Container Registry**: Scans images from the registry
+- **Kubernetes API**: Can scan deployed resources for misconfigurations
+- **PolicyReports**: Can generate PolicyReport CRDs for tracking scan results
+
+Trivy runs as an operator that periodically scans resources and reports findings.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

@@ -13,6 +13,38 @@ Declarative GitOps continuous delivery for Kubernetes
 | **Upstream Project** | [argocd](https://argo-cd.readthedocs.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why ArgoCD?
+
+ArgoCD continuously reconciles what's defined in Git with what's running in the cluster. The platform uses it for several specific features:
+
+- **ApplicationSets**: Generate Applications dynamically from templates, enabling patterns like "deploy to all namespaces matching this label"
+- **Sync Waves**: Orchestrate deployment order (namespaces before CRDs, CRDs before applications)
+- **Prometheus Metrics**: Observability into sync status, reconciliation loops, and resource health
+- **Multicluster Support**: Can manage multiple clusters from a single control plane
+- **UI**: Visual representation of application deployment status
+
+ArgoCD handles single-cluster and multicluster setups with the same architecture. It exposes Prometheus metrics for integration with the observability stack, and works alongside other Argo ecosystem tools (Workflows, Events).
+
+Alternatives like Flux exist and are viable. ArgoCD was chosen here primarily for its UI and ApplicationSet capabilities, which align well with the platform's requirements.
+
+## Architecture Role
+
+ArgoCD operates at **Layer 2** of the platform, the Automation & Governance layer. It's the brain that translates declarative manifests in Git into cluster state.
+
+Key integration points:
+
+- **Git Provider**: Pulls manifests and monitors for changes
+- **Kubernetes API**: Applies resources and continuously reconciles desired state
+- **Kyverno**: Works in tandem during admission control (Kyverno validates what ArgoCD deploys)
+- **External Secrets**: ArgoCD deploys ExternalSecret resources, which trigger secret synchronization from Vault
+- **Prometheus**: Exposes metrics on sync status, application health, and reconciliation performance
+
+The configuration here uses `resourceTrackingMethod: annotation` for better performance (avoids label length limits) and excludes high-frequency resources like CiliumEndpoint and PolicyReport from reconciliation to reduce API server load.
+
+ArgoCD has `selfHeal: true` enabled in ApplicationSets, meaning any manual changes to resources are automatically reverted to match Git. This enforces GitOps discipline and ensures the cluster state is always reproducible.
+
+See [GitOps Model](../../../concepts/gitops-model.md) for how ArgoCD orchestrates the entire platform.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:
