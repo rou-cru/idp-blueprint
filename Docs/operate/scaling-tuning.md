@@ -1,18 +1,51 @@
-# Scaling & Tuning
+---
+# Scaling & Tuning — Knobs that actually move the needle
 
-Guidelines for right-sizing and tuning IDP Blueprint components.
+Make capacity intentional: prioritize what must stay up, keep metrics/logs affordable, and avoid cardinality explosions.
 
-## Resource Management
+## Priorities and pools
 
-- Requests/limits for each workload
-- Retention and storage sizing for Loki/Prometheus
+```d2
+direction: right
 
-## Performance
+Priority: {
+  Infra: "platform-infrastructure"
+  Policy: "platform-policy"
+  Observ: "platform-observability"
+  CICD: "platform-cicd / cicd-execution"
+  Dash: "platform-dashboards"
+}
 
-- Scrape intervals and label cardinality
-- Fluent-bit buffering and backpressure
+Nodes: {
+  Control: "control plane"
+  Infra: "infra nodes"
+  Work: "workload nodes"
+}
 
-## Cost/Footprint
+Priority.Infra -> Nodes.Infra
+Priority.Policy -> Nodes.Infra
+Priority.Observ -> Nodes.Infra
+Priority.Dash -> Nodes.Work
+Priority.CICD -> Nodes.Work
+```
 
-- Component enablement choices for demos vs. production
-- FinOps labels and tracking
+Rules of thumb:
+- Every values file sets `priorityClassName` (the repo checks for this).
+- Keep DaemonSets lean; they run everywhere (Cilium, Fluent‑bit, Node Exporter).
+
+## Observability knobs
+
+- Prometheus: `retention`, TSDB storage, `scrapeInterval`, drop high‑card labels.
+- Loki: pipeline stages, label hygiene, storage backends.
+- Dashboards: render fast; prefer recording rules for expensive queries.
+
+## Performance and safety
+
+- Requests/limits tuned per component; quotas/limits per namespace.
+- Backpressure: Fluent‑bit buffers; Loki ingestion limits.
+- Avoid high cardinality metrics (pod UID, container ID) unless really needed.
+
+## Cost & footprint
+
+- Disable non‑critical components in dev/demo; scale up in staging/prod.
+- FinOps labels are already enforced; use them to attribute and decide.

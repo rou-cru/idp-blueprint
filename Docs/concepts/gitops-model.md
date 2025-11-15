@@ -1,148 +1,99 @@
-# GitOps Model
+# GitOps, Policy, and Eventing — The Control Backbone
 
-IDP Blueprint is GitOps‑first with ArgoCD and ApplicationSets. The repository structure and tasks are designed so that adding or removing a stack component is a simple Git change.
+This IDP is GitOps‑first, policy‑driven, and event‑oriented. The goal is one predictable path from intent to action, plus a programmable way to react to signals.
 
-## Layers: Bootstrap vs GitOps
+## Two layers of change: Bootstrap vs GitOps
 
-- Bootstrap (IT/): one‑time installation of cluster prerequisites and control planes (Cilium, cert‑manager, Vault, External Secrets, ArgoCD, Gateway). See `task bootstrap:*` calls wired into `task deploy`.
-- GitOps (K8s/): ArgoCD ApplicationSets watch `K8s/*` directories and generate Applications for each stack component (observability, CI/CD, security, policies).
+- Bootstrap (`IT/`): one‑time installation for control planes and base services (Cilium, cert‑manager, Vault/ESO, ArgoCD, Gateway). It’s code, but not continuously reconciled.
+- GitOps (`K8s/`): continuously reconciled state. ApplicationSets watch directories and generate Applications.
 
-See also the [Bootstrap Process](../architecture/bootstrap.md) and the GitOps visuals in [Visual Map](../architecture/visual.md).
+```d2
+direction: right
 
-## AppProjects: guardrails per stack
-
-AppProjects scope sources and destinations:
-
-- Files: `IT/argocd/appproject-*.yaml` applied during `task bootstrap:argocd:deploy`
-- They set `spec.sourceRepos: ${REPO_URL}` and `destinations` per namespace
-
-Example: `IT/argocd/appproject-observability.yaml` allows deploying to `namespace: observability` on the in‑cluster server.
-
-## ApplicationSets: directory→Application mapping
-
-ApplicationSets generate Applications from folders. The `stacks:deploy` task applies them with variables substituted via `envsubst`:
-
-```bash
-envsubst < applicationset-observability.yaml | kubectl apply -f -
+IT: "Bootstrap (once)"
+K8s: "GitOps (continuous)"
+IT -> K8s: "seed control planes"
 ```
 
-Example (excerpt from `K8s/observability/applicationset-observability.yaml`):
+## AppProjects and ApplicationSets — guardrails and generation
 
-```yaml
-spec:
-  generators:
-    - git:
-        repoURL: ${REPO_URL}
-        revision: ${TARGET_REVISION}
-        directories:
-          - path: K8s/observability/*
-  template:
-    metadata:
-      name: 'observability-{{path.basename}}'
-    spec:
-      project: observability
-      source:
-        repoURL: ${REPO_URL}
-        targetRevision: ${TARGET_REVISION}
-        path: '{{path}}'
-      destination:
-        server: https://kubernetes.default.svc
-        namespace: observability
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-        syncOptions:
-          - ServerSideApply=true
-          - PruneLast=true
-          - ApplyOutOfSyncOnly=true
-```
-
-Other stacks follow the same pattern:
-
-- `K8s/cicd/applicationset-cicd.yaml` (excludes `jenkins.disabled`)
-- `K8s/security/applicationset-security.yaml`
-
-## GitOps Flow
+- AppProjects define blast radius (source repos + destinations). See `IT/argocd/appproject-*.yaml`.
+- ApplicationSets map folders → Applications. One commit = one rollout.
 
 ```d2
 direction: right
 
 Git: {
-  label: "Git (REPO_URL @ TARGET_REVISION)"
-  K8sDir: {
-    label: "K8s/"
-    Obs: "observability/*"
-    Cicd: "cicd/*"
-    Sec: "security/*"
+  Repo: "${REPO_URL} @ ${TARGET_REVISION}"
+  Folders: {
+    Obs: "K8s/observability/*"
+    Cicd: "K8s/cicd/*"
+    Sec: "K8s/security/*"
   }
 }
 
-Argo: {
-  label: "ArgoCD"
-  ApplicationSets: {
-    ASObs: "ApplicationSet: observability"
-    ASCicd: "ApplicationSet: cicd"
-    ASSec: "ApplicationSet: security"
-  }
-  Applications: {
-    AppProm: "obs-prometheus"
-    AppGraf: "obs-grafana"
-    AppLoki: "obs-loki"
-    AppWF: "cicd-argo-workflows"
-    AppTrivy: "sec-trivy"
-  }
+ArgoCD: {
+  AppProjects
+  ApplicationSets
+  Applications
 }
 
-Cluster: {
-  Namespaces: {
-    ObsNS: "Namespace: observability"
-    CicdNS: "Namespace: cicd"
-    SecNS: "Namespace: security"
-  }
-}
-
-Git.K8sDir.Obs -> Argo.ApplicationSets.ASObs: monitors
-Git.K8sDir.Cicd -> Argo.ApplicationSets.ASCicd: monitors
-Git.K8sDir.Sec -> Argo.ApplicationSets.ASSec: monitors
-
-Argo.ApplicationSets.ASObs -> Argo.Applications.AppProm: generates
-Argo.ApplicationSets.ASObs -> Argo.Applications.AppGraf
-Argo.ApplicationSets.ASObs -> Argo.Applications.AppLoki
-Argo.ApplicationSets.ASCicd -> Argo.Applications.AppWF
-Argo.ApplicationSets.ASSec -> Argo.Applications.AppTrivy
-
-Argo.Applications.AppProm -> Cluster.Namespaces.ObsNS: sync
-Argo.Applications.AppGraf -> Cluster.Namespaces.ObsNS
-Argo.Applications.AppLoki -> Cluster.Namespaces.ObsNS
-Argo.Applications.AppWF -> Cluster.Namespaces.CicdNS
-Argo.Applications.AppTrivy -> Cluster.Namespaces.SecNS
+Git.Folders.Obs -> ArgoCD.ApplicationSets: "generator"
+ArgoCD.ApplicationSets -> ArgoCD.Applications: "templates"
+ArgoCD.Applications -> Cluster: "sync (waves)"
 ```
 
-## Variables: repo and revision
+## Policy — turning conventions into guarantees
 
-- `REPO_URL` and `TARGET_REVISION` are read from `config.toml` by tasks (preferred),
-  and fall back to the current git remote/branch if empty. Tasks substitute them
-  via `envsubst` when applying manifests.
+Kyverno validates at admission (and can mutate/generate). Use it to encode platform rules so every namespace and workload ships with the right labels, limits, and safety constraints.
 
-!!! note
-    Use `config.toml` as the canonical place to set configuration (repo, branch,
-    network, versions, passwords). Only use ad‑hoc environment overrides for
-    temporary testing.
+Examples to enforce:
+- Namespace labels (owner, business-unit, environment).
+- Component labels on Deployments/StatefulSets/DaemonSets.
+- Default NetworkPolicies (planned hardening). 
 
-## Sync policy and drift
+## Eventing — a programmable nervous system (planned core)
 
-- Automated prune + self‑heal keeps the cluster aligned with Git.
-- `ServerSideApply` and `ApplyOutOfSyncOnly` reduce noisy updates.
-- Webhook `caBundle` fields are ignored in diffs to avoid perpetual drift (see `ignoreDifferences` in observability ApplicationSet).
+Argo Events makes “what happens next” explicit: route events into Sensors, then trigger Workflows, ArgoCD actions, or HTTP calls. Treat alerts, GitHub webhooks, and K8s resource state changes the same: as events.
 
-## Add, change, remove a component
+Typical recipes:
+- SLO burn → rollback → notify.
+- GitHub PR → build+test → preview.
+- ArgoCD OutOfSync → refresh/sync → gate on policy.
 
-- Add: create a new folder under the stack (`K8s/observability/<name>`) with a Kustomize overlay or Helm values; commit and push.
-- Change: edit values/overlays and push; ArgoCD reconciles.
-- Remove: delete the folder; ArgoCD prunes the Application on next sync.
+```d2
+direction: right
 
-## Policies and secrets in the loop
+Sources: {
+  label: "Event Sources"
+  Alertmanager
+  GitHub
+  K8sResources
+}
 
-- Kyverno enforces policies at admission; violations appear in Policy Reporter.
-- External Secrets Operator authenticates to Vault (configured during bootstrap) and syncs Kubernetes Secrets needed by components (e.g., ArgoCD admin password).
+ArgoEvents: {
+  Sensors: "filters + routing"
+  Triggers: {
+    WF: "Argo Workflows"
+    ACD: "ArgoCD API"
+    HTTP: "Webhooks"
+  }
+}
+
+Sources -> ArgoEvents.Sensors: emit
+ArgoEvents.Sensors -> Triggers.WF
+ArgoEvents.Sensors -> Triggers.ACD
+ArgoEvents.Sensors -> Triggers.HTTP
+```
+
+## Sync policy, drift, and safety
+
+- Automated prune + self‑heal keep the cluster aligned with Git.
+- Server‑side apply and out‑of‑sync only reduce noisy diffs.
+- Ignore non‑deterministic fields (e.g., webhook caBundle) to avoid drift noise.
+
+## Secrets in the loop (conceptual)
+
+ESO authenticates to Vault and writes K8s Secrets. Workloads consume only K8s Secrets. Use `creationPolicy: Merge` when charts need to add internal keys later.
+
+![ArgoCD apps](../assets/images/after-deploy/argocd-apps-healthy.jpg){ loading=lazy }

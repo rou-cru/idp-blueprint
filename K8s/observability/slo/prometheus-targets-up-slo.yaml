@@ -1,0 +1,25 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: prometheus-targets-up
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: prometheus-targets-up
+    app.kubernetes.io/instance: prometheus-targets-up-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+spec:
+  target: 99.0
+  window: 6h
+  indicator:
+    ratio:
+      good:
+        metric: |
+          sum(avg_over_time(up[5m]))
+      total:
+        metric: |
+          count(up)
+
