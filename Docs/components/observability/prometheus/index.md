@@ -13,6 +13,33 @@ Prometheus monitoring stack with Grafana and Alertmanager
 | **Upstream Project** | [prometheus](https://prometheus.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Prometheus?
+
+Prometheus is the metrics backbone of this platform. The choice is straightforward: it's the standard for Kubernetes monitoring, the kube-prometheus-stack chart simplifies integration with Grafana and other tools, and the pull model it uses is efficient in resource-constrained environments.
+
+The pull model matters. Prometheus scrapes metrics from targets on a schedule, which means you control cardinality and scrape intervals precisely. This prevents metric explosions that can overwhelm push-based systems. In an edge environment where resources are finite, this level of control is critical.
+
+The kube-prometheus-stack Helm chart bundles Prometheus with Grafana, Alertmanager, and a comprehensive set of pre-configured dashboards and alerts for Kubernetes. It's opinionated, but in a good way: you get production-ready monitoring out of the box without spending days configuring scrape targets and dashboards.
+
+ServiceMonitor CRDs make metrics collection declarative. Instead of manually editing Prometheus config files, you define a ServiceMonitor resource and Prometheus discovers it automatically. This integrates perfectly with the GitOps workflow.
+
+## Architecture Role
+
+Prometheus operates at **Layer 1** of the platform, the Platform Services layer. It's a transversal service that monitors everything above it.
+
+Key integration points:
+
+- **ServiceMonitors**: Declared by components (Cilium, ArgoCD, Kyverno, etc.) to expose metrics
+- **Grafana**: Queries Prometheus for metrics visualization
+- **Pyrra**: Uses Prometheus metrics to calculate SLO burn rates
+- **Alertmanager**: Receives alerts from Prometheus evaluation rules (currently enabled for Pyrra support)
+
+The configuration uses a pull model with ServiceMonitor CRDs for discovery. Scrape intervals are tuned per target (e.g., 30s for CNI metrics, 60s for application metrics). This balances visibility with resource efficiency.
+
+Prometheus doesn't currently drive any HorizontalPodAutoscalers (HPAs), meaning metrics are used for passive observability rather than active scaling. This is an opportunity for future optimization.
+
+See [Observability Model](../../../concepts/observability-model.md) for the complete observability architecture.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

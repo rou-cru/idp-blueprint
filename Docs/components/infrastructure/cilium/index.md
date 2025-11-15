@@ -13,6 +13,37 @@ eBPF-based CNI with Gateway API support and L7 proxy capabilities
 | **Upstream Project** | [cilium](https://cilium.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Cilium?
+
+Cilium is the CNI for this platform, and for good reason. It's built on eBPF, which means it operates at the kernel level with minimal overhead. Traditional CNIs work in userspace and require context switches for every network operation. Cilium bypasses that entirely, delivering higher throughput and lower latency while consuming fewer CPU cycles.
+
+But performance isn't the only win. Cilium is effectively multiple tools in one:
+
+- **Networking**: Full-featured CNI with kube-proxy replacement
+- **Observability**: Hubble provides network-level visibility without requiring application instrumentation
+- **Security**: NetworkPolicy engine capable of L3/L4 and L7 filtering
+- **Gateway API**: Native implementation of Kubernetes Gateway API for L7 routing
+- **Service Mesh**: Sidecar-free mesh capabilities (mTLS, load balancing, observability)
+
+In an edge environment where every resource matters, having one tool that handles networking, observability, and security is a significant advantage. The alternative would be deploying separate components for each function, each with its own resource footprint and operational overhead.
+
+Cilium scales from minimal edge deployments to massive production clusters without changing architecture. That's rare.
+
+## Architecture Role
+
+Cilium sits at **Layer 0** of the platform, the infrastructure core. It's the substrate that everything else depends on. Without Cilium, pods can't communicate, services can't be reached, and the Gateway can't route traffic.
+
+Key integration points:
+
+- **Gateway API**: Cilium implements the Gateway API natively, handling L7 routing for all exposed services
+- **Hubble → Prometheus**: Network metrics flow from Hubble to Prometheus via ServiceMonitors
+- **NetworkPolicy Engine**: Ready to enforce network segmentation (currently configured but not actively used)
+- **Envoy Proxy**: Embedded Envoy handles L7 features (HTTP routing, observability, eventual mTLS)
+
+The configuration disables some features for the k3d demo environment (BPF host routing, masquerading, encryption) because they interfere with Docker bridge networking. On bare metal or VMs, these would be enabled for additional performance and security gains.
+
+See [Architecture Overview](../../../architecture/overview.md) for how Cilium fits into the broader platform design.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

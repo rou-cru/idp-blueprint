@@ -13,6 +13,39 @@ Cloud-native certificate management for Kubernetes
 | **Upstream Project** | [cert-manager](https://cert-manager.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Cert-Manager?
+
+Cert-Manager automates the entire TLS certificate lifecycle, reducing operational toil to zero. The alternative is manually generating certificates, distributing them to services, tracking expiration dates, and renewing them before they expire. Cert-Manager handles all of that automatically.
+
+It integrates with practically every certificate authority (Let's Encrypt, Venafi, self-signed, enterprise CAs) and supports multiple challenge types (HTTP-01, DNS-01, TLS-ALPN-01). For this platform, it bootstraps a self-signed CA and uses it to issue certificates for internal services. The Gateway uses a wildcard certificate issued by this CA for all exposed services.
+
+Certificates auto-renew before expiration. Services reference certificates via Kubernetes Secrets, which Cert-Manager updates atomically. The operational burden is zero.
+
+When mTLS is introduced in the future (e.g., for service-to-service encryption via Cilium), Cert-Manager will be even more valuable. It can issue per-pod certificates automatically, rotate them on a short schedule, and ensure the mesh stays secure without manual intervention.
+
+Cert-Manager is cloud-agnostic. It doesn't depend on a specific provider's certificate service, making the platform portable.
+
+## Architecture Role
+
+Cert-Manager operates at **Layer 1** of the platform, the Platform Services layer. It's a cross-cutting service that provides PKI for any component that needs TLS.
+
+Key integration points:
+
+- **ClusterIssuers**: Define certificate authorities (self-signed, CA-based, ACME)
+- **Certificates**: Declarative resources that request certificates from issuers
+- **Kubernetes Secrets**: Cert-Manager stores certificates here, making them consumable by any workload
+- **Gateway API**: Uses the `idp-wildcard-cert` certificate for TLS termination
+
+The PKI bootstrap process is fully declarative:
+
+1. Self-signed ClusterIssuer creates a root CA certificate
+2. That CA certificate backs a CA ClusterIssuer
+3. The CA ClusterIssuer issues certificates for applications
+
+This pattern creates a complete, self-contained PKI without external dependencies.
+
+See [Architecture Overview](../../../architecture/overview.md#2-public-key-infrastructure-pki) for the PKI flow diagram.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:
