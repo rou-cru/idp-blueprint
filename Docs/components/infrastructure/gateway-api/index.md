@@ -2,10 +2,30 @@
 
 Gateway API provides a standard way to expose services with TLS and routing.
 
-## Highlights
+## Why Gateway API?
 
-- Single Gateway with wildcard TLS
-- Per-service `HTTPRoute` resources
-- Works with local wildcard via `nip.io`
+Gateway API is the successor to Ingress. It splits configuration into two resources:
 
-See also: [Networking & Gateway](../../../concepts/networking-gateway.md).
+- **Gateway**: Infrastructure concerns managed by platform engineers (listeners, TLS certificates, load balancer settings)
+- **HTTPRoute**: Application routing managed by developers (path matching, backends, traffic splitting)
+
+This separation enables better collaboration. Platform teams configure Gateways once, application teams create HTTPRoutes that attach to them without coordinating on shared resources.
+
+Gateway API also supports features like request header modification, traffic weighting, and cross-namespace routing with RBAC controls. These required vendor-specific annotations in Ingress or weren't possible at all.
+
+Cilium implements Gateway API natively, and major service meshes (Istio, Linkerd) are adopting it.
+
+## Architecture Role
+
+Gateway API operates at **Layer 1** of the platform, the Platform Services layer. Cilium implements the Gateway API, so this is conceptual rather than a separately deployed service.
+
+Key integration points:
+
+- **Cilium**: Provides the Gateway API implementation
+- **Cert-Manager**: Supplies the wildcard TLS certificate used by the Gateway
+- **HTTPRoutes**: Applications define routing rules that attach to the Gateway
+- **DNS (nip.io)**: Wildcard DNS for local development (e.g., `*.127.0.0.1.nip.io`)
+
+The platform uses a single Gateway with a wildcard certificate. Services define HTTPRoutes that specify hostnames and path matching.
+
+See [Networking & Gateway](../../../concepts/networking-gateway.md) for detailed configuration patterns.

@@ -13,6 +13,27 @@ Code quality and security analysis platform
 | **Upstream Project** | [sonarqube](https://www.sonarsource.com/products/sonarqube) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why SonarQube?
+
+SonarQube provides static code analysis for quality gates in CI/CD pipelines. It scans code for bugs, code smells, security vulnerabilities, and technical debt, then reports on code quality metrics.
+
+While there are lighter, more cloud-native alternatives, SonarQube is mature and widely used in enterprise environments. It supports many languages, has extensive rule sets, and provides detailed reports.
+
+In this platform, Argo Workflows can trigger SonarQube scans as part of the CI pipeline. The scan results feed into quality gates that determine whether code can be promoted.
+
+## Architecture Role
+
+SonarQube sits at **Layer 3** of the platform, the Developer-Facing Applications layer. It's a quality analysis tool used during CI.
+
+Key integration points:
+
+- **Argo Workflows**: Workflows trigger SonarQube scans
+- **PostgreSQL**: SonarQube's data store (deployed alongside)
+- **Gateway API**: Exposed via HTTPRoute for accessing the UI
+- **Git Provider**: Can comment on pull requests with scan results
+
+SonarQube runs as a stateful service with persistent storage for scan history and configuration.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

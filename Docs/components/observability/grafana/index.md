@@ -12,6 +12,35 @@ The leading platform for analytics and monitoring
 | **Upstream Project** | [grafana](https://grafana.com/grafana/) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Grafana?
+
+Grafana provides a unified interface for querying metrics and logs. The kube-prometheus-stack chart bundles it with Prometheus and includes dashboards for Kubernetes components.
+
+Grafana supports multiple data sources. In this platform:
+
+- **Prometheus**: For metrics (resource usage, application performance, SLO burn rates)
+- **Loki**: For logs (structured log queries, correlation with metrics)
+
+The ability to correlate metrics and logs in the same interface helps with debugging. You can see a spike in errors in a Prometheus graph, then query Loki for the corresponding error logs.
+
+Grafana dashboards can be stored as ConfigMaps, making observability infrastructure reproducible and versionable in Git.
+
+## Architecture Role
+
+Grafana sits at **Layer 3** of the platform, the Developer-Facing Applications layer. It's a user interface that consumes data from services below.
+
+Key integration points:
+
+- **Prometheus**: Configured as a data source for metrics
+- **Loki**: Configured as a data source for logs
+- **Vault → External Secrets**: Admin credentials synced
+- **Gateway API**: Exposed via HTTPRoute for browser access
+- **ConfigMaps**: Dashboards stored as code
+
+The configuration uses Unified Alerting (Grafana's built-in alerting) as the primary alerting interface.
+
+See [Observability Model](../../../concepts/observability-model.md) for the complete observability architecture.
+
 ## Configuration Values
 
 The following table lists the configurable parameters from the Prometheus chart that includes Grafana:
