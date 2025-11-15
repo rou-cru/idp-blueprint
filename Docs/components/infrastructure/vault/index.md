@@ -15,11 +15,9 @@ Secrets management and data protection platform
 
 ## Why Vault?
 
-Vault is the secrets backend for this platform, and the choice is about portability and security. Using cloud provider secret managers would create vendor lock-in, require users to register with that specific provider, and force the platform to handle the nuances of each provider's API. Vault eliminates all of that.
+Using cloud provider secret managers creates vendor lock-in and forces the platform to handle provider-specific APIs. Vault provides a provider-agnostic secrets backend that runs anywhere Kubernetes runs.
 
-Vault is portable. It runs anywhere Kubernetes runs. It's secure when configured correctly. And it enables 100% automated deployments without relying on hardcoded values or insecure practices. Users can still extend the platform to connect Vault to their preferred cloud provider's secret manager if needed, but Vault provides a consistent interface regardless of where secrets ultimately come from.
-
-The key benefits:
+Benefits of this approach:
 
 - **No Vendor Lock-In**: Vault works the same on AWS, GCP, Azure, or bare metal
 - **Centralized Management**: Single source of truth for all secrets across the platform

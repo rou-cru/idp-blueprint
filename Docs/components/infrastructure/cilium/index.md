@@ -15,9 +15,9 @@ eBPF-based CNI with Gateway API support and L7 proxy capabilities
 
 ## Why Cilium?
 
-Cilium is the CNI for this platform, and for good reason. It's built on eBPF, which means it operates at the kernel level with minimal overhead. Traditional CNIs work in userspace and require context switches for every network operation. Cilium bypasses that entirely, delivering higher throughput and lower latency while consuming fewer CPU cycles.
+Cilium is built on eBPF, which operates at the kernel level with minimal overhead. Traditional CNIs work in userspace and require context switches for every network operation. Cilium bypasses that, delivering higher throughput and lower latency while consuming fewer CPU cycles.
 
-But performance isn't the only win. Cilium is effectively multiple tools in one:
+Performance is one factor, but Cilium also consolidates multiple functions into a single component:
 
 - **Networking**: Full-featured CNI with kube-proxy replacement
 - **Observability**: Hubble provides network-level visibility without requiring application instrumentation
@@ -25,9 +25,9 @@ But performance isn't the only win. Cilium is effectively multiple tools in one:
 - **Gateway API**: Native implementation of Kubernetes Gateway API for L7 routing
 - **Service Mesh**: Sidecar-free mesh capabilities (mTLS, load balancing, observability)
 
-In an edge environment where every resource matters, having one tool that handles networking, observability, and security is a significant advantage. The alternative would be deploying separate components for each function, each with its own resource footprint and operational overhead.
+In an edge environment where resources are fixed, consolidating networking, observability, and security into one component reduces the total resource footprint. The alternative is deploying separate tools for each function, each with its own overhead.
 
-Cilium scales from minimal edge deployments to massive production clusters without changing architecture. That's rare.
+Cilium works across deployment sizes without requiring architectural changes, from edge setups to large clusters.
 
 ## Architecture Role
 

@@ -4,9 +4,9 @@ This document provides a comprehensive view of the IDP Blueprint's architecture.
 
 ## What You're Looking At
 
-This isn't a toy cluster for tutorials. This is a functional reference design for an Internal Developer Platform built with production-grade practices, deployed in an edge computing context. The goal is simple: demonstrate that you don't need expensive enterprise licenses or cloud-specific services to build something genuinely comparable to commercial platforms.
+This is an Internal Developer Platform designed to run in resource-constrained edge environments. The entire stack deploys with a single command. Everything runs on Kubernetes, which means the underlying infrastructure (bare metal, on-premise, or public cloud) becomes a deployment detail rather than an architectural constraint.
 
-The entire platform deploys with a single command. Everything runs on Kubernetes, abstracted from the underlying infrastructure. Whether you're on bare metal, on-premise, or in a public cloud becomes a deployment detail, not an architectural constraint.
+The approach is straightforward: use CNCF projects and well-established patterns to build a platform without relying on commercial licenses or cloud-specific services. Whether that strategy works for your use case is something you'll determine as you explore the architecture and implementation.
 
 ## Design Context: Edge Computing Constraints
 
@@ -167,21 +167,21 @@ This strategy prioritizes survival and operational continuity over peak performa
 
 See [Disaster Recovery](../operate/disaster-recovery.md) for detailed runbooks.
 
-## Why This Stack?
+## Selection Criteria
 
-Every component in this platform was chosen for specific technical reasons, not popularity or trend-chasing. The selection criteria were:
+The components in this stack were chosen based on specific technical requirements:
 
-1. **Performance under resource constraints**: Edge environments don't have room for bloated tools
-2. **Production-ready practices**: This may be a demo, but the patterns are production-grade
-3. **Modern and valuable**: Cloud-native tools that represent current best practices
-4. **Zero licensing costs**: Demonstrates that CNCF projects can match or exceed commercial alternatives
-5. **Cloud-agnostic**: Kubernetes abstracts the infrastructure, the platform abstracts Kubernetes
+1. **Performance under resource constraints**: Edge environments have fixed resources, so lightweight tools matter
+2. **Declarative patterns**: Everything is GitOps-driven, so tools need to work well with declarative configuration
+3. **Active ecosystems**: CNCF projects with strong community support and regular updates
+4. **No licensing costs**: Avoids commercial licenses to reduce barriers to adoption
+5. **Cloud-agnostic**: Portability across environments (cloud, on-premise, bare metal)
 
-From a cloud provider, you need compute, network, maybe databases, and hardware-level security. Everything else is optional. This platform proves it.
+The goal was to identify what's actually needed from a cloud provider (compute, network, storage, hardware-level security) and handle everything else at the platform level using Kubernetes and its ecosystem.
 
 ## What's Next?
 
-This overview provides the 10,000-foot view. For deeper dives:
+This overview provides the high-level view. For more detail:
 
 - **[Visual Architecture](visual.md)**: Detailed flow diagrams for every major subsystem
 - **[Infrastructure Layer](infrastructure.md)**: How the bootstrap process works
@@ -189,4 +189,4 @@ This overview provides the 10,000-foot view. For deeper dives:
 - **[Bootstrap Process](bootstrap.md)**: The sequence of steps that bring the platform online
 - **[Components](../components/)**: Per-component deep dives, including why each was chosen
 
-The platform is designed to be understandable, modifiable, and adaptable. Explore the sections above to build your mental model of how it all fits together.
+Explore the sections above to understand how the pieces connect.

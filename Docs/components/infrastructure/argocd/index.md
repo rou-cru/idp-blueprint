@@ -15,19 +15,17 @@ Declarative GitOps continuous delivery for Kubernetes
 
 ## Why ArgoCD?
 
-ArgoCD is the GitOps engine for this platform. It's the tool that continuously reconciles what's defined in Git with what's running in the cluster. The choice is straightforward: ArgoCD covers everything you'd need from a GitOps tool, from basic deployments to enterprise-grade multicluster management, without requiring you to piece together multiple solutions.
-
-The feature set is comprehensive:
+ArgoCD continuously reconciles what's defined in Git with what's running in the cluster. The platform uses it for several specific features:
 
 - **ApplicationSets**: Generate Applications dynamically from templates, enabling patterns like "deploy to all namespaces matching this label"
 - **Sync Waves**: Orchestrate deployment order (namespaces before CRDs, CRDs before applications)
-- **Prometheus Metrics**: Deep observability into sync status, reconciliation loops, and resource health
-- **Multicluster Support**: Manage multiple clusters from a single control plane
-- **Developer Portal Capabilities**: The UI can serve as a basic portal for viewing application status
+- **Prometheus Metrics**: Observability into sync status, reconciliation loops, and resource health
+- **Multicluster Support**: Can manage multiple clusters from a single control plane
+- **UI**: Visual representation of application deployment status
 
-ArgoCD scales from simple single-cluster setups to complex enterprise topologies without architectural changes. It integrates seamlessly with the observability stack (metrics to Prometheus, events to logs). And because it's part of the Argo ecosystem, it works naturally alongside Argo Workflows and Argo Events.
+ArgoCD handles single-cluster and multicluster setups with the same architecture. It exposes Prometheus metrics for integration with the observability stack, and works alongside other Argo ecosystem tools (Workflows, Events).
 
-The alternative would be something like Flux, which is excellent but doesn't offer the same integrated UI or the depth of features for complex scenarios. For this platform, ArgoCD is the complete package.
+Alternatives like Flux exist and are viable. ArgoCD was chosen here primarily for its UI and ApplicationSet capabilities, which align well with the platform's requirements.
 
 ## Architecture Role
 

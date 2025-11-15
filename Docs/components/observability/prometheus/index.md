@@ -15,13 +15,11 @@ Prometheus monitoring stack with Grafana and Alertmanager
 
 ## Why Prometheus?
 
-Prometheus is the metrics backbone of this platform. The choice is straightforward: it's the standard for Kubernetes monitoring, the kube-prometheus-stack chart simplifies integration with Grafana and other tools, and the pull model it uses is efficient in resource-constrained environments.
+Prometheus uses a pull model: it scrapes metrics from targets on a schedule. This provides precise control over cardinality and scrape intervals, which helps prevent metric explosions in resource-constrained environments.
 
-The pull model matters. Prometheus scrapes metrics from targets on a schedule, which means you control cardinality and scrape intervals precisely. This prevents metric explosions that can overwhelm push-based systems. In an edge environment where resources are finite, this level of control is critical.
+The kube-prometheus-stack Helm chart bundles Prometheus with Grafana, Alertmanager, and pre-configured dashboards for Kubernetes components. This reduces the initial configuration work.
 
-The kube-prometheus-stack Helm chart bundles Prometheus with Grafana, Alertmanager, and a comprehensive set of pre-configured dashboards and alerts for Kubernetes. It's opinionated, but in a good way: you get production-ready monitoring out of the box without spending days configuring scrape targets and dashboards.
-
-ServiceMonitor CRDs make metrics collection declarative. Instead of manually editing Prometheus config files, you define a ServiceMonitor resource and Prometheus discovers it automatically. This integrates perfectly with the GitOps workflow.
+ServiceMonitor CRDs make metrics collection declarative. Instead of manually editing Prometheus config files, you define ServiceMonitor resources and Prometheus discovers them automatically, which fits the GitOps approach.
 
 ## Architecture Role
 

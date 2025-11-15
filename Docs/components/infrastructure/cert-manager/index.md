@@ -15,15 +15,13 @@ Cloud-native certificate management for Kubernetes
 
 ## Why Cert-Manager?
 
-Cert-Manager automates the entire TLS certificate lifecycle, reducing operational toil to zero. The alternative is manually generating certificates, distributing them to services, tracking expiration dates, and renewing them before they expire. Cert-Manager handles all of that automatically.
+Cert-Manager automates TLS certificate issuance and renewal. The alternative is manual certificate generation, distribution, tracking expiration dates, and renewal.
 
-It integrates with practically every certificate authority (Let's Encrypt, Venafi, self-signed, enterprise CAs) and supports multiple challenge types (HTTP-01, DNS-01, TLS-ALPN-01). For this platform, it bootstraps a self-signed CA and uses it to issue certificates for internal services. The Gateway uses a wildcard certificate issued by this CA for all exposed services.
+It supports multiple certificate authorities (Let's Encrypt, Venafi, self-signed, enterprise CAs) and challenge types (HTTP-01, DNS-01, TLS-ALPN-01). For this platform, it bootstraps a self-signed CA and uses it to issue certificates for internal services.
 
-Certificates auto-renew before expiration. Services reference certificates via Kubernetes Secrets, which Cert-Manager updates atomically. The operational burden is zero.
+Certificates auto-renew before expiration. Services reference certificates via Kubernetes Secrets, which Cert-Manager updates. When mTLS is added in the future, Cert-Manager can issue per-pod certificates and rotate them automatically.
 
-When mTLS is introduced in the future (e.g., for service-to-service encryption via Cilium), Cert-Manager will be even more valuable. It can issue per-pod certificates automatically, rotate them on a short schedule, and ensure the mesh stays secure without manual intervention.
-
-Cert-Manager is cloud-agnostic. It doesn't depend on a specific provider's certificate service, making the platform portable.
+Cert-Manager doesn't depend on provider-specific certificate services, keeping the platform portable.
 
 ## Architecture Role
 

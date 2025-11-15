@@ -15,18 +15,16 @@ Kubernetes-native policy management and security engine
 
 ## Why Kyverno?
 
-Kyverno is the policy engine for this platform. The choice comes down to two key factors: it uses Kubernetes-native resources (policies are CRDs, just like any other manifest), and it doesn't require learning a specialized language like Rego.
+Kyverno uses Kubernetes-native resources (policies are CRDs, like any other manifest) and doesn't require learning a specialized language like Rego. Policies are written in YAML, which means the learning curve is lower if you already understand Kubernetes manifests.
 
-Policies in Kyverno are written in YAML. If you understand Kubernetes manifests, you understand Kyverno policies. This lowers the barrier to entry significantly compared to OPA/Gatekeeper, where you need to learn Rego before you can write effective policies.
-
-But Kyverno is more than just "easier OPA." It has capabilities that extend beyond simple validation:
+Beyond validation, Kyverno supports:
 
 - **Validation**: Accept or reject resources based on rules
 - **Mutation**: Modify resources on admission (e.g., inject labels, add sidecars)
 - **Generation**: Create new resources when a trigger resource is created (e.g., generate NetworkPolicy for every new namespace)
 - **Image Verification**: Validate container image signatures using Sigstore/Cosign
 
-The platform currently uses Kyverno primarily for validation, but its mutation and generation capabilities are ready to be leveraged as governance requirements grow. It also integrates with FinOps tooling like Kubecost, making it useful beyond security and compliance.
+The platform currently uses Kyverno primarily for validation. The mutation and generation capabilities are available for future use as governance requirements evolve. Kyverno also integrates with FinOps tools like Kubecost.
 
 ## Architecture Role
 
