@@ -1,6 +1,8 @@
-# Policies & Governance (Kyverno + Policy Reporter)
+# Policies & governance — Kyverno + Policy Reporter
 
 Governance lives under `Policies/` and is deployed before any workload stacks sync. Kyverno enforces the rules, while Policy Reporter surfaces compliance status.
+
+From a C4 perspective this page is a **component view (L3)** for the automation & governance layer (Kyverno + Policy Reporter).
 
 ## Policy Layers
 
@@ -52,22 +54,42 @@ Kyverno policies plug into the same sync‑wave model described in
 | ClusterPolicies | `0` | Apply after controllers are ready. |
 | Policy Reporter | `1` | Consumes policy reports after Kyverno starts emitting them. |
 
-## Policy Lifecycle
+## Policy lifecycle
 
 ```d2
-shape: sequence_diagram
-Author: Platform Engineer
-Git: Policies Repo
-Argo: ArgoCD
-Kyverno: Kyverno Controller
-Reporter: Policy Reporter
+direction: right
 
-Author -> Git: Add/modify policy YAML
-Git -> Argo: Commit pushed
-Argo -> Kyverno: Apply ClusterPolicy/Policy
-Kyverno -> K8s: Enforce/monitor resources
-Kyverno -> Reporter: Emit PolicyReports
-Reporter -> Author: UI & metrics show pass/fail
+Author: {
+  label: "Platform Engineer"
+  shape: c4-person
+}
+
+Git: {
+  label: "Policies repo\n(Git)"
+}
+
+Argo: {
+  label: "ArgoCD\nPolicies Application"
+}
+
+Kyverno: {
+  label: "Kyverno\ncontroller"
+}
+
+K8s: {
+  label: "Kubernetes cluster\n(resources under policy)"
+}
+
+Reporter: {
+  label: "Policy Reporter\nUI + metrics"
+}
+
+Author -> Git: "edit policy YAML"
+Git -> Argo: "commit pushed"
+Argo -> Kyverno: "apply ClusterPolicy/Policy"
+Kyverno -> K8s: "enforce / monitor"
+Kyverno -> Reporter: "emit PolicyReports"
+Reporter -> Author: "show pass/fail"
 ```
 
 ### Verify

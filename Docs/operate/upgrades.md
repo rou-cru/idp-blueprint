@@ -3,7 +3,7 @@
 
 Upgrades should feel boring. Make order and gates explicit, and test with disposable clusters before touching shared environments.
 
-## Choreography (order that sticks)
+## Upgrade choreography
 
 ```d2
 direction: right

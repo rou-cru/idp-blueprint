@@ -1,107 +1,88 @@
 # IDP Blueprint — A readable reference IDP
 
-IDP Blueprint is an Internal Developer Platform you can run locally, reason about, and adapt to your environment. It targets small, resource‑constrained Kubernetes clusters (for example 1–3 nodes) and uses a GitOps‑first architecture with widely adopted open source components.
+IDP Blueprint is an Internal Developer Platform you can run locally, reason about, and adapt to your environment. It is designed to run well from a small 3‑node demo cluster up to larger, production‑like Kubernetes environments, and uses a GitOps‑first architecture with widely adopted open source components.
 
-The goal of these docs is to explain the platform as a system: what it is, how it is wired, and how to change it safely.
+Use this documentation as a map to the platform: understand the architecture, deploy the reference cluster, then evolve components and operations to fit your own environment.
 
 ## One picture: IDP Blueprint architecture
 
 ```d2
 direction: down
-layout: elk
 
-platform_engineer: |md
-  ## Platform Engineer
-  [Person]
-| { shape: c4-person }
+platform_engineer: {
+  label: "Platform Engineer"
+  shape: c4-person
+}
 
-developer: |md
-  ## Application Developer
-  [Person]
-| { shape: c4-person }
+developer: {
+  label: "Application Developer"
+  shape: c4-person
+}
 
-git_provider: |md
-  ## Git Provider
-  [Software System]
-| { shape: rectangle }
+git_provider: {
+  label: "Git provider"
+  shape: rectangle
+}
 
-container_registry: |md
-  ## Container Registry
-  [Software System]
-| { shape: rectangle }
+container_registry: {
+  label: "Container registry"
+  shape: rectangle
+}
 
-idp: |md
-  ## Internal Developer Platform (IDP)
-  [Software System]
-| {
+idp: {
+  label: "Internal Developer Platform (IDP)"
   shape: rectangle
   style.stroke-width: 3
 
-  argo_cd: |md
-    ## ArgoCD
-    [Container: GitOps Engine]
-  | { shape: rectangle }
+  gitops: {
+    label: "GitOps & automation"
+    shape: rectangle
+    argo_cd: "ArgoCD"
+    appsets: "ApplicationSets"
+  }
 
-  sonarqube: |md
-    ## SonarQube
-    [Container: Code Quality]
-  | { shape: rectangle }
+  cicd: {
+    label: "CI/CD"
+    shape: rectangle
+    argo_workflows: "Argo Workflows"
+    sonarqube: "SonarQube"
+  }
 
   observability: {
+    label: "Observability"
     shape: rectangle
-    style.stroke-width: 2
-    label: "Observability Stack"
-
-    prometheus: |md
-      ## Prometheus
-      [Container: Metrics]
-    | { shape: rectangle }
-
-    loki: |md
-      ## Loki
-      [Container: Logs]
-    | { shape: rectangle }
-
-    grafana: |md
-      ## Grafana
-      [Container: Visualization]
-    | { shape: rectangle }
-
-    fluent_bit: |md
-      ## Fluent-bit
-      [Container: Log Agent]
-    | { shape: rectangle }
+    prometheus: "Prometheus"
+    loki: "Loki"
+    grafana: "Grafana"
+    fluent_bit: "Fluent-bit"
   }
 
   security: {
+    label: "Security & policy"
     shape: rectangle
-    style.stroke-width: 2
-    label: "Security Stack"
+    kyverno: "Kyverno"
+    policy_reporter: "Policy Reporter"
+    vault: "Vault"
+    external_secrets: "External Secrets Operator"
+    trivy: "Trivy"
+    cert_manager: "cert-manager"
+  }
 
-    kyverno: |md
-      ## Kyverno
-      [Container: Policy Engine]
-    | { shape: rectangle }
-
-    vault: |md
-      ## Vault
-      [Container: Secrets Backend]
-    | { shape: rectangle }
-
-    external_secrets: |md
-      ## External Secrets Operator
-      [Container: Secret Sync]
-    | { shape: rectangle }
+  networking: {
+    label: "Networking"
+    shape: rectangle
+    cilium: "Cilium CNI"
+    gateway_api: "Gateway API"
   }
 }
 
 developer -> git_provider
 platform_engineer -> git_provider
 
-git_provider -> idp.argo_cd
+git_provider -> idp.gitops.argo_cd
 
-idp.argo_cd -> idp.security.kyverno
-idp.argo_cd -> idp.security.external_secrets
+idp.gitops.argo_cd -> idp.security.kyverno
+idp.gitops.argo_cd -> idp.security.external_secrets
 
 idp.security.external_secrets -> idp.security.vault
 
@@ -124,7 +105,7 @@ At a glance:
 
 See [Architecture Overview](architecture/overview.md) for the full walkthrough.
 
-## The paved road (opinionated defaults)
+## Paved-road defaults
 
 - **GitOps**: everything reconciled from Git with ArgoCD and ApplicationSets
   (see [`GitOps, Policy, and Eventing`](concepts/gitops-model.md)).
@@ -135,7 +116,7 @@ See [Architecture Overview](architecture/overview.md) for the full walkthrough.
 
 ---
 
-## Choose your journey
+## How to navigate the docs
 
 <div class="grid cards" markdown>
 
@@ -253,7 +234,7 @@ The platform is built from the following open source components:
 ## Platform capabilities
 
 !!! abstract "Production-Ready Platform Engineering"
-    Platform engineering stack suitable for realistic development, staging, and smaller production-like environments. Typical uses include:
+    Platform engineering stack suitable for realistic development, staging, and production-like environments, from small demo clusters up to larger footprints. Typical uses include:
 
     - **Enterprise Architecture** - Evaluate cloud-native technologies in realistic deployment scenarios
     - **Infrastructure Prototyping** - Validate infrastructure changes before production rollout

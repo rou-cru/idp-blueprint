@@ -4,6 +4,8 @@ This directory contains the **static** or **bootstrap layer** of the platform. T
 the core components required to bring up a functional Kubernetes cluster _before_ the
 GitOps engine (e.g., ArgoCD) takes over.
 
+From a C4 perspective this page is the **component view (L3)** of the “0. Infrastructure core” layer described in the Architecture overview.
+
 ## Guiding Principles
 
 The structure follows two simple rules to ensure consistency and clarity.
@@ -74,6 +76,23 @@ IT/
 | `cert-manager/`              | Raw manifests for cert-manager (ClusterIssuers, CA certificates).        | Raw Manifests       |
 | `external-secrets/`          | Raw manifests for External Secrets Operator (SecretStore, ExternalSecret).| Raw Manifests       |
 | `argocd/`                    | Kustomization to support the ArgoCD Helm chart deployment.               | Kustomize           |
+
+## C4 component view — infrastructure core
+
+```d2
+direction: right
+
+InfraCore: {
+  label: "0. Infrastructure core (C4 L3 components)"
+  K8sAPI: "Kubernetes API + etcd"
+  Cilium: "Cilium CNI"
+  Cert: "cert-manager"
+  Vault: "Vault"
+  ESO: "External Secrets Operator"
+  ArgoCD: "ArgoCD"
+  Gateway: "Gateway API"
+}
+```
 
 ## Deployment Workflow
 

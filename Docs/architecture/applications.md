@@ -1,8 +1,10 @@
-# K8s Directory Architecture: GitOps with ApplicationSets
+# K8s directory architecture — GitOps with ApplicationSets
 
 This document outlines the GitOps strategy for managing all applications and services
 (workloads) deployed on the cluster. This directory (`K8s/`) is the source of truth,
 managed exclusively by ArgoCD.
+
+From a C4 perspective this page provides a **component view (L3)** of the GitOps application layer (“2. Automation & governance” and “3. Developer‑facing stacks” in the overview).
 
 ## Core Pattern: App of AppSets
 

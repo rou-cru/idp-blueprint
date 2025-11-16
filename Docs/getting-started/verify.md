@@ -2,7 +2,7 @@
 
 Let’s confirm things came up as expected and set realistic expectations for the first minutes after deploy.
 
-## What to expect (first 5–10 minutes)
+## What to expect in the first 5–10 minutes
 
 - ArgoCD continues syncing for a bit after “task deploy” finishes
 - Pods roll through Pending → Running → Ready as images download
@@ -28,7 +28,7 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 !!! tip
     `k9s` ships in the Devbox/Dev Container. Try `k9s -A` and toggle between `:pods`, `:deploy`, `:events` to watch things settle.
 
-### First Look (C4-style)
+### First look at the platform
 
 ```d2
 direction: right
@@ -61,7 +61,7 @@ Cluster.Gateway -> Cluster.UIs.Grafana
 Cluster.Gateway -> Cluster.UIs.Vault
 ```
 
-## Screens (Examples)
+## Reference screens
 
 Below are reference screenshots to calibrate expectations right after a fresh deploy. Your exact timing may vary while images download and pods become Ready.
 
@@ -109,7 +109,7 @@ kubectl -n cert-manager get secret idp-demo-ca-secret \
 !!! tip
     Certificates are issued automatically by cert-manager using a wildcard certificate for `*.127-0-0-1.nip.io`.
 
-## “Good Enough” Smoke Checks (Eventual Consistency Friendly)
+## “Good Enough” smoke checks — eventual-consistency friendly
 
 - [ ] ArgoCD shows Applications present; several may still be syncing, but status improves over a few minutes
 - [ ] Grafana UI loads; Prometheus and Loki datasources appear after their pods are Ready

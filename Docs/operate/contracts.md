@@ -81,16 +81,15 @@ This page lists every platform contract: what it is, its type, where it lives in
 - Enforcement: Pyrra → PrometheusRule → Alertmanager
 - Failure: wrong metrics/labels → SLOs don’t compute or alert
 
-## Eventing (planned core)
+## Eventing
 - Type: event schema + routing contract
 - Lives: `K8s/cicd/argo-events/*` (sources/sensors/triggers) [to be added]
 - Enforcement: Argo Events controllers
 - Failure: webhooks misrouted; triggers not firing
 
-## Contract meta (checklist)
+## Contract meta checklist
 - Validations: `Scripts/validate-consistency.sh` (labels, priority coverage, deprecated APIs)
 - Profiles/Fuses: `config.toml [fuses]` toggle stacks and prod hardening
 - Cluster name: `config.toml [cluster] name` used by k3d and Cilium
 
 Keep this page updated when introducing new stacks or toggles. Every new capability needs an explicit, documented contract.
-

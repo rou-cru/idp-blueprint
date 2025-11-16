@@ -29,7 +29,7 @@ State.Vault -> Workloads: consume via ESO
 
 ![Backup scope](../assets/images/operate/backup-scope.jpg){ loading=lazy }
 
-## Minimum viable backups (demo → prod)
+## Minimum viable backups from demo to prod
 
 - Vault: export policies and KV data regularly; protect unseal material.
 - Grafana: prefer dashboards as code; if not, snapshot provisioning folders/DB.
@@ -40,7 +40,7 @@ Nice‑to‑have / optional:
 - Prometheus TSDB: only if you need long history; otherwise rely on short retention and external sinks.
 - Loki: treat as forensic; back up only if compliance requires.
 
-## Restore choreography (high‑level)
+## Restore choreography — high level
 
 ```d2
 direction: right

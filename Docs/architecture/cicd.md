@@ -1,6 +1,8 @@
-# CI/CD Stack (Argo Workflows + SonarQube)
+# CI/CD stack — Argo Workflows + SonarQube
 
 The `K8s/cicd/` directory hosts everything developers need to run workflows, quality scans, and build-time policies inside the IDP.
+
+From a C4 perspective this page is a **component view (L3)** of the CI/CD part of the developer‑facing stacks.
 
 ## Components
 
@@ -19,21 +21,40 @@ The `K8s/cicd/` directory hosts everything developers need to run workflows, qua
 ## Workflow Execution Flow
 
 ```d2
-shape: sequence_diagram
-Dev: Developer
-Git: Repo (Workflow YAML)
-ArgoUI: Argo CLI / UI
-Controller: Workflow Controller
-Pods: Workflow Pods
-Sonar: SonarQube
+direction: right
 
-Dev -> Git: Commit workflow template
-Dev -> ArgoUI: Submit workflow (Git artifact)
-ArgoUI -> Controller: Create Workflow CR
-Controller -> Pods: Launch pods (priority: cicd-execution)
-Pods -> Sonar: Quality gate (token/webhook)
-Pods -> Controller: Results + artifacts
-Controller -> Dev: Status in UI/CLI/metrics
+Dev: {
+  label: "Developer"
+  shape: c4-person
+}
+
+Git: {
+  label: "Git repo\nWorkflow YAML"
+}
+
+ArgoUI: {
+  label: "Argo Workflows\nUI / CLI"
+}
+
+Controller: {
+  label: "Workflow controller"
+}
+
+Pods: {
+  label: "Workflow pods"
+}
+
+Sonar: {
+  label: "SonarQube"
+}
+
+Dev -> Git: "commit workflow template"
+Dev -> ArgoUI: "submit workflow"
+Git -> ArgoUI: "reference Git artifact"
+ArgoUI -> Controller: "create Workflow CR"
+Controller -> Pods: "launch pods\n(priority: cicd-execution)"
+Pods -> Sonar: "run quality gate"
+Controller -> Dev: "status in UI / CLI / metrics"
 ```
 
 ## Secrets & Credentials

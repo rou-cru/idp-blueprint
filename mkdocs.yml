@@ -138,19 +138,19 @@ nav:
   - Concepts:
       - Overview: concepts/index.md
       - Design Philosophy: concepts/design-philosophy.md
-      - Architecture:
-          - Platform Overview: architecture/overview.md
-          - Visual Map: architecture/visual.md
-          - Infrastructure Layer: architecture/infrastructure.md
-          - Application Layer: architecture/applications.md
       - GitOps Model: concepts/gitops-model.md
       - Networking & Gateway: concepts/networking-gateway.md
-      - Secrets Management: architecture/secrets.md
       - Security & Policy Model: concepts/security-policy-model.md
-      - Policy Engine (Kyverno): architecture/policies.md
+      - Scheduling & Node Pools: concepts/scheduling-nodepools.md
+  - Architecture:
+      - Platform Overview: architecture/overview.md
+      - Visual Map: architecture/visual.md
+      - Infrastructure Layer: architecture/infrastructure.md
+      - Application Layer: architecture/applications.md
+      - Secrets Management: architecture/secrets.md
+      - Policy Engine / Kyverno: architecture/policies.md
       - Observability Model: architecture/observability.md
       - CI/CD Model: architecture/cicd.md
-      - Scheduling & Node Pools: concepts/scheduling-nodepools.md
       - Bootstrap Process: architecture/bootstrap.md
   - Operate:
       - Overview: operations/index.md

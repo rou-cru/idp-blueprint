@@ -7,6 +7,8 @@ HashiCorp Vault serves as the **single source of truth** for all sensitive data.
 The architecture uses **External Secrets Operator (ESO)** as the unified tool
 to synchronize secrets both within the Kubernetes cluster and to external cloud providers.
 
+From a C4 perspective this page gives a **cross-cutting component view (L3)** of Vault + ESO and how they interact with both in-cluster and external workloads.
+
 ## Architecture Diagram
 
 ```d2

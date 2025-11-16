@@ -72,7 +72,7 @@ Examples to enforce:
 - Component labels on Deployments/StatefulSets/DaemonSets.
 - Default NetworkPolicies (planned hardening). 
 
-## Eventing — a programmable nervous system (planned core)
+## Eventing — a programmable nervous system
 
 Argo Events makes “what happens next” explicit: route events into Sensors, then trigger Workflows, ArgoCD actions, or HTTP calls. Treat alerts, GitHub webhooks, and K8s resource state changes the same: as events.
 
@@ -112,7 +112,7 @@ ArgoEvents.Sensors -> Triggers.HTTP
 - Server‑side apply and out‑of‑sync only reduce noisy diffs.
 - Ignore non‑deterministic fields (e.g., webhook caBundle) to avoid drift noise.
 
-## Secrets in the loop (conceptual)
+## Secrets in the loop
 
 ESO authenticates to Vault and writes K8s Secrets. Workloads consume only K8s Secrets. Use `creationPolicy: Merge` when charts need to add internal keys later.
 

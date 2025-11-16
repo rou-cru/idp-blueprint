@@ -13,7 +13,7 @@ This document focuses on platform metrics: how to monitor the health of the IDP 
 
 ## Key Platform Components to Monitor
 
-### 1. GitOps Engine (ArgoCD)
+### 1. GitOps Engine — ArgoCD
 
 ArgoCD is the heart of the platform. If it fails, automated deployments stop.
 
@@ -35,7 +35,7 @@ ArgoCD is the heart of the platform. If it fails, automated deployments stop.
 - ArgoCD exposes Prometheus metrics via ServiceMonitor
 - Grafana dashboard: ArgoCD Application Overview
 
-### 2. Policy Engine (Kyverno)
+### 2. Policy Engine — Kyverno
 
 Kyverno validates resources on admission. If it's down, policies aren't enforced.
 

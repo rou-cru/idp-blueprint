@@ -2,14 +2,14 @@
 
 This page describes the main architectural elements of IDP Blueprint and how they fit together. It assumes you know Kubernetes basics and want to understand how this IDP is wired as a system.
 
-For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md). Here we stay at the C4 “Context” and “Container” levels.
+For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md). Here we stay at the C4 “System Context” (L1) and “Container” (L2) levels; detailed C4 component (L3) views live in the other Architecture pages.
 
 ## Context and goals
 
 IDP Blueprint is designed for:
 
-- Small, fixed clusters (typically 1–3 nodes, k3d by default).
-- Edge/on‑prem or constrained environments where scaling out is not the main option.
+- Kubernetes clusters where you want a compact, self‑hosted platform stack (the reference demo uses a 3‑node k3d cluster by default).
+- Edge/on‑prem or constrained environments where scaling out is not the main option, but the same architecture applies to larger clusters.
 - GitOps‑first operation: Git is the source of truth, ArgoCD reconciles the cluster.
 - Cloud‑agnostic use: no managed control planes and no commercial licenses.
 
@@ -38,19 +38,37 @@ Everything is driven from Git: changes are pushed to the repo, ArgoCD reconciles
 ```d2
 direction: right
 
-PlatformEngineer: "Platform engineer"
-Developer: "Application developer"
+PlatformEngineer: {
+  label: "Platform Engineer"
+  shape: c4-person
+}
 
-Git: "Git provider (source of truth)"
-Registry: "Container registry"
+Developer: {
+  label: "Application Developer"
+  shape: c4-person
+}
 
-Cluster: "Kubernetes cluster\n(IDP Blueprint)"
+Git: {
+  label: "Git provider\n(bootstrap, stacks, policies)"
+  shape: rectangle
+}
+
+Registry: {
+  label: "Container registry"
+  shape: rectangle
+}
+
+IDPSystem: {
+  label: "IDP Blueprint\n(System)"
+  shape: rectangle
+}
 
 PlatformEngineer -> Git
 Developer -> Git
-Git -> Cluster: "manifests via ArgoCD"
-Registry -> Cluster: "images"
-Developer -> Cluster: "access UIs & APIs"
+
+Git -> IDPSystem: "manifests via ArgoCD"
+Registry -> IDPSystem: "images"
+Developer -> IDPSystem: "use UIs & APIs"
 ```
 
 ## Container view (C4 L2)
@@ -74,6 +92,44 @@ The container view groups components into layers and planes:
   - Security: Trivy Operator and related scanners.
 
 All components are either bootstrapped once from `IT/` (infrastructure core) or continuously reconciled from `K8s/` (stacks).
+
+```d2
+direction: right
+
+Core: {
+  label: "0. Infrastructure core"
+  K8s: "Kubernetes API + etcd"
+  Cilium: "Cilium CNI"
+  Gateway: "Gateway API"
+}
+
+Services: {
+  label: "1. Platform services"
+  Vault
+  ESO: "External Secrets Operator"
+  Cert: "cert-manager"
+  Prom: "Prometheus"
+  Loki
+  FluentBit: "Fluent-bit"
+}
+
+Governance: {
+  label: "2. Automation & governance"
+  ArgoCD
+  AppSets: "ApplicationSets"
+  Kyverno
+  PolicyReporter: "Policy Reporter"
+}
+
+Stacks: {
+  label: "3. Developer-facing stacks"
+  Grafana
+  Pyrra
+  Workflows: "Argo Workflows"
+  Sonar: "SonarQube"
+  Trivy: "Trivy Operator"
+}
+```
 
 ## Platform layers
 

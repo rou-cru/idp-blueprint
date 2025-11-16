@@ -3,7 +3,7 @@
 
 This IDP exposes stack‑level toggles (“fuses”) so you can shape a deployment before syncing anything. Start simple with stack switches, then evolve toward finer‑grained controls per component.
 
-## Stack fuses (today)
+## Stack fuses
 
 Defined in `config.toml` under `[fuses]`:
 
@@ -32,7 +32,7 @@ uv run dasel put -r toml -f config.toml fuses.security false >/dev/null
 task deploy
 ```
 
-## Profiles (concept → practice)
+## Profiles — concept to practice
 
 Three reference profiles to guide safe defaults:
 
@@ -74,7 +74,7 @@ By design (for now), policies use `validationFailureAction: audit`. This keeps t
 - PriorityClass required for workloads
 - ESO `creationPolicy: Merge` for sensitive targets
 
-## Fine‑grained toggles (future)
+## Fine‑grained toggles
 
 Useful switches inside big stacks:
 - Observability: `alertmanager.enabled`, `loki.enabled`, `fluent-bit.enabled`, `pyrra.enabled`

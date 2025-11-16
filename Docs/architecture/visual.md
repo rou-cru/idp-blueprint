@@ -6,7 +6,7 @@ This page collects a small set of diagrams that show how the main control loops 
 - [GitOps model](../concepts/gitops-model.md)
 - [Security & policy model](../concepts/security-policy-model.md)
 
-Each diagram focuses on a single question and links back to the relevant documentation.
+Each diagram focuses on a single question and links back to the relevant documentation. Think of these as **cross-cutting slices across the C4 views** from the Architecture section (they mix context, containers, and components to answer one concrete question).
 
 ## 1. Control backbone: GitOps, policy, and secrets
 
@@ -45,24 +45,38 @@ See:
 **Question:** how does an application pod receive a secret from Vault?
 
 ```d2
-shape: sequence_diagram
-App: Application Pod
-K8S: Kubernetes Secret
-ES: ExternalSecret CR
-ESO: External Secrets Operator
-SS: SecretStore
-Vault
+direction: right
 
-App -> K8S: Needs Secret
-K8S -> App: Not found / outdated
-ESO -> ES: Watch ExternalSecret
-ES -> ESO: secretStoreRef: vault-*
-ESO -> SS: Read SecretStore (vault, k8s auth)
-SS -> ESO: Provider config
-ESO -> Vault: Request secret
-Vault -> ESO: Secret data
-ESO -> K8S: Create/Update Secret
-K8S -> App: Mounted in Pod
+Vault: {
+  label: "Vault\n(KV secrets)"
+}
+
+ESO: {
+  label: "External Secrets Operator"
+}
+
+K8S: {
+  label: "Kubernetes Secret\n(target)"
+}
+
+App: {
+  label: "Application pod"
+}
+
+ES: {
+  label: "ExternalSecret CR\n(desired secret + path)"
+}
+
+SS: {
+  label: "ClusterSecretStore\n(auth & backend config)"
+}
+
+Vault -> ESO: "read secret data"
+ESO -> K8S: "create / update Secret"
+K8S -> App: "mount as env / volume"
+
+ES -> ESO: "spec: secretStoreRef, dataFrom..."
+SS -> ESO: "Vault address, auth, paths"
 ```
 
 See:
@@ -133,14 +147,14 @@ See:
 **Question:** how does a browser request reach platform UIs via Gateway API and TLS?
 
 ```d2
-direction: down
+direction: right
 
 External: {
-  Browser: "Browser: https://grafana.<ip>.nip.io"
+  Browser: "Browser\nhttps://grafana.<ip>.nip.io"
 }
 
 GatewayNS: {
-  label: "Gateway API layer - kube-system"
+  label: "Gateway API layer\nkube-system"
   Gateway: "Gateway: idp-gateway\nHTTPS:443\nTLS: idp-wildcard-cert"
   Cert: "Certificate: idp-wildcard-cert\n*.nip.io\nIssuer: ca-issuer"
 }
@@ -155,6 +169,7 @@ Routes: {
 }
 
 Backends: {
+  label: "Backends"
   S1: "argocd-server:80"
   S2: "prometheus-grafana:80"
   S3: "vault:8200"
@@ -162,18 +177,20 @@ Backends: {
   S5: "sonarqube:9000"
 }
 
-External.Browser -> GatewayNS.Gateway: HTTPS
-GatewayNS.Gateway -> Routes.HR1: hostname route
-GatewayNS.Gateway -> Routes.HR2
-GatewayNS.Gateway -> Routes.HR3
-GatewayNS.Gateway -> Routes.HR4
-GatewayNS.Gateway -> Routes.HR5
+External.Browser -> GatewayNS.Gateway: "HTTPS"
+GatewayNS.Gateway -> Routes.HR1: "hostname: argocd..."
+GatewayNS.Gateway -> Routes.HR2: "hostname: grafana..."
+GatewayNS.Gateway -> Routes.HR3: "hostname: vault..."
+GatewayNS.Gateway -> Routes.HR4: "hostname: workflows..."
+GatewayNS.Gateway -> Routes.HR5: "hostname: sonarqube..."
+
 Routes.HR1 -> Backends.S1
 Routes.HR2 -> Backends.S2
 Routes.HR3 -> Backends.S3
 Routes.HR4 -> Backends.S4
 Routes.HR5 -> Backends.S5
-GatewayNS.Cert -> GatewayNS.Gateway: TLS
+
+GatewayNS.Cert -> GatewayNS.Gateway: "TLS"
 ```
 
 See:

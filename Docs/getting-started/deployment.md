@@ -1,4 +1,4 @@
-# Getting Started — Install & Deployment (what “task deploy” really does)
+# Getting Started — Install & Deployment
 
 This is your guided tour of what “task deploy” does. It’s automated by design and converges to a working platform in minutes.
 
@@ -60,7 +60,7 @@ grafana_admin = "admin"
 
 Note: CLI overrides exist for testing, but `config.toml` is the canonical source.
 
-## After Deploy (What “Good” Looks Like)
+## After deploy — what “good” looks like
 
 - ArgoCD UI reachable via Gateway (nip.io hostnames)
   
