@@ -7,6 +7,19 @@ crds:
 global:
   priorityClassName: platform-infrastructure
 
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+
 # -- Prometheus metrics configuration
 # @section -- Observability
 prometheus:

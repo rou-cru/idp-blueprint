@@ -13,6 +13,35 @@ Synchronize secrets from external sources into Kubernetes
 | **Upstream Project** | [external-secrets](https://external-secrets.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why External Secrets?
+
+External Secrets Operator bridges Vault and Kubernetes. It watches ExternalSecret CRDs, pulls secrets from backends like Vault, and synchronizes them into standard Kubernetes Secrets. Applications consume those Secrets using normal patterns (environment variables, volume mounts), decoupled from the secret source.
+
+This separation means:
+
+- **Vault**: Stores and manages secrets, enforces access policies
+- **External Secrets**: Handles synchronization
+- **Applications**: Consume standard Kubernetes Secrets
+
+The operator supports automatic updates. When a secret changes in Vault, External Secrets updates the Kubernetes Secret, enabling zero-downtime credential rotation.
+
+External Secrets can pull from multiple backends (AWS Secrets Manager, GCP Secret Manager, Azure Key Vault, Vault). While this platform uses Vault, the pattern remains portable.
+
+## Architecture Role
+
+External Secrets Operator sits at **Layer 2** of the platform, the Automation & Governance layer. It operates as a synchronization engine.
+
+Key integration points:
+
+- **Vault**: Authenticates via Kubernetes ServiceAccount and reads secrets from specified paths
+- **Kubernetes Secrets**: Creates and updates Secrets based on ExternalSecret resources
+- **ArgoCD**: Deploys ExternalSecret resources as part of application manifests
+- **Applications**: Consume the synchronized secrets
+
+The `creationPolicy: Merge` setting allows both Helm charts and External Secrets to manage the same Secret resource without conflict. Helm creates the Secret with default values, External Secrets merges in credentials from Vault.
+
+See [Secrets Management](../../../architecture/secrets.md) for the complete flow.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

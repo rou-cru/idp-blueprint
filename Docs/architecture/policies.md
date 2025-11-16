@@ -42,6 +42,9 @@ Reporter -> Dash
 
 ## Sync Waves & Priority
 
+Kyverno policies plug into the same sync‑wave model described in
+[`GitOps, Policy, and Eventing`](../concepts/gitops-model.md).
+
 | Resource | Sync Wave | Notes |
 | --- | --- | --- |
 | Kyverno Namespace/RBAC | `-2` | Must exist before CRDs/webhooks. |

@@ -83,14 +83,8 @@ controller:
   priorityClassName: platform-cicd
   # -- Persistence configuration for the controller.
   # Completely disable archive and persistence for k3d environment
-  persistence:
-    # -- (bool) Archive workflow results
-    archive: false
-    connectionPool:
-      # -- (int) Maximum idle DB connections
-      maxIdleConns: 0
-      # -- (int) Maximum open DB connections
-      maxOpenConns: 0
+  # Omitting the persistence section disables database requirement
+  # Workflows will be stored only in etcd (Kubernetes native storage)
   # -- Maximum number of parallel workflows.
   # -- (int) Parallel workflows allowed
   parallelism: 10

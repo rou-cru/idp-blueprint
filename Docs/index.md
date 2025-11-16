@@ -1,193 +1,141 @@
-# IDP Blueprint Documentation
+# IDP Blueprint — A readable reference IDP
 
-**IDP Blueprint** is an Internal Developer Platform reference architecture designed for modern cloud-native environments. This comprehensive platform engineering solution provides a complete stack including GitOps, observability, security, and policy enforcement, deployable for development, testing, and production environments. Also follows FinOps tagging practices to be prepared in case you add FinOps to the development cycle.
+IDP Blueprint is an Internal Developer Platform you can run locally, reason about, and adapt to your environment. It targets small, resource‑constrained Kubernetes clusters (for example 1–3 nodes) and uses a GitOps‑first architecture with widely adopted open source components.
+
+The goal of these docs is to explain the platform as a system: what it is, how it is wired, and how to change it safely.
+
+## One picture: IDP Blueprint architecture
+
+```d2
+direction: down
+layout: elk
+
+platform_engineer: |md
+  ## Platform Engineer
+  [Person]
+| { shape: c4-person }
+
+developer: |md
+  ## Application Developer
+  [Person]
+| { shape: c4-person }
+
+git_provider: |md
+  ## Git Provider
+  [Software System]
+| { shape: rectangle }
+
+container_registry: |md
+  ## Container Registry
+  [Software System]
+| { shape: rectangle }
+
+idp: |md
+  ## Internal Developer Platform (IDP)
+  [Software System]
+| {
+  shape: rectangle
+  style.stroke-width: 3
+
+  argo_cd: |md
+    ## ArgoCD
+    [Container: GitOps Engine]
+  | { shape: rectangle }
+
+  sonarqube: |md
+    ## SonarQube
+    [Container: Code Quality]
+  | { shape: rectangle }
+
+  observability: {
+    shape: rectangle
+    style.stroke-width: 2
+    label: "Observability Stack"
+
+    prometheus: |md
+      ## Prometheus
+      [Container: Metrics]
+    | { shape: rectangle }
+
+    loki: |md
+      ## Loki
+      [Container: Logs]
+    | { shape: rectangle }
+
+    grafana: |md
+      ## Grafana
+      [Container: Visualization]
+    | { shape: rectangle }
+
+    fluent_bit: |md
+      ## Fluent-bit
+      [Container: Log Agent]
+    | { shape: rectangle }
+  }
+
+  security: {
+    shape: rectangle
+    style.stroke-width: 2
+    label: "Security Stack"
+
+    kyverno: |md
+      ## Kyverno
+      [Container: Policy Engine]
+    | { shape: rectangle }
+
+    vault: |md
+      ## Vault
+      [Container: Secrets Backend]
+    | { shape: rectangle }
+
+    external_secrets: |md
+      ## External Secrets Operator
+      [Container: Secret Sync]
+    | { shape: rectangle }
+  }
+}
+
+developer -> git_provider
+platform_engineer -> git_provider
+
+git_provider -> idp.argo_cd
+
+idp.argo_cd -> idp.security.kyverno
+idp.argo_cd -> idp.security.external_secrets
+
+idp.security.external_secrets -> idp.security.vault
+
+idp.observability.fluent_bit -> idp.observability.loki
+
+idp.observability.prometheus -> idp.observability.grafana
+idp.observability.loki -> idp.observability.grafana
+developer -> idp.observability.grafana
+```
+
+At a glance:
+
+- **Context**: a single Kubernetes cluster, Git as the source of truth, a container registry, and engineers using the platform.
+- **Layers**:
+  - Infrastructure core: Kubernetes, Cilium, Gateway API.
+  - Platform services: Vault, cert‑manager, External Secrets, Prometheus, Loki, Fluent‑bit.
+  - Automation & governance: ArgoCD (GitOps controller), Kyverno (policies),
+    ApplicationSets (generate many Applications from folders).
+  - Developer‑facing stacks: Observability, CI/CD, Security.
+
+See [Architecture Overview](architecture/overview.md) for the full walkthrough.
+
+## The paved road (opinionated defaults)
+
+- **GitOps**: everything reconciled from Git with ArgoCD and ApplicationSets
+  (see [`GitOps, Policy, and Eventing`](concepts/gitops-model.md)).
+- **Policies**: labels, limits, and contracts encoded as Kyverno policies.
+- **Observability**: metrics, logs, dashboards, and SLOs managed as code.
+- **Secrets**: Vault → External Secrets Operator → Kubernetes Secrets (no literals in Git).
+- **Networking**: one Gateway, TLS everywhere (demo CA), nip.io‑based hostnames.
 
 ---
 
-## IDP Blueprint (Conceptual)
-
-```d2
-direction: right
-
-classes: {
-  aux:  { style: { fill: "#F7F9FC" } }
-  main: { style: { fill: "#FFFFFF" } }
-  band: { style: { fill: "#EEF3F7" } }
-  pill: { style: { fill: "#E9F0FF" } }
-}
-
-Canvas: {
-  grid: {
-    columns: 3
-    gap: 24
-  }
-
-  LeftCol: {
-    class: aux
-    label: "IDP Platform"
-    grid: { row: 1 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-
-    A1: { label: "Platform Elements" }
-    A2: { label: "System Core" }
-  }
-
-  Main: {
-    class: main
-    label: "IDP"
-    grid: { row: 1 col: 2 }
-    grid: {
-      columns: 6
-      gap: 12
-    }
-
-    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
-
-    Quality: { class: pill label: "Quality" grid: { row: 2 col: 1 } }
-    Policy:  { class: pill label: "Policy"  grid: { row: 2 col: 2 } }
-    Sec:     { class: pill label: "Security" grid: { row: 2 col: 3 } }
-    CICD:    { class: pill label: "CI/CD"   grid: { row: 2 col: 4 } }
-    Obs:     { class: pill label: "Observability" grid: { row: 2 col: 5 } }
-
-    Secrets: { class: pill label: "Secrets"      grid: { row: 3 col: 2 } }
-    Certs:   { class: pill label: "Certificates" grid: { row: 3 col: 3 } }
-    Engine:  { class: band label: "GitOps Engine" grid: { row: 3 col: 4 colspan: 3 } }
-
-    Cilium:  { class: band label: "Cilium"      grid: { row: 4 col: 1 colspan: 6 } }
-    K8s:     { class: band label: "Kubernetes"  grid: { row: 5 col: 1 colspan: 6 } }
-    Infra:   { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
-  }
-
-  RightCol: {
-    class: aux
-    grid: { row: 1 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    P1: { label: "Dev Portal" }
-  }
-
-  BottomLeft: {
-    class: aux
-    grid: { row: 2 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    C: { label: "Costs" }
-    O: { label: "Opex" }
-  }
-
-  BottomRight: {
-    class: aux
-    grid: { row: 2 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    HA: { label: "Hardware Abstr." }
-    HW: { label: "Hardware" }
-  }
-}
-```
-
-## IDP Blueprint (Implementation)
-
-```d2
-direction: right
-
-classes: {
-  aux:  { style: { fill: "#F7F9FC" } }
-  main: { style: { fill: "#FFFFFF" } }
-  band: { style: { fill: "#EEF3F7" } }
-  pill: { style: { fill: "#E9F0FF" } }
-}
-
-Canvas: {
-  grid: {
-    columns: 3
-    gap: 24
-  }
-
-  LeftCol: {
-    class: aux
-    label: "IDP Platform"
-    grid: { row: 1 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    A1: { label: "Platform Elements" }
-    A2: { label: "System Core" }
-  }
-
-  Main: {
-    class: main
-    label: "IDP"
-    grid: { row: 1 col: 2 }
-    grid: {
-      columns: 6
-      gap: 12
-    }
-
-    UIs: { class: band label: "UIs" grid: { row: 1 col: 1 colspan: 6 } }
-
-    GitHub:     { class: pill label: "GitHub"     grid: { row: 2 col: 1 } }
-    Backstage:  { class: pill label: "Backstage"  grid: { row: 2 col: 2 } }
-    Kyverno:    { class: pill label: "Kyverno"    grid: { row: 2 col: 3 } }
-    Workflows:  { class: pill label: "Workflows"  grid: { row: 2 col: 4 } }
-    Grafana:    { class: pill label: "Grafana"    grid: { row: 2 col: 5 } }
-
-    Vault:      { class: pill label: "Vault"         grid: { row: 3 col: 2 } }
-    CertMgr:    { class: pill label: "Cert-Manager"  grid: { row: 3 col: 3 } }
-    ArgoCD:     { class: band label: "ArgoCD / AppSets" grid: { row: 3 col: 4 colspan: 3 } }
-
-    Cilium:     { class: band label: "Cilium"     grid: { row: 4 col: 1 colspan: 6 } }
-    K8s:        { class: band label: "Kubernetes" grid: { row: 5 col: 1 colspan: 6 } }
-    Infra:      { class: band label: "IT Resources" grid: { row: 6 col: 1 colspan: 6 } }
-  }
-
-  RightCol: {
-    class: aux
-    grid: { row: 1 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    P1: { label: "Dev Portal" }
-  }
-
-  BottomLeft: {
-    class: aux
-    grid: { row: 2 col: 1 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    C: { label: "Costs" }
-    O: { label: "Opex" }
-  }
-
-  BottomRight: {
-    class: aux
-    grid: { row: 2 col: 3 }
-    grid: {
-      columns: 1
-      gap: 8
-    }
-    HA: { label: "Hardware Abstr." }
-    HW: { label: "Hardware" }
-  }
-}
-```
-
----
-
-## Choose Your Journey
+## Choose your journey
 
 <div class="grid cards" markdown>
 
@@ -195,15 +143,15 @@ Canvas: {
 
     ---
 
-    Learn the platform architecture, design tenets, and control planes that make up the IDP Blueprint.
+    Learn the mental model of the platform, its feedback loops, and how GitOps, policy, and events fit together.
 
-    [:octicons-arrow-right-24: Explore Concepts](architecture/overview.md)
+    [:octicons-arrow-right-24: Explore Concepts](concepts/index.md)
 
 -   **Get Started**
 
     ---
 
-    Install, verify and take your first steps with the platform.
+    Install, verify, and take your first steps with reproducible commands and expected outputs.
 
     [:octicons-arrow-right-24: Start Building](getting-started/quickstart.md)
 
@@ -211,7 +159,7 @@ Canvas: {
 
     ---
 
-    Dive into infrastructure, policy, observability and CI/CD components.
+    Dive into infrastructure, policy, observability, and CI/CD components.
 
     [:octicons-arrow-right-24: Explore Components](components/infrastructure/index.md)
 
@@ -227,7 +175,7 @@ Canvas: {
 
 ---
 
-## Who Is This For?
+## Who is this for?
 
 <div class="grid cards" markdown>
 
@@ -259,7 +207,7 @@ Canvas: {
 
 ---
 
-## Documentation Structure
+## Documentation structure
 
 ### [Getting Started](getting-started/overview.md)
 Deployment and configuration documentation:
@@ -268,17 +216,10 @@ Deployment and configuration documentation:
 - **[Quick Start](getting-started/quickstart.md)** - Rapid deployment procedures
 - **[Deployment Guide](getting-started/deployment.md)** - Comprehensive deployment process
 
-- ### Concepts
-  - [Platform Overview](architecture/overview.md)
-  - [Visual Architecture](architecture/visual.md)
-  - [Platform Layers](architecture/infrastructure.md)
-
-- ### How-to Guides
-  - [Prerequisites](getting-started/prerequisites.md)
-  - [Quick Start](getting-started/quickstart.md)
-  - [Deployment Guide](getting-started/deployment.md)
-  - [Operations Checklist](reference/resource-requirements.md)
-  - [Troubleshooting Playbook](reference/troubleshooting.md)
+- ### Architecture & Concepts
+  - [Architecture Overview](architecture/overview.md)
+  - [GitOps Model](concepts/gitops-model.md)
+  - [Security & Policy Model](concepts/security-policy-model.md)
 
 - ### Platform Operations
   - [Infrastructure Stack](components/infrastructure/index.md)
@@ -293,9 +234,9 @@ Deployment and configuration documentation:
 
 ---
 
-## Platform Technology Stack
+## Platform technology stack
 
-Enterprise-grade platform engineering stack with production-ready components:
+The platform is built from the following open source components:
 
 | Layer | Technologies | Capabilities |
 |-------|--------------|--------------|
@@ -309,10 +250,10 @@ Enterprise-grade platform engineering stack with production-ready components:
 
 ---
 
-## Platform Capabilities
+## Platform capabilities
 
 !!! abstract "Production-Ready Platform Engineering"
-    Complete platform engineering stack suitable for development, staging, and production environments. Designed for:
+    Platform engineering stack suitable for realistic development, staging, and smaller production-like environments. Typical uses include:
 
     - **Enterprise Architecture** - Evaluate cloud-native technologies in realistic deployment scenarios
     - **Infrastructure Prototyping** - Validate infrastructure changes before production rollout
@@ -324,13 +265,6 @@ Enterprise-grade platform engineering stack with production-ready components:
     task deploy
     ```
     Fully automated deployment orchestration including cluster provisioning, component installation, GitOps synchronization, and validation.
-
-!!! info "Resource Requirements"
-    Optimized resource allocation for various deployment scenarios:
-
-    - **Minimum Configuration**: 4 CPU cores, 8GB RAM
-    - **Recommended Configuration**: 6 CPU cores, 12GB RAM
-    - **Storage Requirements**: ~20GB persistent storage
 
 ---
 

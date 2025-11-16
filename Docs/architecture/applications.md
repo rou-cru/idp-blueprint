@@ -73,47 +73,34 @@ road" are active before other workloads are deployed.
 This approach provides a secure bootstrap process at the cost of being a slight
 exception to the general "App of AppSets" pattern.
 
-## Directory Structure
+## Directory structure (short)
 
-The structure is designed to be semantic, self-documenting, and to directly reflect the
-namespace strategy.
+The `K8s/` directory mirrors the stack and namespace strategy:
 
-```d2
-direction: right
-
-K8s: {
-  label: "K8s Directory Structure"
-  CICD: {
-    label: "cicd/"
-    AppSet: "applicationset-cicd.yaml"
-    NS: "namespace.yaml"
-    WF: {
-      label: "argo-workflows/"
-      WFK: "kustomization.yaml"
-    }
-  }
-  OBS: {
-    label: "observability/"
-    AppSet: "applicationset-observability.yaml"
-    NS: "namespace.yaml"
-    Loki: {
-      label: "loki/"
-      LokiK: "kustomization.yaml"
-    }
-  }
-  SEC: {
-    label: "security/"
-  }
-}
+```text
+K8s/
+├── cicd/
+│   ├── applicationset-cicd.yaml
+│   ├── namespace.yaml
+│   ├── argo-workflows/
+│   │   └── kustomization.yaml
+│   └── governance/
+│       └── kustomization.yaml
+├── observability/
+│   ├── applicationset-observability.yaml
+│   ├── namespace.yaml
+│   ├── loki/
+│   │   └── kustomization.yaml
+│   └── kube-prometheus-stack/
+│       └── kustomization.yaml
+└── security/
+    ├── applicationset-security.yaml
+    └── namespace.yaml
 ```
 
-- **`namespace.yaml`**: Defines the Kubernetes `Namespace` for the entire stack and
-  contains the common labels and annotations that will be propagated by Kyverno, as per
-  `Policies/tag-policy.md`.
-- **`applicationset-<stack>.yaml`**: The `ApplicationSet` resource that manages all
-  applications within the stack.
-- **`<app-name>/kustomization.yaml`**: The Kustomize entrypoint for a specific
-  application. ArgoCD will target this file for deployment.
+- `namespace.yaml`: defines the stack namespace and common labels/annotations.
+- `applicationset-<stack>.yaml`: ApplicationSet that discovers apps within the stack.
+- `<app-name>/kustomization.yaml`: Kustomize entrypoint for a component; ArgoCD targets this file.
 
 ## Application Manifests & Kustomize
 
@@ -123,30 +110,7 @@ for defining and composing application manifests. Our philosophy is based on
 
 Two primary patterns for Kustomize are established in this project.
 
-```d2
-direction: right
-
-Pattern1: {
-  label: "Pattern 1: Local Resource Aggregation"
-  K1: "kustomization.yaml"
-  R1: "resource-a.yaml"
-  R2: "resource-b.yaml"
-}
-
-Pattern2: {
-  label: "Pattern 2: Helm Chart Orchestration"
-  K2: "kustomization.yaml"
-  Values: "values.yaml"
-  Repo: "Remote Helm Repo"
-}
-
-Pattern1.K1 -> Pattern1.R1: resources
-Pattern1.K1 -> Pattern1.R2: resources
-Pattern2.K2 -> Pattern2.Values: valuesFile
-Pattern2.K2 -> Pattern2.Repo: repo
-```
-
-### Pattern 1: Local Resource Aggregation
+### Pattern 1: local resource aggregation
 
 This is the standard approach for **in-house applications** or for grouping a set of
 related Kubernetes manifests.
@@ -168,7 +132,7 @@ related Kubernetes manifests.
       - resourcequota.yaml
     ```
 
-### Pattern 2: Helm Chart Orchestration
+### Pattern 2: Helm chart orchestration
 
 This is the **preferred, standard method** for deploying **third-party applications**
 or any software available as a Helm chart. It allows us to version and manage the

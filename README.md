@@ -335,7 +335,7 @@ That's it! Your IDP is ready.
 - Highlights:
   - `Docs/architecture/visual.md` – master system map + diagrams.
   - `Docs/architecture/bootstrap.md` – Helm/Kustomize boot choreography.
-  - `Docs/architecture/gitops.md` – App-of-AppSets and namespace conventions.
+  - `Docs/architecture/applications.md` – K8s directory architecture and App‑of‑AppSets pattern.
   - `Docs/architecture/observability.md` – metrics + logging pipelines, dashboards.
   - `Docs/architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
   - `Docs/architecture/policies.md` – Kyverno layers, Policy Reporter flow.

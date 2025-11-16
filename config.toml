@@ -15,7 +15,7 @@ nodeport_https = 30443
 [versions]
 cilium = "1.18.2"
 cert_manager = "v1.19.0"
-prometheus_crds = "77.14.0"
+prometheus_operator_crds = "23.0.0"
 gateway_api = "v1.2.1"
 external_secrets = "0.20.2"
 vault = "0.31.0"
@@ -31,6 +31,10 @@ registry_cache_path = "$HOME/.k3d-registry"
 repo_url = ""
 target_revision = ""
 
+[cluster]
+# Name of the local k3d cluster
+name = "idp-demo"
+
 [argocd]
 sync_timeout = "10m"
 backoff_duration = "10s"
@@ -43,7 +47,7 @@ wait_timeout = "60s"
 
 [passwords]
 # Empty strings instruct Vault helpers to generate random secrets.
-argocd_admin = "argo"
+argocd_admin = ""
 grafana_admin = ""
 sonarqube_admin = ""
 sonarqube_monitoring = ""
@@ -52,3 +56,12 @@ sonarqube_monitoring = ""
 url = "docker.io"
 username = ""
 password = ""
+
+[fuses]
+# Feature toggles (stack-level)
+policies = true
+security = true
+observability = true
+cicd = true
+# Harden profile
+prod = false

@@ -1,0 +1,13 @@
+{
+  "servers": [
+    {
+      "name": "Project Memory",
+      "command": "memory-mcp-server-go",
+      "args": [
+        "--memory",
+        "${workspaceFolder}/.memory/project.db"
+      ],
+      "transport": "stdio"
+    }
+  ]
+}

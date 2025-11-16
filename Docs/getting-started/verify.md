@@ -1,8 +1,8 @@
-# Verify Installation
+# Verify Installation — See the loops in action
 
 Let’s confirm things came up as expected and set realistic expectations for the first minutes after deploy.
 
-## What to Expect (First 5–10 Minutes)
+## What to expect (first 5–10 minutes)
 
 - ArgoCD continues syncing for a bit after “task deploy” finishes
 - Pods roll through Pending → Running → Ready as images download
@@ -111,10 +111,10 @@ kubectl -n cert-manager get secret idp-demo-ca-secret \
 
 ## “Good Enough” Smoke Checks (Eventual Consistency Friendly)
 
-- ArgoCD shows Applications present; several may still be syncing, but status improves over a few minutes
-- Grafana UI loads; Prometheus and Loki datasources appear after their pods are Ready
-- Trivy Operator starts creating VulnerabilityReports as workloads settle
-- External Secrets creates Kubernetes Secrets shortly after Vault init completes
+- [ ] ArgoCD shows Applications present; several may still be syncing, but status improves over a few minutes
+- [ ] Grafana UI loads; Prometheus and Loki datasources appear after their pods are Ready
+- [ ] Trivy Operator starts creating VulnerabilityReports as workloads settle
+- [ ] External Secrets creates Kubernetes Secrets shortly after Vault init completes
 
 If you prefer a checklist:
 

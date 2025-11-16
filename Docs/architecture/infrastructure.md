@@ -1,4 +1,4 @@
-# IT Directory Architecture
+# Infrastructure layer — IT directory
 
 This directory contains the **static** or **bootstrap layer** of the platform. These are
 the core components required to bring up a functional Kubernetes cluster _before_ the
@@ -42,54 +42,24 @@ These use Kustomize for composition and are deployed via
     the `ExternalSecret` for ArgoCD.
   - `argocd/`: Kustomization to support the Helm chart.
 
-## Visual Structure
+## Directory layout (short)
 
-```d2
-direction: right
+The `IT/` directory is intentionally simple:
 
-IT: {
-  label: "IT/"
-  B: "cilium-values.yaml"
-  C: "eso-values.yaml"
-  D: "k3d-cluster.yaml"
-  E: "vault-values.yaml"
-  AA: "cert-manager-values.yaml"
-  AB: "argocd-values.yaml"
-  AC: "kustomization.yaml"
-
-  F: "cert-manager/"
-  G: "external-secrets/"
-  N: "namespaces/"
-  V: "vault/"
-  X: "argocd/"
-}
-
-Raw: {
-  label: "Raw Manifests & Kustomize"
-  H: "ca-issuer.yaml"
-  K: "argocd-secretstore.yaml"
-  L: "argocd-admin-externalsecret.yaml"
-  N1: "kustomization.yaml"
-  V1: "vault-init.sh"
-  X1: "kustomization.yaml"
-}
-
-Values: {
-  label: "Helm Values"
-  B
-  C
-  D
-  E
-  AA
-  AB
-}
-
-IT.F -> Raw.H
-IT.G -> Raw.K
-IT.G -> Raw.L
-IT.N -> Raw.N1
-IT.V -> Raw.V1
-IT.X -> Raw.X1
+```text
+IT/
+├── k3d-cluster.yaml
+├── kustomization.yaml
+├── argocd-values.yaml
+├── cert-manager-values.yaml
+├── cilium-values.yaml
+├── eso-values.yaml
+├── vault-values.yaml
+├── namespaces/
+├── cert-manager/
+├── external-secrets/
+├── vault/
+└── argocd/
 ```
 
 ## Quick Reference

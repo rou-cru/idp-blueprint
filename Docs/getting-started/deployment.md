@@ -1,13 +1,15 @@
-# Getting Started — Install & Deployment
+# Getting Started — Install & Deployment (what “task deploy” really does)
 
-This is your guided tour of what “task deploy” actually does. Expect a smooth, mostly automated bootstrap that converges to a working platform in a few minutes.
+This is your guided tour of what “task deploy” does. It’s automated by design and converges to a working platform in minutes.
 
 ## What Happens During Deploy
 
 - Create cluster and namespaces
 - Install core infrastructure (Cilium, CRDs, cert-manager, Vault, ESO)
 - Install GitOps (ArgoCD) and expose endpoints via Gateway + TLS
-- Apply policies and let ApplicationSets sync the stacks
+- Apply policies and let ApplicationSets sync the stacks – ApplicationSets
+  generate the ArgoCD Applications for each stack based on folders under
+  `K8s/` (see [`GitOps, Policy, and Eventing`](../concepts/gitops-model.md))
 
 ### Platform Components
 

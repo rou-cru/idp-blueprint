@@ -1,4 +1,4 @@
-# Secrets Management Architecture
+# Secrets management architecture
 
 ## Overview
 
@@ -9,51 +9,52 @@ to synchronize secrets both within the Kubernetes cluster and to external cloud 
 
 ## Architecture Diagram
 
-```mermaid
-graph TB
-    subgraph "Kubernetes Cluster"
-        subgraph "external-secrets-system namespace"
-            Vault[("HashiCorp Vault<br/>(Single Source of Truth)")]
-            ESO["External Secrets Operator<br/>(ESO)"]
-        end
+```d2
+direction: right
 
-        subgraph "Application Namespaces"
-            K8sSecrets["Kubernetes Secrets"]
-            Pods["Application Pods"]
-        end
+Cluster: {
+  label: "Kubernetes cluster"
 
-        Vault -->|"read"| ESO
-        ESO -->|"create/update"| K8sSecrets
-        K8sSecrets -->|"mount"| Pods
-    end
+  ESO_NS: {
+    label: "external-secrets-system"
+    Vault: "HashiCorp Vault\n(single source of truth)"
+    ESO: "External Secrets Operator (ESO)"
+  }
 
-    subgraph "External Cloud Providers"
-        AWS["AWS Secrets Manager"]
-        GCP["GCP Secret Manager"]
-        Azure["Azure Key Vault"]
-    end
+  AppNS: {
+    label: "Application namespaces"
+    K8sSecrets: "Kubernetes Secrets"
+    Pods: "Application pods"
+  }
+}
 
-    ESO -->|"PushSecret<br/>propagate"| AWS
-    ESO -->|"PushSecret<br/>propagate"| GCP
-    ESO -->|"PushSecret<br/>propagate"| Azure
+Cloud: {
+  label: "External cloud providers"
+  AWS: "AWS Secrets Manager"
+  GCP: "GCP Secret Manager"
+  Azure: "Azure Key Vault"
+}
 
-    subgraph "External Workloads"
-        Lambda["AWS Lambda"]
-        CloudRun["GCP Cloud Run"]
-        AzureFunc["Azure Functions"]
-        CrossplaneRDS["Crossplane-managed RDS"]
-    end
+External: {
+  label: "External workloads"
+  Lambda: "AWS Lambda"
+  CloudRun: "GCP Cloud Run"
+  AzureFunc: "Azure Functions"
+  CrossplaneRDS: "Crossplane-managed RDS"
+}
 
-    AWS -.->|"consume"| Lambda
-    AWS -.->|"consume"| CrossplaneRDS
-    GCP -.->|"consume"| CloudRun
-    Azure -.->|"consume"| AzureFunc
+Cluster.ESO_NS.Vault -> Cluster.ESO_NS.ESO: "read"
+Cluster.ESO_NS.ESO -> Cluster.AppNS.K8sSecrets: "create/update"
+Cluster.AppNS.K8sSecrets -> Cluster.AppNS.Pods: "mount"
 
-    style Vault fill:#6366f1,stroke:#4338ca,stroke-width:3px,color:#fff
-    style ESO fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#fff
-    style AWS fill:#ff9900,stroke:#ff6600,color:#000
-    style GCP fill:#4285f4,stroke:#1a73e8,color:#fff
-    style Azure fill:#0078d4,stroke:#005a9e,color:#fff
+Cluster.ESO_NS.ESO -> Cloud.AWS: "PushSecret"
+Cluster.ESO_NS.ESO -> Cloud.GCP: "PushSecret"
+Cluster.ESO_NS.ESO -> Cloud.Azure: "PushSecret"
+
+Cloud.AWS -> External.Lambda: "consume"
+Cloud.AWS -> External.CrossplaneRDS: "consume"
+Cloud.GCP -> External.CloudRun: "consume"
+Cloud.Azure -> External.AzureFunc: "consume"
 ```
 
 ## Flow Explanation
@@ -173,7 +174,7 @@ and pushing them to external systems.
 **Examples:**
 
 - Microservices needing database passwords.
-- CI/CD pipelines running in Jenkins pods.
+- CI/CD pipelines running in CI namespaces (for example Argo Workflows pods).
 - Web applications requiring API keys.
 
 ### External Workloads (ESO `PushSecret`)
@@ -197,7 +198,7 @@ and pushing them to external systems.
 
 ⚠️ **NOT for production:**
 
-- TLS is disabled (`skipTLSVerify: true`).
+- TLS uses self‑signed certificates and Vault clients set `skipTLSVerify: true` during development.
 - Vault is initialized with a single unseal key.
 - The root token is logged during the init script.
 - Unseal keys and the root token are stored in a Kubernetes Secret.

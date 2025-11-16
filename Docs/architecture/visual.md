@@ -1,206 +1,48 @@
-# IDP Visual Architecture
+# Architecture visuals — key flows
 
-This document describes the platform's architecture, its workflows, and its
-execution environment through diagrams.
+This page collects a small set of diagrams that show how the main control loops and data paths work inside the platform. Use it as a visual reference after you have read:
 
-## 1. General Architecture and GitOps Flow
+- [Architecture overview](overview.md)
+- [GitOps model](../concepts/gitops-model.md)
+- [Security & policy model](../concepts/security-policy-model.md)
 
-This diagram shows the high-level view of the workflow, from the definition in a Git
-repository to the deployment and operation of the components within the Kubernetes
-cluster.
+Each diagram focuses on a single question and links back to the relevant documentation.
+
+## 1. Control backbone: GitOps, policy, and secrets
+
+**Question:** how do GitOps, admission policy, and secrets reconciliation interact?
 
 ```d2
 direction: right
 
-GitRepo: "Git Repository"
-
-K8sCluster: {
-  label: "Kubernetes Cluster"
-
-  Core: {
-    label: "Core Infrastructure"
-    Cilium
-    CertManager: "Cert-Manager"
-    Vault
-    ESO: "External Secrets Operator"
-  }
-
-  Engines: {
-    label: "GitOps and Policy Engine"
-    ArgoCD
-    Kyverno
-    PolicyReporter: "Policy Reporter"
-  }
-
-  AppStacks: {
-    label: "Application Stacks"
-    Observability: {
-      label: "Observability"
-      Prometheus
-      Grafana
-      Loki
-      FluentBit: "Fluent-bit"
-    }
-    CICD: {
-      label: "CI/CD"
-      Workflows: "Argo Workflows"
-      SonarQube
-    }
-    Security: {
-      label: "Security"
-      Trivy: "Trivy Operator"
-    }
-  }
-
-  K8sApi: "Kubernetes API Server"
-}
-
-GitRepo -> K8sCluster.Engines.ArgoCD: "Defines State"
-K8sCluster.Engines.ArgoCD -> K8sCluster.AppStacks: "Applies Manifests"
-K8sCluster.Engines.ArgoCD -> K8sCluster.K8sApi: "Creates Resources"
-K8sCluster.K8sApi -> K8sCluster.Engines.Kyverno: "Validates Requests"
-K8sCluster.Engines.Kyverno -> K8sCluster.K8sApi: "Enforces Policies"
-K8sCluster.Engines.Kyverno -> K8sCluster.Engines.PolicyReporter: "PolicyReports"
-K8sCluster.Core.Vault -> K8sCluster.Core.ESO: "Secrets"
-K8sCluster.Core.ESO -> K8sCluster.K8sApi: "Syncs"
-K8sCluster.AppStacks.Observability.FluentBit -> K8sCluster.AppStacks.Observability.Loki: "Logs"
-K8sCluster.AppStacks.Observability.Prometheus -> K8sCluster.AppStacks.Observability.Grafana: "Metrics"
-K8sCluster.AppStacks.Observability.Loki -> K8sCluster.AppStacks.Observability.Grafana: "Logs"
-K8sCluster.AppStacks.CICD.Workflows -> K8sCluster.AppStacks.CICD.SonarQube: "Analysis"
-K8sCluster.AppStacks.Security.Trivy -> K8sCluster.K8sApi: "Scans"
-K8sCluster.Core.CertManager -> K8sCluster.K8sApi: "Certificates"
-```
-
-## 2. Helm to Pods Deployment Flow
-
-This diagram shows the complete deployment chain from Helm charts to running pods,
-illustrating how different layers (Bootstrap, GitOps) interact.
-
-```d2
-direction: down
-
-Bootstrap: {
-  label: "Bootstrap Layer - IT/"
-  H1: "Helm: cilium v1.18.2"
-  H2: "Helm: vault v0.31.0"
-  H3: "Helm: argocd v8.6.0"
-  H4: "Helm: cert-manager v1.19.0"
-  H5: "Helm: external-secrets v0.20.2"
-}
-
+K8s: "Kubernetes API Server"
 GitOps: {
-  label: "GitOps Layer - K8s/"
-  Apps: {
-    APP1: "observability-fluent-bit"
-    APP2: "observability-loki"
-    APP3: "observability-kube-prometheus-stack"
-    APP4: "cicd-argo-workflows"
-    APP5: "security-trivy"
-    APP6: "platform-policies"
-  }
+  Argo: ArgoCD
+}
+Policy: {
+  Kyverno
+}
+Secrets: {
+  ESO: "External Secrets Operator"
 }
 
-K8s: {
-  label: "Kubernetes Resources"
-  DS1: "DaemonSet: cilium-agent"
-  STS1: "StatefulSet: vault-0"
-  DEP1: "Deployment: argocd-server"
-  DS2: "DaemonSet: fluent-bit"
-  STS2: "StatefulSet: loki"
-  STS3: "StatefulSet: prometheus"
-  DEP2: "Deployment: grafana"
-  DEP3: "Deployment: argo-workflows-server"
-  DEP4: "Deployment: argo-workflows-controller"
-  DEP5: "Deployment: trivy-operator"
-  DEP6: "Deployment: kyverno-admission-controller"
-}
-
-Bootstrap.H1 -> K8s.DS1: "task deploy"
-Bootstrap.H2 -> K8s.STS1: "task deploy"
-Bootstrap.H3 -> K8s.DEP1: "task deploy"
-
-K8s.DEP1 -> GitOps.Apps.APP1: "manages"
-K8s.DEP1 -> GitOps.Apps.APP2
-K8s.DEP1 -> GitOps.Apps.APP3
-K8s.DEP1 -> GitOps.Apps.APP4
-K8s.DEP1 -> GitOps.Apps.APP5
-K8s.DEP1 -> GitOps.Apps.APP6
-
-GitOps.Apps.APP1 -> K8s.DS2
-GitOps.Apps.APP2 -> K8s.STS2
-GitOps.Apps.APP3 -> K8s.STS3
-GitOps.Apps.APP3 -> K8s.DEP2
-GitOps.Apps.APP4 -> K8s.DEP3
-GitOps.Apps.APP5 -> K8s.DEP5
-GitOps.Apps.APP6 -> K8s.DEP6
+GitOps.Argo <-> K8s: "Reconciles Git state"
+Policy.Kyverno <-> K8s: "Validates & mutates"
+Secrets.ESO <-> K8s: "Syncs secrets"
 ```
 
-## 3. Node Pools and Workload Deployment
+- ArgoCD reconciles manifests from Git into the cluster.
+- Kyverno validates and optionally mutates or generates resources at admission.
+- ESO keeps Kubernetes Secrets in sync with Vault and other secret stores.
 
-Within the Hub cluster, nodes are segmented into logical "Node Pools" using
-labels to isolate workloads. This classification is the basis for future
-scheduling rules with `tolerations` and `affinity`.
+See:
+- [GitOps model](../concepts/gitops-model.md)
+- [Security & policy model](../concepts/security-policy-model.md)
+- [Secrets management architecture](secrets.md)
 
-```d2
-direction: right
+## 2. Secret management flow
 
-Cluster: {
-  label: "IDP Hub Cluster — k3d-idp-demo"
-
-  ControlPlane: {
-    label: "Control Plane"
-    node: "server-0"
-  }
-
-  InfraPool: {
-    label: "Node Pool: IT Infrastructure (agent-0)"
-    ArgoCD
-    Vault
-    Kyverno
-    Prometheus
-  }
-
-  WorkloadPool: {
-    label: "Node Pool: GitOps Workloads (agent-1)"
-    ArgoWorkflows: "Argo Workflows"
-    SonarQube
-  }
-
-  DaemonSets: {
-    label: "DaemonSets (run on all nodes)"
-    Cilium: "Cilium Agent"
-    FluentBit: "Fluent-bit"
-    NodeExporter: "Node Exporter"
-  }
-}
-```
-
-## 4. Certificate Management Flow
-
-This flow shows how a Gateway resource automatically obtains a TLS certificate
-via cert-manager annotation.
-
-```d2
-shape: sequence_diagram
-GW: Gateway Resource
-CM: cert-manager
-CI: ClusterIssuer
-CAS: CA Secret
-TLS: TLS Certificate Secret
-
-GW -> CM: Requests certificate (annotation\ncert-manager.io/cluster-issuer: ca-issuer)
-CM -> CI: Read ClusterIssuer
-CI -> CM: ca.secretName: idp-demo-ca-secret
-CM -> CAS: Load root CA
-CAS -> CM: CA key + cert
-CM -> TLS: Create idp-wildcard-cert (*.nip.io)
-TLS -> GW: Referenced in listeners.tls
-```
-
-## 5. Secret Management Flow
-
-This flow details how an application securely consumes a secret from Vault
-without having direct credentials.
+**Question:** how does an application pod receive a secret from Vault?
 
 ```d2
 shape: sequence_diagram
@@ -223,19 +65,21 @@ ESO -> K8S: Create/Update Secret
 K8S -> App: Mounted in Pod
 ```
 
-## 6. Observability Data Flow
+See:
+- [Secrets management architecture](secrets.md)
+- [Security & policy model](../concepts/security-policy-model.md)
 
-This diagram details how metrics and logs are collected, processed, and visualized on
-the platform.
+## 3. Observability data flow
+
+**Question:** how do metrics and logs move from nodes to dashboards?
 
 ```d2
 direction: right
 
 Nodes: {
-  App: "App Pod"
+  App: "App pod"
   Kubelet
   NodeExporter
-  LogFiles: "Container Logs"
 }
 
 Obs: {
@@ -246,80 +90,47 @@ Obs: {
   FB: "Fluent-bit"
 }
 
-Nodes.App -> Nodes.LogFiles: "Logs"
-Nodes.App -> Obs.Prom: "Metrics"
-Nodes.Kubelet -> Obs.Prom: "Metrics"
-Nodes.LogFiles -> Obs.FB: "Tailed"
-Obs.FB -> Obs.Loki: "Forwards"
-Nodes.NodeExporter -> Obs.Prom: "Node metrics"
-Obs.KSM -> Obs.Prom: "Cluster metrics"
-Obs.Prom -> Obs.Graf: "Datasource"
-Obs.Loki -> Obs.Graf: "Datasource"
+Nodes.App -> Obs.FB: "logs"
+Nodes.App -> Obs.Prom: "metrics"
+Nodes.Kubelet -> Obs.Prom
+Nodes.NodeExporter -> Obs.Prom
+Obs.KSM -> Obs.Prom
+Obs.FB -> Obs.Loki
+Obs.Prom -> Obs.Graf
+Obs.Loki -> Obs.Graf
 ```
 
-## 7. Security Scanning Flow with Trivy
+See:
+- [Observability architecture](observability.md)
 
-This diagram illustrates how the Trivy operator scans cluster workloads for
-vulnerabilities.
+## 4. GitOps structure with ApplicationSets
 
-```d2
-shape: sequence_diagram
-User: User/ArgoCD
-K8s: Kubernetes API
-TrivyOp: Trivy Operator
-Workload: Deployment/Pod
-Report: VulnerabilityReport
-
-User -> K8s: Create/Update Workload
-K8s -> TrivyOp: Watch changes
-TrivyOp -> Workload: Discover images
-TrivyOp -> TrivyOp: Scan images
-TrivyOp -> K8s: Create/Update VulnerabilityReport
-K8s -> Report: Store CRD
-```
-
-## 8. GitOps Structure with ApplicationSets
-
-This diagram explains the "App of Apps" pattern. The `ApplicationSet` resources in
-ArgoCD monitor directories in Git. When they find subdirectories that match their
-generator, they automatically create child `Application` resources, one for each
-stack component.
+**Question:** how does ArgoCD discover and deploy stacks from the `K8s/` directory?
 
 ```d2
 direction: right
 
-Git: {
-  label: "Git Repository"
-  K8sDir: "K8s/ Directory"
-  Obs: "observability/"
-  Sec: "security/"
-  CiCd: "cicd/"
-}
+Git: "K8s Git repository"
 
 Argo: {
   label: "ArgoCD"
-  ASObs: "ApplicationSet observability"
-  ASSec: "ApplicationSet security"
-  ASCi: "ApplicationSet cicd"
-  AppProm: "App: obs-prometheus"
-  AppGraf: "App: obs-grafana"
-  AppLoki: "App: obs-loki"
-  AppTrivy: "App: sec-trivy"
+  ASObs: "ApplicationSet: observability"
+  ASSec: "ApplicationSet: security"
+  ASCi: "ApplicationSet: cicd"
 }
 
-Git.K8sDir -> Argo.ASObs: Monitored
-Git.K8sDir -> Argo.ASSec: Monitored
-Git.K8sDir -> Argo.ASCi: Monitored
-Argo.ASObs -> Argo.AppProm: Generates
-Argo.ASObs -> Argo.AppGraf
-Argo.ASObs -> Argo.AppLoki
-Argo.ASSec -> Argo.AppTrivy
+Git -> Argo.ASObs
+Git -> Argo.ASSec
+Git -> Argo.ASCi
 ```
 
-## 9. Gateway API Service Exposure
+See:
+- [K8s directory architecture](applications.md)
+- [GitOps model](../concepts/gitops-model.md)
 
-This diagram shows how services are exposed via Gateway API with wildcard TLS
-and nip.io DNS (zero configuration required).
+## 5. Gateway API service exposure
+
+**Question:** how does a browser request reach platform UIs via Gateway API and TLS?
 
 ```d2
 direction: down
@@ -329,7 +140,7 @@ External: {
 }
 
 GatewayNS: {
-  label: "Gateway API Layer - kube-system"
+  label: "Gateway API layer - kube-system"
   Gateway: "Gateway: idp-gateway\nHTTPS:443\nTLS: idp-wildcard-cert"
   Cert: "Certificate: idp-wildcard-cert\n*.nip.io\nIssuer: ca-issuer"
 }
@@ -365,29 +176,5 @@ Routes.HR5 -> Backends.S5
 GatewayNS.Cert -> GatewayNS.Gateway: TLS
 ```
 
-## 10. Control Loop Overview
-
-This diagram illustrates the continuous, cross-reconciling control loops between
-the core GitOps components, forming the heart of the "Platform as a System."
-Each component watches the Kubernetes API server for changes and acts to align the
-cluster's actual state with the desired state defined in Git, policies, or
-external secret stores.
-
-```d2
-direction: right
-
-K8s: "Kubernetes API Server"
-GitOps: {
-  Argo: ArgoCD
-}
-Policy: {
-  Kyverno
-}
-Secrets: {
-  ESO: "External Secrets Operator"
-}
-
-GitOps.Argo <-> K8s: "Reconciles Git State"
-Policy.Kyverno <-> K8s: "Validates & Mutates"
-Secrets.ESO <-> K8s: "Syncs Secrets"
-```
+See:
+- [Networking & gateway](../concepts/networking-gateway.md)
