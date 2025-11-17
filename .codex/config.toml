@@ -1,0 +1,12 @@
+[mcp_servers.memory]
+command = "memory-mcp-server-go"
+args = ["-memory", ".memory/graph.db"]
+
+[mcp_servers.repomix]
+command = "npx"
+args = ["-y", "@yamadashy/repomix-mcp@latest"]
+
+[mcp_servers."sequential-thinking"]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-sequential-thinking", "--mcp", "--max-steps", "10"]
+

@@ -1,0 +1,28 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "memory-mcp-server-go",
+      "args": [
+        "-memory",
+        "${workspaceFolder}/.memory/graph.db"
+      ]
+    },
+    "repomix": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@yamadashy/repomix-mcp@latest"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking",
+        "--mcp",
+        "--max-steps",
+        "10"
+      ]
+    }
+  }
+}
