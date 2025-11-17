@@ -6,12 +6,12 @@ sandbox_mode = "danger-full-access"
 web_search_request = true
 
 [mcp_servers.memory]
-command = "memory-mcp-server-go"
-args = ["-memory", "${workspaceFolder}/.memory/graph.db"]
+command = "./Scripts/run-memory-mcp.sh"
+args = []
 
 [mcp_servers.repomix]
 command = "npx"
-args = ["-y", "@yamadashy/repomix-mcp@latest"]
+args = ["-y", "repomix", "--mcp"]
 
 [mcp_servers."sequential-thinking"]
 command = "npx"

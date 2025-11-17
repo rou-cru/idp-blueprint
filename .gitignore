@@ -22,3 +22,5 @@ CLAUDE.md
 
 # Generated Chart.yaml files (created by generate-chart-metadata.sh)
 Docs/components/**/Chart.yaml
+.memory/graph.db-shm
+.memory/graph.db-wal

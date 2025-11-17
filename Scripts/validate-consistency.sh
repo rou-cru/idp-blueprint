@@ -137,16 +137,16 @@ fi
 echo ""
 echo "6. Verificando cobertura de priorityClassName..."
 
-# Contar dinámicamente todos los *-values.yaml excluyendo jenkins.disabled
-TOTAL_VALUES_FILES=$(find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" 2>/dev/null | wc -l)
-ACTUAL=$(find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" -exec grep -l "priorityClassName" {} \; 2>/dev/null | wc -l)
+# Contar dinámicamente todos los *-values.yaml
+TOTAL_VALUES_FILES=$(find . -name "*-values.yaml" 2>/dev/null | wc -l)
+ACTUAL=$(find . -name "*-values.yaml" -exec grep -l "priorityClassName" {} \; 2>/dev/null | wc -l)
 
 if [ "$ACTUAL" -eq "$TOTAL_VALUES_FILES" ]; then
   echo "  ✅ Priority class coverage: 100% ($ACTUAL/$TOTAL_VALUES_FILES archivos)"
 else
   echo "  ⚠️  Priority class coverage: $ACTUAL/$TOTAL_VALUES_FILES archivos"
   echo "  📋 Archivos sin priorityClassName:"
-  find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" 2>/dev/null | while read -r f; do
+  find . -name "*-values.yaml" 2>/dev/null | while read -r f; do
     if ! grep -q "priorityClassName" "$f"; then
       echo "      - $f"
     fi

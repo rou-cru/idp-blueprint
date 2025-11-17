@@ -16,17 +16,15 @@ spec:
         revision: ${TARGET_REVISION}
         directories:
           - path: K8s/cicd/*
-          - path: K8s/cicd/jenkins.disabled
-            exclude: true
   template:
     metadata:
-      name: 'cicd-{{path.basename}}'
+      name: "cicd-{{path.basename}}"
     spec:
       project: cicd
       source:
         repoURL: ${REPO_URL}
         targetRevision: ${TARGET_REVISION}
-        path: '{{path}}'
+        path: "{{path}}"
         kustomize: {}
       destination:
         server: https://kubernetes.default.svc
