@@ -175,17 +175,27 @@ store_password_in_vault() {
   local key_name=$5
   local password_to_store=$6
 
-  # Use 'vault kv patch' instead of 'put' to support multiple keys in the same path
-  # - If secret doesn't exist: patch creates it with this key
+  # Strategy: Try 'patch' first (to preserve existing keys), fallback to 'put' if secret doesn't exist
   # - If secret exists: patch adds/updates only this key, preserving other keys
+  # - If secret doesn't exist: patch fails, then we use 'put' to create it
   # This allows secrets like secret/docker/registry to have registry, username, password
-  if ! kubectl exec -n "$namespace" "$pod" -- \
+
+  # Try patch first (preserves other keys if secret exists)
+  if kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
     vault kv patch "$vault_path" "${key_name}=${password_to_store}" &>/dev/null; then
+    log "✅ Password stored successfully (patched existing secret)"
+    return 0
+  fi
+
+  # If patch failed (likely because secret doesn't exist), use put to create it
+  if ! kubectl exec -n "$namespace" "$pod" -- \
+    env VAULT_TOKEN="$token" \
+    vault kv put "$vault_path" "${key_name}=${password_to_store}" &>/dev/null; then
     error "Failed to store password in Vault at path: ${vault_path}"
   fi
 
-  log "✅ Password stored successfully"
+  log "✅ Password stored successfully (created new secret)"
 }
 
 verify_storage() {
