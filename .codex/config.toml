@@ -1,6 +1,13 @@
+model = "gpt-5.1-codex"
+approval_policy = "on-request"
+sandbox_mode = "danger-full-access"
+
+[features]
+web_search_request = true
+
 [mcp_servers.memory]
 command = "memory-mcp-server-go"
-args = ["-memory", ".memory/graph.db"]
+args = ["-memory", "${workspaceFolder}/.memory/graph.db"]
 
 [mcp_servers.repomix]
 command = "npx"
@@ -10,3 +17,5 @@ args = ["-y", "@yamadashy/repomix-mcp@latest"]
 command = "npx"
 args = ["-y", "@modelcontextprotocol/server-sequential-thinking", "--mcp", "--max-steps", "10"]
 
+[notice]
+hide_gpt5_1_migration_prompt = true
