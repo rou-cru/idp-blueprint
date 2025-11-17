@@ -7,90 +7,144 @@ Use this documentation as a map to the platform: understand the architecture, de
 ## One picture: IDP Blueprint architecture
 
 ```d2
-direction: down
+grid-rows: 4
+style.fill: black
 
-platform_engineer: {
-  label: "Platform Engineer"
-  shape: c4-person
-}
-
-developer: {
-  label: "Application Developer"
-  shape: c4-person
-}
-
-git_provider: {
-  label: "Git provider"
-  shape: rectangle
-}
-
-container_registry: {
-  label: "Container registry"
-  shape: rectangle
-}
-
-idp: {
-  label: "Internal Developer Platform (IDP)"
-  shape: rectangle
-  style.stroke-width: 3
-
-  gitops: {
-    label: "GitOps & automation"
-    shape: rectangle
-    argo_cd: "ArgoCD"
-    appsets: "ApplicationSets"
+classes: {
+  layer0: {
+    width: 260
+    style: {
+      fill: navy
+      stroke: deepskyblue
+      stroke-width: 3
+      font-color: white
+      text-transform: uppercase
+    }
   }
-
-  cicd: {
-    label: "CI/CD"
-    shape: rectangle
-    argo_workflows: "Argo Workflows"
-    sonarqube: "SonarQube"
+  layer1: {
+    width: 220
+    style: {
+      fill: midnightblue
+      stroke: mediumseagreen
+      stroke-width: 3
+      font-color: white
+      text-transform: uppercase
+    }
   }
-
-  observability: {
-    label: "Observability"
-    shape: rectangle
-    prometheus: "Prometheus"
-    loki: "Loki"
-    grafana: "Grafana"
-    fluent_bit: "Fluent-bit"
+  layer2: {
+    width: 220
+    style: {
+      fill: black
+      stroke: mediumorchid
+      stroke-width: 3
+      font-color: white
+      text-transform: uppercase
+    }
   }
-
-  security: {
-    label: "Security & policy"
-    shape: rectangle
-    kyverno: "Kyverno"
-    policy_reporter: "Policy Reporter"
-    vault: "Vault"
-    external_secrets: "External Secrets Operator"
-    trivy: "Trivy"
-    cert_manager: "cert-manager"
-  }
-
-  networking: {
-    label: "Networking"
-    shape: rectangle
-    cilium: "Cilium CNI"
-    gateway_api: "Gateway API"
+  layer3: {
+    width: 220
+    style: {
+      fill: black
+      stroke: orange
+      stroke-width: 3
+      font-color: white
+      text-transform: uppercase
+    }
   }
 }
 
-developer -> git_provider
-platform_engineer -> git_provider
+# Row 1: developer-facing surfaces
 
-git_provider -> idp.gitops.argo_cd
+grafana: {
+  class: layer3
+  label: "Grafana"
+}
 
-idp.gitops.argo_cd -> idp.security.kyverno
-idp.gitops.argo_cd -> idp.security.external_secrets
+workflows: {
+  class: layer3
+  label: "Argo Workflows"
+}
 
-idp.security.external_secrets -> idp.security.vault
+sonarqube: {
+  class: layer3
+  label: "SonarQube"
+}
 
-idp.observability.fluent_bit -> idp.observability.loki
+trivy: {
+  class: layer3
+  label: "Trivy"
+}
 
-idp.observability.prometheus -> idp.observability.grafana
-idp.observability.loki -> idp.observability.grafana
-developer -> idp.observability.grafana
+argocd: {
+  class: layer3
+  label: "ArgoCD"
+}
+
+# Row 2: automation & governance
+
+appsets: {
+  class: layer2
+  label: "ApplicationSets"
+}
+
+kyverno: {
+  class: layer2
+  label: "Kyverno"
+}
+
+policy_reporter: {
+  class: layer2
+  label: "Policy Reporter"
+}
+
+vault: {
+  class: layer2
+  label: "Vault"
+}
+
+# Row 3: platform services
+
+eso: {
+  class: layer1
+  label: "External Secrets"
+}
+
+cert_manager: {
+  class: layer1
+  label: "cert-manager"
+}
+
+prom: {
+  class: layer1
+  label: "Prometheus"
+}
+
+loki: {
+  class: layer1
+  label: "Loki"
+}
+
+fluent: {
+  class: layer1
+  label: "Fluent-bit"
+}
+
+# Row 4: infrastructure core
+
+kubernetes: {
+  class: layer0
+  label: "Kubernetes"
+}
+
+cilium: {
+  class: layer0
+  label: "Cilium CNI"
+}
+
+gateway: {
+  class: layer0
+  label: "Gateway API"
+}
 ```
 
 At a glance:
