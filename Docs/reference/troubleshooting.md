@@ -141,7 +141,7 @@ kubectl get namespaces
 task destroy
 ```
 
-### Clean Registry Cache (if needed)
+### Clean registry cache when needed
 
 ```bash
 task registry:clean

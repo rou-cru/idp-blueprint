@@ -1,31 +1,23 @@
-# Platform Operations Overview
+---
+# Operate — run the platform in practice
 
-Operate every subsystem of the IDP Blueprint—from bootstrap infrastructure to
-observability and CI/CD—using the component guides in this section.
+This section focuses on day‑2 operation: backups, upgrades, scaling, and recovery. It assumes you have deployed the platform and understand the basics of its architecture.
 
-## Layers
+There is no new mental model here; we reuse the same Desired/Observed/Actionable loops from [Concepts](../concepts/index.md). The emphasis is on concrete runbooks.
 
-- **Infrastructure** – Cilium, Cert-Manager, Vault, External Secrets, ArgoCD,
-  and supporting namespaces.
-- **Policy & Security** – Kyverno policies, Policy Reporter, Trivy scanning, and
-  governance guidance.
-- **Observability** – Prometheus, Grafana, Loki, Fluent Bit, dashboards, and
-  alerting hooks.
-- **CI/CD** – Argo Workflows, SonarQube, and the supporting automation that
-  project teams touch daily.
+## What “good operations” means for this IDP
 
-## How To Use
+- SLOs as code (Pyrra) define expectations; burn rates lead to actions.
+- GitOps and policies keep intent and reality aligned; drift is corrected automatically.
+- Runbooks capture steps for common failure modes and routine tasks.
+- Backups focus on state that cannot be recreated deterministically from Git.
 
-Each component page includes:
+## Runbooks you will rely on
 
-1. **Summary & diagrams** – Why the component exists and how it fits into the
-   flow.
-2. **Values & configuration** – Helm/Kustomize knobs maintained by GitOps.
-3. **Operational guidance** – Scaling tips, dashboards, and health checks.
+Start with these documents when operating the platform:
 
-## Quick Links
-
-- [Infrastructure Stack](../components/infrastructure/index.md)
-- [Policy & Security](../components/policy/index.md)
-- [Observability](../components/observability/index.md)
-- [CI/CD](../components/cicd/index.md)
+- [Backup & restore](../operate/backup-restore.md) — what to back up vs what to rebuild.
+- [Upgrades](../operate/upgrades.md) — order, gates, and rollback strategies.
+- [Scaling & tuning](../operate/scaling-tuning.md) — key knobs (retention, cardinality, priorities).
+- [Disaster recovery](../operate/disaster-recovery.md) — rebuild from Git and restore secrets.
+- [Troubleshooting playbook](../reference/troubleshooting.md) — common issues and diagnostics.

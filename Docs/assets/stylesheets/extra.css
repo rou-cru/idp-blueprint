@@ -187,3 +187,15 @@
     padding-right: 2rem;
   } */
 }
+
+/* D2 diagrams — keep them readable and not oversized */
+.md-typeset .d2 {
+  max-width: 60rem;
+  margin: 1.5rem auto;
+  overflow: auto;
+}
+
+.md-typeset .d2 svg {
+  width: 100%;
+  height: auto;
+}

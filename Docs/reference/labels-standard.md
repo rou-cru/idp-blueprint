@@ -73,41 +73,36 @@ consistent documentation generation.
 
 ## Priority Classes Assignment
 
-Priority classes should be assigned based on component criticality:
+PriorityClasses are defined as code in `IT/priorityclasses/priorityclasses.yaml`
+and are part of the scheduling model described in
+[`Scheduling, Priority, and Node Pools`](../concepts/scheduling-nodepools.md).
 
-### platform-critical (Value: 1000000000)
+Use them to express **relative importance** rather than absolute guarantees. The
+main classes are:
 
-Reserved for system-critical components.
+- **platform-infrastructure** (`value: 1000000`) – Vault, ArgoCD, cert-manager,
+  External Secrets Operator and other core control planes
+- **platform-policy** (`value: 100000`) – Kyverno admission/background
+  controllers
+- **platform-security** (`value: 12000`) – Trivy security scanners
+- **platform-observability** (`value: 10000`) – Prometheus, Loki, Fluent Bit,
+  Policy Reporter and related telemetry
+- **platform-cicd** (`value: 7500`) – long‑lived CI/CD services (Argo
+  Workflows, SonarQube, backing databases)
+- **platform-dashboards** (`value: 5000`) – Grafana, Alertmanager and other
+  dashboards
+- **user-workloads** (`value: 3000`) – user applications deployed via GitOps
+- **cicd-execution** (`value: 2500`) – short‑lived CI/CD execution pods (e.g.
+  workflow pods, ephemeral builds)
+- **unclassified-workload** (`value: 0`, `globalDefault: true`) – default for
+  any workload without an explicit PriorityClass
 
-### platform-infrastructure (Value: 900000)
+Guidelines:
 
-- argocd
-- cert-manager
-- vault
-- external-secrets
-- kyverno
-
-### platform-observability (Value: 800000)
-
-- prometheus
-- grafana
-- loki
-- fluent-bit
-- policy-reporter
-
-### platform-cicd (Value: 700000)
-
-- jenkins
-- sonarqube
-- argo-workflows
-
-### platform-security (Value: 750000)
-
-- trivy
-
-### platform-default (Value: 0)
-
-Default for application workloads.
+- Platform components SHOULD set one of the `platform-*` PriorityClasses.
+- CI/CD execution pods SHOULD use `cicd-execution`.
+- User workloads MAY use `user-workloads` or rely on the global default
+  `unclassified-workload`, depending on environment guarantees.
 
 ## External Secrets RefreshInterval Strategy
 
@@ -127,6 +122,9 @@ Default for application workloads.
 ## ArgoCD Sync Wave Annotations
 
 Sync waves control deployment order in ArgoCD:
+
+For the full wave model used in this repository, see
+[`GitOps, Policy, and Eventing`](../concepts/gitops-model.md).
 
 | Wave | Resources | Purpose |
 |------|-----------|---------|

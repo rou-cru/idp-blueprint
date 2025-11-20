@@ -13,6 +13,28 @@ Fast and lightweight log processor and forwarder
 | **Upstream Project** | [fluent-bit](https://fluentbit.io) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Fluent-bit?
+
+Fluent-bit is designed for performance and low resource consumption. It runs as a DaemonSet on every node, capturing container logs and forwarding them to Loki.
+
+The alternative is Fluentd, which is more feature-rich but heavier. In resource-constrained edge environments, Fluent-bit's lightweight footprint makes it the better choice. It's flexible enough for complex log processing if needed, and works in diverse environments (even AWS Fargate).
+
+Fluent-bit handles the push model for logs: it actively forwards logs to Loki as they're generated, ensuring logs are captured even if a pod crashes immediately.
+
+## Architecture Role
+
+Fluent-bit operates at **Layer 1** of the platform, the Platform Services layer. It's part of the log collection pipeline.
+
+Key integration points:
+
+- **Kubernetes**: Runs as a DaemonSet, collects logs from all containers on each node
+- **Loki**: Forwards logs to Loki's API
+- **Node filesystem**: Reads container logs from `/var/log/containers`
+
+The configuration tails container logs, parses JSON-formatted logs, and forwards them to Loki with appropriate labels.
+
+See [Observability Model](../../../architecture/observability.md) for the complete log pipeline.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

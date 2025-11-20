@@ -53,6 +53,13 @@ Before deploying the IDP Blueprint, verify your environment with this quick chec
 !!! note
     Dev Containers already include all required tooling (kubectl, helm, k3d, task, etc.). Opening the repo in VS Code and choosing “Reopen in Container” is the easiest path.
 
+!!! info "Cluster resource sizing (demo)"
+    For a full demo cluster on a single machine, we see good results with:
+
+    - **Minimum configuration**: 4 CPU cores, 8 GB RAM
+    - **Recommended configuration**: 6 CPU cores, 12 GB RAM
+    - **Storage**: ~20 GB persistent storage
+
 ## Docker Hub Authentication
 
 To avoid Docker Hub rate limiting:

@@ -1,6 +1,8 @@
-# Observability Stack Deep Dive
+# Observability stack — C4 component view
 
 The observability stack covers metrics, logs, and dashboards with minimal footprint. It lives under `K8s/observability/` and is powered by Prometheus, Loki, Fluent-bit, and Grafana.
+
+From a C4 perspective this page is a **component view (L3)** for the “Observability” part of the developer‑facing stacks.
 
 ## Components at a Glance
 
@@ -72,16 +74,29 @@ The Prometheus stack enables Alertmanager but does not send notifications by def
 ## Custom Dashboards Workflow
 
 ```d2
-shape: sequence_diagram
-Dev: Platform Engineer
-Git: Repo (K8s/observability)
-Argo: ArgoCD
-Grafana: Grafana Pod
+direction: right
 
-Dev -> Git: Add dashboard JSON under dashboards/
-Git -> Argo: Commit pushed
-Argo -> Grafana: Sync ConfigMap/Secret
-Grafana -> Dev: Dashboard appears in UI
+Dev: {
+  label: "Platform Engineer"
+  shape: c4-person
+}
+
+Git: {
+  label: "Git repo\nK8s/observability/dashboards/"
+}
+
+Argo: {
+  label: "ArgoCD\nObservability stack"
+}
+
+Grafana: {
+  label: "Grafana pod"
+}
+
+Dev -> Git: "add / update dashboard JSON"
+Git -> Argo: "commit pushed"
+Argo -> Grafana: "sync ConfigMap / Secret"
+Grafana -> Dev: "dashboard visible in UI"
 ```
 
 ## Extending the Stack

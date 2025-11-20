@@ -1,8 +1,10 @@
-# IT Directory Architecture
+# Infrastructure layer — IT directory
 
 This directory contains the **static** or **bootstrap layer** of the platform. These are
 the core components required to bring up a functional Kubernetes cluster _before_ the
 GitOps engine (e.g., ArgoCD) takes over.
+
+From a C4 perspective this page is the **component view (L3)** of the “0. Infrastructure core” layer described in the Architecture overview.
 
 ## Guiding Principles
 
@@ -15,7 +17,7 @@ Configuration for a core component deployed via a Helm chart is defined in a sin
 
 - **Location**: Root of the `IT/` directory.
 - **Naming**: The filename is simple and references the component (e.g.,
-  `cilium-values.yaml`, `vault-values.yaml`).
+  `values.yaml`).
 
 ### 2. Raw Kubernetes Manifests
 
@@ -42,54 +44,25 @@ These use Kustomize for composition and are deployed via
     the `ExternalSecret` for ArgoCD.
   - `argocd/`: Kustomization to support the Helm chart.
 
-## Visual Structure
+## Directory layout (short)
 
-```d2
-direction: right
+The `IT/` directory is intentionally simple:
 
-IT: {
-  label: "IT/"
-  B: "cilium-values.yaml"
-  C: "eso-values.yaml"
-  D: "k3d-cluster.yaml"
-  E: "vault-values.yaml"
-  AA: "cert-manager-values.yaml"
-  AB: "argocd-values.yaml"
-  AC: "kustomization.yaml"
-
-  F: "cert-manager/"
-  G: "external-secrets/"
-  N: "namespaces/"
-  V: "vault/"
-  X: "argocd/"
-}
-
-Raw: {
-  label: "Raw Manifests & Kustomize"
-  H: "ca-issuer.yaml"
-  K: "argocd-secretstore.yaml"
-  L: "argocd-admin-externalsecret.yaml"
-  N1: "kustomization.yaml"
-  V1: "vault-init.sh"
-  X1: "kustomization.yaml"
-}
-
-Values: {
-  label: "Helm Values"
-  B
-  C
-  D
-  E
-  AA
-  AB
-}
-
-IT.F -> Raw.H
-IT.G -> Raw.K
-IT.G -> Raw.L
-IT.N -> Raw.N1
-IT.V -> Raw.V1
-IT.X -> Raw.X1
+```text
+IT/
+├── k3d-cluster.yaml
+├── kustomization.yaml
+├── namespaces/
+├── cert-manager/
+│   └── values.yaml
+├── external-secrets/
+│   └── values.yaml
+├── vault/
+│   └── values.yaml
+├── cilium/
+│   └── values.yaml
+└── argocd/
+    └── values.yaml
 ```
 
 ## Quick Reference
@@ -105,25 +78,42 @@ IT.X -> Raw.X1
 | `external-secrets/`          | Raw manifests for External Secrets Operator (SecretStore, ExternalSecret).| Raw Manifests       |
 | `argocd/`                    | Kustomization to support the ArgoCD Helm chart deployment.               | Kustomize           |
 
+## C4 component view — infrastructure core
+
+```d2
+direction: right
+
+InfraCore: {
+  label: "0. Infrastructure core (C4 L3 components)"
+  K8sAPI: "Kubernetes API + etcd"
+  Cilium: "Cilium CNI"
+  Cert: "cert-manager"
+  Vault: "Vault"
+  ESO: "External Secrets Operator"
+  ArgoCD: "ArgoCD"
+  Gateway: "Gateway API"
+}
+```
+
 ## Deployment Workflow
 
 The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 
 1. **Create k3d cluster** (`k3d-cluster-cached.yaml` with persistent registry cache).
 2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
-3. **Deploy Cilium CNI** via Helm (`cilium-values.yaml`).
+3. **Deploy Cilium CNI** via Helm (`IT/cilium/values.yaml`).
 4. **Deploy Prometheus CRDs** via a dedicated Helm chart install.
    This is done using the `kube-prometheus-stack` chart with the `crdsOnly=true` flag.
-5. **Deploy Cert-Manager** via Helm (`cert-manager-values.yaml`).
+5. **Deploy Cert-Manager** via Helm (`IT/cert-manager/values.yaml`).
    - Wait for webhook readiness.
    - Then apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
 6. **Deploy Vault Stack**:
-   - Deploy Vault via Helm (`vault-values.yaml`).
+   - Deploy Vault via Helm (`IT/vault/values.yaml`).
    - Execute the initialization script (`vault-init.sh`) to initialize and unseal Vault.
-7. **Deploy External Secrets Operator** via Helm (`eso-values.yaml`).
+7. **Deploy External Secrets Operator** via Helm (`IT/external-secrets/values.yaml`).
    - Then apply ESO resources (`ClusterSecretStore`, `ExternalSecret` for ArgoCD)
      via Kustomize: `kustomize build external-secrets/ | kubectl apply -f -`.
-8. **Deploy ArgoCD** via Helm (`argocd-values.yaml`).
+8. **Deploy ArgoCD** via Helm (`IT/argocd/values.yaml`).
 9. **Deploy Gateway API** via Kustomize: `kustomize build gateway/ | kubectl apply -f -`.
    - Creates the Gateway resource with wildcard TLS certificate.
 10. **Deploy Policies** via ArgoCD Application: `kubectl apply -f Policies/app-kyverno.yaml`.
