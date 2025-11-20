@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Generate documentation for all Helm values files using helm-docs
 
 set -euo pipefail

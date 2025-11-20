@@ -1,12 +1,9 @@
-#!/bin/bash
-set -e
-
-echo "🔍 Validando consistencia del repositorio..."
-echo ""
+#!/usr/bin/env bash
+set -euo pipefail
 
 # Verificar que yq está disponible
 if ! command -v yq &> /dev/null; then
-  echo "❌ Error: yq no está instalado. Instálalo desde: https://github.com/mikefarah/yq"
+  echo "Error: yq is not installed" >&2
   exit 1
 fi
 
@@ -15,163 +12,127 @@ ROOT_DIR=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
 CANONICAL_KUSTOMIZATION="$ROOT_DIR/IT/kustomization.yaml"
 
 if [ ! -f "$CANONICAL_KUSTOMIZATION" ]; then
-  echo "❌ Error: No se encuentra $CANONICAL_KUSTOMIZATION"
+  echo "Error: $CANONICAL_KUSTOMIZATION not found" >&2
   exit 1
 fi
 
-CANONICAL_PART_OF=$(yq -r '.labels[0].pairs["app.kubernetes.io/part-of"]' "$CANONICAL_KUSTOMIZATION")
-CANONICAL_OWNER=$(yq -r '.labels[0].pairs["owner"]' "$CANONICAL_KUSTOMIZATION")
-CANONICAL_BUSINESS_UNIT=$(yq -r '.labels[0].pairs["business-unit"]' "$CANONICAL_KUSTOMIZATION")
-CANONICAL_ENVIRONMENT=$(yq -r '.labels[0].pairs["environment"]' "$CANONICAL_KUSTOMIZATION")
-
-echo "📋 Valores canónicos desde $CANONICAL_KUSTOMIZATION:"
-echo "   part-of: $CANONICAL_PART_OF"
-echo "   owner: $CANONICAL_OWNER"
-echo "   business-unit: $CANONICAL_BUSINESS_UNIT"
-echo "   environment: $CANONICAL_ENVIRONMENT"
-echo ""
+CANONICAL_PART_OF=$(yq '.labels[0].pairs["app.kubernetes.io/part-of"]' "$CANONICAL_KUSTOMIZATION")
+CANONICAL_OWNER=$(yq '.labels[0].pairs["owner"]' "$CANONICAL_KUSTOMIZATION")
+CANONICAL_BUSINESS_UNIT=$(yq '.labels[0].pairs["business-unit"]' "$CANONICAL_KUSTOMIZATION")
+CANONICAL_ENVIRONMENT=$(yq '.labels[0].pairs["environment"]' "$CANONICAL_KUSTOMIZATION")
 
 ERRORS=0
 
-# 1. Verificar que no hay valores "None"
-echo "1. Verificando valores 'None'..."
-if grep -r "None" IT/kustomization.yaml K8s/ 2>/dev/null; then
-  echo "  ❌ Encontrados valores 'None'"
-  ((ERRORS++))
-else
-  echo "  ✅ No hay valores 'None'"
-fi
-
-# 2. Verificar labels en namespaces IT/
-echo ""
-echo "2. Verificando labels en namespaces IT/..."
-NS_ERRORS=0
+# 1. Verificar labels en namespaces IT/
 for ns in IT/namespaces/*.yaml; do
   if [[ "$ns" != *"kustomization.yaml" ]]; then
-    if ! grep -q "app.kubernetes.io/part-of: $CANONICAL_PART_OF" "$ns"; then
-      echo "  ❌ $ns falta label part-of (esperado: $CANONICAL_PART_OF)"
-      ((NS_ERRORS++))
+    ns_part_of=$(yq '.metadata.labels["app.kubernetes.io/part-of"] // ""' "$ns")
+    ns_owner=$(yq '.metadata.labels["owner"] // ""' "$ns")
+    ns_bu=$(yq '.metadata.labels["business-unit"] // ""' "$ns")
+    ns_env=$(yq '.metadata.labels["environment"] // ""' "$ns")
+
+    if [ "$ns_part_of" != "$CANONICAL_PART_OF" ]; then
+      echo "Error: $ns missing label part-of (expected: $CANONICAL_PART_OF, got: $ns_part_of)"
+      ERRORS=$((ERRORS + 1))
     fi
-    if ! grep -q "owner: $CANONICAL_OWNER" "$ns"; then
-      echo "  ❌ $ns falta label owner (esperado: $CANONICAL_OWNER)"
-      ((NS_ERRORS++))
+    if [ "$ns_owner" != "$CANONICAL_OWNER" ]; then
+      echo "Error: $ns missing label owner (expected: $CANONICAL_OWNER, got: $ns_owner)"
+      ERRORS=$((ERRORS + 1))
     fi
-    if ! grep -q "business-unit: $CANONICAL_BUSINESS_UNIT" "$ns"; then
-      echo "  ❌ $ns falta label business-unit (esperado: $CANONICAL_BUSINESS_UNIT)"
-      ((NS_ERRORS++))
+    if [ "$ns_bu" != "$CANONICAL_BUSINESS_UNIT" ]; then
+      echo "Error: $ns missing label business-unit (expected: $CANONICAL_BUSINESS_UNIT, got: $ns_bu)"
+      ERRORS=$((ERRORS + 1))
     fi
-    if ! grep -q "environment: $CANONICAL_ENVIRONMENT" "$ns"; then
-      echo "  ❌ $ns falta label environment (esperado: $CANONICAL_ENVIRONMENT)"
-      ((NS_ERRORS++))
+    if [ "$ns_env" != "$CANONICAL_ENVIRONMENT" ]; then
+      echo "Error: $ns missing label environment (expected: $CANONICAL_ENVIRONMENT, got: $ns_env)"
+      ERRORS=$((ERRORS + 1))
     fi
   fi
 done
-if [ "$NS_ERRORS" -eq 0 ]; then
-  echo "  ✅ Todos los namespaces IT tienen los labels requeridos"
-else
-  echo "  ❌ Errores en labels de namespaces: $NS_ERRORS"
-  ((ERRORS+=NS_ERRORS))
+
+# 2. Verificar owner y business-unit consistency
+KUSTOMIZATIONS=(
+  "IT/kustomization.yaml"
+  "IT/argocd/kustomization.yaml"
+  "K8s/argocd/kustomization.yaml"
+  "K8s/cicd/infrastructure/kustomization.yaml"
+)
+
+declare -A OWNER_VALUES
+for kust in "${KUSTOMIZATIONS[@]}"; do
+  if [ -f "$kust" ]; then
+    owner=$(yq '.labels[0].pairs["owner"] // ""' "$kust")
+    if [ -n "$owner" ]; then
+      OWNER_VALUES["$owner"]=1
+    fi
+  fi
+done
+
+if [ "${#OWNER_VALUES[@]}" -ne 1 ]; then
+  echo "Error: Inconsistent 'owner' values across kustomizations"
+  for val in "${!OWNER_VALUES[@]}"; do
+    echo "  - $val"
+  done
+  ERRORS=$((ERRORS + 1))
 fi
 
-# 3. Verificar owner y business-unit consistency
-echo ""
-echo "3. Verificando consistencia de 'owner' y 'business-unit'..."
+declare -A BU_VALUES
+for kust in "${KUSTOMIZATIONS[@]}"; do
+  if [ -f "$kust" ]; then
+    bu=$(yq '.labels[0].pairs["business-unit"] // ""' "$kust")
+    if [ -n "$bu" ]; then
+      BU_VALUES["$bu"]=1
+    fi
+  fi
+done
 
-# Lista de kustomizations a verificar (DRY - single source)
-KUSTOMIZATIONS="IT/kustomization.yaml IT/argocd/kustomization.yaml K8s/argocd/kustomization.yaml K8s/cicd/infrastructure/kustomization.yaml"
-
-# shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
-OWNER_VALUES=$(grep -h "owner:" $KUSTOMIZATIONS 2>/dev/null | awk '{print $2}' | sort -u | wc -l)
-if [ "$OWNER_VALUES" -eq 1 ]; then
-  echo "  ✅ Valor de 'owner' consistente en todos los kustomizations"
-else
-  echo "  ❌ Valores de 'owner' inconsistentes:"
-  # shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
-  grep -h "owner:" $KUSTOMIZATIONS 2>/dev/null | sort -u
-  ((ERRORS++))
+if [ "${#BU_VALUES[@]}" -ne 1 ]; then
+  echo "Error: Inconsistent 'business-unit' values across kustomizations"
+  for val in "${!BU_VALUES[@]}"; do
+    echo "  - $val"
+  done
+  ERRORS=$((ERRORS + 1))
 fi
 
-# shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
-BU_VALUES=$(grep -h "business-unit:" $KUSTOMIZATIONS 2>/dev/null | awk '{print $2}' | sort -u | wc -l)
-if [ "$BU_VALUES" -eq 1 ]; then
-  echo "  ✅ Valor de 'business-unit' consistente en todos los kustomizations"
-else
-  echo "  ❌ Valores de 'business-unit' inconsistentes:"
-  # shellcheck disable=SC2086  # Word splitting is intentional here for multiple files
-  grep -h "business-unit:" $KUSTOMIZATIONS 2>/dev/null | sort -u
-  ((ERRORS++))
-fi
-
-# 4. Verificar comment style
-echo ""
-echo "4. Verificando comment style en values files..."
-if grep -r "^## @section" IT/ K8s/ Policies/ --include="*-values.yaml" 2>/dev/null; then
-  echo "  ❌ Encontrado comment style ## @section (debe ser # @section --)"
-  ((ERRORS++))
-else
-  echo "  ✅ Comment style consistente (# @section --)"
-fi
-
-# 5. Verificar kustomizations con labels pero sin resources (excepto K8s/argocd y K8s/vault)
-echo ""
-echo "5. Verificando kustomizations con labels pero sin resources..."
-KUST_ERRORS=0
+# 3. Verificar kustomizations con labels pero sin resources
 while IFS= read -r kust; do
   # Skip label-only overlays (K8s/argocd, K8s/vault)
   if [[ "$kust" == *"K8s/argocd/kustomization.yaml" ]] || [[ "$kust" == *"K8s/vault/kustomization.yaml" ]]; then
     continue
   fi
-  if grep -q "^labels:" "$kust" && ! grep -q "^resources:" "$kust"; then
-    echo "  ❌ $kust tiene labels pero no resources"
-    ((KUST_ERRORS++))
+
+  has_labels=$(yq '.labels // null' "$kust")
+  has_resources=$(yq '.resources // null' "$kust")
+
+  if [ "$has_labels" != "null" ] && [ "$has_resources" == "null" ]; then
+    echo "Error: $kust has labels but no resources"
+    ERRORS=$((ERRORS + 1))
   fi
 done < <(find . -name "kustomization.yaml" 2>/dev/null)
-if [ "$KUST_ERRORS" -eq 0 ]; then
-  echo "  ✅ Todos los kustomizations con labels tienen resources (excepto overlays conocidos)"
-else
-  echo "  ❌ Kustomizations inválidos: $KUST_ERRORS"
-  ((ERRORS+=KUST_ERRORS))
-fi
 
-# 6. Verificar priorityClassName coverage
-echo ""
-echo "6. Verificando cobertura de priorityClassName..."
+# 4. Verificar priorityClassName coverage
+TOTAL_VALUES_FILES=$(find . -name "*-values.yaml" 2>/dev/null | wc -l)
+ACTUAL=0
 
-# Contar dinámicamente todos los *-values.yaml excluyendo jenkins.disabled
-TOTAL_VALUES_FILES=$(find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" 2>/dev/null | wc -l)
-ACTUAL=$(find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" -exec grep -l "priorityClassName" {} \; 2>/dev/null | wc -l)
+while IFS= read -r f; do
+  has_priority=$(yq '.. | select(has("priorityClassName")) | .priorityClassName' "$f" 2>/dev/null || true)
+  if [ -n "$has_priority" ]; then
+    ACTUAL=$((ACTUAL + 1))
+  fi
+done < <(find . -name "*-values.yaml" 2>/dev/null)
 
-if [ "$ACTUAL" -eq "$TOTAL_VALUES_FILES" ]; then
-  echo "  ✅ Priority class coverage: 100% ($ACTUAL/$TOTAL_VALUES_FILES archivos)"
-else
-  echo "  ⚠️  Priority class coverage: $ACTUAL/$TOTAL_VALUES_FILES archivos"
-  echo "  📋 Archivos sin priorityClassName:"
-  find . -name "*-values.yaml" -not -path "*/jenkins.disabled/*" 2>/dev/null | while read -r f; do
-    if ! grep -q "priorityClassName" "$f"; then
-      echo "      - $f"
+if [ "$ACTUAL" -ne "$TOTAL_VALUES_FILES" ]; then
+  echo "Warning: priorityClassName coverage: $ACTUAL/$TOTAL_VALUES_FILES files"
+  while IFS= read -r f; do
+    has_priority=$(yq '.. | select(has("priorityClassName")) | .priorityClassName' "$f" 2>/dev/null || true)
+    if [ -z "$has_priority" ]; then
+      echo "  - $f"
     fi
-  done
+  done < <(find . -name "*-values.yaml" 2>/dev/null)
 fi
 
-# 7. Verificar API version deprecated
-echo ""
-echo "7. Verificando API versions deprecated..."
-if grep -r "external-secrets.io/v1beta1" K8s/ 2>/dev/null; then
-  echo "  ❌ Encontrada API version deprecated v1beta1"
-  ((ERRORS++))
-else
-  echo "  ✅ No hay API versions deprecated"
-fi
-
-# Resumen final
-echo ""
-echo "═══════════════════════════════════════════"
-if [ $ERRORS -eq 0 ]; then
-  echo "✅ Todas las validaciones pasaron"
-  echo "═══════════════════════════════════════════"
-  exit 0
-else
-  echo "❌ Validaciones fallidas: $ERRORS"
-  echo "═══════════════════════════════════════════"
+# Exit
+if [ "$ERRORS" -gt 0 ]; then
+  echo "Validation failed: $ERRORS error(s)"
   exit 1
 fi

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Vault secret generator - Production-ready utility
@@ -19,7 +19,7 @@ set -euo pipefail
 readonly SCRIPT_NAME=$(basename "$0")
 
 log() {
-  echo "[$(date -u '+%Y-%m-%d %H:%M:%S UTC')] $*" >&2
+  echo "$*" >&2
 }
 
 error() {
@@ -72,7 +72,6 @@ detect_vault_pod() {
     error "Cannot find Vault pod in namespace: ${namespace}. Set VAULT_POD environment variable."
   fi
 
-  log "Detected Vault pod: ${pod} in ${namespace}."
   echo "$pod"
 }
 
@@ -105,7 +104,6 @@ retrieve_vault_token() {
     error "Cannot retrieve Vault token from secret 'vault-init-keys' in namespace '${namespace}'. Has Vault been initialized?"
   fi
 
-  log "✅ Token retrieved successfully"
   echo "$token"
 }
 
@@ -128,8 +126,6 @@ generate_random_password() {
   local length=$4
   local format=$5
 
-  log "Generating ${length}-byte random password using Vault (format: ${format})..."
-
   local password
   password=$(kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
@@ -140,7 +136,6 @@ generate_random_password() {
     error "Failed to generate password from Vault"
   fi
 
-  log "✅ Password generated successfully"
   echo "$password"
 }
 
@@ -149,7 +144,6 @@ hash_password() {
     local hashing_method=$2
 
     if [[ "$hashing_method" == "bcrypt" ]]; then
-        log "Hashing password with bcrypt..."
         if ! command -v htpasswd &> /dev/null; then
             error "htpasswd could not be found. Please ensure apacheHttpd is installed via devbox."
         fi
@@ -160,7 +154,6 @@ hash_password() {
         if [[ -z "$hashed_password" ]]; then
             error "Failed to hash password with htpasswd - empty result"
         fi
-        log "✅ Password hashed successfully"
         echo "$hashed_password"
     else
         echo "$password"
@@ -175,13 +168,24 @@ store_password_in_vault() {
   local key_name=$5
   local password_to_store=$6
 
+  # Strategy: Try 'patch' first (to preserve existing keys), fallback to 'put' if secret doesn't exist
+  # - If secret exists: patch adds/updates only this key, preserving other keys
+  # - If secret doesn't exist: patch fails, then we use 'put' to create it
+  # This allows secrets like secret/docker/registry to have registry, username, password
+
+  # Try patch first (preserves other keys if secret exists)
+  if kubectl exec -n "$namespace" "$pod" -- \
+    env VAULT_TOKEN="$token" \
+    vault kv patch "$vault_path" "${key_name}=${password_to_store}" &>/dev/null; then
+    return 0
+  fi
+
+  # If patch failed (likely because secret doesn't exist), use put to create it
   if ! kubectl exec -n "$namespace" "$pod" -- \
     env VAULT_TOKEN="$token" \
     vault kv put "$vault_path" "${key_name}=${password_to_store}" &>/dev/null; then
     error "Failed to store password in Vault at path: ${vault_path}"
   fi
-
-  log "✅ Password stored successfully"
 }
 
 verify_storage() {
@@ -240,15 +244,10 @@ main() {
     password_source="random (32 bytes)"
   fi
 
-  log "===================================================="
-  log "Vault Secret Generator"
-  log "===================================================="
   log "Vault path:   ${vault_path}"
   log "Key name:     ${key_name}"
   log "Password:     ${password_source}"
-  log "Format:       ${format}"
   log "Hashing:      ${hashing}"
-  log "===================================================="
 
   # Preflight checks
   validate_vault_connection "$vault_namespace" "$vault_pod"
@@ -278,9 +277,7 @@ main() {
   # Verify
   verify_storage "$vault_namespace" "$vault_pod" "$vault_token" "$vault_path" "$key_name"
 
-  log "===================================================="
-  log "✅ Secret stored at: ${vault_path}"
-  log "===================================================="
+  log "Secret stored: ${vault_path}"
 }
 
 main "$@"

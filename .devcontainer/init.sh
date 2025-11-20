@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Load vars from Env file if exist
 if [ -f ".env" ]; then
@@ -7,7 +7,6 @@ if [ -f ".env" ]; then
     source .env
     set +a
 fi
-
 
 # -- CNI
 helm repo add cilium https://helm.cilium.io/
@@ -24,7 +23,6 @@ helm repo add sonarsource https://SonarSource.github.io/helm-chart-sonarqube
 # -- Security
 helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo add aqua https://aquasecurity.github.io/helm-charts/
-
 # -- Sensitive Data 
 helm repo add external-secrets https://charts.external-secrets.io
 helm repo add hashicorp https://helm.releases.hashicorp.com
@@ -38,7 +36,7 @@ helm repo add policy-reporter https://kyverno.github.io/policy-reporter
 helm repo add jenkins https://charts.jenkins.io
 # helm repo add crossplane-stable https://charts.crossplane.io/stable
 # -- Backup & Disaster
-# helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts # Para Velero
+# helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts # Velero Backups
 # -- Just in Case
 helm repo add bitnami https://charts.bitnami.com/bitnami
 # -- Complete Helm setup

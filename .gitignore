@@ -2,11 +2,19 @@
 .env
 .task/
 .venv/
+devbox.d/
 **/charts
 devbox.lock
+
+# AI assistant personal configs (not the shared knowledge graph)
 GEMINI.md
-.claude
 CLAUDE.md
+.claude/*
+.codex/*
+!.codex/config.toml
+
+# Knowledge graph is versioned - see .memory/README.md
+# (no ignore needed - we want to version .memory/)
 
 # MkDocs build output and cache
 /site/
@@ -14,3 +22,5 @@ CLAUDE.md
 
 # Generated Chart.yaml files (created by generate-chart-metadata.sh)
 Docs/components/**/Chart.yaml
+.memory/graph.db-shm
+.memory/graph.db-wal

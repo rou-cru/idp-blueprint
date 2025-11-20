@@ -1,3 +1,5 @@
 .git/
 devbox.lock
 .devbox/
+.cache/
+.venv/

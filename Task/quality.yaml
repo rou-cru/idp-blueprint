@@ -62,10 +62,8 @@ tasks:
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
       - |
-        echo "Validating Kustomize overlays and Kubernetes schemas..."
         for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
-          echo "  Building and validating: $dir"
-          kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -
+          kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas --quiet -
         done
 
   security:
