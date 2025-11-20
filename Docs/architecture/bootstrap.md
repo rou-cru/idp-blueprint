@@ -1,7 +1,9 @@
-# IT Directory Architecture
+# IT directory architecture — bootstrap timeline
 
 This directory contains the **static / bootstrap layer** of the platform. Everything
 here must exist _before_ ArgoCD can reconcile Git.
+
+From a C4 perspective the components are the same as in the infrastructure core; this page focuses on their **lifecycle over time** (bootstrap sequence) rather than on a new structural level.
 
 ## Guiding Principles
 
@@ -14,7 +16,7 @@ Configuration for a core component deployed via a Helm chart is defined in a sin
 
 - **Location**: Root of the `IT/` directory.
 - **Naming**: The filename is simple and references the component (e.g.,
-  `cilium-values.yaml`, `vault-values.yaml`).
+  `values.yaml`).
 
 ### 2. Raw Kubernetes Manifests
 
@@ -40,54 +42,23 @@ Kustomize and apply them with `kustomize build <dir>/ | kubectl apply -f -`.
     the `ExternalSecret` for ArgoCD.
   - `argocd/`: Kustomization to support the Helm chart.
 
-## Visual Structure
+## Directory layout (short)
 
-```d2
-direction: right
+The `IT/` directory is intentionally flat at the top level:
 
-IT: {
-  label: "IT/"
-  B: "cilium-values.yaml"
-  C: "eso-values.yaml"
-  D: "k3d-cluster.yaml"
-  E: "vault-values.yaml"
-  AA: "cert-manager-values.yaml"
-  AB: "argocd-values.yaml"
-  AC: "kustomization.yaml"
-
-  F: "cert-manager/"
-  G: "external-secrets/"
-  N: "namespaces/"
-  V: "vault/"
-  X: "argocd/"
-}
-
-Raw: {
-  label: "Raw Manifests & Kustomize"
-  H: "ca-issuer.yaml"
-  K: "argocd-secretstore.yaml"
-  L: "argocd-admin-externalsecret.yaml"
-  N1: "kustomization.yaml"
-  V1: "vault-init.sh"
-  X1: "kustomization.yaml"
-}
-
-Values: {
-  label: "Helm Values"
-  B
-  C
-  D
-  E
-  AA
-  AB
-}
-
-IT.F -> Raw.H
-IT.G -> Raw.K
-IT.G -> Raw.L
-IT.N -> Raw.N1
-IT.V -> Raw.V1
-IT.X -> Raw.X1
+```text
+IT/
+├── k3d-cluster.yaml
+├── kustomization.yaml
+├── namespaces/
+├── cert-manager/
+│   └── values.yaml
+├── external-secrets/
+│   └── values.yaml
+├── vault/
+│   └── values.yaml
+└── argocd/
+    └── values.yaml
 ```
 
 ## Quick Reference
@@ -105,34 +76,28 @@ IT.X -> Raw.X1
 
 ## Deployment Workflow
 
-### Bootstrap Timeline
+### Bootstrap timeline
 
 ```d2
-shape: sequence_diagram
-Task: task deploy
-K3d: k3d cluster
-NS: Namespaces
-Cilium: Cilium
-CRDs: Prometheus CRDs
-CM: cert-manager
-Vault: Vault (deploy + init)
-ESO: External Secrets Operator
-Argo: ArgoCD
-GW: Gateway API
-Kyverno: Policies (Kyverno)
-Stacks: Application stacks (AppSets)
+direction: right
 
-Task -> K3d: Create cluster
-Task -> NS: Apply namespaces
-Task -> Cilium: Install CNI
-Task -> CRDs: Install operator CRDs
-Task -> CM: Install + apply issuers/certs
-Task -> Vault: Deploy and init
-Task -> ESO: Install ESO
-Task -> Argo: Deploy ArgoCD
-Task -> GW: Apply Gateway
-Task -> Kyverno: Deploy policies
-Task -> Stacks: Sync stacks (observability, cicd, security)
+Task: {
+  label: "task deploy"
+}
+
+K3d: "Create k3d cluster"
+NS: "Apply bootstrap namespaces"
+Cilium: "Install Cilium CNI"
+CRDs: "Install Prometheus CRDs"
+CM: "Install cert-manager\n+ issuers/certs"
+Vault: "Deploy + init Vault"
+ESO: "Deploy External Secrets Operator"
+Argo: "Deploy ArgoCD + AppProjects"
+GW: "Apply Gateway API resources"
+Kyverno: "Deploy Kyverno + Policy Reporter"
+Stacks: "Sync stacks\n(observability, security, CI/CD)"
+
+Task -> K3d -> NS -> Cilium -> CRDs -> CM -> Vault -> ESO -> Argo -> GW -> Kyverno -> Stacks
 ```
 
 ### Expanded Steps

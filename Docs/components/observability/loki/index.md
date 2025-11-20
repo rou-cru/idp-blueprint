@@ -13,6 +13,28 @@ Log aggregation system designed to store and query logs
 | **Upstream Project** | [loki](https://grafana.com/oss/loki) |
 | **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
 
+## Why Loki?
+
+Loki is a log aggregation system designed for resource efficiency. It indexes logs by labels (like Prometheus does for metrics) rather than indexing the full text of every log line. This dramatically reduces storage and resource requirements.
+
+Performance and scalability matter here. Loki can run as a single binary in edge deployments (like this one) or scale to massive distributed clusters without architectural changes. The resource footprint in single-binary mode is minimal.
+
+Integration with Grafana is tight. You write LogQL queries (similar syntax to PromQL) to search logs, filter by labels, and correlate with metrics. Logs and metrics share the same label namespace, making correlation straightforward.
+
+## Architecture Role
+
+Loki operates at **Layer 1** of the platform, the Platform Services layer. It's part of the observability stack.
+
+Key integration points:
+
+- **Fluent-bit**: Receives logs forwarded from every node
+- **Grafana**: Configured as a data source for log queries
+- **Prometheus**: Shares label conventions for easier correlation
+
+The configuration here runs in single-binary mode with filesystem storage and a 6-hour retention period. This is appropriate for a demo environment. In a production environment, you'd use object storage (S3, GCS, Azure Blob) and longer retention.
+
+See [Observability Model](../../../architecture/observability.md) for how Loki fits into the complete stack.
+
 ## Configuration Values
 
 The following table lists the configurable parameters:

@@ -1,67 +1,47 @@
-# Getting Started Overview
+---
+# Getting started — read this before you run anything
 
-Welcome to the IDP Blueprint! This section will help you get up and running with your
-own Internal Developer Platform.
+Welcome. In this section you will deploy the platform locally, check that it is healthy, and understand at a high level what you just created.
 
-## System Context
+If you want the full architectural view, see [Architecture overview](../architecture/overview.md). Here we focus on what you need to know to run the commands with confidence.
 
-```d2
-direction: right
+## What you will build
 
-You: {
-  label: "You"
-  shape: person
-}
+After completing the quickstart you will have:
 
-External: {
-  label: "External"
-  Repo: {
-    label: "GitHub Repository"
-    shape: cloud
-  }
-  Docker: {
-    label: "Docker Hub"
-    shape: cloud
-  }
-}
+- A local k3d Kubernetes cluster (by default `idp-demo`).
+- Core platform services:
+  - Cilium, Gateway API.
+  - Vault, External Secrets Operator, cert‑manager.
+  - Prometheus, Loki, Grafana.
+- GitOps and policy control planes:
+  - ArgoCD with ApplicationSets (a controller that generates many Applications
+    from the `K8s/` folder structure; see
+    [`GitOps, Policy, and Eventing`](../concepts/gitops-model.md)).
+  - Kyverno and Policy Reporter.
+- Stacks for:
+  - Observability.
+  - CI/CD.
+  - Security scanning.
 
-Local: {
-  label: "Local Environment"
-  Dev: "Dev Container / Tooling"
-}
+All of this is deployed from this repository using `task deploy`.
 
-Cluster: {
-  label: "Local IDP Cluster (k3d)"
-  Gateway: {
-    label: "Gateway (nip.io + TLS)"
-    shape: cloud
-  }
-  UIs: {
-    label: "Platform UIs"
-    ArgoCD: "ArgoCD"
-    Grafana: "Grafana"
-    Vault: "Vault"
-  }
-}
+## What you will learn
 
-You -> External.Repo: clone
-You -> Local.Dev: run tasks
-Local.Dev -> External.Docker: pull images
-You -> Cluster.Gateway: open URLs
-Cluster.Gateway -> Cluster.UIs.ArgoCD
-Cluster.Gateway -> Cluster.UIs.Grafana
-Cluster.Gateway -> Cluster.UIs.Vault
-```
+In this getting started section you will:
 
-## What You'll Learn
+- Check **prerequisites** for your local machine.
+- Run the **quickstart** to deploy the platform.
+- Understand at a high level what happens during deployment.
+- Verify that key components are healthy.
 
-In this getting started section, you'll learn:
+## Reading order
 
-- **Prerequisites**: What tools and resources you need before starting
-- **Quick Start**: How to deploy the platform with a single command
-- **Deployment Process**: Understanding what happens during the deployment
+Recommended order:
 
-## Next Steps
+1. [Prerequisites](prerequisites.md) — tools and baseline resources.
+2. [Quickstart](quickstart.md) — one command to deploy.
+3. [Verify installation](verify.md) — basic checks and expected results.
+4. [First steps](first-steps.md) — guided exploration of the UIs and GitOps flows.
 
-Start with the [Prerequisites](prerequisites.md) to ensure your environment is ready,
-then move on to the [Quick Start](quickstart.md) guide to deploy your first IDP instance.
+Once you are comfortable with the running cluster, read [Architecture overview](../architecture/overview.md) and [Concepts](../concepts/index.md) to understand the platform design in depth.

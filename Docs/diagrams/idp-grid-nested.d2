@@ -1,0 +1,87 @@
+// IDP grid layout reference
+// -------------------------
+// This file encodes the *layout mechanism* we use for the IDP architecture map:
+// - One container (IDP) with grid-columns for domains.
+// - Nested containers (Observability, Delivery, Security) with grid-rows for
+//   vertical span (UX → Control → Services → Secrets).
+// - An Infra row at the bottom, using grid-columns to align under the domains.
+//
+// The exact labels inside blocks are placeholders. Semantics (what each block
+// represents) are defined in grid-block-arch.md. This file is the structural
+// reference for how to compose 2D shapes using D2 grid.
+
+classes: {
+  obs: {
+    style: {
+      fill: darkslateblue
+      stroke: darkslateblue
+      stroke-width: 2
+      font-color: white
+      text-transform: uppercase
+    }
+  }
+  del: {
+    style: {
+      fill: darkgreen
+      stroke: darkgreen
+      stroke-width: 2
+      font-color: white
+      text-transform: uppercase
+    }
+  }
+  sec: {
+    style: {
+      fill: darkred
+      stroke: darkred
+      stroke-width: 2
+      font-color: white
+      text-transform: uppercase
+    }
+  }
+  core: {
+    style: {
+      fill: dimgray
+      stroke: dimgray
+      stroke-width: 2
+      font-color: white
+      text-transform: uppercase
+    }
+  }
+}
+
+IDP: {
+  grid-columns: 3
+
+  Observability: {
+    grid-rows: 3
+    class: obs
+    OVX: "Observability UX"
+    OVC: "SLO / Observability Control"
+    OVS: "Observability Services"
+  }
+
+  Delivery: {
+    grid-rows: 3
+    class: del
+    DLX: "Delivery UX"
+    DLC: "GitOps / Delivery Control"
+    DLS: "CI/CD Services"
+  }
+
+  Security: {
+    grid-rows: 4
+    class: sec
+    SCX: "Security UX"
+    SCC: "Security & Policy Control"
+    SCS: "Security Services"
+    SCSec: "Secrets Platform (Vault & ESO)"
+  }
+
+  Infra: {
+    grid-columns: 3
+    class: core
+    Kubernetes: "Kubernetes Runtime"
+    Net: "Cluster Networking & Gateway"
+    Primitives: "Platform Primitives"
+  }
+}

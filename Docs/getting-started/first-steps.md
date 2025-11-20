@@ -1,10 +1,12 @@
-# First Steps
+# First Steps — What to explore right away
 
 This guide highlights what to do right after a successful installation.
 
 ## Explore GitOps state
 
-- Open ArgoCD and review Applications and ApplicationSets
+- Open ArgoCD and review Applications and ApplicationSets (ApplicationSets
+  generate many Applications from the `K8s/` folder structure; see
+  [`GitOps, Policy, and Eventing`](../concepts/gitops-model.md))
 - Identify how each stack (observability, security, policy, CI/CD) is wired
 
 ## Check policy enforcement
@@ -21,10 +23,3 @@ This guide highlights what to do right after a successful installation.
 
 - Confirm External Secrets pulls a value from Vault into a Kubernetes Secret
 - Inspect the rendered Secret and ensure your workloads can mount it
-
-## Try a tutorial!
-
-- [Onboard an Application](../tutorials/onboard-app.md)
-- [Add a Policy (Kyverno)](../tutorials/add-policy.md)
-- [Consume a Secret from Vault](../tutorials/consume-secret.md)
-- [Add an Observability Dashboard](../tutorials/add-dashboard.md)

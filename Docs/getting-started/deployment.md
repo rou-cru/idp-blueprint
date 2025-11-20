@@ -1,13 +1,15 @@
 # Getting Started — Install & Deployment
 
-This is your guided tour of what “task deploy” actually does. Expect a smooth, mostly automated bootstrap that converges to a working platform in a few minutes.
+This is your guided tour of what “task deploy” does. It’s automated by design and converges to a working platform in minutes.
 
 ## What Happens During Deploy
 
 - Create cluster and namespaces
 - Install core infrastructure (Cilium, CRDs, cert-manager, Vault, ESO)
 - Install GitOps (ArgoCD) and expose endpoints via Gateway + TLS
-- Apply policies and let ApplicationSets sync the stacks
+- Apply policies and let ApplicationSets sync the stacks – ApplicationSets
+  generate the ArgoCD Applications for each stack based on folders under
+  `K8s/` using sync waves to control deployment order (see [GitOps Model](../concepts/gitops-model.md#sync-waves--ordering-without-scripts) for wave definitions)
 
 ### Platform Components
 
@@ -58,7 +60,7 @@ grafana_admin = "admin"
 
 Note: CLI overrides exist for testing, but `config.toml` is the canonical source.
 
-## After Deploy (What “Good” Looks Like)
+## After deploy — what “good” looks like
 
 - ArgoCD UI reachable via Gateway (nip.io hostnames)
   
