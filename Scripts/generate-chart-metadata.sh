@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Generate Chart.yaml files for all components based on versions from:
 # - kustomization.yaml (for GitOps components)
 # - Taskfile.yaml (for infrastructure components)
@@ -14,11 +14,11 @@ cd "$REPO_ROOT"
 # helm_chart_name: name in kustomization.yaml (if different from component_name)
 COMPONENTS=(
   # Infrastructure (versions from Taskfile.yaml)
-  "cilium|infrastructure|eBPF-based CNI with Gateway API support and L7 proxy capabilities|https://cilium.io|IT/cilium/cilium-values.yaml|CILIUM_VERSION|"
-  "argocd|infrastructure|Declarative GitOps continuous delivery for Kubernetes|https://argo-cd.readthedocs.io|IT/argocd/argocd-values.yaml|ARGOCD_VERSION|"
-  "vault|infrastructure|Secrets management and data protection platform|https://www.vaultproject.io|IT/vault/vault-values.yaml|VAULT_VERSION|"
-  "cert-manager|infrastructure|Cloud-native certificate management for Kubernetes|https://cert-manager.io|IT/cert-manager/cert-manager-values.yaml|CERT_MANAGER_VERSION|"
-  "external-secrets|infrastructure|Synchronize secrets from external sources into Kubernetes|https://external-secrets.io|IT/external-secrets/eso-values.yaml|EXTERNAL_SECRETS_VERSION|"
+  "cilium|infrastructure|eBPF-based CNI with Gateway API support and L7 proxy capabilities|https://cilium.io|IT/cilium/values.yaml|CILIUM_VERSION|"
+  "argocd|infrastructure|Declarative GitOps continuous delivery for Kubernetes|https://argo-cd.readthedocs.io|IT/argocd/values.yaml|ARGOCD_VERSION|"
+  "vault|infrastructure|Secrets management and data protection platform|https://www.vaultproject.io|IT/vault/values.yaml|VAULT_VERSION|"
+  "cert-manager|infrastructure|Cloud-native certificate management for Kubernetes|https://cert-manager.io|IT/cert-manager/values.yaml|CERT_MANAGER_VERSION|"
+  "external-secrets|infrastructure|Synchronize secrets from external sources into Kubernetes|https://external-secrets.io|IT/external-secrets/values.yaml|EXTERNAL_SECRETS_VERSION|"
 
   # Policy (versions from kustomization.yaml)
   "kyverno|policy|Kubernetes-native policy management and security engine|https://kyverno.io|Policies/kyverno/kyverno-values.yaml||kyverno"
@@ -84,10 +84,12 @@ get_version_from_config() {
   local config_key
   config_key=$(echo "$version_var" | sed 's/_VERSION$//' | tr '[:upper:]' '[:lower:]')
 
-  # Extract version from config.toml using dasel
+  # Extract version from config.toml using config-get.sh helper
   local version
-  if command -v dasel &> /dev/null; then
-    version=$(dasel -r toml -f config.toml "versions.${config_key}" 2>/dev/null | tr -d '"')
+  if [ -f "./Scripts/config-get.sh" ]; then
+    version=$(./Scripts/config-get.sh "versions.${config_key}" config.toml 2>/dev/null)
+  elif command -v dasel &> /dev/null; then
+    version=$(dasel -r toml -f config.toml "versions.${config_key}" 2>/dev/null | tr -d "'\"")
   elif command -v yq &> /dev/null; then
     # Fallback to yq if dasel not available (requires toml support)
     version=$(yq -r ".versions.${config_key}" config.toml 2>/dev/null)
@@ -178,21 +180,12 @@ EOF
   fi
 
   if [ "$version" = "latest" ]; then
-    echo "⚠️  Generated: $output_file (version: $version - WARNING: Could not extract version from $version_source)"
-  else
-    echo "✅ Generated: $output_file (version: $version from $version_source)"
+    echo "Warning: $output_file - could not extract version from $version_source"
   fi
 }
 
 # Main execution
-echo "🔧 Generating Chart.yaml files for all components..."
-echo ""
-
 for component_spec in "${COMPONENTS[@]}"; do
   IFS='|' read -r name category description homepage source version_var helm_chart_name <<< "$component_spec"
   generate_chart_yaml "$name" "$category" "$description" "$homepage" "$source" "$version_var" "$helm_chart_name"
 done
-
-echo ""
-echo "✅ All Chart.yaml files generated successfully!"
-echo "📝 These files serve as semantic .gitkeep and provide metadata for helm-docs"

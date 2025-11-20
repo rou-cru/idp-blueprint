@@ -4,38 +4,38 @@ vars:
   CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
 
   DOCKER_IMAGE_NAME:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' images.docker_image_name | tr -d '"'
+    sh: ./Scripts/config-get.sh images.docker_image_name '{{.CONFIG_FILE}}'
   DOCKER_IMAGE_TAG:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' images.docker_image_tag | tr -d '"'
+    sh: ./Scripts/config-get.sh images.docker_image_tag '{{.CONFIG_FILE}}'
   DOCKER_IMAGE_TAG_MINIMAL:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' images.docker_image_tag_minimal | tr -d '"'
+    sh: ./Scripts/config-get.sh images.docker_image_tag_minimal '{{.CONFIG_FILE}}'
 
   # Network Configuration
   LAN_IP:
     sh: |
-      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' network.lan_ip 2>/dev/null || true) | tr -d '"' )
+      value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
       if [ -n "$value" ] && [ "$value" != '""' ]; then
         echo "$value"
       else
         ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1"
       fi
   NODEPORT_HTTP:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' network.nodeport_http | tr -d '"'
+    sh: ./Scripts/config-get.sh network.nodeport_http '{{.CONFIG_FILE}}'
   NODEPORT_HTTPS:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' network.nodeport_https | tr -d '"'
+    sh: ./Scripts/config-get.sh network.nodeport_https '{{.CONFIG_FILE}}'
 
   REPO_URL:
     sh: |
-      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' git.repo_url 2>/dev/null || true) | tr -d '"' )
-      if [ -n "$value" ] && [ "$value" != '""' ]; then
+      value=$(./Scripts/config-get.sh git.repo_url '{{.CONFIG_FILE}}' 2>/dev/null || true)
+      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
         echo "$value"
       else
         git config --get remote.origin.url 2>/dev/null || echo "https://github.com/rou-cru/idp-blueprint.git"
       fi
   TARGET_REVISION:
     sh: |
-      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' git.target_revision 2>/dev/null || true) | tr -d '"' )
-      if [ -n "$value" ] && [ "$value" != '""' ]; then
+      value=$(./Scripts/config-get.sh git.target_revision '{{.CONFIG_FILE}}' 2>/dev/null || true)
+      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
         echo "$value"
       else
         git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD"
@@ -43,61 +43,84 @@ vars:
 
   # Helm Chart Versions
   CILIUM_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.cilium | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.cilium '{{.CONFIG_FILE}}'
   CERT_MANAGER_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.cert_manager | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.cert_manager '{{.CONFIG_FILE}}'
   PROMETHEUS_CRDS_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.prometheus_crds | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.prometheus_operator_crds '{{.CONFIG_FILE}}'
   GATEWAY_API_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.gateway_api | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.gateway_api '{{.CONFIG_FILE}}'
   EXTERNAL_SECRETS_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.external_secrets | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.external_secrets '{{.CONFIG_FILE}}'
   VAULT_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.vault | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.vault '{{.CONFIG_FILE}}'
   ARGOCD_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.argocd | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.argocd '{{.CONFIG_FILE}}'
 
   # Operational Settings
   KUBECTL_TIMEOUT:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' operational.kubectl_timeout | tr -d '"'
+    sh: ./Scripts/config-get.sh operational.kubectl_timeout '{{.CONFIG_FILE}}'
   K3D_CONFIG:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' operational.k3d_config | tr -d '"'
+    sh: ./Scripts/config-get.sh operational.k3d_config '{{.CONFIG_FILE}}'
   REGISTRY_CACHE_PATH:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' operational.registry_cache_path | tr -d '"'
+    sh: ./Scripts/config-get.sh operational.registry_cache_path '{{.CONFIG_FILE}}'
+
+  # Cluster
+  CLUSTER_NAME:
+    sh: |
+      value=$(./Scripts/config-get.sh cluster.name '{{.CONFIG_FILE}}' 2>/dev/null || true)
+      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
 
   # ArgoCD Configuration
   ARGOCD_SYNC_TIMEOUT:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' argocd.sync_timeout | tr -d '"'
+    sh: ./Scripts/config-get.sh argocd.sync_timeout '{{.CONFIG_FILE}}'
   ARGOCD_BACKOFF_DURATION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' argocd.backoff_duration | tr -d '"'
+    sh: ./Scripts/config-get.sh argocd.backoff_duration '{{.CONFIG_FILE}}'
   ARGOCD_BACKOFF_FACTOR:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' argocd.backoff_factor | tr -d '"'
+    sh: ./Scripts/config-get.sh argocd.backoff_factor '{{.CONFIG_FILE}}'
   ARGOCD_BACKOFF_MAX_DURATION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' argocd.backoff_max_duration | tr -d '"'
+    sh: ./Scripts/config-get.sh argocd.backoff_max_duration '{{.CONFIG_FILE}}'
   ARGOCD_RETRY_LIMIT:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' argocd.retry_limit | tr -d '"'
+    sh: ./Scripts/config-get.sh argocd.retry_limit '{{.CONFIG_FILE}}'
 
   # Gateway Timeouts
   GATEWAY_WAIT_TIMEOUT:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' gateway.wait_timeout | tr -d '"'
+    sh: ./Scripts/config-get.sh gateway.wait_timeout '{{.CONFIG_FILE}}'
 
   # Password Configuration
   ARGOCD_ADMIN_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.argocd_admin | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.argocd_admin '{{.CONFIG_FILE}}'
   GRAFANA_ADMIN_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.grafana_admin | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.grafana_admin '{{.CONFIG_FILE}}'
   SONARQUBE_ADMIN_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.sonarqube_admin | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.sonarqube_admin '{{.CONFIG_FILE}}'
   SONARQUBE_MONITORING_PASSCODE:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.sonarqube_monitoring | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.sonarqube_monitoring '{{.CONFIG_FILE}}'
 
   # Docker Registry Configuration
   DOCKER_REGISTRY_URL:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.url | tr -d '"'
+    sh: ./Scripts/config-get.sh registry.url '{{.CONFIG_FILE}}'
   DOCKER_REGISTRY_USERNAME:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.username | tr -d '"'
+    sh: ./Scripts/config-get.sh registry.username '{{.CONFIG_FILE}}'
   DOCKER_REGISTRY_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.password | tr -d '"'
+    sh: ./Scripts/config-get.sh registry.password '{{.CONFIG_FILE}}'
+
+  # Fuses (feature toggles)
+  FUSE_POLICIES:
+    sh: |
+      v=$(./Scripts/config-get.sh fuses.policies '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_SECURITY:
+    sh: |
+      v=$(./Scripts/config-get.sh fuses.security '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_OBSERVABILITY:
+    sh: |
+      v=$(./Scripts/config-get.sh fuses.observability '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_CICD:
+    sh: |
+      v=$(./Scripts/config-get.sh fuses.cicd '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_PROD:
+    sh: |
+      v=$(./Scripts/config-get.sh fuses.prod '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=false; echo "$v"
 
 includes:
   k3d:

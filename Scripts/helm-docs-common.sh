@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Common functions for helm-docs scripts
 # This file should be sourced, not executed directly
 
@@ -12,7 +12,7 @@ validate_git_repo() {
   fi
 }
 
-# Process each directory containing *-values.yaml files
+# Process each directory containing values.yaml files
 # Arguments:
 #   $1: callback function to execute (receives: template_path, values_file_name)
 # Returns:
@@ -32,11 +32,11 @@ helm_docs_foreach() {
     return 1
   fi
 
-  # Find all directories containing *-values.yaml files
+  # Find all directories containing values.yaml files
   # Using dirname instead of -printf for macOS compatibility
   while read -r dir; do
     local values_file
-    values_file=$(find "$dir" -maxdepth 1 -name '*-values.yaml' -type f | head -1)
+    values_file=$(find "$dir" -maxdepth 1 -name 'values.yaml' -type f | head -1)
 
     if [ -n "$values_file" ]; then
       local chart_name
@@ -46,7 +46,7 @@ helm_docs_foreach() {
 
       # Setup cleanup trap for temporary files
       cleanup_temp_files() {
-        rm -f "$dir/Chart.yaml" "$dir/values.yaml"
+        rm -f "$dir/Chart.yaml"
       }
       trap cleanup_temp_files EXIT INT TERM
 
@@ -65,9 +65,6 @@ name: $chart_name
 version: 0.1.0
 EOF
 
-      # Create symlink to values file
-      ln -sf "$values_name" values.yaml
-
       # Execute callback
       if ! "$callback" "$template" "$values_name"; then
         exit_code=1
@@ -83,7 +80,7 @@ EOF
         return 1
       }
     fi
-  done < <(find . -type f -name '*-values.yaml' -exec dirname {} \; | sort -u)
+  done < <(find . -type f -name 'values.yaml' -exec dirname {} \; | sort -u)
 
   return $exit_code
 }

@@ -2,64 +2,73 @@ version: '3'
 
 vars:
   CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
+  # Fuses
+  FUSE_PROD:
+    sh: |
+      v=$(./Scripts/config-get.sh fuses.prod '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=false; echo "$v"
+  # Cluster name (for components that need it)
+  CLUSTER_NAME:
+    sh: |
+      value=$(./Scripts/config-get.sh cluster.name '{{.CONFIG_FILE}}' 2>/dev/null || true)
+      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
 
   # Network Configuration
   LAN_IP:
     sh: |
-      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' network.lan_ip 2>/dev/null || true) | tr -d '"' )
-      if [ -n "$value" ] && [ "$value" != '""' ]; then
+      value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
+      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
         echo "$value"
       else
         ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1"
       fi
   NODEPORT_HTTP:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' network.nodeport_http | tr -d '"'
+    sh: ./Scripts/config-get.sh network.nodeport_http '{{.CONFIG_FILE}}'
   NODEPORT_HTTPS:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' network.nodeport_https | tr -d '"'
+    sh: ./Scripts/config-get.sh network.nodeport_https '{{.CONFIG_FILE}}'
 
   # Helm Chart Versions
   CILIUM_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.cilium | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.cilium '{{.CONFIG_FILE}}'
   CERT_MANAGER_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.cert_manager | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.cert_manager '{{.CONFIG_FILE}}'
   GATEWAY_API_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.gateway_api | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.gateway_api '{{.CONFIG_FILE}}'
   EXTERNAL_SECRETS_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.external_secrets | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.external_secrets '{{.CONFIG_FILE}}'
   VAULT_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.vault | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.vault '{{.CONFIG_FILE}}'
   ARGOCD_VERSION:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' versions.argocd | tr -d '"'
+    sh: ./Scripts/config-get.sh versions.argocd '{{.CONFIG_FILE}}'
 
   # Operational Settings
   KUBECTL_TIMEOUT:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' operational.kubectl_timeout | tr -d '"'
+    sh: ./Scripts/config-get.sh operational.kubectl_timeout '{{.CONFIG_FILE}}'
   GATEWAY_WAIT_TIMEOUT:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' gateway.wait_timeout | tr -d '"'
+    sh: ./Scripts/config-get.sh gateway.wait_timeout '{{.CONFIG_FILE}}'
 
   # Password Configuration
   ARGOCD_ADMIN_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.argocd_admin | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.argocd_admin '{{.CONFIG_FILE}}'
   GRAFANA_ADMIN_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.grafana_admin | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.grafana_admin '{{.CONFIG_FILE}}'
   SONARQUBE_ADMIN_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.sonarqube_admin | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.sonarqube_admin '{{.CONFIG_FILE}}'
   SONARQUBE_MONITORING_PASSCODE:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' passwords.sonarqube_monitoring | tr -d '"'
+    sh: ./Scripts/config-get.sh passwords.sonarqube_monitoring '{{.CONFIG_FILE}}'
 
   # Docker Registry Configuration
   DOCKER_REGISTRY_URL:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.url | tr -d '"'
+    sh: ./Scripts/config-get.sh registry.url '{{.CONFIG_FILE}}'
   DOCKER_REGISTRY_USERNAME:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.username | tr -d '"'
+    sh: ./Scripts/config-get.sh registry.username '{{.CONFIG_FILE}}'
   DOCKER_REGISTRY_PASSWORD:
-    sh: dasel -r toml -f '{{.CONFIG_FILE}}' registry.password | tr -d '"'
+    sh: ./Scripts/config-get.sh registry.password '{{.CONFIG_FILE}}'
 
   # Git Configuration
   REPO_URL:
     sh: |
-      value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' git.repo_url 2>/dev/null || true) | tr -d '"' )
-      if [ -n "$value" ] && [ "$value" != '""' ]; then
+      value=$(./Scripts/config-get.sh git.repo_url '{{.CONFIG_FILE}}' 2>/dev/null || true)
+      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
         echo "$value"
       else
         git config --get remote.origin.url 2>/dev/null || echo "https://github.com/rou-cru/idp-blueprint.git"
@@ -97,7 +106,7 @@ tasks:
     cmds:
       - |
         helm upgrade --install prometheus-crds prometheus-community/prometheus-operator-crds \
-          --version 23.0.0 \
+          --version {{.PROMETHEUS_CRDS_VERSION}} \
           --namespace kube-system \
           --hide-notes
 
@@ -127,7 +136,8 @@ tasks:
         helm upgrade --install cilium cilium/cilium \
           --version {{.CILIUM_VERSION}} \
           --namespace kube-system \
-          --values cilium-values.yaml \
+          --values values.yaml \
+          --set cluster.name={{.CLUSTER_NAME}} \
           --hide-notes
       - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system
         --timeout={{.KUBECTL_TIMEOUT}}
@@ -155,7 +165,7 @@ tasks:
         helm upgrade --install cert-manager jetstack/cert-manager \
           --version {{.CERT_MANAGER_VERSION}} \
           --namespace cert-manager \
-          --values cert-manager-values.yaml \
+          --values values.yaml \
           --hide-notes
       - kubectl wait --for=condition=Available deployment/cert-manager-webhook -n
         cert-manager --timeout={{.KUBECTL_TIMEOUT}}
@@ -174,7 +184,7 @@ tasks:
         helm upgrade --install external-secrets external-secrets/external-secrets \
           --version {{.EXTERNAL_SECRETS_VERSION}} \
           --namespace external-secrets-system \
-          --values eso-values.yaml \
+          --values values.yaml \
           --hide-notes
       - kubectl wait --for=condition=available --timeout={{.KUBECTL_TIMEOUT}}
         deployment/external-secrets -n external-secrets-system
@@ -259,7 +269,7 @@ tasks:
         helm upgrade --install vault hashicorp/vault \
           --version {{.VAULT_VERSION}} \
           --namespace vault-system \
-          --values vault-values.yaml \
+          --values values.yaml \
           --hide-notes
       - task: vault:init
       - task: vault:generate-secrets
@@ -284,15 +294,20 @@ tasks:
       REPO_URL: '{{.REPO_URL}}'
     cmds:
       - |
+        EXTRA_ARGS=""
+        if [ "{{.FUSE_PROD}}" = "true" ]; then
+          EXTRA_ARGS="--set ha.enabled=true"
+        fi
         helm upgrade --install argocd argo/argo-cd \
           --version {{.ARGOCD_VERSION}} \
           --namespace argocd \
-          --values argocd-values.yaml \
+          --values values.yaml \
+          $EXTRA_ARGS \
           --hide-notes
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd
         --timeout={{.KUBECTL_TIMEOUT}}
       - task: it:eso:apply-resources
-      - for: [platform, observability, cicd, security]
+      - for: [platform, observability, cicd, security, events]
         cmd: envsubst < appproject-{{.ITEM}}.yaml | kubectl apply -f -
 
   gateway:deploy:
@@ -308,7 +323,7 @@ tasks:
     env:
       DNS_SUFFIX:
         sh: |
-          value=$( (dasel -r toml -f '{{.CONFIG_FILE}}' network.lan_ip 2>/dev/null || true) | tr -d '"' | tr -d "'" )
+          value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
           if [ -z "$value" ] || [ "$value" = "''" ]; then
             value=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1")
           fi
@@ -330,6 +345,7 @@ tasks:
       - |
         echo "✅ Gateway ready. Services available at:"
         echo "   https://argocd.$DNS_SUFFIX"
+        echo "   https://events.$DNS_SUFFIX"
         echo "   https://grafana.$DNS_SUFFIX"
         echo "   https://vault.$DNS_SUFFIX"
         echo "   https://sonarqube.$DNS_SUFFIX"
