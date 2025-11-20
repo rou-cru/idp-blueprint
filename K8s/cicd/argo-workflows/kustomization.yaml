@@ -6,7 +6,7 @@ helmCharts:
     version: 0.45.27
     releaseName: argo-workflows
     namespace: cicd
-    valuesFile: argo-workflows-values.yaml
+    valuesFile: values.yaml
 resources:
   - docker-credentials-externalsecret.yaml
   - workflow-templates/

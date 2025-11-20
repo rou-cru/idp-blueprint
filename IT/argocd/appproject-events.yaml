@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: cicd
+  name: events
   namespace: argocd
 spec:
-  description: CI/CD stack (Argo Workflows, SonarQube)
+  description: Event mesh stack (Argo Events)
   sourceRepos:
     - '${REPO_URL}'
   destinations:
-    - namespace: cicd
+    - namespace: argo-events
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: '*'

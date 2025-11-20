@@ -9,3 +9,4 @@ resources:
   - external-secrets-system.yaml
   - observability.yaml
   - vault-system.yaml
+  - argo-events.yaml

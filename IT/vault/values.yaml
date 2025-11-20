@@ -1,1 +1,96 @@
-vault-values.yaml
+# @section -- Server
+server:
+  # -- (string) Priority class for Vault pods
+  priorityClassName: platform-infrastructure
+  # -- Update strategy for zero-downtime updates (StatefulSet)
+  updateStrategyType: RollingUpdate
+  affinity:
+    podAntiAffinity: null
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  standalone:
+    # -- (bool) Enables standalone server configuration
+    enabled: true
+    # -- (string) HCL configuration for the Raft storage backend
+    config: |
+      storage "raft" {
+        path    = "/vault/data"
+        node_id = "vault-0"
+      }
+      listener "tcp" {
+        address         = "0.0.0.0:8200"
+        tls_disable     = "true"
+        telemetry {
+          unauthenticated_metrics_access = true
+        }
+      }
+      telemetry {
+        prometheus_retention_time = "30s"
+        disable_hostname          = true
+      }
+      audit "file" {
+        path = "/vault/logs/audit.log"
+      }
+  dataStorage:
+    # -- (bool) Enable persistence
+    enabled: true
+    # -- (string) Storage size
+    size: 1Gi
+  resources:
+    requests:
+      # -- (string) Memory request
+      memory: 256Mi
+      # -- (string) CPU request
+      cpu: 250m
+    limits:
+      # -- (string) Memory limit
+      memory: 512Mi
+      # -- (string) CPU limit
+      cpu: 500m
+  livenessProbe:
+    # -- (bool) Enable liveness probe
+    enabled: false
+    # -- (int) Failure threshold
+    failureThreshold: 2
+    # -- (int) Initial delay seconds
+    initialDelaySeconds: 5
+    # -- (int) Period seconds
+    periodSeconds: 2
+    # -- (int) Success threshold
+    successThreshold: 1
+    # -- (int) Timeout seconds
+    timeoutSeconds: 5
+    # -- (list) Exec command
+    execCommand: []
+  readinessProbe:
+    # -- (bool) Enable readiness probe
+    enabled: true
+    # -- (int) Failure threshold
+    failureThreshold: 2
+    # -- (int) Initial delay seconds
+    initialDelaySeconds: 5
+    # -- (string) Readiness probe path
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+  serviceMonitor:
+    # -- (bool) Enable ServiceMonitor
+    enabled: true
+    # -- (string) Scrape interval
+    interval: 60s
+    # -- (string) Scrape timeout
+    scrapeTimeout: 40s
+
+# @section -- UI
+ui:
+  # -- (bool) Enable Vault UI
+  enabled: true
+  service:
+    # -- (string) Service type
+    type: 'ClusterIP'

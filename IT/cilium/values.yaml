@@ -1,1 +1,234 @@
-cilium-values.yaml
+# @section -- IPAM
+ipam:
+  # -- (string) IPAM mode (cluster-pool recommended for efficient allocation)
+  mode: 'cluster-pool'
+  operator:
+    # -- (list) Pod CIDR for the cluster (must match k3d default)
+    clusterPoolIPv4PodCIDRList: ['10.42.0.0/16']
+
+# @section -- IPv6
+ipv6:
+  # -- (bool) Enable IPv6 support (disabled for demo performance)
+  enabled: false
+
+# @section -- L7 Proxy
+# Required for L7 features like Gateway API and Ingress
+l7Proxy: true
+
+# -- (bool) Replace kube-proxy with Cilium's eBPF implementation
+# @section -- Kube-proxy Replacement
+kubeProxyReplacement: true
+
+# @section -- Hubble
+hubble:
+  # -- (bool) Enable Hubble
+  enabled: true
+  relay:
+    # -- (bool) Enable Hubble Relay
+    enabled: true
+    # -- (int) Number of replicas
+    replicas: 1
+    resources:
+      requests:
+        # -- (string) CPU request
+        cpu: 100m
+        # -- (string) Memory request
+        memory: 128Mi
+      limits:
+        # -- (string) CPU limit
+        cpu: 500m
+        # -- (string) Memory limit
+        memory: 256Mi
+  ui:
+    # -- (bool) Enable Hubble UI
+    enabled: true
+    # -- (int) Number of replicas
+    replicas: 1
+    resources:
+      requests:
+        # -- (string) CPU request
+        cpu: 50m
+        # -- (string) Memory request
+        memory: 64Mi
+      limits:
+        # -- (string) CPU limit
+        cpu: 100m
+        # -- (string) Memory limit
+        memory: 128Mi
+    ingress:
+      # -- (bool) Enable ingress
+      enabled: false
+    service:
+      # -- (string) Service type
+      type: ClusterIP
+  metrics:
+    # -- (list) Enabled metrics for Hubble to collect
+    enabled:
+      - dns:query;ignoreAAAA
+      - drop
+      - tcp
+      - flow
+      - port-distribution
+      - icmp
+      - http
+
+# @section -- CNI Configuration
+# Cilium operates as the primary CNI
+cni:
+  # -- (string) CNI chaining mode (none = complete CNI replacement)
+  chainingMode: none
+  # -- (bool) Exclusive mode (Cilium is the only CNI)
+  exclusive: true
+
+# @section -- Envoy Proxy
+# Required for L7 features like Gateway API and Ingress
+envoy:
+  # -- (bool) Enable Envoy proxy
+  enabled: true
+  prometheus:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+# @section -- Ingress Controller
+# Disabled - project uses Gateway API exclusively
+ingressController:
+  # -- (bool) Enable the Ingress Controller
+  enabled: false
+
+# @section -- Kubernetes Integration
+# -- (bool) Enable Kubernetes EndpointSlice feature
+enableK8sEndpointSlice: true
+
+# @section -- Gateway API
+gatewayAPI:
+  # -- (bool) Enable Gateway API
+  enabled: true
+
+# @section -- LoadBalancer & L2 Announcements
+# Disabled for k3d (docker bridge network isolation)
+# K3s ServiceLB is used instead for LAN exposure
+l2announcements:
+  # -- (bool) Enable L2 announcements
+  enabled: false
+  # -- (string) Lease duration
+  leaseDuration: 3s
+  # -- (string) Lease renew deadline
+  leaseRenewDeadline: 1s
+  # -- (string) Lease retry period
+  leaseRetryPeriod: 500ms
+
+externalIPs:
+  # -- (bool) Enable external IPs
+  enabled: false
+
+# @section -- Operator
+operator:
+  # -- (string) Priority class for the Cilium operator
+  priorityClassName: platform-infrastructure
+  # -- (int) Number of replicas for the operator
+  replicas: 1
+  # -- Rolling update strategy for zero-downtime updates
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # -- (int) Maximum unavailable pods during update (0 for zero-downtime)
+      maxUnavailable: 0
+      # -- (int) Maximum surge pods during update
+      maxSurge: 1
+  prometheus:
+    # -- (bool) Enable Prometheus metrics
+    enabled: true
+    serviceMonitor:
+      # -- (bool) Enable ServiceMonitor
+      enabled: true
+      # -- (string) Scrape interval for critical CNI metrics
+      interval: 30s
+      # -- (string) Scrape timeout
+      scrapeTimeout: 25s
+  resources:
+    requests:
+      # -- (string) CPU request
+      cpu: 100m
+      # -- (string) Memory request
+      memory: 128Mi
+    limits:
+      # -- (string) CPU limit
+      cpu: 500m
+      # -- (string) Memory limit
+      memory: 512Mi
+
+# @section -- Observability
+prometheus:
+  # -- (bool) Enable metrics exposition
+  enabled: true
+  serviceMonitor:
+    # -- (bool) Create ServiceMonitor CRD
+    enabled: true
+    # -- (string) Scrape interval for eBPF events and network flows
+    interval: 30s
+    # -- (string) Scrape timeout
+    scrapeTimeout: 25s
+  dashboards:
+    # -- (bool) Create ConfigMap with official Cilium dashboard
+    enabled: true
+    # -- (string) Namespace for dashboard ConfigMap
+    namespace: default
+
+# -- (string) Default enforcement mode for CiliumNetworkPolicy
+# @section -- Network Policy
+policyEnforcementMode: 'default'
+
+# @section -- BGP
+bgpControlPlane:
+  # -- (bool) Enable BGP (disabled for demo, used for on-prem route announcement)
+  enabled: false
+
+# @section -- Security
+encryption:
+  # -- (bool) Enable encryption (disabled for local demo)
+  enabled: false
+  # -- (string) Encryption type
+  type: wireguard
+
+# @section -- Cluster
+cluster:
+  # -- (string) Cluster name
+  name: idp-demo
+  # -- (int) Cluster ID
+  id: 1
+
+# @section -- Performance
+bpf:
+  # -- (bool) Enable BPF host routing for improved performance
+  # Disabled for k3d/Docker environments - causes DNS resolution issues
+  # Enable only for bare-metal/VM deployments
+  hostRouting: false
+  # -- (bool) Enable BPF masquerading for traffic leaving cluster nodes
+  # Disabled for k3d/Docker environments - interferes with Docker bridge networking
+  # and causes DNS responses to be malformed ("server misbehaving" errors)
+  # Enable only for bare-metal/VM deployments
+  masquerade: false
+  # -- (string) Monitor aggregation level
+  monitorAggregation: medium
+  # -- (string) Monitor interval
+  monitorInterval: '10s'
+  # -- (string) Monitor flags
+  monitorFlags: 'all'
+
+# @section -- Labels
+commonLabels:
+  # -- (string) Application instance
+  app.kubernetes.io/instance: cilium-demo
+  # -- (string) Application version
+  app.kubernetes.io/version: '1.18.2'
+  # -- (string) Application component
+  app.kubernetes.io/component: cni
+  # -- (string) Part of platform
+  app.kubernetes.io/part-of: idp
+  # -- (string) Owner
+  owner: platform-team
+  # -- (string) Business unit
+  business-unit: infrastructure
+  # -- (string) Environment
+  environment: demo
