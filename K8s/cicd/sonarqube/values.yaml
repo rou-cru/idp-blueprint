@@ -1,1 +1,125 @@
-sonarqube-values.yaml
+# @section -- SonarQube Server
+
+# @section -- Community Build
+community:
+  # -- (bool) Enable the community SonarQube edition
+  enabled: true
+
+sonarqube:
+  # -- (string) Priority class for SonarQube pods
+  priorityClassName: platform-cicd
+  # -- Environment variables for reverse proxy configuration
+  # Required when SonarQube is behind a reverse proxy that terminates TLS
+  env:
+    - name: SONAR_WEB_JAVAADDITIONALOPTS
+      value: "-Dsonar.web.proxyScheme=https"
+  # -- Resource requests and limits for the SonarQube server.
+  resources:
+    requests:
+      # -- (string) CPU request for SonarQube
+      cpu: 250m
+      # -- (string) Memory request for SonarQube
+      memory: 1Gi
+    limits:
+      # -- (string) CPU limit for SonarQube
+      cpu: 1000m
+      # -- (string) Memory limit for SonarQube
+      memory: 1.5Gi
+  # -- Liveness probe to check if the SonarQube server is running.
+  livenessProbe:
+    exec:
+      command:
+        - sh
+        - -c
+        - 'wget --no-proxy --quiet -O /dev/null --timeout=1 --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:9000/api/system/liveness"'
+    # -- (int) Delay before starting liveness checks
+    initialDelaySeconds: 60
+    # -- (int) Frequency of liveness checks
+    periodSeconds: 30
+    # -- (int) Number of failures tolerated
+    failureThreshold: 6
+    # -- (int) Timeout for each liveness probe
+    timeoutSeconds: 1
+  # -- Readiness probe to check if the SonarQube server is ready to accept traffic.
+  readinessProbe:
+    exec:
+      command:
+        - sh
+        - -c
+        - >
+          if curl -s -f http://localhost:9000/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"';
+          then exit 0;
+          fi;
+          exit 1
+    # -- (int) Delay before starting readiness checks
+    initialDelaySeconds: 60
+    # -- (int) Frequency of readiness checks
+    periodSeconds: 30
+    # -- (int) Number of readiness failures tolerated
+    failureThreshold: 6
+    # -- (int) Timeout for each readiness probe
+    timeoutSeconds: 1
+
+# -- Required initContainer to set kernel parameters for Elasticsearch.
+initSysctl:
+  # -- (bool) Enable sysctl init container
+  enabled: true
+
+# -- Required initContainer to set filesystem permissions.
+initFs:
+  # -- (bool) Enable filesystem permissions init container
+  enabled: true
+
+# @section -- Persistence
+persistence:
+  # -- (bool) Enable persistent volume claims
+  enabled: true
+  # -- Minimal size for a demo environment.
+  # -- (string) PVC size for SonarQube data
+  size: 2Gi
+
+# @section -- PostgreSQL Database
+# -- Configuration for the bundled PostgreSQL database.
+postgresql:
+  # -- (string) Priority class for PostgreSQL pods
+  priorityClassName: platform-cicd
+  # -- Resource requests and limits for the PostgreSQL pod.
+  resources:
+    requests:
+      # -- (string) CPU request for PostgreSQL
+      cpu: 100m
+      # -- (string) Memory request for PostgreSQL
+      memory: 128Mi
+    limits:
+      # -- (string) CPU limit for PostgreSQL
+      cpu: 250m
+      # -- (string) Memory limit for PostgreSQL
+      memory: 256Mi
+
+# @section -- Secrets
+# -- Admin password from Vault ExternalSecret.
+setAdminPassword:
+  # -- (bool) Pull admin password from Vault-managed secret
+  enabled: true
+  # -- (string) Secret containing admin credentials
+  passwordSecretName: sonarqube-admin-credentials
+  # -- (string) Key within the admin password secret
+  passwordSecretKey: password
+  # -- (string) Secret that stores the current password for rotation
+  currentPasswordSecretName: sonarqube-admin-credentials
+  # -- (string) Key for the existing admin password
+  currentPasswordSecretKey: currentPassword
+  # -- Resource limits for password change hook job
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+# -- Monitoring passcode from Vault ExternalSecret.
+# -- (string) Secret containing the monitoring passcode
+monitoringPasscodeSecretName: "sonarqube-monitoring-passcode"
+# -- (string) Key that stores the monitoring passcode
+monitoringPasscodeSecretKey: "passcode"

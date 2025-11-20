@@ -1,0 +1,99 @@
+# @section -- Global Configuration
+global:
+  # -- Image pull policy for all components
+  image:
+    pullPolicy: IfNotPresent
+
+# @section -- CRDs
+crds:
+  # -- Install Argo Events CRDs
+  install: true
+  # -- Keep CRDs on chart uninstall
+  keep: true
+
+# @section -- Controller
+controller:
+  # -- (string) Priority class for controller pods
+  priorityClassName: platform-events
+  # -- Number of controller replicas
+  replicas: 1
+  # -- Rolling update strategy for zero-downtime updates
+  deploymentStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # -- (int) Maximum unavailable pods during update (0 for zero-downtime)
+      maxUnavailable: 0
+      # -- (int) Maximum surge pods during update
+      maxSurge: 1
+  # -- Resource requests and limits for the controller
+  resources:
+    requests:
+      # -- (string) CPU request for the controller
+      cpu: 50m
+      # -- (string) Memory request for the controller
+      memory: 64Mi
+    limits:
+      # -- (string) CPU limit for the controller
+      cpu: 200m
+      # -- (string) Memory limit for the controller
+      memory: 256Mi
+  # -- Metrics configuration for the controller
+  metrics:
+    # -- (bool) Enable Prometheus metrics endpoint
+    enabled: true
+    # -- (int) Port for metrics endpoint
+    port: 7777
+    # -- (string) Path for metrics endpoint
+    path: /metrics
+    serviceMonitor:
+      # -- (bool) Create ServiceMonitor for controller metrics
+      enabled: true
+      # -- Additional labels for ServiceMonitor
+      additionalLabels:
+        # -- (string) Prometheus selector label
+        prometheus: kube-prometheus
+  # -- Node affinity for controller (schedule on control-plane for stability)
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+  # -- Tolerations for controller to run on control-plane node
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
+# @section -- Webhook
+webhook:
+  # -- (bool) Enable the validating admission webhook
+  enabled: true
+  # -- (string) Priority class for webhook pods
+  priorityClassName: platform-events
+  # -- Resource requests and limits for the webhook
+  resources:
+    requests:
+      # -- (string) CPU request for the webhook
+      cpu: 25m
+      # -- (string) Memory request for the webhook
+      memory: 32Mi
+    limits:
+      # -- (string) CPU limit for the webhook
+      cpu: 100m
+      # -- (string) Memory limit for the webhook
+      memory: 128Mi
+  # -- Node affinity for webhook (schedule on control-plane for stability)
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: Exists
+  # -- Tolerations for webhook to run on control-plane node
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule

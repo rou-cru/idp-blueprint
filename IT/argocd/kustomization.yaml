@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - appproject-cicd.yaml
+  - appproject-events.yaml
   - appproject-observability.yaml
   - appproject-platform.yaml
   - appproject-security.yaml

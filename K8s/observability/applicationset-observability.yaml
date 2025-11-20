@@ -37,6 +37,7 @@ spec:
           - ServerSideApply=true
           - PruneLast=true
           - ApplyOutOfSyncOnly=true
+          - RespectIgnoreDifferences=true
         retry:
           limit: 10
           backoff:
@@ -52,3 +53,12 @@ spec:
           kind: ValidatingWebhookConfiguration
           jqPathExpressions:
             - '.webhooks[]?.clientConfig.caBundle'
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+            - /metadata/labels
+        - group: ""
+          kind: ServiceAccount
+          jsonPointers:
+            - /secrets

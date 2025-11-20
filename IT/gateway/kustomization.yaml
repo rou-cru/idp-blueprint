@@ -8,9 +8,11 @@ resources:
   - gatewayclass.yaml
   - idp-gateway.yaml
   - idp-wildcard-cert.yaml
+  - httproutes/argo-events-httproute.yaml
   - httproutes/argo-workflows-httproute.yaml
   - httproutes/argocd-httproute.yaml
   - httproutes/grafana-httproute.yaml
+  - httproutes/pyrra-httproute.yaml
   - httproutes/sonarqube-httproute.yaml
   - httproutes/vault-httproute.yaml
   - httproutes/redirect-http-to-https.yaml

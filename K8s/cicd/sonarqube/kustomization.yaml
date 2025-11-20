@@ -11,4 +11,4 @@ helmCharts:
     version: 2025.5.0
     releaseName: sonarqube
     namespace: cicd
-    valuesFile: sonarqube-values.yaml
+    valuesFile: values.yaml

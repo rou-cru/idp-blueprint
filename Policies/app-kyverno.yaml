@@ -29,9 +29,28 @@ spec:
       - SkipDryRunOnMissingResource=true
       - PruneLast=true
       - ApplyOutOfSyncOnly=true
+      - RespectIgnoreDifferences=true
     retry:
       limit: 5
       backoff:
         duration: 5s
         factor: 2
         maxDuration: 5m
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+      jqPathExpressions:
+        - '.webhooks[]?.clientConfig.caBundle'
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jqPathExpressions:
+        - '.webhooks[]?.clientConfig.caBundle'
+    - group: ""
+      kind: Secret
+      jsonPointers:
+        - /data
+        - /metadata/labels
+    - group: ""
+      kind: ServiceAccount
+      jsonPointers:
+        - /secrets

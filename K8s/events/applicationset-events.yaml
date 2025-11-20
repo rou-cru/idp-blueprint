@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: security
+  name: events
   namespace: argocd
   labels:
     app.kubernetes.io/part-of: idp
@@ -15,20 +15,20 @@ spec:
         repoURL: ${REPO_URL}
         revision: ${TARGET_REVISION}
         directories:
-          - path: K8s/security/*
+          - path: K8s/events/*
   template:
     metadata:
-      name: 'security-{{path.basename}}'
+      name: "events-{{path.basename}}"
     spec:
-      project: security
+      project: events
       source:
         repoURL: ${REPO_URL}
         targetRevision: ${TARGET_REVISION}
-        path: '{{path}}'
+        path: "{{path}}"
         kustomize: {}
       destination:
         server: https://kubernetes.default.svc
-        namespace: security
+        namespace: argo-events
       syncPolicy:
         automated:
           prune: true
