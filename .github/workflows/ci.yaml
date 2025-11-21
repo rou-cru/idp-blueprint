@@ -7,6 +7,10 @@ on:
       - 'Docs/**'
       - 'mkdocs.yml'
       - '**.md'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'Scripts/generate-chart-metadata.sh'
+      - 'Scripts/helm-docs-*.sh'
       - '.github/workflows/docs.yaml'
   pull_request:
     branches: [main]
@@ -14,6 +18,10 @@ on:
       - 'Docs/**'
       - 'mkdocs.yml'
       - '**.md'
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - 'Scripts/generate-chart-metadata.sh'
+      - 'Scripts/helm-docs-*.sh'
       - '.github/workflows/docs.yaml'
 
 # Prevent concurrent runs - use head_ref for PRs, ref for pushes
