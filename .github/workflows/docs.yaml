@@ -7,6 +7,9 @@ on:
       - main
     paths:
       - 'Docs/**'
+      - 'IT/**'
+      - 'K8s/**'
+      - 'Policies/**'
       - 'mkdocs.yml'
       - 'pyproject.toml'
       - 'uv.lock'
@@ -23,6 +26,9 @@ on:
       - main
     paths:
       - 'Docs/**'
+      - 'IT/**'
+      - 'K8s/**'
+      - 'Policies/**'
       - 'mkdocs.yml'
       - 'pyproject.toml'
       - 'uv.lock'

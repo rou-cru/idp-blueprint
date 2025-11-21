@@ -35,18 +35,4 @@ Policy Reporter watches for PolicyReport resources and updates its internal stat
 
 ## Configuration Values
 
-The following table lists the configurable parameters:
-
-## Values
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| policyReporter.resources | object | `{"limits":{"cpu":"200m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` | Resource requests and limits for the core engine. |
-| priorityClassName | string | `"platform-observability"` | Priority class for Policy Reporter |
-| ui.enabled | bool | `true` | Enables the deployment of the Policy Reporter UI. |
-| ui.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"50m","memory":"64Mi"}}` | Resource requests and limits for the UI. |
-
----
-
-**Documentation Auto-generated** by [helm-docs](https://github.com/norwoodj/helm-docs)
-**Last Updated**: This file is regenerated automatically when values change
+--8<-- "_values.generated.md"
