@@ -270,7 +270,12 @@ tasks:
         msg: 'helm is required but not installed. Run: brew install helm'
       - sh: command -v kubectl
         msg: 'kubectl is required but not installed. Run: brew install kubectl'
+      - sh: command -v kustomize
+        msg: 'kustomize is required but not installed. Run: brew install kustomize'
     cmds:
+      - kustomize build . | kubectl apply -f -
+      - kubectl wait --for=condition=Ready certificate/vault-tls -n vault-system
+        --timeout={{.KUBECTL_TIMEOUT}}
       - |
         helm upgrade --install vault hashicorp/vault \
           --version {{.VAULT_VERSION}} \

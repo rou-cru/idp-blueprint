@@ -5,7 +5,6 @@ server:
   # -- Update strategy for zero-downtime updates (StatefulSet)
   updateStrategyType: RollingUpdate
   affinity:
-    podAntiAffinity: null
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
