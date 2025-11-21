@@ -24,7 +24,7 @@ argo_events = "2.4.12"
 
 [operational]
 kubectl_timeout = "300s"
-k3d_config = "IT/k3d-cluster-cached.yaml"
+k3d_config = "IT/k3d-cluster.yaml"
 registry_cache_path = "$HOME/.k3d-registry"
 
 [git]

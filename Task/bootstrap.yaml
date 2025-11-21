@@ -77,21 +77,25 @@ vars:
 tasks:
   it:apply-namespaces:
     desc: 'Apply all IT bootstrap namespaces via Kustomize'
+    internal: true
     cmds:
       - kustomize build IT/namespaces | kubectl apply -f -
 
   it:apply-serviceaccounts:
     desc: 'Apply all IT bootstrap ServiceAccounts via Kustomize'
+    internal: true
     cmds:
       - kustomize build IT/serviceaccounts | kubectl apply -f -
 
   it:apply-priorityclasses:
     desc: 'Apply PriorityClasses for pod scheduling'
+    internal: true
     cmds:
       - kustomize build IT/priorityclasses | kubectl apply -f -
 
   it:apply-gateway-api-crds:
     desc: 'Apply Gateway API CRDs'
+    internal: true
     cmds:
       - defer: rm -f /tmp/gateway-api-*.yaml
       - |
@@ -103,6 +107,7 @@ tasks:
 
   it:apply-prometheus-crds:
     desc: 'Apply Prometheus CRDs from the dedicated Helm chart'
+    internal: true
     cmds:
       - |
         helm upgrade --install prometheus-crds prometheus-community/prometheus-operator-crds \
@@ -112,12 +117,14 @@ tasks:
 
   it:apply-crds:
     desc: 'Apply all CRDs required for the platform'
+    internal: true
     deps:
       - it:apply-gateway-api-crds
       - it:apply-prometheus-crds
 
   cilium:preload:
     desc: 'Pre-load Cilium image to Docker host'
+    internal: true
     vars:
       CILIUM_IMAGE: 'quay.io/cilium/cilium:v{{.CILIUM_VERSION}}'
     cmds:

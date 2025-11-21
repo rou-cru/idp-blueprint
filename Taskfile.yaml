@@ -165,13 +165,6 @@ tasks:
       - task: stacks:deploy
       - exit 0
 
-  deploy:nocache:
-    desc: 'Deploy without registry cache (test slow pulls)'
-    cmds:
-      - task: deploy
-        vars:
-          K3D_CONFIG: IT/k3d-cluster.yaml
-
   destroy:
     desc: 'Remove all IDP related components and cluster'
     cmds:

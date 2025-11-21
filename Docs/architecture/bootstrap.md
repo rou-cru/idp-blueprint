@@ -65,7 +65,7 @@ IT/
 
 | Path | Purpose | Type |
 | --- | --- | --- |
-| `k3d-cluster.yaml` | Defines the k3d topology (1 server + 2 agents + registry cache). | k3d Config |
+| `k3d-cluster.yaml` | Defines the k3d topology (1 server + 2 agents) including the local registry cache. | k3d Config |
 | `kustomization.yaml` | Root orchestrator (currently minimal but future-proof). | Kustomize |
 | `*-values.yaml` | Helm chart configuration for each bootstrap dependency. | Helm Values |
 | `namespaces/` | Namespaces + labels required before workloads land. | Kustomize Bootstrap |
@@ -102,7 +102,7 @@ Task -> K3d -> NS -> Cilium -> CRDs -> CM -> Vault -> ESO -> Argo -> GW -> Kyver
 
 ### Expanded Steps
 
-1. **Create the cluster** via `k3d-cluster-cached.yaml` (built-in registry cache keeps re-deployments snappy).
+1. **Create the cluster** via `k3d-cluster.yaml` (includes a local registry cache to speed re-deployments).
 2. **Apply namespaces** so priority classes, quotas, and Kyverno label policies have a home.
 3. **Install Cilium** to replace the default CNI and enable the Gateway API dataplane.
 4. **Lay down Prometheus CRDs** using `prometheus-operator-crds` so later Helm releases skip CRD churn.
