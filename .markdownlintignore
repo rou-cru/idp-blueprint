@@ -1,0 +1,20 @@
+# Devbox and build artifacts
+.devbox/
+.task/
+devbox.d/
+.venv/
+
+# MkDocs output
+site/
+.cache/
+
+# Node modules (if any)
+node_modules/
+
+# Generated charts
+**/charts/
+
+# AI assistant configs
+.claude/
+.codex/
+.memory/
