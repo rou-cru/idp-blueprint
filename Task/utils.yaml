@@ -14,11 +14,13 @@ tasks:
 
   docs:metadata:
     desc: 'Generate Chart.yaml metadata for all components'
+    internal: true
     cmds:
       - ./Scripts/generate-chart-metadata.sh
 
   docs:helm:
     desc: 'Generate documentation for Helm charts'
+    internal: true
     cmds:
       - ./Scripts/helm-docs-generate.sh
 

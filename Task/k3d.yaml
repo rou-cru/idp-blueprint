@@ -11,6 +11,7 @@ tasks:
   k3d:check-inotify:
     desc: 'Check and fix inotify limits for Kubernetes controllers'
     platforms: [linux]
+    internal: true
     cmds:
       - ./Scripts/check-inotify.sh
 

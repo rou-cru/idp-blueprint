@@ -26,7 +26,6 @@ CONFIG_FILE=config.prod.toml task deploy
 | Task | When to use |
 |------|-------------|
 | `task deploy` | End-to-end bootstrap (k3d, IT layer, Gateway, stacks). |
-| `task deploy:nocache` | Same as `deploy` but forces slow image pulls to test bandwidth assumptions. |
 | `task destroy` | Tear everything down (k3d cluster + registry cache). |
 | `task redeploy` | Convenience wrapper for `destroy` followed by `deploy`. |
 | `task utils:config:print` | Inspect effective repo/branch, cluster name, LAN IP, NodePorts, and fuse values. |

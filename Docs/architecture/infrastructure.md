@@ -69,7 +69,7 @@ IT/
 
 | File / Directory             | Purpose                                                                  | Type                |
 | ---------------------------- | ------------------------------------------------------------------------ | ------------------- |
-| `k3d-cluster.yaml`           | Defines the k3d cluster itself.                                          | k3d Config          |
+| `k3d-cluster.yaml`           | Defines the k3d cluster (includes local registry cache).                 | k3d Config          |
 | `kustomization.yaml`         | Root Kustomize orchestrator (currently minimal).                         | Kustomize           |
 | `*-values.yaml`              | Configures a core component's Helm chart.                                | Helm Values         |
 | `namespaces/`                | Bootstrap namespace definitions for core components.                     | Kustomize Bootstrap |
@@ -99,7 +99,7 @@ InfraCore: {
 
 The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 
-1. **Create k3d cluster** (`k3d-cluster-cached.yaml` with persistent registry cache).
+1. **Create k3d cluster** (`k3d-cluster.yaml` includes the local registry cache).
 2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
 3. **Deploy Cilium CNI** via Helm (`IT/cilium/values.yaml`).
 4. **Deploy Prometheus CRDs** via a dedicated Helm chart install.
