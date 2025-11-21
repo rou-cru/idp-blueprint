@@ -1,22 +1,26 @@
-/* IDP Blueprint custom styles inspired by Crossplane docs */
+/* IDP Blueprint - Professional Documentation Styles */
 
 :root {
   --idp-heading-font: "Space Grotesk", "Inter", "Segoe UI", sans-serif;
-  --idp-surface: #f6f7fb;
-  --idp-surface-muted: #eef1f8;
-  --idp-border: #dfe3ec;
-  --idp-card-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  --idp-surface: #f8f9fb;
+  --idp-surface-muted: #f0f2f5;
+  --idp-border: #e1e4e8;
+  --idp-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --idp-heading-color: #0f172a;
-  --idp-body-color: #1f2933;
+  --idp-body-color: #1f2937;
+  --idp-header-bg: #1e293b;
+  --idp-header-text: #f8fafc;
 }
 
 [data-md-color-scheme="slate"] {
-  --idp-surface: #181b23;
+  --idp-surface: #1a1d28;
   --idp-surface-muted: #1f2330;
   --idp-border: #2a3144;
-  --idp-card-shadow: 0 12px 32px rgba(2, 6, 23, 0.7);
-  --idp-heading-color: #f8fafc;
-  --idp-body-color: #cbd5f5;
+  --idp-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --idp-heading-color: #f1f5f9;
+  --idp-body-color: #cbd5e1;
+  --idp-header-bg: #0f172a;
+  --idp-header-text: #f8fafc;
 }
 
 /* Typography */
@@ -35,46 +39,228 @@
   color: var(--idp-body-color);
 }
 
-/* Header & navigation */
+/* ============================================
+   HEADER - Clean and Professional
+   ============================================ */
 .md-header {
-  /* border-bottom: 1px solid rgba(31, 41, 51, 0.08); */
-  background: linear-gradient(135deg,
-      rgba(32, 9, 123, 0.95),
-      rgba(30, 41, 59, 0.95));
-  color: #fff;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
-  max-width: none;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  background: var(--idp-header-bg) !important;
+  color: var(--idp-header-text);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+  height: auto;
+  position: sticky;
+  top: 0;
+  z-index: 4;
 }
 
-[data-md-color-scheme="slate"] .md-header {
-  border-bottom-color: rgba(15, 23, 42, 0.4);
-  background: linear-gradient(120deg,
-      rgba(21, 94, 203, 0.9),
-      rgba(2, 6, 23, 0.9));
+/* Header inner container - minimal padding, clean alignment */
+.md-header__inner {
+  padding: 0 1rem;
+  max-width: 100%;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
 }
 
-.md-header__button,
+/* Header title - clean and simple */
 .md-header__title {
-  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  order: 1;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  color: var(--idp-header-text);
 }
 
+/* Navigation tabs - integrated in header */
+.md-tabs {
+  position: static !important;
+  background: transparent !important;
+  height: auto !important;
+  margin: 0 auto 0 1rem;
+  order: 2;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.md-tabs__list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.md-tabs__item {
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.md-tabs__link {
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border-radius: 4px;
+}
+
+.md-tabs__link:hover {
+  color: var(--idp-header-text);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.md-tabs__link--active {
+  color: var(--idp-header-text);
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Header action buttons - unified styling */
+.md-header__personal-link,
+.md-source,
+.md-header label[for="__search"],
+.md-header__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.md-header__personal-link:hover,
+.md-source:hover,
+.md-header label[for="__search"]:hover,
 .md-header__button:hover {
-  color: #e0e7ff;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--idp-header-text);
 }
 
+.md-header__personal-link {
+  order: 4;
+}
+
+.md-source {
+  order: 5;
+}
+
+.md-source__repository {
+  display: none;
+}
+
+.md-header label[for="__search"] {
+  order: 6;
+}
+
+.md-header__button {
+  order: 7;
+}
+
+.md-header__button svg,
+.md-source__icon,
+.md-search__icon,
+.md-header__personal-link svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: currentColor;
+}
+
+/* ============================================
+   SIDEBAR - Optimized width
+   ============================================ */
+.md-sidebar--primary {
+  width: 12.5rem;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--primary {
+    width: 12.5rem;
+  }
+
+  [dir="ltr"] .md-sidebar--primary {
+    left: 0;
+  }
+
+  .md-content {
+    margin-left: 12.5rem;
+  }
+}
+
+/* ============================================
+   FOOTER - Single line, minimal padding
+   ============================================ */
+.md-footer {
+  padding: 0;
+  margin-top: 2rem;
+}
+
+.md-footer__inner {
+  padding: 0.5rem 1rem;
+  max-width: 100%;
+  min-height: auto;
+}
+
+.md-footer-meta {
+  background-color: var(--md-footer-bg-color--dark);
+  padding: 0;
+}
+
+.md-footer-meta__inner {
+  padding: 0.5rem 1rem;
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: auto;
+}
+
+/* Hide or minimize footer social icons to keep it single line */
+.md-footer-meta .md-social {
+  margin: 0;
+  padding: 0;
+}
+
+.md-footer-meta .md-social__link {
+  padding: 0.25rem;
+}
+
+/* Copyright should be inline */
+.md-footer-meta .md-copyright {
+  margin: 0;
+  padding: 0;
+  font-size: 0.75rem;
+}
+
+/* ============================================
+   NAVIGATION - Clean typography
+   ============================================ */
 .md-nav__title,
 .md-nav__link {
-  font-size: 0.78rem;
-  letter-spacing: 0.02em;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  letter-spacing: 0;
   color: var(--idp-body-color);
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
 }
 
 [data-md-color-scheme="slate"] .md-nav__title,
 [data-md-color-scheme="slate"] .md-nav__link {
-  color: #cbd5f5;
+  color: #cbd5e1;
 }
 
 .md-nav__link--active {
@@ -82,25 +268,31 @@
   color: var(--md-primary-fg-color);
 }
 
-/* Landing page cards */
+.md-nav__item {
+  padding: 0;
+}
+
+/* ============================================
+   CARDS - Minimal and clean
+   ============================================ */
 .grid.cards {
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .grid.cards>ul,
 .grid.cards>ol {
   border: 1px solid var(--idp-border);
-  border-radius: 0.8rem;
+  border-radius: 8px;
   box-shadow: var(--idp-card-shadow);
   background: #fff;
-  padding: 1rem;
-  transition: transform 140ms ease, box-shadow 140ms ease;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
 }
 
 .grid.cards>ul:hover,
 .grid.cards>ol:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 [data-md-color-scheme="slate"] .grid.cards>ul,
@@ -109,86 +301,103 @@
   border-color: var(--idp-border);
 }
 
+[data-md-color-scheme="slate"] .grid.cards>ul:hover,
+[data-md-color-scheme="slate"] .grid.cards>ol:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 .grid.cards strong {
   color: var(--idp-heading-color);
 }
 
-/* Hero persona chips */
+/* ============================================
+   CHIPS & BADGES - Clean design
+   ============================================ */
 .persona-chip {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.75rem;
-  border-radius: 999px;
-  background: rgba(63, 81, 181, 0.12);
-  border: 1px solid rgba(63, 81, 181, 0.2);
-  color: #3f51b5;
+  padding: 0.25rem 0.625rem;
+  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: rgb(79, 70, 229);
   font-size: 0.75rem;
-  font-weight: 600;
-  margin-right: 0.35rem;
+  font-weight: 500;
+  margin-right: 0.5rem;
 }
 
 [data-md-color-scheme="slate"] .persona-chip {
-  background: rgba(148, 163, 253, 0.15);
-  border-color: rgba(148, 163, 253, 0.35);
-  color: #cbd5f5;
+  background: rgba(129, 140, 248, 0.15);
+  border-color: rgba(129, 140, 248, 0.3);
+  color: rgb(165, 180, 252);
 }
 
-/* Tables */
+/* ============================================
+   TABLES - Professional styling
+   ============================================ */
 .md-typeset table:not([class]) {
   border: 1px solid var(--idp-border);
-  border-radius: 0.6rem;
+  border-radius: 6px;
   overflow: hidden;
+  font-size: 0.875rem;
 }
 
 .md-typeset table:not([class]) th {
   background: var(--idp-surface);
   font-weight: 600;
   color: var(--idp-heading-color);
-}
-
-[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
-  color: #e0e7ff;
+  padding: 0.75rem 1rem;
 }
 
 .md-typeset table:not([class]) td {
   border-top: 1px solid var(--idp-border);
+  padding: 0.625rem 1rem;
 }
 
-[data-md-color-scheme="slate"] .md-typeset table:not([class]) td {
-  border-color: rgba(148, 163, 253, 0.15);
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  color: var(--idp-heading-color);
 }
 
-/* Buttons */
+/* ============================================
+   BUTTONS - Minimal rounded
+   ============================================ */
 .md-button {
-  border-radius: 999px;
+  border-radius: 6px;
   text-transform: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.md-button--primary {
   font-weight: 600;
-  padding: 0.35rem 1.3rem;
 }
 
-[data-md-color-scheme="slate"] .md-button {
-  color: #0f172a;
-}
-
-/* Content width adjustments */
+/* ============================================
+   CONTENT LAYOUT - Balanced spacing
+   ============================================ */
 @media screen and (min-width: 76.25em) {
-
   .md-main__inner,
   .md-content,
   .md-content__inner {
     max-width: none;
     width: 100%;
-    margin-left: auto;
-    margin-right: auto;
   }
 
-  /* .md-content__inner {
-    padding-left: 2rem;
-    padding-right: 2rem;
-  } */
+  .md-content {
+    margin-right: 0;
+  }
 }
 
-/* D2 diagrams — keep them readable and not oversized */
+/* Main content padding */
+.md-content__inner {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+/* ============================================
+   DIAGRAMS - Optimized display
+   ============================================ */
 .md-typeset .d2 {
   max-width: 60rem;
   margin: 1.5rem auto;
@@ -198,4 +407,71 @@
 .md-typeset .d2 svg {
   width: 100%;
   height: auto;
+}
+
+/* ============================================
+   TABLE OF CONTENTS - Clean and minimal
+   ============================================ */
+.md-sidebar--secondary {
+  padding-left: 0.5rem;
+  width: 12rem;
+}
+
+.md-sidebar__scrollwrap {
+  margin: 0;
+  padding: 0;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--secondary {
+    margin-left: 0;
+    width: 12rem;
+  }
+
+  .md-sidebar--secondary .md-sidebar__scrollwrap {
+    overflow-x: hidden;
+  }
+}
+
+.md-nav__link {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.md-nav--secondary .md-nav__link {
+  padding-right: 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* ============================================
+   ADMONITIONS - Subtle and clean
+   ============================================ */
+.md-typeset .admonition {
+  border-radius: 6px;
+  border-width: 0;
+  border-left-width: 3px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+}
+
+.md-typeset .admonition-title {
+  font-weight: 600;
+  padding-left: 0;
+  margin: 0 0 0.5rem 0;
+}
+
+/* ============================================
+   CODE BLOCKS - Professional appearance
+   ============================================ */
+.md-typeset code {
+  font-size: 0.8125rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+}
+
+.md-typeset pre>code {
+  padding: 0.75rem 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
 }

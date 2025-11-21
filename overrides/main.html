@@ -145,3 +145,89 @@
 
   {{ super() }}
 {% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <!-- Add personal branding link to header and reorganize layout -->
+  <script>
+    function setupHeader() {
+      const header = document.querySelector(".md-header__inner");
+      const tabs = document.querySelector(".md-tabs");
+
+      if (header && tabs) {
+        // Move tabs into header
+        const searchButton = header.querySelector('label[for="__search"]');
+        if (searchButton) {
+          header.insertBefore(tabs, searchButton);
+        } else {
+          header.appendChild(tabs);
+        }
+
+        // Create personal link if it doesn't exist
+        if (!header.querySelector(".md-header__personal-link")) {
+          const personalLink = document.createElement("a");
+          personalLink.href = "https://roura.xyz";
+          personalLink.className = "md-header__personal-link";
+          personalLink.title = "Alberto Roura - Platform Engineering";
+          personalLink.target = "_blank";
+          personalLink.rel = "noopener author";
+          personalLink.setAttribute("aria-label", "Visit author's website");
+
+          personalLink.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+          `;
+
+          const searchButton = header.querySelector('label[for="__search"]');
+          if (searchButton) {
+            header.insertBefore(personalLink, searchButton);
+          } else {
+            header.appendChild(personalLink);
+          }
+        }
+      }
+
+      // Prevent title from changing on scroll
+      const headerTitle = document.querySelector(".md-header__title");
+      if (headerTitle) {
+        const siteName = "IDP Blueprint";
+        const observer = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            const titleElement = headerTitle.querySelector(".md-header__ellipsis");
+            if (titleElement && titleElement.textContent !== siteName) {
+              titleElement.textContent = siteName;
+            }
+          });
+        });
+
+        observer.observe(headerTitle, {
+          childList: true,
+          subtree: true,
+          characterData: true
+        });
+
+        // Set initial title
+        const titleElement = headerTitle.querySelector(".md-header__ellipsis");
+        if (titleElement) {
+          titleElement.textContent = siteName;
+        }
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", setupHeader);
+
+    // Also handle instant navigation events
+    if (typeof document$ !== 'undefined') {
+      document$.subscribe(function() {
+        setTimeout(setupHeader, 100);
+
+        const headerTitle = document.querySelector(".md-header__title .md-header__ellipsis");
+        if (headerTitle) {
+          headerTitle.textContent = "IDP Blueprint";
+        }
+      });
+    }
+  </script>
+{% endblock %}
