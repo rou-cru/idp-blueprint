@@ -4,21 +4,21 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - 'docs/**'
+      - 'Docs/**'
       - 'mkdocs.yml'
       - '**.md'
       - '.github/workflows/docs.yaml'
   pull_request:
     branches: [main]
     paths-ignore:
-      - 'docs/**'
+      - 'Docs/**'
       - 'mkdocs.yml'
       - '**.md'
       - '.github/workflows/docs.yaml'
 
-# Prevent concurrent runs on same ref
+# Prevent concurrent runs - use head_ref for PRs, ref for pushes
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -27,6 +27,7 @@ permissions:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,15 +40,19 @@ jobs:
         uses: jetpack-io/devbox-install-action@v0.11.0
         with:
           project-path: .devcontainer
+          enable-cache: true
 
       - name: Run Linting Tasks
         run: devbox run -- task quality:lint
         working-directory: .devcontainer
+        timeout-minutes: 10
 
       - name: Run Security Scans
         run: devbox run -- task quality:security
         working-directory: .devcontainer
+        timeout-minutes: 15
 
       - name: Run Validations
         run: devbox run -- task quality:validate
         working-directory: .devcontainer
+        timeout-minutes: 10

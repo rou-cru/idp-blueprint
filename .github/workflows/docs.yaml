@@ -1,15 +1,13 @@
 name: Documentation
 
 on:
-  # Trigger on push to main
+  # Only build and deploy on push to main (after merge)
   push:
     branches:
       - main
     paths:
       - 'Docs/**'
-      - 'IT/**'
-      - 'K8s/**'
-      - 'Policies/**'
+      - '**/README.md'
       - 'mkdocs.yml'
       - 'pyproject.toml'
       - 'uv.lock'
@@ -20,22 +18,9 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
-  # Trigger on PR for validation (no deploy)
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'Docs/**'
-      - 'IT/**'
-      - 'K8s/**'
-      - 'Policies/**'
-      - 'mkdocs.yml'
-      - 'pyproject.toml'
-      - 'uv.lock'
-
 # Prevent concurrent deployments
 concurrency:
-  group: docs-${{ github.ref }}
+  group: docs-deploy
   cancel-in-progress: true
 
 # Required permissions for GitHub Pages
@@ -45,9 +30,13 @@ permissions:
   id-token: write
 
 jobs:
-  build:
-    name: Build Documentation
+  build-and-deploy:
+    name: Build and Deploy Documentation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -88,10 +77,12 @@ jobs:
       - name: Generate documentation (metadata + helm-docs)
         run: devbox run -- task utils:docs
         working-directory: .devcontainer
+        timeout-minutes: 5
 
       - name: Build MkDocs site
         run: devbox run -- task utils:docs:build
         working-directory: .devcontainer
+        timeout-minutes: 5
 
       - name: Validate build output
         run: |
@@ -103,31 +94,14 @@ jobs:
       - name: Check for broken links
         run: devbox run -- task utils:docs:linkcheck
         working-directory: .devcontainer
+        timeout-minutes: 3
         continue-on-error: true
 
       - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: site/
 
-      - name: Upload build artifact (PR preview)
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-preview-${{ github.event.pull_request.number }}
-          path: site/
-          retention-days: 7
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
