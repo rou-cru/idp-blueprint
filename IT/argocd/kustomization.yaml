@@ -7,6 +7,7 @@ resources:
   - appproject-observability.yaml
   - appproject-platform.yaml
   - appproject-security.yaml
+  - appproject-backstage.yaml
 
 commonAnnotations:
   contact: platform-team

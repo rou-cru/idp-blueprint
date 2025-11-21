@@ -15,6 +15,7 @@ resources:
   - httproutes/pyrra-httproute.yaml
   - httproutes/sonarqube-httproute.yaml
   - httproutes/vault-httproute.yaml
+  - httproutes/backstage-httproute.yaml
   - httproutes/redirect-http-to-https.yaml
   - gateway-tls-permission.yaml
 

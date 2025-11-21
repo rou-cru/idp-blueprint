@@ -184,6 +184,9 @@ nav:
           - Overview: components/cicd/index.md
           - Argo Workflows: components/cicd/argo-workflows/index.md
           - SonarQube: components/cicd/sonarqube/index.md
+      - Developer Portal:
+          - Overview: components/developer-portal/index.md
+          - Backstage: components/developer-portal/backstage/index.md
       - Eventing:
           - Overview: components/eventing/index.md
           - Argo Events: components/eventing/argo-events/index.md

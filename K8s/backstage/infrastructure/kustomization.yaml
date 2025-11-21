@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - eso-backstage.yaml
+  - backstage-secretstore.yaml
+
+labels:
+  - includeSelectors: true
+    pairs:
+      app.kubernetes.io/part-of: idp
+      owner: platform-team
+      business-unit: infrastructure
+      environment: demo
