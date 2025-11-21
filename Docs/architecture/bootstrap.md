@@ -3,7 +3,7 @@
 This directory contains the **static / bootstrap layer** of the platform. Everything
 here must exist _before_ ArgoCD can reconcile Git.
 
-From a C4 perspective the components are the same as in the infrastructure core; this page focuses on their **lifecycle over time** (bootstrap sequence) rather than on a new structural level.
+The components are the same as in the infrastructure core; this page focuses on their **lifecycle over time** (bootstrap sequence) rather than on a new structural level.
 
 ## Guiding Principles
 
@@ -81,23 +81,25 @@ IT/
 ```d2
 direction: right
 
-Task: {
-  label: "task deploy"
+classes: { step: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white } }
+
+Flow: {
+  class: step
+  Task: "task deploy"
+  K3d: "Create k3d cluster"
+  NS: "Bootstrap namespaces"
+  Cilium: "Install Cilium"
+  CRDs: "Prometheus CRDs"
+  Cert: "cert-manager + issuers"
+  Vault: "Vault (init/unseal)"
+  ESO: "External Secrets Operator"
+  Argo: "ArgoCD + AppProjects"
+  Gateway: "Gateway API + wildcard cert"
+  Kyverno: "Kyverno + Policy Reporter"
+  Stacks: "Sync stacks (obs/sec/cicd/backstage)"
 }
 
-K3d: "Create k3d cluster"
-NS: "Apply bootstrap namespaces"
-Cilium: "Install Cilium CNI"
-CRDs: "Install Prometheus CRDs"
-CM: "Install cert-manager\n+ issuers/certs"
-Vault: "Deploy + init Vault"
-ESO: "Deploy External Secrets Operator"
-Argo: "Deploy ArgoCD + AppProjects"
-GW: "Apply Gateway API resources"
-Kyverno: "Deploy Kyverno + Policy Reporter"
-Stacks: "Sync stacks\n(observability, security, CI/CD)"
-
-Task -> K3d -> NS -> Cilium -> CRDs -> CM -> Vault -> ESO -> Argo -> GW -> Kyverno -> Stacks
+Flow.Task -> Flow.K3d -> Flow.NS -> Flow.Cilium -> Flow.CRDs -> Flow.Cert -> Flow.Vault -> Flow.ESO -> Flow.Argo -> Flow.Gateway -> Flow.Kyverno -> Flow.Stacks
 ```
 
 ### Expanded Steps

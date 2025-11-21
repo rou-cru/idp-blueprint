@@ -1,14 +1,14 @@
-# Observability stack — C4 component view
+# Observability stack — component view
 
 The observability stack covers metrics, logs, and dashboards with minimal footprint. It lives under `K8s/observability/` and is powered by Prometheus, Loki, Fluent-bit, and Grafana.
 
-From a C4 perspective this page is a **component view (L3)** for the “Observability” part of the developer‑facing stacks.
+This page is the component view for the “Observability” part of the developer‑facing stacks.
 
 ## Components at a Glance
 
 | Component | Deploy Path | Purpose |
 | --- | --- | --- |
-| Prometheus (`kube-prometheus-stack`) | `K8s/observability/kube-prometheus-stack/` | Scrapes cluster + workload metrics, exposes Alertmanager + Grafana. |
+| Prometheus | `K8s/observability/kube-prometheus-stack/` | Scrapes cluster + workload metrics, exposes Alertmanager + Grafana. |
 | Fluent-bit | `K8s/observability/fluent-bit/` | Tails container logs on every node and forwards to Loki. |
 | Loki | `K8s/observability/loki/` | Stores logs in boltDB shipper mode (single replica for k3d). |
 | Grafana | Bundled via Prometheus stack | Serves dashboards, integrates with Prometheus + Loki datasources automatically. |
@@ -24,30 +24,44 @@ From a C4 perspective this page is a **component view (L3)** for the “Observab
 ```d2
 direction: right
 
+classes: { infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+           ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white } }
+
 Nodes: {
-  Pods: "App Pods"
-  FluentBit: "Fluent-bit DaemonSet"
-  NodeExporter: "Node Exporter"
-  Kubelet: "Kubelet / cAdvisor"
+  class: infra
+  Pods: "Workload pods"
+  Fluent: "Fluent-bit DaemonSet"
+  NodeExp: "Node Exporter"
+  Kubelet: "Kubelet"
+  cAdvisor: "cAdvisor"
   KSM: "Kube-State-Metrics"
 }
 
 Observability: {
-  Prometheus
-  Loki
-  Grafana
-  Alertmanager
+  class: data
+  Prom: "Prometheus Operator"
+  Loki: "Loki"
+  Alert: "Alertmanager"
 }
 
-Nodes.Pods -> Nodes.FluentBit: "Logs"
-Nodes.FluentBit -> Observability.Loki: "HTTP API"
-Nodes.Pods -> Observability.Prometheus: "Metrics"
-Nodes.NodeExporter -> Observability.Prometheus: "Node metrics"
-Nodes.Kubelet -> Observability.Prometheus: "cAdvisor"
-Nodes.KSM -> Observability.Prometheus: "Workload metrics"
-Observability.Prometheus -> Observability.Alertmanager: "Alerts"
-Observability.Prometheus -> Observability.Grafana: "Datasource"
-Observability.Loki -> Observability.Grafana: "Datasource"
+UX: {
+  class: ui
+  Grafana: "Grafana"
+  Pyrra: "Pyrra (SLOs)"
+}
+
+Nodes.Pods -> Nodes.Fluent: "Logs"
+Nodes.Fluent -> Observability.Loki: "push"
+Nodes.Pods -> Observability.Prom: "app metrics"
+Nodes.NodeExp -> Observability.Prom: "node metrics"
+Nodes.Kubelet -> Observability.Prom: "kubelet metrics"
+Nodes.cAdvisor -> Observability.Prom: "cAdvisor"
+Nodes.KSM -> Observability.Prom: "cluster metrics"
+Observability.Prom -> Observability.Alert: "alerts"
+Observability.Prom -> UX.Grafana: "datasource"
+Observability.Loki -> UX.Grafana: "logs datasource"
+UX.Pyrra -> Observability.Prom: "reads SLO burn rates"
 ```
 
 ## Instrumentation Strategy
@@ -73,31 +87,9 @@ The Prometheus stack enables Alertmanager but does not send notifications by def
 
 ## Custom Dashboards Workflow
 
-```d2
-direction: right
-
-Dev: {
-  label: "Platform Engineer"
-  shape: c4-person
-}
-
-Git: {
-  label: "Git repo\nK8s/observability/dashboards/"
-}
-
-Argo: {
-  label: "ArgoCD\nObservability stack"
-}
-
-Grafana: {
-  label: "Grafana pod"
-}
-
-Dev -> Git: "add / update dashboard JSON"
-Git -> Argo: "commit pushed"
-Argo -> Grafana: "sync ConfigMap / Secret"
-Grafana -> Dev: "dashboard visible in UI"
-```
+- Platform engineer adds/updates JSON under `K8s/observability/kube-prometheus-stack/dashboards/`.
+- Commit → ApplicationSet syncs → Grafana sidecar reloads dashboards.
+- Verify in Grafana UI. No separate diagram needed.
 
 ## Extending the Stack
 

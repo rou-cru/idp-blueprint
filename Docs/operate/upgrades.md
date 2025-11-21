@@ -3,31 +3,12 @@
 
 Upgrades should feel boring. Make order and gates explicit, and test with disposable clusters before touching shared environments.
 
-## Upgrade choreography
+## Upgrade choreography (texto)
 
-```d2
-direction: right
-
-Plan: {
-  Readme: "Release notes + breaking changes"
-  Matrix: "Compatibility (Cilium, K8s, CRDs)"
-}
-
-Stage: {
-  Ephemeral: "k3d: task deploy"
-  Validate: "health + dashboards + SLOs"
-}
-
-Prod: {
-  Windows: "change window"
-  Gates: "prechecks + manual gate"
-  Roll: "apply in order"
-}
-
-Plan -> Stage: test
-Stage -> Prod.Gates: promote
-Prod.Roll -> Validate: observe
-```
+1) **Plan**: leer release notes, chequear matriz de compatibilidad (Cilium, K8s, CRDs).  
+2) **Stage**: cluster efímero (`task deploy`), validar salud + dashboards + SLOs.  
+3) **Prod**: ventana acordada, prechecks, manual gate; aplicar en orden.  
+4) **Observar**: después del roll, validar Apps Healthy/Synced y SLO burn rate.  
 
 Recommended order:
 1) CRDs and controllers (Kyverno, ESO, cert-manager) → 2) Networking (Cilium) → 3) GitOps (ArgoCD) → 4) Stacks (observability, security, CI/CD).

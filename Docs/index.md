@@ -7,144 +7,83 @@ Use this documentation as a map to the platform: understand the architecture, de
 ## One picture: IDP Blueprint architecture
 
 ```d2
-grid-rows: 4
-style.fill: black
+direction: right
 
 classes: {
-  layer0: {
-    width: 260
-    style: {
-      fill: navy
-      stroke: deepskyblue
-      stroke-width: 3
-      font-color: white
-      text-transform: uppercase
-    }
+  actors: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#38bdf8" }
+  system: { style.fill: "#111827"; style.font-color: white; style.stroke: "#22d3ee" }
+  infra:  { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  gov:    { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  svc:    { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  ux:     { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+External: {
+  class: actors
+  Devs: "Developers"
+  Platform: "Platform Engineers"
+  Security: "Security/Compliance"
+}
+
+IDP: {
+  class: system
+  label: "IDP Blueprint cluster"
+
+  Infra: {
+    class: infra
+    label: "Infrastructure Core"
+    K8s: "Kubernetes API\n+ etcd"
+    Cilium
+    Gateway: "Gateway API"
+    Cert: "cert-manager"
   }
-  layer1: {
-    width: 220
-    style: {
-      fill: midnightblue
-      stroke: mediumseagreen
-      stroke-width: 3
-      font-color: white
-      text-transform: uppercase
-    }
+
+  Governance: {
+    class: gov
+    label: "Automation & Governance"
+    Argo: "ArgoCD + ApplicationSets"
+    Kyverno
+    Vault
+    ESO: "External Secrets"
   }
-  layer2: {
-    width: 220
-    style: {
-      fill: black
-      stroke: mediumorchid
-      stroke-width: 3
-      font-color: white
-      text-transform: uppercase
-    }
+
+  Services: {
+    class: svc
+    label: "Platform Services"
+    Prom: "Prometheus"
+    Loki
+    Fluent: "Fluent-bit"
   }
-  layer3: {
-    width: 220
-    style: {
-      fill: black
-      stroke: orange
-      stroke-width: 3
-      font-color: white
-      text-transform: uppercase
-    }
+
+  UX: {
+    class: ux
+    label: "Developer-Facing"
+    Grafana
+    Workflows: "Argo Workflows"
+    Sonar: "SonarQube"
+    Trivy: "Trivy Operator"
+    Backstage
   }
 }
 
-# Row 1: developer-facing surfaces
-
-grafana: {
-  class: layer3
-  label: "Grafana"
-}
-
-workflows: {
-  class: layer3
-  label: "Argo Workflows"
-}
-
-sonarqube: {
-  class: layer3
-  label: "SonarQube"
-}
-
-trivy: {
-  class: layer3
-  label: "Trivy"
-}
-
-argocd: {
-  class: layer3
-  label: "ArgoCD"
-}
-
-# Row 2: automation & governance
-
-appsets: {
-  class: layer2
-  label: "ApplicationSets"
-}
-
-kyverno: {
-  class: layer2
-  label: "Kyverno"
-}
-
-policy_reporter: {
-  class: layer2
-  label: "Policy Reporter"
-}
-
-vault: {
-  class: layer2
-  label: "Vault"
-}
-
-# Row 3: platform services
-
-eso: {
-  class: layer1
-  label: "External Secrets"
-}
-
-cert_manager: {
-  class: layer1
-  label: "cert-manager"
-}
-
-prom: {
-  class: layer1
-  label: "Prometheus"
-}
-
-loki: {
-  class: layer1
-  label: "Loki"
-}
-
-fluent: {
-  class: layer1
-  label: "Fluent-bit"
-}
-
-# Row 4: infrastructure core
-
-kubernetes: {
-  class: layer0
-  label: "Kubernetes"
-}
-
-cilium: {
-  class: layer0
-  label: "Cilium CNI"
-}
-
-gateway: {
-  class: layer0
-  label: "Gateway API"
-}
+External.Devs -> IDP.Governance.Argo: "Git → GitOps"
+External.Platform -> IDP.Governance.Argo: "Operate platform"
+External.Security -> IDP.Governance.Kyverno: "Guardrails"
+External.Devs -> IDP.UX.Backstage: "use catalog/docs"
+IDP.Governance.Argo -> IDP.Services.Prom
+IDP.Governance.Argo -> IDP.Services.Loki
+IDP.Governance.Argo -> IDP.UX.Workflows
+IDP.Governance.Argo -> IDP.UX.Sonar
+IDP.Governance.Argo -> IDP.UX.Grafana
+IDP.Governance.Argo -> IDP.UX.Backstage
+IDP.Governance.ESO -> IDP.UX.Workflows: "inject secrets"
+IDP.Governance.ESO -> IDP.UX.Sonar
+IDP.Governance.ESO -> IDP.UX.Backstage
+IDP.Governance.Vault -> IDP.Governance.ESO: "KV read"
+IDP.Infra.Gateway -> IDP.UX.Grafana: "HTTPS routes"
+IDP.Infra.Gateway -> IDP.UX.Workflows
+IDP.Infra.Gateway -> IDP.UX.Sonar
+IDP.Infra.Gateway -> IDP.UX.Backstage
 ```
 
 At a glance:

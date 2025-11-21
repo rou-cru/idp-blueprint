@@ -7,56 +7,56 @@ HashiCorp Vault serves as the **single source of truth** for all sensitive data.
 The architecture uses **External Secrets Operator (ESO)** as the unified tool
 to synchronize secrets both within the Kubernetes cluster and to external cloud providers.
 
-From a C4 perspective this page gives a **cross-cutting component view (L3)** of Vault + ESO and how they interact with both in-cluster and external workloads.
+This page gives a cross-cutting component view of Vault + ESO and how they interact with both in-cluster and external workloads.
 
 ## Architecture Diagram
 
 ```d2
 direction: right
 
-Cluster: {
-  label: "Kubernetes cluster"
-
-  ESO_NS: {
-    label: "external-secrets-system"
-    Vault: "HashiCorp Vault\n(single source of truth)"
-    ESO: "External Secrets Operator (ESO)"
-  }
-
-  AppNS: {
-    label: "Application namespaces"
-    K8sSecrets: "Kubernetes Secrets"
-    Pods: "Application pods"
-  }
+classes: {
+  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  ext: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
 }
 
-Cloud: {
-  label: "External cloud providers"
+Cluster: {
+  class: infra
+  label: "Cluster"
+  VaultNS: { class: control; label: "vault-system\nVault (KV v2)\nTokenReviewer" }
+  ESONS: { class: control; label: "external-secrets-system\nESO controllers" }
+  AppNS: { class: data; label: "App namespaces\nExternalSecret CRs\nKubernetes Secrets\nPods" }
+}
+
+CloudSM: {
+  class: ext
+  label: "Cloud secret managers"
   AWS: "AWS Secrets Manager"
   GCP: "GCP Secret Manager"
   Azure: "Azure Key Vault"
 }
 
 External: {
+  class: ext
   label: "External workloads"
   Lambda: "AWS Lambda"
   CloudRun: "GCP Cloud Run"
-  AzureFunc: "Azure Functions"
-  CrossplaneRDS: "Crossplane-managed RDS"
+  Functions: "Azure Functions"
+  Crossplane: "Crossplane-managed DBs"
 }
 
-Cluster.ESO_NS.Vault -> Cluster.ESO_NS.ESO: "read"
-Cluster.ESO_NS.ESO -> Cluster.AppNS.K8sSecrets: "create/update"
-Cluster.AppNS.K8sSecrets -> Cluster.AppNS.Pods: "mount"
+Cluster.VaultNS -> Cluster.ESONS: "auth (K8s SA) + read KV"
+Cluster.ESONS -> Cluster.AppNS: "create/update Secrets"
+Cluster.AppNS -> Cluster.AppNS: "Pods mount or env"
 
-Cluster.ESO_NS.ESO -> Cloud.AWS: "PushSecret"
-Cluster.ESO_NS.ESO -> Cloud.GCP: "PushSecret"
-Cluster.ESO_NS.ESO -> Cloud.Azure: "PushSecret"
-
-Cloud.AWS -> External.Lambda: "consume"
-Cloud.AWS -> External.CrossplaneRDS: "consume"
-Cloud.GCP -> External.CloudRun: "consume"
-Cloud.Azure -> External.AzureFunc: "consume"
+Cluster.ESONS -> CloudSM.AWS: "PushSecret (optional)"
+Cluster.ESONS -> CloudSM.GCP
+Cluster.ESONS -> CloudSM.Azure
+CloudSM.AWS -> External.Lambda: "consume"
+CloudSM.AWS -> External.Crossplane
+CloudSM.GCP -> External.CloudRun
+CloudSM.Azure -> External.Functions
 ```
 
 ## Flow Explanation

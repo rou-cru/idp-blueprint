@@ -6,7 +6,7 @@ This document outlines the GitOps strategy for managing all applications and ser
 (workloads) deployed on the cluster. This directory (`K8s/`) is the source of truth,
 managed exclusively by ArgoCD.
 
-From a C4 perspective this page provides a **component view (L3)** of the GitOps application layer ("2. Automation & governance" and "3. Developer‑facing stacks" in the overview).
+This page provides a component view of the GitOps application layer (automation/governance and developer‑facing stacks).
 
 ## Core Pattern: App of AppSets
 
@@ -24,42 +24,40 @@ reduces the blast radius of any configuration errors.
 
 ### GitOps Workflow Diagram
 
-This diagram illustrates the entire flow, from the Git repository to the deployed
-applications in their respective namespaces.
-
 ```d2
 direction: right
 
-Git: {
-  label: "Git Repository (K8s/)"
-  Root: "Root App"
-}
+classes: { git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           ns: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
+Git: { class: git; label: "Git repo\nK8s/" }
 
 Argo: {
-  label: "ArgoCD"
-  AppSetCICD: "AppSet-CICD"
-  AppSetObs: "AppSet-Observability"
-  AppSetSec: "AppSet-Security"
-  DiscWF: "argo-workflows/"
-  DiscLoki: "loki/"
-  DiscProm: "prometheus/"
+  class: control
+  label: "ArgoCD (app-of-appsets)"
+  AppSets: {
+    CICD: "ApplicationSet: cicd"
+    OBS: "ApplicationSet: observability"
+    SEC: "ApplicationSet: security"
+    DP: "ApplicationSet: backstage"
+  }
 }
 
 Cluster: {
-  label: "Kubernetes Cluster"
-  NSCICD: "Namespace: cicd"
-  NSOBS: "Namespace: observability"
+  class: ns
+  label: "Namespaces"
+  CICD: "cicd"
+  OBS: "observability"
+  SEC: "security"
+  DP: "backstage"
 }
 
-Git.Root -> Argo.AppSetCICD: deploys
-Git.Root -> Argo.AppSetObs: deploys
-Git.Root -> Argo.AppSetSec: deploys
-Argo.AppSetCICD -> Argo.DiscWF: discovers
-Argo.AppSetObs -> Argo.DiscLoki: discovers
-Argo.AppSetObs -> Argo.DiscProm: discovers
-Argo.DiscWF -> Cluster.NSCICD: deploys to
-Argo.DiscLoki -> Cluster.NSOBS: deploys to
-Argo.DiscProm -> Cluster.NSOBS: deploys to
+Git -> Argo: "Root app\n(manages AppSets)"
+Argo.AppSets.CICD -> Cluster.CICD: "generate apps\nargo-workflows/, sonarqube/"
+Argo.AppSets.OBS -> Cluster.OBS: "generate apps\nloki/, kube-prometheus-stack/"
+Argo.AppSets.SEC -> Cluster.SEC: "generate apps\ntrivy-operator/"
+Argo.AppSets.DP -> Cluster.DP: "generate apps\nbackstage/"
 ```
 
 ## Bootstrap and Standalone Applications

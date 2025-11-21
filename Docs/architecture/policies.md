@@ -2,7 +2,7 @@
 
 Governance lives under `Policies/` and is deployed before any workload stacks sync. Kyverno enforces the rules, while Policy Reporter surfaces compliance status.
 
-From a C4 perspective this page is a **component view (L3)** for the automation & governance layer (Kyverno + Policy Reporter).
+This page shows the component view for the automation & governance layer (Kyverno + Policy Reporter).
 
 ## Policy Layers
 
@@ -17,19 +17,25 @@ From a C4 perspective this page is a **component view (L3)** for the automation 
 ```d2
 direction: right
 
-Git: "Policies/ Directory"
-KyvernoApp: "ArgoCD Application"
-Kyverno: "Kyverno Helm Release"
-Policies: "ClusterPolicy + Policy"
-Reporter: "Policy Reporter"
-Dash: "Grafana & UI"
+classes: { actor: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+           ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white } }
 
-Git -> KyvernoApp: kustomize build
-KyvernoApp -> Kyverno
-Kyverno -> Policies
-KyvernoApp -> Reporter
-Policies -> Reporter
-Reporter -> Dash
+Author: { class: actor; label: "Platform Engineer" }
+Repo: { class: git; label: "Policies/ (Git)\nKyverno + Reporter" }
+Argo: { class: control; label: "ArgoCD\nPolicies App" }
+Kyverno: { class: control; label: "Kyverno controllers" }
+Cluster: { class: data; label: "Namespaces + workloads" }
+Reporter: { class: ui; label: "Policy Reporter UI\n+ metrics to Grafana" }
+
+Author -> Repo: "edit / review"
+Repo -> Argo: "commit → sync"
+Argo -> Kyverno: "apply manifests"
+Kyverno -> Cluster: "enforce / mutate / audit"
+Kyverno -> Reporter: "PolicyReports"
+Reporter -> Author: "dashboards & alerts"
 ```
 
 - `Policies/app-kyverno.yaml` – ArgoCD Application applied during bootstrap.
@@ -59,37 +65,41 @@ Kyverno policies plug into the same sync‑wave model described in
 ```d2
 direction: right
 
-Author: {
-  label: "Platform Engineer"
-  shape: c4-person
-}
+classes: { actor: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           gov: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+           domain: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
 
-Git: {
-  label: "Policies repo\n(Git)"
-}
-
-Argo: {
-  label: "ArgoCD\nPolicies Application"
-}
-
-Kyverno: {
-  label: "Kyverno\ncontroller"
-}
-
-K8s: {
-  label: "Kubernetes cluster\n(resources under policy)"
-}
-
+Lifecycle: {
+  class: gov
+  label: "Policy lifecycle"
+  Repo: "Git: Policies/"
+  Argo: "ArgoCD policy app"
+  Kyverno: "Kyverno controllers"
+  Cluster: {
+    class: domain
+    label: "Cluster scope"
+    Work: "Workloads"
+    Ns: "Namespaces"
+  }
 Reporter: {
-  label: "Policy Reporter\nUI + metrics"
+  class: ui
+  label: "Reporting UI"
+  PR: "Policy Reporter"
+  Grafana: "Grafana (dashboards)"
+}
 }
 
-Author -> Git: "edit policy YAML"
-Git -> Argo: "commit pushed"
-Argo -> Kyverno: "apply ClusterPolicy/Policy"
-Kyverno -> K8s: "enforce / monitor"
-Kyverno -> Reporter: "emit PolicyReports"
-Reporter -> Author: "show pass/fail"
+Author: { class: actor; label: "Engineer" }
+
+Author -> Lifecycle.Repo: "author / review"
+Lifecycle.Repo -> Lifecycle.Argo: "commit → sync"
+Lifecycle.Argo -> Lifecycle.Kyverno: "apply"
+Lifecycle.Kyverno -> Lifecycle.Cluster.Work: "mutate/enforce"
+Lifecycle.Kyverno -> Lifecycle.Cluster.Ns: "validate labels"
+Lifecycle.Kyverno -> Lifecycle.Reporter.PR: "PolicyReports"
+Lifecycle.Reporter.PR -> Lifecycle.Reporter.Grafana: "dashboards/metrics"
+Lifecycle.Reporter.Grafana -> Author: "status + alerts"
 ```
 
 ### Verify

@@ -7,45 +7,57 @@ Make the networking model easy to reason about: a single Gateway receives HTTPS 
 ```d2
 direction: right
 
-Client: {
-  Browser: "User / CLI"
-}
+classes: { actor: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           gateway: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           route: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+           backend: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+           pki: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white } }
+
+Client: { class: actor; label: "User (browser/CLI)" }
 
 Gateway: {
-  label: "Gateway API (Cilium)"
-  SVC: "NodePort (nodeport_http / nodeport_https from config.toml)"
-  Listener: "HTTPS *.nip.io"
-  TLS: "Wildcard cert"
-  Routes: {
-    argocd: "argocd"
-    grafana: "grafana"
-    vault: "vault"
-    workflows: "workflows"
-    pyrra: "pyrra (SLO UI)"
-  }
+  class: gateway
+  label: "Gateway API (Cilium)\nNodePort http/https\nListener: HTTPS *.nip.io"
+}
+
+Routes: {
+  class: route
+  Argo: "argocd"
+  Grafana: "grafana"
+  Vault: "vault"
+  Workflows: "workflows"
+  Pyrra: "pyrra"
+  Backstage: "backstage"
 }
 
 Backends: {
-  argocd: "argocd-server:80"
-  grafana: "prometheus-grafana:80"
-  vault: "vault:8200"
-  workflows: "argo-workflows-server:2746"
-  pyrra: "pyrra:9099"
+  class: backend
+  A: "argocd-server:80"
+  G: "prometheus-grafana:80"
+  V: "vault:8200"
+  W: "argo-workflows-server:2746"
+  P: "pyrra:9099"
+  B: "backstage:7007"
 }
 
-PKI: {
-  CA: "idp-demo-ca"
-  Issuer: "ca-issuer"
-  Wildcard: "*.nip.io"
-}
+PKI: { class: pki; label: "PKI\nCA: idp-demo-ca\nIssuer: ca-issuer\nWildcard: *.nip.io" }
 
-Client.Browser -> Gateway.SVC: HTTPS
-Gateway.Listener -> PKI.Wildcard: terminate
-Gateway.Routes.argocd -> Backends.argocd
-Gateway.Routes.grafana -> Backends.grafana
-Gateway.Routes.vault -> Backends.vault
-Gateway.Routes.workflows -> Backends.workflows
-Gateway.Routes.pyrra -> Backends.pyrra
+Client -> Gateway: HTTPS
+Gateway -> Routes.Argo
+Gateway -> Routes.Grafana
+Gateway -> Routes.Vault
+Gateway -> Routes.Workflows
+Gateway -> Routes.Pyrra
+Gateway -> Routes.Backstage
+
+Routes.Argo -> Backends.A
+Routes.Grafana -> Backends.G
+Routes.Vault -> Backends.V
+Routes.Workflows -> Backends.W
+Routes.Pyrra -> Backends.P
+Routes.Backstage -> Backends.B
+
+PKI -> Gateway: "TLS termination"
 ```
 
 ## Decision: Gateway API over Ingress

@@ -7,29 +7,34 @@ The platform treats capacity as a product feature. PriorityClasses and pools ens
 ```d2
 direction: right
 
-Priority: {
+classes: { prio: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           pool: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
+Priorities: {
+  class: prio
   Infra: "platform-infrastructure\n(Vault, ArgoCD, cert-manager)"
   Events: "platform-events\n(Argo Events)"
   Observ: "platform-observability\n(Prometheus, Loki)"
   Policy: "platform-policy\n(Kyverno)"
-  CICD: "platform-cicd\n(Argo Workflows)"
+  CICD: "platform-cicd / cicd-execution\n(Workflows controller + pods)"
   Dash: "platform-dashboards\n(Grafana)"
-  Exec: "cicd-execution\n(Workflow pods)"
+  Users: "user-workloads\n(default)"
 }
 
 Pools: {
-  ControlPlane: "K8s control plane"
-  InfraNodes: "infra services"
-  WorkloadNodes: "apps + CI/CD"
+  class: pool
+  Control: "Control plane node"
+  Infra: "Infra nodes"
+  Work: "Workload nodes"
 }
 
-Priority.Infra -> Pools.InfraNodes
-Priority.Events -> Pools.InfraNodes
-Priority.Observ -> Pools.InfraNodes
-Priority.Policy -> Pools.InfraNodes
-Priority.CICD -> Pools.WorkloadNodes
-Priority.Dash -> Pools.WorkloadNodes
-Priority.Exec -> Pools.WorkloadNodes
+Priorities.Infra -> Pools.Infra
+Priorities.Events -> Pools.Infra
+Priorities.Observ -> Pools.Infra
+Priorities.Policy -> Pools.Infra
+Priorities.CICD -> Pools.Work
+Priorities.Dash -> Pools.Work
+Priorities.Users -> Pools.Work
 ```
 
 Key points:

@@ -16,22 +16,24 @@ This is your guided tour of what “task deploy” does. It’s automated by des
 ```d2
 direction: right
 
-Cluster: {
-  label: "Local IDP Cluster (k3d)"
-  Core: "Core (Cilium, cert-manager, Vault, ESO)"
-  GitOps: "ArgoCD (GitOps)"
-  Gateway: {
-    label: "Gateway (nip.io + TLS)"
-    shape: cloud
-  }
-  Policies: "Kyverno (Policies)"
-  Stacks: {
-    label: "Stacks (Observability, CI/CD, Security)"
-    style: {
-      multiple: true
-    }
-  }
+classes: { step: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#22d3ee" } }
+
+Bootstrap: {
+  class: step
+  K3d: "Create k3d cluster"
+  Core: "Install core (Cilium, cert-manager, Vault, ESO)"
+  Argo: "Install ArgoCD + AppProjects"
+  Gateway: "Apply Gateway API + wildcard cert"
+  Policies: "Deploy Kyverno + Policy Reporter"
 }
+
+GitOps: {
+  class: step
+  Stacks: "Sync stacks (observability, CI/CD, security, backstage)"
+  Govern: "Enforce quotas/limits/labels"
+}
+
+Bootstrap.K3d -> Bootstrap.Core -> Bootstrap.Argo -> Bootstrap.Gateway -> Bootstrap.Policies -> GitOps.Stacks -> GitOps.Govern
 ```
 
 ## Configure via config.toml

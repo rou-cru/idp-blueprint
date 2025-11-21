@@ -2,7 +2,7 @@
 
 > **Prerequisites:** This builds on the [GitOps philosophy](design-philosophy.md#3-gitops). For implementation details, see [Application Architecture](../architecture/applications.md).
 
-This IDP is GitOps‑first, policy‑driven, and event‑oriented. The goal is one predictable path from intent to action, plus a programmable way to react to signals.
+This IDP is GitOps‑first, policy‑driven, and event‑oriented. The goal is one predictable path from intent to action, plus a programmable way to react to signals. We borrow C4 naming to structure views but keep diagrams jargon‑free.
 
 ## Two layers of change: Bootstrap vs GitOps
 
@@ -12,9 +12,13 @@ This IDP is GitOps‑first, policy‑driven, and event‑oriented. The goal is o
 ```d2
 direction: right
 
-IT: "Bootstrap (once)"
-K8s: "GitOps (continuous)"
-IT -> K8s: "seed control planes"
+classes: { infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           gitops: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white } }
+
+IT: { class: infra; label: "Bootstrap (IT/)\nOne-time install\nCilium, cert-manager, Vault, ESO, ArgoCD, Gateway" }
+GitOps: { class: gitops; label: "GitOps (K8s/)\nContinuous reconcile\nStacks via ApplicationSets" }
+
+IT -> GitOps: "seed control planes"
 ```
 
 ## AppProjects and ApplicationSets — guardrails and generation
@@ -25,24 +29,35 @@ IT -> K8s: "seed control planes"
 ```d2
 direction: right
 
-Git: {
-  Repo: "https://github.com/rou-cru/idp-blueprint @ HEAD"
-  Folders: {
-    Obs: "K8s/observability/*"
-    Cicd: "K8s/cicd/*"
-    Sec: "K8s/security/*"
-  }
+classes: { git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           ns: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
+Repo: { class: git; label: "Git\nK8s/* stacks" }
+
+Argo: {
+  class: control
+  label: "ArgoCD"
+  Projects: "AppProjects\n(blast radius)"
+  AppSets: "ApplicationSets\n(one per stack)"
+  Apps: "Applications\n(one per component)"
 }
 
-ArgoCD: {
-  AppProjects
-  ApplicationSets
-  Applications
+Namespaces: {
+  class: ns
+  OBS: "observability"
+  CICD: "cicd"
+  SEC: "security"
+  DP: "backstage"
 }
 
-Git.Folders.Obs -> ArgoCD.ApplicationSets: "generator"
-ArgoCD.ApplicationSets -> ArgoCD.Applications: "templates"
-ArgoCD.Applications -> Cluster: "sync (waves)"
+Repo -> Argo.AppSets: "directories → generators"
+Argo.AppSets -> Argo.Projects: "scoped"
+Argo.AppSets -> Argo.Apps: "templates"
+Argo.Apps -> Namespaces.OBS: "sync"
+Argo.Apps -> Namespaces.CICD
+Argo.Apps -> Namespaces.SEC
+Argo.Apps -> Namespaces.DP
 ```
 
 ## Sync Waves — ordering without scripts
@@ -86,26 +101,32 @@ Typical recipes:
 ```d2
 direction: right
 
+classes: { event: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           action: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
 Sources: {
-  label: "Event Sources"
-  Alertmanager
-  GitHub
-  K8sResources
+  class: event
+  Alert: "Alertmanager"
+  GitHub: "GitHub webhooks"
+  K8s: "K8s resource events"
 }
 
-ArgoEvents: {
-  Sensors: "filters + routing"
-  Triggers: {
-    WF: "Argo Workflows"
-    ACD: "ArgoCD API"
-    HTTP: "Webhooks"
-  }
+Sensors: { class: control; label: "Argo Events Sensors\n(filters + routing)" }
+
+Triggers: {
+  class: action
+  WF: "Argo Workflows"
+  ACD: "ArgoCD API"
+  HTTP: "HTTP/webhook"
 }
 
-Sources -> ArgoEvents.Sensors: emit
-ArgoEvents.Sensors -> Triggers.WF
-ArgoEvents.Sensors -> Triggers.ACD
-ArgoEvents.Sensors -> Triggers.HTTP
+Sources.Alert -> Sensors
+Sources.GitHub -> Sensors
+Sources.K8s -> Sensors
+Sensors -> Triggers.WF
+Sensors -> Triggers.ACD
+Sensors -> Triggers.HTTP
 ```
 
 ## Sync policy, drift, and safety
