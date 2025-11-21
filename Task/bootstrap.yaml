@@ -313,7 +313,7 @@ tasks:
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd
         --timeout={{.KUBECTL_TIMEOUT}}
       - task: it:eso:apply-resources
-      - for: [platform, observability, cicd, security, events]
+      - for: [platform, observability, cicd, security, events, backstage]
         cmd: envsubst < appproject-{{.ITEM}}.yaml | kubectl apply -f -
 
   gateway:deploy:
@@ -351,6 +351,7 @@ tasks:
       - |
         echo "✅ Gateway ready. Services available at:"
         echo "   https://argocd.$DNS_SUFFIX"
+        echo "   https://backstage.$DNS_SUFFIX"
         echo "   https://events.$DNS_SUFFIX"
         echo "   https://grafana.$DNS_SUFFIX"
         echo "   https://vault.$DNS_SUFFIX"

@@ -1,11 +1,13 @@
+# Defines the namespace for the Backstage developer portal.
 apiVersion: v1
 kind: Namespace
 metadata:
   name: backstage
-  annotations:
-    argocd.argoproj.io/sync-wave: "-2"
   labels:
     app.kubernetes.io/part-of: idp
     owner: platform-team
     business-unit: infrastructure
     environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    description: "Namespace for the Backstage developer portal."
