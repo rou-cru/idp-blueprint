@@ -11,8 +11,7 @@ edit_uri: edit/main/Docs/
 
 # Copyright
 copyright: |
-  Copyright &copy; 2024-2025 <a href="https://roura.xyz" target="_blank" rel="noopener author">Alberto Roura</a> -
-  <a href="https://roura.xyz" target="_blank" rel="noopener">Platform Engineering Portfolio</a>
+  Copyright &copy; 2024-2025 <a href="https://roura.xyz" target="_blank" rel="noopener author">Alberto Roura</a>
 
 # Configuration
 theme:
@@ -28,7 +27,6 @@ theme:
     code: "JetBrains Mono"
   features:
     # Content features
-    - content.action.edit
     - content.code.copy
     - content.tabs.link
     - content.tooltips
@@ -39,7 +37,7 @@ theme:
     - navigation.instant.progress
     - navigation.sections
     - navigation.tabs
-    # - navigation.tabs.sticky
+    - navigation.tabs.sticky
     - navigation.path
     - navigation.top
     - navigation.tracking
