@@ -6,10 +6,10 @@ servers: 1
 agents: 2
 image: rancher/k3s:v1.33.4-k3s1
 ports:
-  - port: 80:30080
+  - port: 80:${NODEPORT_HTTP}
     nodeFilters:
       - server:0
-  - port: 443:30443
+  - port: 443:${NODEPORT_HTTPS}
     nodeFilters:
       - server:0
 registries:

@@ -85,12 +85,8 @@ jobs:
       - name: Sync documentation dependencies
         run: uv sync --locked
 
-      - name: Generate Chart.yaml metadata
-        run: devbox run -- task utils:docs:metadata
-        working-directory: .devcontainer
-
-      - name: Generate Helm documentation
-        run: devbox run -- task utils:docs:helm
+      - name: Generate documentation (metadata + helm-docs)
+        run: devbox run -- task utils:docs
         working-directory: .devcontainer
 
       - name: Build MkDocs site

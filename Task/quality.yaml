@@ -20,7 +20,7 @@ tasks:
     desc: 'Lint all YAML files'
     internal: true
     cmds:
-      - yamllint .
+      - yamllint -c .config/lint/.yamllint .
 
   lint:shell:
     desc: 'Lint all shell scripts'
@@ -38,7 +38,7 @@ tasks:
     desc: 'Lint all Markdown files'
     internal: true
     cmds:
-      - markdownlint-cli2 .
+      - markdownlint-cli2 -c .config/lint/.markdownlint-cli2.yaml .
 
   lint:helm:
     desc: 'Validate Helm values documentation completeness'
@@ -90,7 +90,7 @@ tasks:
     desc: 'Scan for hardcoded secrets'
     internal: true
     cmds:
-      - trufflehog filesystem . --exclude-paths .trufflehog-ignore --log-level=-1
+      - trufflehog filesystem . --exclude-paths .config/lint/.trufflehog-ignore --log-level=-1
 
   check:
     desc: 'Run all checks (lint, validation, security)'

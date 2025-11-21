@@ -20,7 +20,6 @@ tasks:
 
   docs:helm:
     desc: 'Generate documentation for Helm charts'
-    internal: true
     cmds:
       - ./Scripts/helm-docs-generate.sh
 

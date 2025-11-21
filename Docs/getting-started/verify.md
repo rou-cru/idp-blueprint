@@ -81,7 +81,7 @@ Endpoints follow your LAN IP as a nip.io wildcard. If your IP is 127.0.0.1:
 - Argo Workflows: https://workflows.127-0-0-1.nip.io
 - SonarQube: https://sonarqube.127-0-0-1.nip.io
 
-Reachable from other devices on your LAN using your workstation IP. Ensure NodePorts `30080`/`30443` are allowed by your OS firewall.
+Reachable from other devices on your LAN using your workstation IP. Ensure the configured NodePorts are allowed by your OS firewall.
 
 ## Login Notes
 

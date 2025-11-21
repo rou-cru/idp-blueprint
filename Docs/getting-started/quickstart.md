@@ -43,12 +43,12 @@ Time: ~5–10 minutes depending on network and hardware.
     - The task prints the service URLs when Gateway is ready (for example `https://argocd.<ip>.nip.io`). Copy them from the output.
 
 !!! warning
-    The Gateway uses NodePorts `30080` (HTTP) and `30443` (HTTPS).
+    The Gateway uses NodePorts from `config.toml` (`nodeport_http`/`nodeport_https`, defaults `30080`/`30443`).
     Ensure they are not in use by other services.
 
 ## 3. First access
 
-When the Gateway is ready, open the printed URLs. They use a nip.io wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`). Ensure NodePorts `30080`/`30443` are allowed by your OS firewall.
+When the Gateway is ready, open the printed URLs. They use a nip.io wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`). Ensure the configured NodePorts are allowed by your OS firewall.
 
 ## 4. Credentials
 
