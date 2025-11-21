@@ -1,6 +1,8 @@
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Documentation](https://github.com/rou-cru/idp-blueprint/actions/workflows/docs.yaml/badge.svg?branch=main)](https://github.com/rou-cru/idp-blueprint/actions/workflows/docs.yaml)
+
 # IDP-blueprint
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?style=flat-square&logo=kubernetes)](https://k3d.io/)
 [![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?style=flat-square&logo=docker)](https://containers.dev/)
 [![Task](https://img.shields.io/badge/Automation-Task-violet?style=flat-square&logo=task)](https://taskfile.dev/)
@@ -415,17 +417,9 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 - [ ] Cost optimization dashboard
 - [ ] Implement NetworkPolicies for enhanced security and namespace isolation
 
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE)
-file for details.
-
-Feel free to use this as a reference or foundation for your own IDP
-implementations.
-
 ## 🙏 Acknowledgments
 
-This project integrates and builds upon excellent open-source tools from the
+This project integrates and builds open-source tools from the
 Cloud Native ecosystem:
 
 - ArgoCD by Argo Project
@@ -553,4 +547,14 @@ the project.
 
 ---
 
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE)
+file for details.
+
+Feel free to use this as a reference or foundation for your own IDP
+implementations.
+
 **⭐ If you find this project useful, please consider starring it on GitHub!**
+
+
