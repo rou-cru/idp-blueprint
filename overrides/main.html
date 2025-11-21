@@ -190,32 +190,44 @@
 {% block scripts %}
   {{ super() }}
 
-  <!-- Add personal branding link to header -->
+  <!-- Add personal branding link to header and reorganize layout -->
   <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    function setupHeader() {
       const header = document.querySelector(".md-header__inner");
+      const tabs = document.querySelector(".md-tabs");
 
-      if (header) {
-        const personalLink = document.createElement("a");
-        personalLink.href = "https://roura.xyz";
-        personalLink.className = "md-header__personal-link";
-        personalLink.title = "Alberto Roura - Platform Engineering";
-        personalLink.target = "_blank";
-        personalLink.rel = "noopener author";
-        personalLink.setAttribute("aria-label", "Visit author's website");
-
-        personalLink.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-          </svg>
-          <span>roura.xyz</span>
-        `;
-
-        const repoLink = header.querySelector('a[href*="github.com"]');
-        if (repoLink) {
-          repoLink.parentNode.insertBefore(personalLink, repoLink);
+      if (header && tabs) {
+        // Move tabs into header
+        const searchButton = header.querySelector('label[for="__search"]');
+        if (searchButton) {
+          header.insertBefore(tabs, searchButton);
         } else {
-          header.appendChild(personalLink);
+          header.appendChild(tabs);
+        }
+
+        // Create personal link if it doesn't exist
+        if (!header.querySelector(".md-header__personal-link")) {
+          const personalLink = document.createElement("a");
+          personalLink.href = "https://roura.xyz";
+          personalLink.className = "md-header__personal-link";
+          personalLink.title = "Alberto Roura - Platform Engineering";
+          personalLink.target = "_blank";
+          personalLink.rel = "noopener author";
+          personalLink.setAttribute("aria-label", "Visit author's website");
+
+          personalLink.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            <span>roura.xyz</span>
+          `;
+
+          const searchButton = header.querySelector('label[for="__search"]');
+          if (searchButton) {
+            header.insertBefore(personalLink, searchButton);
+          } else {
+            header.appendChild(personalLink);
+          }
         }
       }
 
@@ -244,14 +256,20 @@
           titleElement.textContent = siteName;
         }
       }
-    });
+    }
+
+    document.addEventListener("DOMContentLoaded", setupHeader);
 
     // Also handle instant navigation events
-    document$.subscribe(function() {
-      const headerTitle = document.querySelector(".md-header__title .md-header__ellipsis");
-      if (headerTitle) {
-        headerTitle.textContent = "IDP Blueprint";
-      }
-    });
+    if (typeof document$ !== 'undefined') {
+      document$.subscribe(function() {
+        setTimeout(setupHeader, 100);
+
+        const headerTitle = document.querySelector(".md-header__title .md-header__ellipsis");
+        if (headerTitle) {
+          headerTitle.textContent = "IDP Blueprint";
+        }
+      });
+    }
   </script>
 {% endblock %}
