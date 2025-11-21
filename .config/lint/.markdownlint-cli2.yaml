@@ -5,6 +5,7 @@ gitignore: true
 
 # Explicit ignores for build artifacts and caches
 ignores:
+  - ".git/**"
   - ".devbox/**"
   - ".task/**"
   - "devbox.d/**"
@@ -16,6 +17,11 @@ ignores:
   - ".claude/**"
   - ".codex/**"
   - ".memory/**"
+  - ".serena/**"
+  - ".gemini/**"
+  - ".github/**"
+  - ".devcontainer/**"
+  - ".config/**"
 
 # Linting rules configuration
 config:

@@ -1,3 +1,6 @@
+# Git directory
+.git/
+
 # Devbox and build artifacts
 .devbox/
 .task/
@@ -18,3 +21,10 @@ node_modules/
 .claude/
 .codex/
 .memory/
+.serena/
+.gemini/
+
+# GitHub and dev configs
+.github/
+.devcontainer/
+.config/

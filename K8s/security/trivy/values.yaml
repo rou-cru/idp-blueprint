@@ -23,6 +23,16 @@ operator:
   # -- (bool) Enable cluster compliance scanner
   clusterComplianceEnabled: true
 
+  # @section -- Scan Job Concurrency & Performance
+  # -- (int) Maximum number of concurrent scan jobs (default: 10)
+  scanJobsConcurrentLimit: 3
+  # -- (int) Maximum number of concurrent node collector jobs (default: 1)
+  scanNodeCollectorLimit: 1
+  # -- (string) Timeout for scan jobs
+  scanJobTimeout: 5m
+  # -- (string) Delay before retrying failed scan jobs
+  scanJobsRetryDelay: 30s
+
 # @section -- Compliance
 compliance:
   # -- (bool) Enable compliance reporting
@@ -50,6 +60,8 @@ trivy:
   mode: ClientServer
   # -- (string) Trivy Server URL
   serverURL: "http://trivy-server.security.svc:4954"
+  # -- (bool) Use slower scanning mode (lower CPU/memory usage)
+  slow: true
 
 # @section -- Trivy Server
 trivyServer:
