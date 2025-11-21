@@ -1,0 +1,25 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: backstage
+  namespace: backstage
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/name: backstage
+    app.kubernetes.io/instance: backstage-demo
+    app.kubernetes.io/component: developer-portal
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    description: 'HTTPRoute for Backstage developer portal'
+    contact: platform-team
+    documentation: https://backstage.io
+spec:
+  parentRefs:
+    - name: idp-gateway
+      namespace: kube-system
+  hostnames:
+    - "backstage.${DNS_SUFFIX}"
+  rules:
+    - backendRefs:
+        - name: backstage
+          port: 7007

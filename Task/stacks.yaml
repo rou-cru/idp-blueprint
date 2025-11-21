@@ -71,6 +71,20 @@ tasks:
     cmds:
       - envsubst < applicationset-events.yaml | kubectl apply -f -
 
+  backstage:
+    desc: 'Deploy the Backstage developer portal via ArgoCD'
+    dir: K8s/backstage
+    preconditions:
+      - sh: command -v envsubst
+        msg: 'envsubst is required but not installed. Run: brew install gettext'
+      - sh: command -v kubectl
+        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    env:
+      REPO_URL: '{{.REPO_URL}}'
+      TARGET_REVISION: '{{.TARGET_REVISION}}'
+    cmds:
+      - envsubst < applicationset-backstage.yaml | kubectl apply -f -
+
   deploy:
     desc: 'Deploy all application stacks via ArgoCD ApplicationSets (feature-gated)'
     cmds:
@@ -97,5 +111,11 @@ tasks:
           task stacks:security || exit 1
         else
           echo "Skipping security"
+        fi
+      - |
+        if [ "{{.FUSE_BACKSTAGE}}" != "false" ]; then
+          task stacks:backstage || exit 1
+        else
+          echo "Skipping backstage"
         fi
       - task stacks:events

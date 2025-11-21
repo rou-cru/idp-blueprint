@@ -118,6 +118,9 @@ vars:
   FUSE_CICD:
     sh: |
       v=$(./Scripts/config-get.sh fuses.cicd '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
+  FUSE_BACKSTAGE:
+    sh: |
+      v=$(./Scripts/config-get.sh fuses.backstage '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
   FUSE_PROD:
     sh: |
       v=$(./Scripts/config-get.sh fuses.prod '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=false; echo "$v"

@@ -66,5 +66,6 @@ policies = true
 security = true
 observability = true
 cicd = true
+backstage = true
 # Harden profile
 prod = false

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: governance
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo

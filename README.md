@@ -411,7 +411,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 ## 🗺️ Roadmap
 
-- [ ] Add Backstage as developer portal
+- [x] Add Backstage as developer portal
 - [ ] Crossplane for infrastructure as code
 - [ ] OpenTelemetry Collector + Tempo for distributed tracing
 - [ ] Cost optimization dashboard
@@ -544,5 +544,4 @@ performs an automatic initialization step:
 repositories manually and can add other env setup steps without caring how the
 environment itself is generated. They will always be ready for you to deploy
 the project.
-
 
