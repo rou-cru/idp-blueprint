@@ -1,4 +1,5 @@
 .devbox
+.devcontainer/.devbox
 .env
 .task/
 .venv/
