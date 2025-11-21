@@ -2,7 +2,7 @@
 
 The `K8s/cicd/` directory hosts everything developers need to run workflows, quality scans, and build-time policies inside the IDP.
 
-From a C4 perspective this page is a **component view (L3)** of the CI/CD part of the developer‑facing stacks.
+This page shows the component view of the CI/CD part of the developer‑facing stacks.
 
 ## Components
 
@@ -23,38 +23,34 @@ From a C4 perspective this page is a **component view (L3)** of the CI/CD part o
 ```d2
 direction: right
 
-Dev: {
-  label: "Developer"
-  shape: c4-person
+classes: { actor: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+           ux: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white } }
+
+Dev: { class: actor; label: "Developer" }
+Git: { class: actor; label: "Git repo\nWorkflow specs" }
+
+Argo: {
+  class: control
+  Server: "Argo Workflows server\n(UI/API)"
+  Controller: "Workflow controller"
 }
 
-Git: {
-  label: "Git repo\nWorkflow YAML"
+Exec: {
+  class: data
+  Pods: "Workflow pods\n(priority: cicd-execution)"
+  Secrets: "Secrets from Vault via ESO"
 }
 
-ArgoUI: {
-  label: "Argo Workflows\nUI / CLI"
-}
+Sonar: { class: ux; label: "SonarQube\nquality gate" }
 
-Controller: {
-  label: "Workflow controller"
-}
-
-Pods: {
-  label: "Workflow pods"
-}
-
-Sonar: {
-  label: "SonarQube"
-}
-
-Dev -> Git: "commit workflow template"
-Dev -> ArgoUI: "submit workflow"
-Git -> ArgoUI: "reference Git artifact"
-ArgoUI -> Controller: "create Workflow CR"
-Controller -> Pods: "launch pods\n(priority: cicd-execution)"
-Pods -> Sonar: "run quality gate"
-Controller -> Dev: "status in UI / CLI / metrics"
+Dev -> Git: "author templates"
+Git -> Argo.Server: "submit / reference artifact"
+Argo.Server -> Argo.Controller: "create Workflow CR"
+Argo.Controller -> Exec.Pods: "launch steps"
+Exec.Pods -> Sonar: "scan & gate"
+Exec.Pods -> Argo.Server: "status / metrics"
 ```
 
 ## Secrets & Credentials
@@ -84,20 +80,9 @@ Controller -> Dev: "status in UI / CLI / metrics"
 
 ## Example: Quality Gate Workflow
 
-```d2
-direction: right
+Keep this as a concise stage map (not a sequence diagram) to explain gate placement:
 
-Code: "Source Repo"
-Build: "Build & Test"
-Scan: "SonarQube Scan"
-Gate: {
-  label: "Quality Gate"
-}
-Deploy: "GitOps Merge"
+- **Code** → **Build & Test** → **SonarQube Scan** → **Quality Gate**
+- Pass → proceed to **GitOps Merge**; Fail → return to **Code**.
 
-Code -> Build -> Scan -> Gate
-Gate -> Deploy: pass
-Gate -> Code: fail
-```
-
-In Argo Workflows, this translates to a DAG with `build` → `sonarqube-scan` → `quality-gate`. The scan step reaches out to SonarQube using the Vault-provisioned monitoring token.
+In Argo Workflows, this becomes a DAG (`build` → `sonarqube-scan` → `quality-gate`) using the Vault-provisioned monitoring token.

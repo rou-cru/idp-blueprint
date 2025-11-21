@@ -33,32 +33,29 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 ```d2
 direction: right
 
-You: {
-  label: "You"
-  shape: person
+classes: { actor: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#38bdf8" }
+           gateway: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white } }
+
+User: { class: actor; label: "You\n(Laptop)" }
+Browser: { class: actor; label: "Browser" }
+
+Gateway: { class: gateway; label: "Gateway API\nTLS *.nip.io" }
+
+UIs: {
+  class: ui
+  Argo: "ArgoCD"
+  Grafana
+  Vault
+  Backstage
 }
 
-Browser: "Web Browser"
-
-Cluster: {
-  label: "Local k3d Cluster"
-  Gateway: {
-    label: "Gateway (nip.io + TLS)"
-    shape: cloud
-  }
-  UIs: {
-    label: "Platform UIs"
-    ArgoCD
-    Grafana
-    Vault
-  }
-}
-
-You -> Browser: open URL
-Browser -> Cluster.Gateway: HTTPS
-Cluster.Gateway -> Cluster.UIs.ArgoCD
-Cluster.Gateway -> Cluster.UIs.Grafana
-Cluster.Gateway -> Cluster.UIs.Vault
+User -> Browser: "open https://<app>.<ip>.nip.io"
+Browser -> Gateway: HTTPS
+Gateway -> UIs.Argo
+Gateway -> UIs.Grafana
+Gateway -> UIs.Vault
+Gateway -> UIs.Backstage
 ```
 
 ## Reference screens

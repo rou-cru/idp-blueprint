@@ -3,31 +3,11 @@
 
 Make capacity intentional: prioritize what must stay up, keep metrics/logs affordable, and avoid cardinality explosions.
 
-## Priorities and pools
+## Prioridades y pools (sin diagrama)
 
-```d2
-direction: right
-
-Priority: {
-  Infra: "platform-infrastructure"
-  Policy: "platform-policy"
-  Observ: "platform-observability"
-  CICD: "platform-cicd / cicd-execution"
-  Dash: "platform-dashboards"
-}
-
-Nodes: {
-  Control: "control plane"
-  Infra: "infra nodes"
-  Work: "workload nodes"
-}
-
-Priority.Infra -> Nodes.Infra
-Priority.Policy -> Nodes.Infra
-Priority.Observ -> Nodes.Infra
-Priority.Dash -> Nodes.Work
-Priority.CICD -> Nodes.Work
-```
+- Infra / Policy / Observ corren en nodos de infra.
+- CICD y Dash en nodos de workload (excepto control plane como lifeboat).
+- Cada `values.yaml` debe definir `priorityClassName`; Kyverno lo valida.
 
 Rules of thumb:
 - Every values file sets `priorityClassName` (the repo checks for this).

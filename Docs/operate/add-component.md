@@ -3,20 +3,14 @@
 
 Treat every component as code. Adding, changing, or removing should feel like a small, reviewable PR.
 
-## The recipe
+## The recipe (concise)
 
-```d2
-direction: right
-
-Folder: "K8s/<stack>/<name>"
-Overlay: "Kustomize + helmCharts (optional)"
-Labels: "owner, business-unit, environment, app.kubernetes.io/*"
-PR: "Commit & push"
-Argo: "ApplicationSet → Application"
-Cluster: "Sync (waves + policies)"
-
-Folder -> Overlay -> Labels -> PR -> Argo -> Cluster
-```
+1. Crea `K8s/<stack>/<name>/`.
+2. Define `kustomization.yaml` (recursos o `helmCharts`).
+3. Aplica etiquetas canónicas (`owner`, `business-unit`, `environment`, `app.kubernetes.io/*`).
+4. Commit + push.
+5. ApplicationSet detecta la carpeta → ArgoCD crea `Application`.
+6. Sync respeta waves/policies y converge en el cluster.
 
 Steps:
 - Create a folder under the right stack (for example `K8s/observability/<name>`).

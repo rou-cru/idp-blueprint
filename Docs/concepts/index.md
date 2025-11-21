@@ -20,30 +20,17 @@ At product level, the platform runs on three feedback loops:
 ```d2
 direction: right
 
-Desired: {
-  label: "Desired state (Git)"
-  Code: "Manifests, values, policies, SLOs"
-}
+classes: { desired: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           observed: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+           action: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white } }
 
-Observed: {
-  label: "Observed state"
-  Metrics: "Prometheus"
-  Logs: "Loki"
-  SLOs: "Pyrra"
-}
+Desired: { class: desired; label: "Desired (Git)\nManifests, values, policies, SLOs" }
+Observed: { class: observed; label: "Observed\nPrometheus, Loki, Pyrra" }
+Action: { class: action; label: "Actionable\nArgoCD, Kyverno, Argo Events" }
 
-Actionable: {
-  label: "Actionable state"
-  GitOps: "ArgoCD"
-  Policy: "Kyverno (enforce/audit)"
-  Events: "Argo Events"
-}
-
-Desired.Code -> Actionable.GitOps: "reconcile"
-Desired.Code -> Actionable.Policy: "govern"
-Observed.Metrics -> Actionable.Events: "emit → trigger"
-Observed.SLOs -> Actionable.Events: "burn → playbook"
-Actionable.GitOps -> Observed.Metrics: "deploy → measure"
+Desired -> Action: "reconcile / govern"
+Observed -> Action: "signals → triggers"
+Action -> Observed: "deploy → measure"
 ```
 
 As you explore the docs, map each capability to one or more of these loops. If something does not fit, it is either out of scope or a sign that a new abstraction might be needed.

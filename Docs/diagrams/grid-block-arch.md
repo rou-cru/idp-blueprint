@@ -10,18 +10,16 @@ especially for:
 In D2, legends can be defined via `vars.d2-legend`, for example:
 
 ```d2
-vars: {
-  d2-legend: {
-    observability: {
-      label: Observability
-      style.fill: "#1f2937"
-    }
-    security: {
-      label: Security
-      style.fill: "#4b5563"
-    }
-  }
+```d2
+direction: right
+
+Legend: {
+  Infra: "Infra core\n#0f172a / #38bdf8"
+  Services: "Platform services\n#0f766e / #34d399"
+  Governance: "Automation & governance\n#111827 / #6366f1"
+  UX: "Developer-facing\n#7c3aed / #a855f7"
 }
+```
 ```
 
 Guidelines for using legends with the grid:

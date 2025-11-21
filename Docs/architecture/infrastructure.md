@@ -4,7 +4,7 @@ This directory contains the **static** or **bootstrap layer** of the platform. T
 the core components required to bring up a functional Kubernetes cluster _before_ the
 GitOps engine (e.g., ArgoCD) takes over.
 
-From a C4 perspective this page is the **component view (L3)** of the “0. Infrastructure core” layer described in the Architecture overview.
+This page shows the component view of the infrastructure core layer described in the Architecture overview.
 
 ## Guiding Principles
 
@@ -78,21 +78,42 @@ IT/
 | `external-secrets/`          | Raw manifests for External Secrets Operator (SecretStore, ExternalSecret).| Raw Manifests       |
 | `argocd/`                    | Kustomization to support the ArgoCD Helm chart deployment.               | Kustomize           |
 
-## C4 component view — infrastructure core
+## Component view — infrastructure core
 
 ```d2
 direction: right
 
-InfraCore: {
-  label: "0. Infrastructure core (C4 L3 components)"
-  K8sAPI: "Kubernetes API + etcd"
+classes: { infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
+Cluster: {
+  class: infra
+  label: "Infrastructure core"
+  API: "Kubernetes API + etcd"
   Cilium: "Cilium CNI"
-  Cert: "cert-manager"
-  Vault: "Vault"
-  ESO: "External Secrets Operator"
-  ArgoCD: "ArgoCD"
   Gateway: "Gateway API"
+  Cert: "cert-manager\n+ ca-issuer"
 }
+
+Control: {
+  class: control
+  Vault: "Vault (vault-system)"
+  ESO: "External Secrets Operator"
+  Argo: "ArgoCD\n(app-of-appsets)"
+}
+
+Data: {
+  class: data
+  PKI: "PKI assets\n(CA, wildcard certs)"
+  Secrets: "K8s Secrets\nsynced from Vault"
+}
+
+Control.Vault -> Control.ESO: "tokenreview + kv"
+Control.ESO -> Data.Secrets: "create/update"
+Control.Argo -> Cluster.API: "reconcile manifests"
+Cluster.Cert -> Cluster.Gateway: "TLS for routes"
+Cluster.Gateway -> Control.Argo: "expose UI"
 ```
 
 ## Deployment Workflow

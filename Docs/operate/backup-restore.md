@@ -5,27 +5,11 @@ Not everything deserves a backup. Treat Git as the truth for configuration and f
 
 ## Map the sources of truth
 
-```d2
-direction: right
+Conceptual map (sin diagrama):
 
-Config: {
-  Git: "Manifests, values, policies, SLOs"
-}
-
-State: {
-  Vault: "Secrets & policies"
-  Grafana: "Dashboards/settings (if not Git‑managed)"
-  Prometheus: "TSDB (optional; low RPO assumed)"
-}
-
-Ephemeral: {
-  Loki: "Logs (replayable)"
-  ArgoCD: "Runtime state (rebuildable from Git)"
-}
-
-Config.Git -> ArgoCD: reconcile
-State.Vault -> Workloads: consume via ESO
-```
+- **Config (Git)**: manifiestos, values, policies, SLOs → reconciliados por ArgoCD.
+- **Estado**: Vault (secrets/policies), Grafana (si no está en Git), Prometheus TSDB (opcional).
+- **Efímero**: Loki (replayable), estado runtime de ArgoCD (se reconstruye).
 
 ![Backup scope](../assets/images/operate/backup-scope.jpg){ loading=lazy }
 
@@ -42,19 +26,12 @@ Nice‑to‑have / optional:
 
 ## Restore choreography — high level
 
-```d2
-direction: right
+Flujo de restauración resumido:
 
-Rebuild: "Cluster + bootstrap"
-Secrets: "Restore Vault"
-GitOps: "ArgoCD reconnects to Git"
-Stacks: "Stacks sync (observability, security, CI/CD)"
-
-Rebuild -> Secrets: unseal + import
-Rebuild -> GitOps: apply AppProjects + ApplicationSets
-GitOps -> Stacks: converge
-Stacks -> Users: validate
-```
+1) Rebuild del clúster + bootstrap (IT/).  
+2) Restaurar Vault (unseal + importar backup).  
+3) Reconectar ArgoCD a Git (AppProjects + ApplicationSets).  
+4) Dejar que los stacks sincronicen y validar UIs/alertas.  
 
 Checklist:
 - Recreate cluster and apply bootstrap (IT/).

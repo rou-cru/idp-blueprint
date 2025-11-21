@@ -2,7 +2,7 @@
 
 This page describes the main architectural elements of IDP Blueprint and how they fit together. It assumes you know Kubernetes basics and want to understand how this IDP is wired as a system.
 
-For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md). Here we stay at the C4 “System Context” (L1) and “Container” (L2) levels; detailed C4 component (L3) views live in the other Architecture pages.
+For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md). Here we stay at system context (L1) and container (L2) levels; detailed component views live in the other Architecture pages.
 
 ## Context and goals
 
@@ -19,7 +19,7 @@ Typical uses:
 - Prototype an internal developer platform without committing to a vendor.
 - Train platform, SRE, and security engineers on GitOps and policy‑driven operation.
 
-## System context (C4 L1)
+## System context
 
 At the highest level, the platform sits between engineers, Git, and a Kubernetes cluster:
 
@@ -38,40 +38,54 @@ Everything is driven from Git: changes are pushed to the repo, ArgoCD reconciles
 ```d2
 direction: right
 
-PlatformEngineer: {
-  label: "Platform Engineer"
-  shape: c4-person
+classes: { actor: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           ext: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           system: { style.fill: "#111827"; style.stroke: "#34d399"; style.font-color: white } }
+
+Actors: {
+  class: actor
+  Platform: "Platform Engineer"
+  Dev: "Application Developer"
 }
 
-Developer: {
-  label: "Application Developer"
-  shape: c4-person
+External: {
+  class: ext
+  Git: "Git provider\n(bootstrap, stacks, policies)"
+  Registry: "Container registry"
 }
 
-Git: {
-  label: "Git provider\n(bootstrap, stacks, policies)"
-  shape: rectangle
+IDP: {
+  class: system
+  label: "IDP Blueprint cluster"
+  Gateway: "Gateway API + TLS"
+  Argo: "ArgoCD + AppSets"
+  Observability: {
+    Prom: "Prometheus"
+    Loki: "Loki"
+    Graf: "Grafana"
+  }
+  Security: {
+    Kyverno
+    Reporter: "Policy Reporter"
+  }
+  CICD: {
+    Workflows: "Argo Workflows"
+    Sonar: "SonarQube"
+  }
+  Portal: "Backstage"
 }
 
-Registry: {
-  label: "Container registry"
-  shape: rectangle
-}
+Actors.Platform -> External.Git
+Actors.Dev -> External.Git
 
-IDPSystem: {
-  label: "IDP Blueprint\n(System)"
-  shape: rectangle
-}
-
-PlatformEngineer -> Git
-Developer -> Git
-
-Git -> IDPSystem: "manifests via ArgoCD"
-Registry -> IDPSystem: "images"
-Developer -> IDPSystem: "use UIs & APIs"
+External.Git -> IDP.Argo: "manifests"
+External.Registry -> IDP.Argo: "images"
+IDP.Gateway -> Actors.Dev: "UIs/APIs (HTTPS)"
+Actors.Dev -> IDP.Portal: "use catalog/docs"
+Actors.Platform -> IDP.Argo: "operate platform"
 ```
 
-## Container view (C4 L2)
+## Container view
 
 The container view groups components into layers and planes:
 
@@ -96,51 +110,74 @@ All components are either bootstrapped once from `IT/` (infrastructure core) or 
 ```d2
 direction: right
 
-Core: {
-  label: "0. Infrastructure core"
+classes: {
+  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  svc:   { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  gov:   { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  ux:    { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+Infra: {
+  class: infra
+  label: "Infrastructure core"
   K8s: "Kubernetes API + etcd"
   Cilium: "Cilium CNI"
   Gateway: "Gateway API"
+  Cert: "cert-manager"
 }
 
 Services: {
-  label: "1. Platform services"
+  class: svc
+  label: "Platform services"
   Vault
   ESO: "External Secrets Operator"
-  Cert: "cert-manager"
   Prom: "Prometheus"
   Loki
-  FluentBit: "Fluent-bit"
+  Fluent: "Fluent-bit"
 }
 
 Governance: {
-  label: "2. Automation & governance"
-  ArgoCD
-  AppSets: "ApplicationSets"
+  class: gov
+  label: "Automation & governance"
+  Argo: "ArgoCD + ApplicationSets"
   Kyverno
-  PolicyReporter: "Policy Reporter"
+  Reporter: "Policy Reporter"
 }
 
-Stacks: {
-  label: "3. Developer-facing stacks"
+UX: {
+  class: ux
+  label: "Developer-facing"
   Grafana
   Pyrra
   Workflows: "Argo Workflows"
   Sonar: "SonarQube"
   Trivy: "Trivy Operator"
+  Backstage
 }
+
+Infra.Cert -> Services.Vault: "issue certs"
+Services.ESO -> Services.Vault: "read secrets"
+Governance.Argo -> Services.Prom
+Governance.Argo -> Services.Loki
+Governance.Argo -> UX.Workflows
+Governance.Argo -> UX.Sonar
+Governance.Argo -> UX.Backstage
+Governance.Kyverno -> UX.Workflows: "policies"
+Infra.Gateway -> UX.Grafana: "HTTPS routes"
+Infra.Gateway -> UX.Backstage
+Infra.Gateway -> UX.Sonar
 ```
 
 ## Platform layers
 
 The same components can be viewed as a set of logical layers:
 
-| Layer                         | Components (examples)                                                   | Responsibility                                                |
-|-------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------|
-| **0. Infrastructure core**    | Kubernetes, Cilium, Gateway API                                        | Scheduling, networking, traffic in/out                       |
-| **1. Platform services**      | Vault, ESO, cert‑manager, Prometheus, Loki, Fluent‑bit                 | Secrets, PKI, metrics, logs                                  |
-| **2. Automation & governance**| ArgoCD, ApplicationSets, Kyverno, Policy Reporter                      | GitOps, reconciliation, policies, compliance                 |
-| **3. Developer‑facing stacks**| Grafana, Pyrra, Argo Workflows, SonarQube, Trivy Operator              | Dashboards, pipelines, scanning                              |
+| Layer                       | Components (examples)                                      | Responsibility                              |
+|-----------------------------|------------------------------------------------------------|---------------------------------------------|
+| Infrastructure core         | Kubernetes, Cilium, Gateway API                            | Scheduling, networking, traffic in/out      |
+| Platform services           | Vault, ESO, cert‑manager, Prometheus, Loki, Fluent‑bit     | Secrets, PKI, metrics, logs                 |
+| Automation & governance     | ArgoCD, ApplicationSets, Kyverno, Policy Reporter          | GitOps, reconciliation, policies, compliance|
+| Developer‑facing stacks     | Grafana, Pyrra, Argo Workflows, SonarQube, Trivy Operator  | Dashboards, pipelines, scanning             |
 
 This layering is reflected in the repository layout and in the deployment order.
 
