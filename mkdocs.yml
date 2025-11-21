@@ -27,7 +27,6 @@ theme:
     code: "JetBrains Mono"
   features:
     # Content features
-    - content.action.edit
     - content.code.copy
     - content.tabs.link
     - content.tooltips
