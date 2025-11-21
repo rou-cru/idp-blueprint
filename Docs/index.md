@@ -284,7 +284,7 @@ For technical support and contributions:
 
 ## About the Author
 
-**IDP Blueprint** is created and maintained by **[Alberto Roura](https://roura.xyz)**, a Platform Engineering specialist. For more Platform Engineering content, architecture insights, and cloud-native best practices, visit **[roura.xyz](https://roura.xyz)**.
+**IDP Blueprint** is created and maintained by **[Alberto Roura](https://roura.xyz)**, Platform Engineering specialist with expertise in cloud-native architectures, GitOps, and developer experience. Available for consulting, collaboration, and Platform Engineering initiatives — visit **[roura.xyz](https://roura.xyz)**.
 
 ---
 
