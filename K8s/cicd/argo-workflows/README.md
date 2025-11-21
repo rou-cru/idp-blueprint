@@ -1,6 +1,6 @@
 # argo-workflows
 
-![Version: 0.45.27](https://img.shields.io/badge/Version-0.45.27-informational?style=flat-square) 
+![Version: 0.45.27](https://img.shields.io/badge/Version-0.45.27-informational?style=flat-square)
 
 ## Component Information
 
@@ -92,4 +92,3 @@ The following table lists the configurable parameters:
 | workflow.serviceAccount.name | string | `"argo-workflow"` | Workflow service account name |
 | workflowDefaults.spec.priorityClassName | string | `"cicd-execution"` | Priority class for workflow pods. |
 | workflowDefaults.spec.serviceAccountName | string | `"argo-workflow"` | Service account for workflow pods. |
-

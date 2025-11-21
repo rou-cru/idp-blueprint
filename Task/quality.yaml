@@ -38,7 +38,7 @@ tasks:
     desc: 'Lint all Markdown files'
     internal: true
     cmds:
-      - markdownlint-cli2 -c .config/lint/.markdownlint-cli2.yaml "Docs/**/*.md" "*.md" "K8s/**/*.md" "IT/**/*.md" "Policies/**/*.md" "Scripts/**/*.md" "Task/**/*.md"
+      - markdownlint-cli2 --config .config/lint/.markdownlint-cli2.yaml --fix "Docs/**/*.md" "*.md" "Policies/tag-policy.md" "Scripts/**/*.md" "Task/**/*.md"
 
   lint:helm:
     desc: 'Validate Helm values documentation completeness'

@@ -1,6 +1,6 @@
 # pyrra
 
-![Version: 0.19.2](https://img.shields.io/badge/Version-0.19.2-informational?style=flat-square) 
+![Version: 0.19.2](https://img.shields.io/badge/Version-0.19.2-informational?style=flat-square)
 
 ## Component Information
 
@@ -26,4 +26,3 @@ The following table lists the configurable parameters:
 | serviceMonitor | object | `{"additionalLabels":{"prometheus":"kube-prometheus"},"enabled":true}` | Create a ServiceMonitor for Prometheus Operator |
 | serviceMonitor.additionalLabels.prometheus | string | `"kube-prometheus"` | Prometheus selector label |
 | serviceMonitor.enabled | bool | `true` | Enable ServiceMonitor for Pyrra |
-

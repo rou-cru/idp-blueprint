@@ -1,6 +1,6 @@
 # kube-prometheus-stack
 
-![Version: 77.14.0](https://img.shields.io/badge/Version-77.14.0-informational?style=flat-square) 
+![Version: 77.14.0](https://img.shields.io/badge/Version-77.14.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -76,4 +76,3 @@ The following table lists the configurable parameters:
 | prometheusOperator.resources.requests.cpu | string | `"25m"` | CPU request |
 | prometheusOperator.resources.requests.memory | string | `"32Mi"` | Memory request |
 | windows-exporter | object | `{"enabled":false}` | Disables unnecessary components. |
-
