@@ -1,6 +1,8 @@
 # Design Philosophy
 
-This document describes the core design philosophies that guide the architecture and implementation of the IDP Blueprint platform. These aren't just abstract principles—they manifest in concrete technical decisions throughout the stack.
+This document describes the core design philosophies that guide the architecture and
+  implementation of the IDP Blueprint platform. These aren't just abstract principles—they
+  manifest in concrete technical decisions throughout the stack.
 
 ## The Five Philosophies
 

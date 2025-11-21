@@ -1,15 +1,25 @@
-*[IDP]: Internal Developer Platform - A self-service platform for developers to deploy and manage applications
-*[CNI]: Container Network Interface - Specification and libraries for configuring network interfaces in Linux containers
-*[GitOps]: Git Operations - Infrastructure and application management using Git as single source of truth
-*[CI/CD]: Continuous Integration / Continuous Delivery - Automated software delivery pipeline
+# Abbreviations
+
+*[IDP]: Internal Developer Platform - A self-service platform for developers to deploy and
+  manage applications
+*[CNI]: Container Network Interface - Specification and libraries for configuring
+  network interfaces in Linux containers
+*[GitOps]: Git Operations - Infrastructure and application management using Git as
+  single source of truth
+*[CI/CD]: Continuous Integration / Continuous Delivery - Automated software delivery
+  pipeline
 *[RBAC]: Role-Based Access Control - Method of regulating access based on user roles
 *[TLS]: Transport Layer Security - Cryptographic protocol for secure communications
-*[eBPF]: Extended Berkeley Packet Filter - Linux kernel technology for running sandboxed programs
+*[eBPF]: Extended Berkeley Packet Filter - Linux kernel technology for running sandboxed
+  programs
 *[YAML]: YAML Ain't Markup Language - Human-readable data serialization language
-*[API]: Application Programming Interface - Set of protocols for building software applications
+*[API]: Application Programming Interface - Set of protocols for building software
+  applications
 *[CRD]: Custom Resource Definition - Extension of Kubernetes API for custom resources
-*[SRE]: Site Reliability Engineering - Discipline that incorporates software engineering to IT operations
-*[SAST]: Static Application Security Testing - Method of debugging by examining source code before execution
+*[SRE]: Site Reliability Engineering - Discipline that incorporates software engineering to
+  IT operations
+*[SAST]: Static Application Security Testing - Method of debugging by examining source
+  code before execution
 *[SBOM]: Software Bill of Materials - List of components in a piece of software
 
 *[ArgoCD]: Declarative GitOps continuous delivery tool for Kubernetes
