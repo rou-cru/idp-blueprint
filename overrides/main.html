@@ -148,39 +148,25 @@
     .md-header__personal-link {
       display: inline-flex;
       align-items: center;
-      margin-left: 0.6rem;
-      padding: 0.3rem 0.7rem;
-      color: rgba(255, 255, 255, 0.85);
-      border-radius: 0.3rem;
-      transition: all 0.2s ease;
+      justify-content: center;
+      width: 2.4rem;
+      height: 2.4rem;
+      padding: 0;
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: 0.1rem;
+      transition: background-color 0.25s, color 0.25s;
       text-decoration: none;
-      font-size: 0.7rem;
-      font-weight: 500;
-      gap: 0.4rem;
-      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .md-header__personal-link:hover {
-      background-color: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.3);
+      background-color: rgba(255, 255, 255, 0.1);
       color: #fff;
-      transform: translateY(-1px);
     }
 
     .md-header__personal-link svg {
-      width: 0.9rem;
-      height: 0.9rem;
+      width: 1.2rem;
+      height: 1.2rem;
       fill: currentColor;
-      opacity: 0.9;
-    }
-
-    @media screen and (max-width: 76.1875em) {
-      .md-header__personal-link span {
-        display: none;
-      }
-      .md-header__personal-link {
-        padding: 0.3rem;
-      }
     }
   </style>
 
@@ -219,7 +205,6 @@
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
               <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
             </svg>
-            <span>roura.xyz</span>
           `;
 
           const searchButton = header.querySelector('label[for="__search"]');
