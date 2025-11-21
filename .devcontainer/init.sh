@@ -40,7 +40,4 @@ helm repo add jenkins https://charts.jenkins.io
 # -- Just in Case
 helm repo add bitnami https://charts.bitnami.com/bitnami
 # -- Complete Helm setup
-# Use timeout to prevent hanging in CI environments
-if ! timeout 120s helm repo update; then
-  echo "Warning: helm repo update timed out or failed. Continuing anyway..." >&2
-fi
+helm repo update
