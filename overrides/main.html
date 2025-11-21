@@ -143,5 +143,74 @@
   <link rel="author" href="https://roura.xyz">
   <meta name="format-detection" content="telephone=no">
 
+  <!-- Custom styles for personal branding link in header -->
+  <style>
+    .md-header__personal-link {
+      display: flex;
+      align-items: center;
+      margin-left: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      color: rgba(255, 255, 255, 0.9);
+      border-radius: 0.2rem;
+      transition: background-color 0.25s, color 0.25s;
+      text-decoration: none;
+      font-size: 0.7rem;
+      font-weight: 500;
+      gap: 0.3rem;
+    }
+
+    .md-header__personal-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .md-header__personal-link svg {
+      width: 1rem;
+      height: 1rem;
+      fill: currentColor;
+    }
+
+    @media screen and (max-width: 76.1875em) {
+      .md-header__personal-link span {
+        display: none;
+      }
+    }
+  </style>
+
   {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+
+  <!-- Add personal branding link to header -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const header = document.querySelector(".md-header__inner");
+
+      if (header) {
+        const personalLink = document.createElement("a");
+        personalLink.href = "https://roura.xyz";
+        personalLink.className = "md-header__personal-link";
+        personalLink.title = "Alberto Roura - Platform Engineering";
+        personalLink.target = "_blank";
+        personalLink.rel = "noopener author";
+        personalLink.setAttribute("aria-label", "Visit author's website");
+
+        personalLink.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,9V11H9V13H11V15H13V13H15V11H13V9H11Z" transform="rotate(45 12 12)"/>
+          </svg>
+          <span>roura.xyz</span>
+        `;
+
+        const repoLink = header.querySelector('a[href*="github.com"]');
+        if (repoLink) {
+          repoLink.parentNode.insertBefore(personalLink, repoLink);
+        } else {
+          header.appendChild(personalLink);
+        }
+      }
+    });
+  </script>
 {% endblock %}
