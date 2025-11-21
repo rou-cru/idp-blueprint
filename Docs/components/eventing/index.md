@@ -47,15 +47,19 @@ The eventing stack provides:
 ## Common Use Cases
 
 ### Continuous Deployment
+
 Automatically build, test, and deploy applications when code is pushed to Git repositories.
 
 ### Incident Response
+
 Trigger remediation workflows when monitoring alerts fire, reducing mean time to recovery (MTTR).
 
 ### Scheduled Automation
+
 Execute periodic tasks like backups, cleanup jobs, and compliance scans using calendar-based triggers.
 
 ### Cross-Service Orchestration
+
 Coordinate complex workflows across multiple platform components with event-driven coordination.
 
 ## Deployment Structure

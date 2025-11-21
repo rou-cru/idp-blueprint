@@ -1,4 +1,5 @@
 ---
+
 # ApplicationSets Patterns — Many apps, one generator
 
 ApplicationSets turn folder structure into Applications. One commit → one rollout.

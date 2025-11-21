@@ -6,25 +6,25 @@ Before deploying the IDP Blueprint, verify your environment with this quick chec
 
 <div class="grid cards" markdown>
 
--   **Hardware**
+- **Hardware**
 
     ---
 
-    - CPU: 4 cores (6+ recommended)
-    - Memory: 8 GB (12+ GB recommended)
-    - Storage: 20+ GB free
+  - CPU: 4 cores (6+ recommended)
+  - Memory: 8 GB (12+ GB recommended)
+  - Storage: 20+ GB free
 
--   **Operating System**
-
-    ---
-
-    - Linux, macOS, or Windows (WSL2)
-
--   **Network & Ports**
+- **Operating System**
 
     ---
 
-    - Internet to pull images
+  - Linux, macOS, or Windows (WSL2)
+
+- **Network & Ports**
+
+    ---
+
+  - Internet to pull images
 - NodePorts free: values from `config.toml` (`nodeport_http`/`nodeport_https`, defaults 30080/30443)
 
 </div>
@@ -33,20 +33,20 @@ Before deploying the IDP Blueprint, verify your environment with this quick chec
 
 <div class="grid cards" markdown>
 
--   **Core Tools**
+- **Core Tools**
 
     ---
 
-    - Docker (and `docker login`)
-    - Git (2.0+)
-    - VS Code + Dev Containers (recommended) or Devbox
+  - Docker (and `docker login`)
+  - Git (2.0+)
+  - VS Code + Dev Containers (recommended) or Devbox
 
--   **CLI Tooling (if no Dev Container)**
+- **CLI Tooling (if no Dev Container)**
 
     ---
 
-    - k3d, kubectl, helm, kustomize
-    - envsubst (gettext), dasel, task
+  - k3d, kubectl, helm, kustomize
+  - envsubst (gettext), dasel, task
 
 </div>
 

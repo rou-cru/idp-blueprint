@@ -121,7 +121,7 @@ See [Architecture Overview](architecture/overview.md) for the full walkthrough.
 
     [:octicons-arrow-right-24: Explore Concepts](concepts/index.md)
 
--   **Get Started**
+- **Get Started**
 
     ---
 
@@ -129,7 +129,7 @@ See [Architecture Overview](architecture/overview.md) for the full walkthrough.
 
     [:octicons-arrow-right-24: Start Building](getting-started/quickstart.md)
 
--   **Components**
+- **Components**
 
     ---
 
@@ -137,7 +137,7 @@ See [Architecture Overview](architecture/overview.md) for the full walkthrough.
 
     [:octicons-arrow-right-24: Explore Components](components/infrastructure/index.md)
 
--   **Reference**
+- **Reference**
 
     ---
 
@@ -153,25 +153,25 @@ See [Architecture Overview](architecture/overview.md) for the full walkthrough.
 
 <div class="grid cards" markdown>
 
--   **Platform Engineers**
+- **Platform Engineers**
 
     ---
 
     Focus on the bootstrap layer, GitOps workflows, and operational guides under *Operate*.
 
--   **Security & Policy Teams**
+- **Security & Policy Teams**
 
     ---
 
     Review Kyverno, Trivy, and governance references within *Components → Policy & Security*.
 
--   **Observability & SRE**
+- **Observability & SRE**
 
     ---
 
     Jump to *Components → Observability* for dashboards, alerts, and data flow diagrams.
 
--   **Application Teams**
+- **Application Teams**
 
     ---
 
@@ -184,6 +184,7 @@ See [Architecture Overview](architecture/overview.md) for the full walkthrough.
 ## Documentation structure
 
 ### [Getting Started](getting-started/overview.md)
+
 Deployment and configuration documentation:
 
 - **[Prerequisites](getting-started/prerequisites.md)** - Infrastructure requirements and system dependencies
@@ -191,17 +192,20 @@ Deployment and configuration documentation:
 - **[Deployment Guide](getting-started/deployment.md)** - Comprehensive deployment process
 
 - ### Architecture & Concepts
+
   - [Architecture Overview](architecture/overview.md)
   - [GitOps Model](concepts/gitops-model.md)
   - [Security & Policy Model](concepts/security-policy-model.md)
 
 - ### Platform Operations
+
   - [Infrastructure Stack](components/infrastructure/index.md)
   - [Policy & Security](components/policy/index.md)
   - [Observability](components/observability/index.md)
   - [CI/CD](components/cicd/index.md)
 
 - ### Reference
+
   - [Label Standards](reference/labels-standard.md)
   - [FinOps Tags](reference/finops-tags.md)
   - [Contributing](guides/contributing.md)

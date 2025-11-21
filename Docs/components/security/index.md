@@ -9,6 +9,7 @@ The security stack provides vulnerability scanning and compliance checking capab
 ## Security Capabilities
 
 These components provide:
+
 - Vulnerability scanning
 - Configuration auditing
 - Compliance checking

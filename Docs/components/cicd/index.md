@@ -10,6 +10,7 @@ The CI/CD stack provides workflow orchestration and code quality analysis capabi
 ## CI/CD Capabilities
 
 These components provide:
+
 - Workflow orchestration
 - Code quality analysis
 - Security scanning integration

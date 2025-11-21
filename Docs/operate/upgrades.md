@@ -1,4 +1,5 @@
 ---
+
 # Upgrades — Choreography, gates, and rollbacks
 
 Upgrades should feel boring. Make order and gates explicit, and test with disposable clusters before touching shared environments.
@@ -11,6 +12,7 @@ Upgrades should feel boring. Make order and gates explicit, and test with dispos
 4) **Observar**: después del roll, validar Apps Healthy/Synced y SLO burn rate.  
 
 Recommended order:
+
 1) CRDs and controllers (Kyverno, ESO, cert-manager) → 2) Networking (Cilium) → 3) GitOps (ArgoCD) → 4) Stacks (observability, security, CI/CD).
 
 ## Gates that matter

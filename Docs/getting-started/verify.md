@@ -72,11 +72,11 @@ Below are reference screenshots to calibrate expectations right after a fresh de
 
 Endpoints follow your LAN IP as a nip.io wildcard. If your IP is 127.0.0.1:
 
-- ArgoCD: https://argocd.127-0-0-1.nip.io
-- Grafana: https://grafana.127-0-0-1.nip.io
-- Vault: https://vault.127-0-0-1.nip.io
-- Argo Workflows: https://workflows.127-0-0-1.nip.io
-- SonarQube: https://sonarqube.127-0-0-1.nip.io
+- ArgoCD: <https://argocd.127-0-0-1.nip.io>
+- Grafana: <https://grafana.127-0-0-1.nip.io>
+- Vault: <https://vault.127-0-0-1.nip.io>
+- Argo Workflows: <https://workflows.127-0-0-1.nip.io>
+- SonarQube: <https://sonarqube.127-0-0-1.nip.io>
 
 Reachable from other devices on your LAN using your workstation IP. Ensure the configured NodePorts are allowed by your OS firewall.
 

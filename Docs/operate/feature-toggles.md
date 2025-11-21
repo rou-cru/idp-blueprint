@@ -1,4 +1,5 @@
 ---
+
 # Feature Toggles & Profiles — Knobs, switches, and fuses
 
 This IDP exposes stack‑level toggles (“fuses”) so you can shape a deployment before syncing anything. Start simple with stack switches, then evolve toward finer‑grained controls per component.
@@ -69,6 +70,7 @@ alerts.enabled = true
 ## Kyverno mode
 
 By design (for now), policies use `validationFailureAction: audit`. This keeps the road paved without blocking deploys. Candidates to enforce later:
+
 - Namespace labels (already enforced)
 - Component labels on Deployments/StatefulSets
 - PriorityClass required for workloads
@@ -77,11 +79,13 @@ By design (for now), policies use `validationFailureAction: audit`. This keeps t
 ## Fine‑grained toggles
 
 Useful switches inside big stacks:
+
 - Observability: `alertmanager.enabled`, `loki.enabled`, `fluent-bit.enabled`, `pyrra.enabled`
 - Security: `trivy.enabled`, `image-policy.enabled`
 - Delivery: `rollouts.enabled`, `kargo.enabled`
 
 Implementation options:
+
 - Pass `--set enabled=<bool>` when charts support it (Tasks detect fuses and add flags).
 - Split subcomponents into separate Application folders and gate per‑folder.
 

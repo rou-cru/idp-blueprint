@@ -32,6 +32,7 @@ ArgoCD is the heart of the platform. If it fails, automated deployments stop.
   - Goal: P95 < 60s
 
 **Where to find:**
+
 - ArgoCD exposes Prometheus metrics via ServiceMonitor
 - Grafana dashboard: ArgoCD Application Overview
 
@@ -54,6 +55,7 @@ Kyverno validates resources on admission. If it's down, policies aren't enforced
   - Goal: 0 failures
 
 **Where to find:**
+
 - Kyverno exposes Prometheus metrics
 - PolicyReports via Policy Reporter dashboard
 
@@ -64,6 +66,7 @@ If Prometheus or Loki fail, you lose visibility into the platform.
 **Metrics to track:**
 
 **Prometheus:**
+
 - **Scrape Success Rate:** Are targets being scraped successfully?
   - Metric: `up{job="<target>"}`
   - Goal: > 99% uptime per target
@@ -77,6 +80,7 @@ If Prometheus or Loki fail, you lose visibility into the platform.
   - Goal: P95 < 1s
 
 **Loki:**
+
 - **Ingestion Rate:** Are logs being ingested?
   - Metric: `loki_ingester_chunks_created_total`
   - Goal: Matches expected log volume
@@ -86,6 +90,7 @@ If Prometheus or Loki fail, you lose visibility into the platform.
   - Goal: P95 < 5s
 
 **Where to find:**
+
 - Grafana dashboards for Prometheus and Loki (included in kube-prometheus-stack)
 
 ### 4. Secrets Management
@@ -95,11 +100,13 @@ If Vault or External Secrets fail, applications can't access credentials.
 **Metrics to track:**
 
 **Vault:**
+
 - **Sealed Status:** Is Vault unsealed?
   - Metric: `vault_core_unsealed`
   - Goal: 1 (unsealed)
 
 **External Secrets:**
+
 - **Sync Success:** Are ExternalSecrets syncing successfully?
   - Metric: `externalsecret_sync_calls_total{status="success"}`
   - Goal: > 99% success rate
@@ -109,6 +116,7 @@ If Vault or External Secrets fail, applications can't access credentials.
   - Goal: < 60s (depends on refresh interval)
 
 **Where to find:**
+
 - External Secrets exposes Prometheus metrics via ServiceMonitor
 
 ### 5. Cluster Resources
@@ -134,6 +142,7 @@ The Kubernetes cluster itself needs monitoring.
   - Goal: > 20% available disk
 
 **Where to find:**
+
 - Grafana dashboards: Kubernetes / Nodes, Kubernetes / Compute Resources
 
 ## Platform SLIs and SLOs
@@ -183,6 +192,7 @@ Example: If the ArgoCD SLO is 99% sync success over 30 days, the error budget is
 **Gap:** Components may be over-provisioned (wasting resources) or under-provisioned (risking OOMKills).
 
 **Future Work:**
+
 - Use tools like Goldilocks or VPA (Vertical Pod Autoscaler) to recommend optimal resource requests
 - Monitor actual resource usage vs requests via Prometheus
 - Create dashboards showing resource efficiency
@@ -194,6 +204,7 @@ Example: If the ArgoCD SLO is 99% sync success over 30 days, the error budget is
 **Gap:** If ArgoCD sync success rate drops below 99%, there's no automatic alert.
 
 **Future Work:**
+
 - Define PrometheusRule resources for each platform SLO
 - Configure alerting routes in Alertmanager (currently enabled for Pyrra)
 - Create runbooks for each alert
@@ -205,6 +216,7 @@ Example: If the ArgoCD SLO is 99% sync success over 30 days, the error budget is
 **Gap:** If workload growth is high, the cluster could run out of capacity without warning.
 
 **Future Work:**
+
 - Track resource usage trends over time
 - Project when capacity limits will be reached
 - Define capacity thresholds that trigger planning discussions

@@ -20,6 +20,7 @@ Legend: {
   UX: "Developer-facing\n#7c3aed / #a855f7"
 }
 ```
+
 ```
 
 Guidelines for using legends with the grid:

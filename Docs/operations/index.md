@@ -1,4 +1,5 @@
 ---
+
 # Operate — run the platform in practice
 
 This section focuses on day‑2 operation: backups, upgrades, scaling, and recovery. It assumes you have deployed the platform and understand the basics of its architecture.

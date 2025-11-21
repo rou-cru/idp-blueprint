@@ -1,4 +1,5 @@
 ---
+
 # Backup & Restore — Know what to back up vs. what to rebuild
 
 Not everything deserves a backup. Treat Git as the truth for configuration and focus backups on mutable state you can’t deterministically recreate.
@@ -21,6 +22,7 @@ Conceptual map (sin diagrama):
 - Git: mirror repository; backups of CI pipelines as needed.
 
 Nice‑to‑have / optional:
+
 - Prometheus TSDB: only if you need long history; otherwise rely on short retention and external sinks.
 - Loki: treat as forensic; back up only if compliance requires.
 
@@ -34,6 +36,7 @@ Flujo de restauración resumido:
 4) Dejar que los stacks sincronicen y validar UIs/alertas.  
 
 Checklist:
+
 - Recreate cluster and apply bootstrap (IT/).
 - Restore Vault (policies + data); rebind ESO roles.
 - Reapply ArgoCD projects and ApplicationSets; let stacks converge.

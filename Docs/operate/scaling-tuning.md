@@ -1,4 +1,5 @@
 ---
+
 # Scaling & Tuning — Knobs that actually move the needle
 
 Make capacity intentional: prioritize what must stay up, keep metrics/logs affordable, and avoid cardinality explosions.
@@ -10,6 +11,7 @@ Make capacity intentional: prioritize what must stay up, keep metrics/logs affor
 - Cada `values.yaml` debe definir `priorityClassName`; Kyverno lo valida.
 
 Rules of thumb:
+
 - Every values file sets `priorityClassName` (the repo checks for this).
 - Keep DaemonSets lean; they run everywhere (Cilium, Fluent‑bit, Node Exporter).
 

@@ -13,6 +13,7 @@ The observability stack provides monitoring, logging, alerting, and SLO tracking
 ## Observability Capabilities
 
 These components provide:
+
 - Metrics collection and storage
 - Log aggregation and querying
 - Dashboard visualization

@@ -17,6 +17,9 @@ node_modules/
 # Generated charts
 **/charts/
 
+# Auto-generated documentation
+**/_values.generated.md
+
 # AI assistant configs
 .claude/
 .codex/
