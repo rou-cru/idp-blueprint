@@ -4,4 +4,3 @@ resources:
   - ca-issuer.yaml
   - idp-demo-ca.yaml
   - self-signed-issuer.yaml
-  - vault-tls-certificate.yaml

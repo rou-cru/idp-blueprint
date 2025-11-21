@@ -8,7 +8,7 @@ readonly NAMESPACE="vault-system"
 readonly SECRET_NAME="vault-init-keys"
 
 log() {
-  echo "$*" >&2
+  echo "[$(date -u '+%Y-%m-%d %H:%M:%S UTC')] $*"
 }
 
 wait_for_vault_pod() {
@@ -158,8 +158,7 @@ path "secret/metadata/*" {
     bound_service_account_names=external-secrets \
     bound_service_account_namespaces=argocd \
     policies=eso-policy \
-    ttl=24h \
-    audience=vault
+    ttl=24h
 
   log "✅ Vault configured for ESO (ArgoCD namespace)"
 
@@ -169,8 +168,7 @@ path "secret/metadata/*" {
     bound_service_account_names=external-secrets \
     bound_service_account_namespaces=cicd \
     policies=eso-policy \
-    ttl=24h \
-    audience=vault
+    ttl=24h
 
   log "✅ Vault configured for ESO (CICD namespace)"
 
@@ -180,8 +178,7 @@ path "secret/metadata/*" {
     bound_service_account_names=external-secrets \
     bound_service_account_namespaces=observability \
     policies=eso-policy \
-    ttl=24h \
-    audience=vault
+    ttl=24h
 
   log "=================================================="
   log "✅ Vault initialization complete!"
