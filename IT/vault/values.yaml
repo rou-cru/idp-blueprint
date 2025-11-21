@@ -16,6 +16,17 @@ server:
     - key: node-role.kubernetes.io/control-plane
       operator: Exists
       effect: NoSchedule
+  # -- (list) Volumes to mount into the Vault pod
+  volumes:
+    - name: vault-tls
+      secret:
+        secretName: vault-tls
+        defaultMode: 0400
+  # -- (list) Volume mounts for the Vault container
+  volumeMounts:
+    - name: vault-tls
+      mountPath: /vault/tls
+      readOnly: true
   standalone:
     # -- (bool) Enables standalone server configuration
     enabled: true
@@ -27,7 +38,10 @@ server:
       }
       listener "tcp" {
         address         = "0.0.0.0:8200"
-        tls_disable     = "true"
+        tls_disable     = "false"
+        tls_cert_file   = "/vault/tls/tls.crt"
+        tls_key_file    = "/vault/tls/tls.key"
+        tls_min_version = "tls12"
         telemetry {
           unauthenticated_metrics_access = true
         }
