@@ -1,8 +1,24 @@
 # .markdownlint-cli2.yaml
 
-# Use the default configuration as a base
+# Respect .gitignore patterns
+gitignore: true
+
+# Explicit ignores for build artifacts and caches
+ignores:
+  - ".devbox/**"
+  - ".task/**"
+  - "devbox.d/**"
+  - ".venv/**"
+  - "site/**"
+  - ".cache/**"
+  - "node_modules/**"
+  - "**/charts/**"
+  - ".claude/**"
+  - ".codex/**"
+  - ".memory/**"
+
+# Linting rules configuration
 config:
-  gitignore: true
   # Enforce dashes for unordered lists
   MD004:
     style: dash
