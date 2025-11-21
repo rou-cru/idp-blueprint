@@ -1,7 +1,7 @@
 site_name: IDP Blueprint
 site_description: Enterprise-grade Internal Developer Platform Blueprint - Production-ready platform engineering stack with GitOps, observability, security, and policy enforcement for modern cloud-native architectures
-site_author: IDP Blueprint Project
-site_url: https://rou-cru.github.io/idp-blueprint
+site_author: Alberto Roura
+site_url: https://idp-blueprint.roura.xyz
 site_dir: site
 docs_dir: Docs
 
@@ -10,11 +10,14 @@ repo_url: https://github.com/rou-cru/idp-blueprint
 edit_uri: edit/main/Docs/
 
 # Copyright
-copyright: Copyright &copy; 2024-2025 IDP Blueprint Contributors
+copyright: |
+  Copyright &copy; 2024-2025 <a href="https://roura.xyz" target="_blank" rel="noopener author">Alberto Roura</a> -
+  <a href="https://roura.xyz" target="_blank" rel="noopener">Platform Engineering Portfolio</a>
 
 # Configuration
 theme:
   name: material
+  custom_dir: overrides
   language: en
   palette:
     - scheme: slate
@@ -102,9 +105,54 @@ plugins:
       dark_theme: 200
       sketch: true
       pad: 24
+  # SEO Enhancements
+  - meta
+  - tags
 
 # Customization
 extra:
+  # SEO Meta Tags
+  meta:
+    - name: keywords
+      content: Internal Developer Platform, IDP, Platform Engineering, GitOps, Kubernetes, ArgoCD, DevOps, Cloud Native, Infrastructure as Code, Kyverno, Observability, CI/CD, Developer Platform, Platform as a Product
+    - name: author
+      content: Alberto Roura
+    - name: robots
+      content: index, follow
+    - property: og:type
+      content: website
+    - property: og:title
+      content: IDP Blueprint - Enterprise Internal Developer Platform Reference
+    - property: og:description
+      content: Production-ready Internal Developer Platform blueprint with GitOps, observability, security, and policy enforcement. Reference architecture for Platform Engineering teams.
+    - property: og:url
+      content: https://idp-blueprint.roura.xyz
+    - property: og:site_name
+      content: IDP Blueprint
+    - property: og:locale
+      content: en_US
+    - name: twitter:card
+      content: summary_large_image
+    - name: twitter:title
+      content: IDP Blueprint - Enterprise Internal Developer Platform
+    - name: twitter:description
+      content: Production-ready IDP blueprint for Platform Engineering. GitOps, Kubernetes, ArgoCD, Kyverno, complete observability stack.
+    - name: twitter:creator
+      content: "@albertoroura"
+    - property: article:author
+      content: Alberto Roura
+    - property: article:tag
+      content: Platform Engineering
+    - property: article:tag
+      content: Internal Developer Platform
+    - property: article:tag
+      content: GitOps
+    - property: article:tag
+      content: Kubernetes
+  # Canonical URL
+  canonical_url: https://idp-blueprint.roura.xyz
+  # Analytics (if needed in the future)
+  # google_analytics: ['UA-XXXXX', 'idp-blueprint.roura.xyz']
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/rou-cru/idp-blueprint
@@ -113,8 +161,8 @@ extra:
       link: https://github.com/rou-cru/idp-blueprint/pkgs/container/idp-blueprint
       name: Container Registry
     - icon: fontawesome/solid/globe
-      link: https://www.albertoroura.xyz
-      name: Project Author
+      link: https://roura.xyz
+      name: Alberto Roura - Platform Engineering
 
 extra_css:
   - assets/stylesheets/extra.css
