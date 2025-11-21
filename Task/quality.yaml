@@ -38,7 +38,7 @@ tasks:
     desc: 'Lint all Markdown files'
     internal: true
     cmds:
-      - markdownlint-cli2 -c .config/lint/.markdownlint-cli2.yaml .
+      - find . -name '*.md' -type f | grep -v -e '/.devbox/' -e '/.task/' -e '/site/' -e '/.cache/' -e '/charts/' -e '/.claude/' -e '/.codex/' -e '/.memory/' -e '/.venv/' -e '/node_modules/' -e '/devbox.d/' | xargs -r markdownlint-cli2 -c .config/lint/.markdownlint-cli2.yaml
 
   lint:helm:
     desc: 'Validate Helm values documentation completeness'
