@@ -177,8 +177,6 @@ tasks:
       - kubectl wait --for=condition=Available deployment/cert-manager-webhook -n
         cert-manager --timeout={{.KUBECTL_TIMEOUT}}
       - kustomize build . | kubectl apply -f -
-      - kubectl wait --for=condition=Ready certificate/vault-tls -n vault-system
-        --timeout={{.KUBECTL_TIMEOUT}}
 
   external-secrets:deploy:
     desc: 'Install External Secrets Operator'

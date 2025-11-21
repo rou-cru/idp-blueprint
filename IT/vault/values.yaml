@@ -4,10 +4,8 @@ server:
   priorityClassName: platform-infrastructure
   # -- Update strategy for zero-downtime updates (StatefulSet)
   updateStrategyType: RollingUpdate
-  # -- (object) Pod affinity configuration
   affinity:
-    # Disable podAntiAffinity for demo (single replica doesn't need node separation)
-    podAntiAffinity: {}
+    podAntiAffinity: null
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
