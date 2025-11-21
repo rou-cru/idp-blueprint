@@ -188,12 +188,14 @@ nav:
           - Grafana: components/observability/grafana/index.md
           - Loki: components/observability/loki/index.md
           - Fluent-bit: components/observability/fluent-bit/index.md
+          - SLO Management (Pyrra): components/observability/pyrra/index.md
       - CI/CD:
           - Overview: components/cicd/index.md
           - Argo Workflows: components/cicd/argo-workflows/index.md
           - SonarQube: components/cicd/sonarqube/index.md
       - Eventing:
-          - Argo Events: components/eventing/index.md
+          - Overview: components/eventing/index.md
+          - Argo Events: components/eventing/argo-events/index.md
   - Reference:
       - Overview: reference/overview.md
       - Platform Metrics: reference/platform-metrics.md
