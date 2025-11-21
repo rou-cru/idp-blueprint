@@ -1,6 +1,6 @@
 # vault
 
-![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square) 
+![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -50,4 +50,3 @@ The following table lists the configurable parameters:
 | server.updateStrategyType | string | `"RollingUpdate"` | Update strategy for zero-downtime updates (StatefulSet) |
 | ui.enabled | bool | `true` | Enable Vault UI |
 | ui.service.type | string | `"ClusterIP"` | Service type |
-

@@ -544,4 +544,3 @@ performs an automatic initialization step:
 repositories manually and can add other env setup steps without caring how the
 environment itself is generated. They will always be ready for you to deploy
 the project.
-

@@ -32,6 +32,7 @@ Se realizó una auditoría exhaustiva comparando la documentación MKDocs (87 ar
 **Impacto**: Feature importante completamente oculta en la navegación
 
 #### Problema
+
 - ✗ **Falta**: `Docs/components/observability/pyrra/index.md`
 - ✗ **NO está en mkdocs.yml** - no visible en Components > Observability
 - ✓ Implementado: Chart Helm en `K8s/observability/pyrra/`
@@ -39,6 +40,7 @@ Se realizó una auditoría exhaustiva comparando la documentación MKDocs (87 ar
 - ✓ SLOs reales: 5 archivos en `K8s/observability/slo/`
 
 #### Evidencia
+
 ```bash
 # Implementación existe
 K8s/observability/pyrra/
@@ -58,7 +60,9 @@ Docs/components/observability/pyrra/
 ```
 
 #### Referencias Encontradas
+
 Pyrra es mencionado en 6 documentos:
+
 - `operations/index.md`
 - `prometheus/index.md`
 - `networking-gateway.md`
@@ -67,11 +71,14 @@ Pyrra es mencionado en 6 documentos:
 - `platform-metrics.md`
 
 #### Solución Requerida
+
 1. **Crear** `Docs/components/observability/pyrra/index.md` (~2-3 KB)
 2. **Actualizar** `mkdocs.yml` línea ~190 agregando:
+
    ```yaml
    - SLO Management (Pyrra): components/observability/pyrra/index.md
    ```
+
 3. **Actualizar** `Docs/components/observability/index.md` mencionando Pyrra
 
 ---
@@ -82,6 +89,7 @@ Pyrra es mencionado en 6 documentos:
 **Impacto**: Estructura anómala que no sigue el patrón de otros componentes
 
 #### Problema
+
 - ✗ **Falta**: `Docs/components/eventing/argo-events/index.md`
 - ✗ **Estructura incorrecta**: Todo el contenido está en `eventing/index.md`
 - ✗ **mkdocs.yml**: Apunta a `eventing/index.md` en vez de tener subsección clara
@@ -90,6 +98,7 @@ Pyrra es mencionado en 6 documentos:
 #### Comparación con Patrón Estándar
 
 **Patrón correcto (Prometheus)**:
+
 ```
 components/observability/prometheus/
   ├── index.md              ← Documentación del componente
@@ -97,6 +106,7 @@ components/observability/prometheus/
 ```
 
 **Patrón actual (Argo Events)** ❌:
+
 ```
 components/eventing/
   ├── index.md              ← TODO el contenido aquí (incorrecto)
@@ -105,9 +115,11 @@ components/eventing/
 ```
 
 #### Solución Requerida
+
 1. **Crear** `Docs/components/eventing/argo-events/index.md`
 2. **Convertir** `Docs/components/eventing/index.md` en overview ligero
 3. **Actualizar** `mkdocs.yml` líneas 195-196:
+
    ```yaml
    - Eventing:
        - Overview: components/eventing/index.md
@@ -122,7 +134,9 @@ components/eventing/
 **Impacto**: Componente omitido del índice principal
 
 #### Problema
+
 El archivo `Docs/components/observability/index.md` lista:
+
 - ✓ Prometheus
 - ✓ Grafana
 - ✓ Loki
@@ -130,6 +144,7 @@ El archivo `Docs/components/observability/index.md` lista:
 - ✗ **FALTA**: Pyrra (SLO Management)
 
 #### Solución Requerida
+
 Actualizar `Docs/components/observability/index.md` agregando sección de Pyrra.
 
 ---
@@ -140,9 +155,11 @@ Actualizar `Docs/components/observability/index.md` agregando sección de Pyrra.
 **Impacto**: Confusión estructural
 
 #### Problema
+
 `Docs/components/eventing/index.md` contiene documentación completa de Argo Events en lugar de ser un overview del stack de eventing.
 
 #### Solución Requerida
+
 Refactorizar para que sea un índice/overview ligero que apunte a la documentación específica de Argo Events.
 
 ---
@@ -174,6 +191,7 @@ Refactorizar para que sea un índice/overview ligero que apunte a la documentaci
 ### No Hay Features Documentadas Sin Implementar
 
 ✅ Todas las features mencionadas en la documentación están implementadas:
+
 - GitOps (ArgoCD) ✓
 - Observabilidad (Prometheus, Grafana, Loki) ✓
 - CI/CD (Argo Workflows, SonarQube) ✓
@@ -200,12 +218,15 @@ Refactorizar para que sea un índice/overview ligero que apunte a la documentaci
 **Estado**: Funcional pero podría ser más claro
 
 #### Observación
+
 - Grafana viene bundled en `kube-prometheus-stack`
 - Ambos comparten el mismo Chart.yaml
 - La documentación podría aclarar esta relación
 
 #### Sugerencia
+
 Agregar nota en `Docs/components/observability/grafana/index.md`:
+
 ```markdown
 > **Nota**: Grafana viene incluido como parte de kube-prometheus-stack.
 > Ambos componentes se despliegan juntos desde el mismo Helm chart.
@@ -217,6 +238,7 @@ Agregar nota en `Docs/components/observability/grafana/index.md`:
 **Estado**: Correcto (no es un Helm chart)
 
 #### Observación
+
 - Gateway API NO es un Helm chart
 - Es configuración Kubernetes nativa en `IT/gateway/`
 - Correctamente documentado en `components/infrastructure/gateway-api/index.md`
@@ -228,7 +250,9 @@ Agregar nota en `Docs/components/observability/grafana/index.md`:
 **Estado**: Archivos auxiliares
 
 #### Observación
+
 Directorios `governance/` en cada stack contienen:
+
 - `namespace.yaml`
 - `resourcequota.yaml`
 - `limitrange.yaml`
@@ -236,6 +260,7 @@ Directorios `governance/` en cada stack contienen:
 Estos son archivos de soporte mencionados brevemente en `eventing/index.md` pero sin documentación formal.
 
 #### Sugerencia (Opcional)
+
 Documentar el propósito de governance en `Docs/operate/contracts.md` o crear nueva sección en Reference.
 
 ### 4. Taskfile Commands - Documentación Podría Ampliarse
@@ -243,10 +268,13 @@ Documentar el propósito de governance en `Docs/operate/contracts.md` o crear nu
 **Severidad**: ℹ️ INFORMATIVA
 
 #### Observación
+
 `Docs/reference/taskfile-commands.md` lista comandos principales, pero hay ~40+ tareas definidas en `Task/`.
 
 #### Sugerencia (Opcional)
+
 Generar automáticamente lista completa con:
+
 ```bash
 task --list-all > taskfile-commands-full.md
 ```
@@ -285,6 +313,7 @@ task --list-all > taskfile-commands-full.md
 ### PRIORIDAD 1 - Crear Archivos Faltantes (1-2 horas)
 
 #### Tarea 1.1: Crear Pyrra Documentation
+
 ```bash
 # Archivo a crear
 Docs/components/observability/pyrra/index.md
@@ -300,6 +329,7 @@ Docs/components/observability/pyrra/index.md
 ```
 
 #### Tarea 1.2: Crear Argo Events Documentation
+
 ```bash
 # Archivo a crear
 Docs/components/eventing/argo-events/index.md
@@ -317,6 +347,7 @@ Docs/components/eventing/argo-events/index.md
 ### PRIORIDAD 2 - Actualizar mkdocs.yml (15 minutos)
 
 #### Cambio 2.1: Agregar Pyrra
+
 ```yaml
 # Línea ~190 en mkdocs.yml
 - Observability:
@@ -329,6 +360,7 @@ Docs/components/eventing/argo-events/index.md
 ```
 
 #### Cambio 2.2: Reestructurar Eventing
+
 ```yaml
 # Líneas ~195-196 en mkdocs.yml
 - Eventing:
@@ -339,12 +371,14 @@ Docs/components/eventing/argo-events/index.md
 ### PRIORIDAD 3 - Actualizar Índices (30 minutos)
 
 #### Tarea 3.1: Actualizar Observability Index
+
 ```bash
 # Archivo: Docs/components/observability/index.md
 # Acción: Agregar sección de Pyrra
 ```
 
 #### Tarea 3.2: Refactorizar Eventing Index
+
 ```bash
 # Archivo: Docs/components/eventing/index.md
 # Acción: Convertir en overview ligero
@@ -453,6 +487,7 @@ Policies/ (Governance - 2 componentes)
 ### Para Prevenir Futuras Discrepancias
 
 1. **Checklist de nuevo componente**:
+
    ```markdown
    - [ ] Implementar Helm chart en IT/ o K8s/
    - [ ] Crear index.md en Docs/components/
@@ -463,6 +498,7 @@ Policies/ (Governance - 2 componentes)
    ```
 
 2. **CI/CD validation**:
+
    ```bash
    # Agregar check automático que valide:
    # - Cada Chart.yaml tiene index.md correspondiente

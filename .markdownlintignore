@@ -19,6 +19,9 @@ node_modules/
 
 # Auto-generated documentation
 **/_values.generated.md
+IT/**/README.md
+K8s/**/README.md
+Policies/**/README.md
 
 # AI assistant configs
 .claude/

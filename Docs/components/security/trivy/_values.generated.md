@@ -1,6 +1,6 @@
 # trivy
 
-![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square) 
+![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -46,4 +46,3 @@ The following table lists the configurable parameters:
 | trivyServer.resources.limits.memory | string | `"1Gi"` | Memory limit |
 | trivyServer.resources.requests.cpu | string | `"200m"` | CPU request |
 | trivyServer.resources.requests.memory | string | `"512Mi"` | Memory request |
-

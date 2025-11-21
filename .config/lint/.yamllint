@@ -2,6 +2,9 @@
 
 extends: default
 
+ignore: |
+  .config/lint/.markdownlint-cli2.yaml
+
 rules:
   # Disable line length checks, as Prettier will handle it.
   line-length: disable

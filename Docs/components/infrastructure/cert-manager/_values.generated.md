@@ -1,6 +1,6 @@
 # cert-manager
 
-![Version: v1.19.0](https://img.shields.io/badge/Version-v1.19.0-informational?style=flat-square) 
+![Version: v1.19.0](https://img.shields.io/badge/Version-v1.19.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -96,4 +96,3 @@ The following table lists the configurable parameters:
 | webhook.resources.limits.memory | string | `"256Mi"` | Memory limit |
 | webhook.resources.requests.cpu | string | `"100m"` | CPU request |
 | webhook.resources.requests.memory | string | `"128Mi"` | Memory request |
-

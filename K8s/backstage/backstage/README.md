@@ -1,6 +1,6 @@
 # backstage
 
-![Version: 2.6.3](https://img.shields.io/badge/Version-2.6.3-informational?style=flat-square) 
+![Version: 2.6.3](https://img.shields.io/badge/Version-2.6.3-informational?style=flat-square)
 
 ## Component Information
 
@@ -62,4 +62,3 @@ The following table lists the configurable parameters:
 | postgresql.primary.resources.limits.memory | string | `"1Gi"` |  |
 | postgresql.primary.resources.requests.cpu | string | `"200m"` |  |
 | postgresql.primary.resources.requests.memory | string | `"512Mi"` |  |
-

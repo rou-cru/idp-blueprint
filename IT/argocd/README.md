@@ -1,6 +1,6 @@
 # argocd
 
-![Version: 8.6.0](https://img.shields.io/badge/Version-8.6.0-informational?style=flat-square) 
+![Version: 8.6.0](https://img.shields.io/badge/Version-8.6.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -147,4 +147,3 @@ The following table lists the configurable parameters:
 | server.resources.limits.memory | string | `"256Mi"` | Memory limit |
 | server.resources.requests.cpu | string | `"125m"` | CPU request |
 | server.resources.requests.memory | string | `"128Mi"` | Memory request |
-

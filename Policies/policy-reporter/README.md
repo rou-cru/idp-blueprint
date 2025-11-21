@@ -1,6 +1,6 @@
 # policy-reporter
 
-![Version: 3.5.0](https://img.shields.io/badge/Version-3.5.0-informational?style=flat-square) 
+![Version: 3.5.0](https://img.shields.io/badge/Version-3.5.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -30,4 +30,3 @@ The following table lists the configurable parameters:
 | ui.resources.limits.memory | string | `"128Mi"` | Memory limit for the UI |
 | ui.resources.requests.cpu | string | `"50m"` | CPU request for the UI |
 | ui.resources.requests.memory | string | `"64Mi"` | Memory request for the UI |
-

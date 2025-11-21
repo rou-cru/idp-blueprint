@@ -1,6 +1,6 @@
 # argo-events
 
-![Version: 2.4.12](https://img.shields.io/badge/Version-2.4.12-informational?style=flat-square) 
+![Version: 2.4.12](https://img.shields.io/badge/Version-2.4.12-informational?style=flat-square)
 
 ## Component Information
 
@@ -49,4 +49,3 @@ The following table lists the configurable parameters:
 | webhook.resources.requests.cpu | string | `"25m"` | CPU request for the webhook |
 | webhook.resources.requests.memory | string | `"32Mi"` | Memory request for the webhook |
 | webhook.tolerations | list | `[{"effect":"NoSchedule","key":"node-role.kubernetes.io/control-plane","operator":"Exists"}]` | Tolerations for webhook to run on control-plane node |
-

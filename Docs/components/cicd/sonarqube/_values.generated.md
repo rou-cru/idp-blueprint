@@ -1,6 +1,6 @@
 # sonarqube
 
-![Version: 2025.5.0](https://img.shields.io/badge/Version-2025.5.0-informational?style=flat-square) 
+![Version: 2025.5.0](https://img.shields.io/badge/Version-2025.5.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -58,4 +58,3 @@ The following table lists the configurable parameters:
 | sonarqube.resources.limits.memory | string | `"1.5Gi"` | Memory limit for SonarQube |
 | sonarqube.resources.requests.cpu | string | `"250m"` | CPU request for SonarQube |
 | sonarqube.resources.requests.memory | string | `"1Gi"` | Memory request for SonarQube |
-

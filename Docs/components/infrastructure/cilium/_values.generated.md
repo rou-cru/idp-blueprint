@@ -1,6 +1,6 @@
 # cilium
 
-![Version: 1.18.2](https://img.shields.io/badge/Version-1.18.2-informational?style=flat-square) 
+![Version: 1.18.2](https://img.shields.io/badge/Version-1.18.2-informational?style=flat-square)
 
 ## Component Information
 
@@ -101,4 +101,3 @@ The following table lists the configurable parameters:
 | prometheus.serviceMonitor.enabled | bool | `true` | Create ServiceMonitor CRD |
 | prometheus.serviceMonitor.interval | string | `"30s"` | Scrape interval for eBPF events and network flows |
 | prometheus.serviceMonitor.scrapeTimeout | string | `"25s"` | Scrape timeout |
-
