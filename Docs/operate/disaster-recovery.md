@@ -1,4 +1,5 @@
 ---
+
 # Disaster Recovery — Rebuild fast, restore what matters
 
 This document outlines the disaster recovery strategy for the IDP Blueprint platform, designed specifically for resource-constrained edge environments.
@@ -115,10 +116,12 @@ This strategy makes deliberate compromises optimized for resilience in resource-
 ### Scenario 1: Single Worker Node Failure
 
 **Symptoms:**
+
 - Node shows `NotReady` in `kubectl get nodes`
 - Pods from that node are in `Pending` or `Terminating` state
 
 **Recovery Steps:**
+
 1. Check node status: `kubectl describe node <node-name>`
 2. If node is recoverable, investigate logs and restart kubelet
 3. If node is lost, remaining worker absorbs workloads automatically
@@ -130,11 +133,13 @@ This strategy makes deliberate compromises optimized for resilience in resource-
 ### Scenario 2: Both Worker Nodes Failure
 
 **Symptoms:**
+
 - Only master node shows `Ready`
 - ArgoCD and Prometheus pods on master node
 - Loki, Argo Events, and application workloads in `Pending` state
 
 **Recovery Steps:**
+
 1. Verify critical services: `kubectl get pods -n argocd` and `kubectl get pods -n observability`
 2. Use Prometheus to assess cluster state
 3. Use ArgoCD to verify GitOps sync status
@@ -146,10 +151,12 @@ This strategy makes deliberate compromises optimized for resilience in resource-
 ### Scenario 3: Total Cluster Failure
 
 **Symptoms:**
+
 - No nodes accessible
 - Kubernetes API unreachable
 
 **Recovery Steps:**
+
 1. Restore infrastructure (nodes)
 2. Restore etcd from backup (see [Backup & Restore](backup-restore.md))
 3. Verify control plane components start correctly

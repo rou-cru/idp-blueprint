@@ -123,6 +123,7 @@ These alerts integrate with Alertmanager routing and can be sent to Slack, Pager
 ## Common SLO Patterns
 
 ### Availability SLO (Success Rate)
+
 ```yaml
 indicator:
   ratio:
@@ -133,6 +134,7 @@ indicator:
 ```
 
 ### Latency SLO (P99 < 500ms)
+
 ```yaml
 indicator:
   ratio:
@@ -143,6 +145,7 @@ indicator:
 ```
 
 ### Saturation SLO (Resource Usage)
+
 ```yaml
 indicator:
   ratio:

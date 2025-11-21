@@ -1,4 +1,5 @@
 ---
+
 # Getting started — read this before you run anything
 
 Welcome. In this section you will deploy the platform locally, check that it is healthy, and understand at a high level what you just created.

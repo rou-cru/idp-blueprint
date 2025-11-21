@@ -1,4 +1,5 @@
 ---
+
 # Labels & Metadata — Contracts you can select on
 
 Labels are contracts. They enable selection, grouping, and FinOps. Use

@@ -22,6 +22,7 @@ ignores:
   - ".github/**"
   - ".devcontainer/**"
   - ".config/**"
+  - "**/_values.generated.md"
 
 # Linting rules configuration
 config:

@@ -12,4 +12,3 @@ How to run validations locally before pushing changes.
 - `task validate:kustomize` – Build overlays
 - `./Scripts/helm-docs-lint.sh` – Validate Helm docs comments
 - `./Scripts/validate-consistency.sh` – Canonical labels and priority classes
-

@@ -38,6 +38,7 @@ Priorities.Users -> Pools.Work
 ```
 
 Key points:
+
 - PriorityClasses are declared in `IT/priorityclasses/priorityclasses.yaml` and
   include: `platform-infrastructure`, `platform-events`, `platform-policy`,
   `platform-security`, `platform-observability`, `platform-cicd`,

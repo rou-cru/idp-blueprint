@@ -85,15 +85,17 @@ waves for **optional or edge‑exposed** resources.
 Kyverno validates at admission (and can mutate/generate). Use it to encode platform rules so every namespace and workload ships with the right labels, limits, and safety constraints.
 
 Examples to enforce:
+
 - Namespace labels (owner, business-unit, environment).
 - Component labels on Deployments/StatefulSets/DaemonSets.
-- Default NetworkPolicies (planned hardening). 
+- Default NetworkPolicies (planned hardening).
 
 ## Eventing — a programmable nervous system
 
 Argo Events makes “what happens next” explicit: route events into Sensors, then trigger Workflows, ArgoCD actions, or HTTP calls. Treat alerts, GitHub webhooks, and K8s resource state changes the same: as events.
 
 Typical recipes:
+
 - SLO burn → rollback → notify.
 - GitHub PR → build+test → preview.
 - ArgoCD OutOfSync → refresh/sync → gate on policy.

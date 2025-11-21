@@ -21,6 +21,7 @@ These philosophies reinforce each other. GitOps builds on Infrastructure as Code
 Instead of writing scripts that execute a sequence of steps (imperative), you declare what the desired end state should look like. The system figures out how to achieve that state.
 
 **Imperative:**
+
 ```bash
 kubectl create namespace my-app
 kubectl create secret generic db-password --from-literal=password=secret
@@ -28,6 +29,7 @@ kubectl apply -f deployment.yaml
 ```
 
 **Declarative:**
+
 ```yaml
 # All resources defined in YAML
 apiVersion: v1

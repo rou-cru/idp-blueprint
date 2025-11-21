@@ -320,7 +320,7 @@ spec:
 
 **Vault:**
 
--  `vault_core_unsealed` - Seal status (0=sealed, 1=unsealed).
+- `vault_core_unsealed` - Seal status (0=sealed, 1=unsealed).
 - `vault_token_count_by_policy` - Active tokens per policy.
 - Prometheus ServiceMonitor is enabled in `IT/vault/values.yaml`.
 

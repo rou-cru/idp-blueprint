@@ -86,6 +86,7 @@ Argo Events supports multiple event source types:
 Sensors define what happens when events occur:
 
 ### Trigger Argo Workflow
+
 ```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Sensor
@@ -113,6 +114,7 @@ spec:
 ```
 
 ### Trigger ArgoCD Sync
+
 ```yaml
 triggers:
   - template:
@@ -125,6 +127,7 @@ triggers:
 ```
 
 ### Fan-Out Pattern
+
 ```yaml
 triggers:
   - template:
@@ -168,6 +171,7 @@ Design Sensors so they emit structured CloudEvents (or JSON payloads) that downs
 ## Common Use Cases
 
 ### Continuous Deployment Pipeline
+
 ```
 GitHub Push Event → EventSource (webhook)
                   → Sensor (filters by branch)
@@ -176,6 +180,7 @@ GitHub Push Event → EventSource (webhook)
 ```
 
 ### Automated Incident Response
+
 ```
 Prometheus Alert → Alertmanager webhook → EventSource
                                         → Sensor (filters by severity)
@@ -184,6 +189,7 @@ Prometheus Alert → Alertmanager webhook → EventSource
 ```
 
 ### Scheduled Maintenance
+
 ```
 Calendar EventSource (cron: 0 2 * * *)
   → Sensor

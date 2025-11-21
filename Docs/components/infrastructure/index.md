@@ -13,6 +13,7 @@ The infrastructure layer provides the foundational services that power the entir
 ## Component Details
 
 Each component is thoroughly documented with:
+
 - Version information
 - Configuration parameters
 - Resource requirements

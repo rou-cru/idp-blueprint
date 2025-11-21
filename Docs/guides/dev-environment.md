@@ -11,4 +11,3 @@ Set up a local development environment for contributing to the platform and docs
 
 - `task` CLI, `kubectl`, `k3d`, `helm`
 - Linters: yamllint, shellcheck
-

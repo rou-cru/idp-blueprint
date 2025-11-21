@@ -10,6 +10,7 @@ The policy layer enforces organizational standards and security requirements acr
 ## Policy Capabilities
 
 These components provide:
+
 - Policy enforcement as code
 - Compliance monitoring
 - Automated security checks

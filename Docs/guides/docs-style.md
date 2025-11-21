@@ -13,4 +13,3 @@ House style for authoring documentation.
 - Headings: sentence case; concise
 - Code blocks with language hints; enable copy buttons
 - Use tabs/cards for alternative paths or personas
-

@@ -1,4 +1,5 @@
 ---
+
 # Quickstart — A smooth paved road
 
 Spin up the full IDP locally with one command, then validate access and credentials. Expect eventual consistency for a few minutes while images download.
@@ -8,7 +9,7 @@ Spin up the full IDP locally with one command, then validate access and credenti
 - Recommended: VS Code Dev Containers (repo already includes tooling), or Devbox
 - Or install locally: Docker, k3d, kubectl, helm, kustomize, envsubst (gettext), dasel
 - Review [Prerequisites](prerequisites.md) and ensure `docker login` to avoid rate limits
-- Configure settings in `config.toml` (preferred method): LAN IP override, NodePorts, 
+- Configure settings in `config.toml` (preferred method): LAN IP override, NodePorts,
 versions, passwords
 
 ## 1. Clone the repository

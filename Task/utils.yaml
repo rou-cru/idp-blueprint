@@ -50,7 +50,7 @@ tasks:
   docs:lint:
     desc: 'Lint documentation markdown files'
     cmds:
-      - markdownlint-cli2 "Docs/**/*.md"
+      - markdownlint-cli2 --config .config/lint/.markdownlint-cli2.yaml --fix "Docs/**/*.md"
 
   docs:clean:
     desc: 'Clean built documentation'
