@@ -37,28 +37,64 @@
 
 /* Header & navigation */
 .md-header {
-  /* border-bottom: 1px solid rgba(31, 41, 51, 0.08); */
   background: linear-gradient(135deg,
-      rgba(32, 9, 123, 0.95),
-      rgba(30, 41, 59, 0.95));
+      rgb(32, 9, 123),
+      rgb(30, 41, 59)) !important;
   color: #fff;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
   max-width: none;
   width: 100%;
   margin-left: auto;
   margin-right: auto;
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  height: 3rem;
+  backdrop-filter: none;
+  opacity: 1 !important;
 }
 
 [data-md-color-scheme="slate"] .md-header {
-  border-bottom-color: rgba(15, 23, 42, 0.4);
   background: linear-gradient(120deg,
-      rgba(21, 94, 203, 0.9),
-      rgba(2, 6, 23, 0.9));
+      rgb(21, 94, 203),
+      rgb(2, 6, 23)) !important;
+}
+
+/* Ensure header inner has proper padding */
+.md-header__inner {
+  padding: 0 0.8rem;
+  max-width: 100%;
+  height: 3rem;
 }
 
 .md-header__button,
 .md-header__title {
   color: #fff;
+}
+
+/* Prevent title from changing to "Home" on scroll */
+.md-header__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Footer padding adjustments */
+.md-footer {
+  padding: 0;
+}
+
+.md-footer__inner {
+  padding: 0.6rem 0.8rem;
+  max-width: 100%;
+}
+
+.md-footer-meta {
+  background-color: var(--md-footer-bg-color--dark);
+}
+
+.md-footer-meta__inner {
+  padding: 0.6rem 0.8rem;
+  max-width: 100%;
 }
 
 .md-header__button:hover {
@@ -198,4 +234,45 @@
 .md-typeset .d2 svg {
   width: 100%;
   height: auto;
+}
+
+/* Table of Contents improvements */
+.md-sidebar--secondary {
+  padding-left: 0.6rem;
+}
+
+.md-sidebar__scrollwrap {
+  margin: 0;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--secondary {
+    margin-left: 0;
+  }
+
+  .md-sidebar--secondary .md-sidebar__scrollwrap {
+    overflow-x: hidden;
+  }
+}
+
+/* TOC links should not overflow */
+.md-nav__link {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.md-nav--secondary .md-nav__link {
+  padding-right: 0.6rem;
+}
+
+/* Prevent content from being cut off by TOC */
+@media screen and (min-width: 76.25em) {
+  .md-content {
+    margin-right: 0;
+  }
+
+  .md-sidebar--secondary {
+    width: 12.1rem;
+  }
 }
