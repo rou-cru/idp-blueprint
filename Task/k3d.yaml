@@ -25,7 +25,12 @@ tasks:
         if k3d cluster list -o json | jq -e '.[] | select(.name == "{{.CLUSTER_NAME}}")' >/dev/null 2>&1; then
           echo "Skipping k3d cluster creation (already exists)"
         else
-          k3d cluster create {{.CLUSTER_NAME}} -c {{.K3D_CONFIG}}
+          TMP_CFG=$(mktemp)
+          # Render k3d config with NodePort values from config.toml (envsubst is no-op if placeholders absent)
+          NODEPORT_HTTP={{.NODEPORT_HTTP}} NODEPORT_HTTPS={{.NODEPORT_HTTPS}} \
+            envsubst < {{.K3D_CONFIG}} > "$TMP_CFG"
+          k3d cluster create {{.CLUSTER_NAME}} -c "$TMP_CFG"
+          rm -f "$TMP_CFG"
         fi
 
   k3d:destroy:

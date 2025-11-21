@@ -203,8 +203,7 @@ tasks:
     dir: IT/external-secrets
     cmds:
       - kustomize build . | kubectl apply -f -
-      - kubectl wait --for=condition=Ready externalsecret/argocd-admin-password -n
-        argocd --timeout=300s
+      - kubectl wait --for=condition=Ready externalsecret/argocd-admin-password -n argocd --timeout={{.KUBECTL_TIMEOUT}}
 
   vault:clean:
     desc: 'Clean Vault deployment'

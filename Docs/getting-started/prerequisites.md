@@ -25,7 +25,7 @@ Before deploying the IDP Blueprint, verify your environment with this quick chec
     ---
 
     - Internet to pull images
-    - NodePorts free: 30080/30443
+- NodePorts free: values from `config.toml` (`nodeport_http`/`nodeport_https`, defaults 30080/30443)
 
 </div>
 

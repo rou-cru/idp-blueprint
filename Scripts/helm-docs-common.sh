@@ -139,7 +139,7 @@ helm_docs_foreach() {
 
   local root_dir
   root_dir=$(git rev-parse --show-toplevel)
-  local template="$root_dir/.helm-docs-template.gotmpl"
+  local template="$root_dir/.config/helm-docs/template.gotmpl"
 
   if [ ! -f "$template" ]; then
     echo "Error: Template file not found: $template" >&2

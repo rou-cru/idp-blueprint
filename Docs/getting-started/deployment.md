@@ -41,6 +41,7 @@ Prefer editing `config.toml` in the repo root; tasks read all settings from ther
 ```toml
 [network]
 lan_ip = "192.168.1.20"   # override auto-detected IP
+# HTTP/HTTPS NodePorts used by the Gateway (k3d config and Service patch consume these)
 nodeport_http = 30080
 nodeport_https = 30443
 

@@ -13,7 +13,7 @@ Client: {
 
 Gateway: {
   label: "Gateway API (Cilium)"
-  SVC: "NodePort 30080/30443"
+  SVC: "NodePort (nodeport_http / nodeport_https from config.toml)"
   Listener: "HTTPS *.nip.io"
   TLS: "Wildcard cert"
   Routes: {

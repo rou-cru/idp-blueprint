@@ -18,5 +18,5 @@ Examples for 127.0.0.1:
 
 ## NodePorts — local demo
 
-- HTTP Gateway: `30080`
-- HTTPS Gateway: `30443`
+- HTTP Gateway: value from `config.toml` → `nodeport_http` (default `30080`)
+- HTTPS Gateway: value from `config.toml` → `nodeport_https` (default `30443`)

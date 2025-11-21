@@ -45,7 +45,7 @@ This guide covers common issues and their solutions when working with the IDP Bl
 
 1. Check firewall settings
 2. Verify LAN IP detection: `ip route get 1.1.1.1 | awk '{print $7; exit}'`
-3. Ensure ports 30080 and 30443 are available
+3. Ensure the configured NodePorts (`nodeport_http`/`nodeport_https`) are available
 4. Check if VPN is interfering with local network access
 
 ## Component-Specific Issues
