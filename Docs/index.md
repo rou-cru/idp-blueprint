@@ -1,8 +1,10 @@
-# IDP Blueprint — A readable reference IDP
+# IDP Blueprint — Production-Ready Internal Developer Platform Reference
 
-IDP Blueprint is an Internal Developer Platform you can run locally, reason about, and adapt to your environment. It is designed to run well from a small 3‑node demo cluster up to larger, production‑like Kubernetes environments, and uses a GitOps‑first architecture with widely adopted open source components.
+**IDP Blueprint** is a comprehensive, production-ready **Internal Developer Platform (IDP)** that serves as a reference architecture for **Platform Engineering** teams. Built with industry-standard open-source tools and **GitOps** principles, this platform delivers a complete developer experience from local development to enterprise production environments.
 
-Use this documentation as a map to the platform: understand the architecture, deploy the reference cluster, then evolve components and operations to fit your own environment.
+This **platform engineering blueprint** demonstrates how to build, operate, and scale an Internal Developer Platform using **Kubernetes**, **ArgoCD**, **Kyverno**, and a complete **observability stack**. Whether you're building your first IDP or modernizing existing infrastructure, this reference implementation provides battle-tested patterns and architectural decisions for **cloud-native platform engineering**.
+
+Use this documentation as your comprehensive guide to **Platform Engineering**: understand the architecture, deploy the reference cluster, explore GitOps workflows, and adapt components to fit your environment. Perfect for **Platform Engineers**, **SRE teams**, and **DevOps practitioners** implementing **Platform as a Product** strategies.
 
 ## One picture: IDP Blueprint architecture
 
@@ -280,4 +282,14 @@ For technical support and contributions:
 
 ---
 
+## About the Author
+
+**IDP Blueprint** is created and maintained by **[Alberto Roura](https://roura.xyz)**, a Platform Engineering specialist focused on building scalable, production-ready Internal Developer Platforms. Learn more about Platform Engineering practices, cloud-native architectures, and developer experience optimization at **[roura.xyz](https://roura.xyz)**.
+
+For professional inquiries, consulting, or collaboration on Platform Engineering initiatives, visit **[roura.xyz](https://roura.xyz)**.
+
+---
+
 **IDP Blueprint** is open source software licensed under the [MIT License](https://github.com/rou-cru/idp-blueprint/blob/main/LICENSE).
+
+*This documentation is part of the Platform Engineering reference portfolio by [Alberto Roura](https://roura.xyz).*

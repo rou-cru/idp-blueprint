@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  <!-- Enhanced SEO Meta Tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="{{ config.site_name }} - {{ page.title if page and page.title else 'Enterprise Internal Developer Platform' }}">
+  <meta name="description" content="{{ config.site_description }}">
+  <meta name="keywords" content="Internal Developer Platform, IDP, Platform Engineering, GitOps, Kubernetes, ArgoCD, DevOps, Cloud Native, Infrastructure as Code, Kyverno, Observability, CI/CD, Argo Workflows, Prometheus, Grafana, Vault, cert-manager, Cilium, Developer Platform, Platform as a Product, Self-Service Platform">
+  <meta name="author" content="Alberto Roura">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ page.canonical_url }}">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ page.canonical_url }}">
+  <meta property="og:site_name" content="{{ config.site_name }}">
+  <meta property="og:title" content="{{ config.site_name }} - {{ page.title if page and page.title else 'Enterprise Internal Developer Platform' }}">
+  <meta property="og:description" content="{{ config.site_description }}">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{ page.canonical_url }}">
+  <meta name="twitter:title" content="{{ config.site_name }} - {{ page.title if page and page.title else 'Enterprise IDP' }}">
+  <meta name="twitter:description" content="{{ config.site_description }}">
+  <meta name="twitter:creator" content="@albertoroura">
+
+  <!-- Structured Data - Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": "{{ page.canonical_url }}#article",
+        "headline": "{{ config.site_name }} - {{ page.title if page and page.title else 'Enterprise Internal Developer Platform' }}",
+        "description": "{{ config.site_description }}",
+        "author": {
+          "@type": "Person",
+          "@id": "https://roura.xyz#person",
+          "name": "Alberto Roura",
+          "url": "https://roura.xyz",
+          "jobTitle": "Platform Engineering Specialist",
+          "sameAs": [
+            "https://github.com/rou-cru",
+            "https://linkedin.com/in/albertoroura"
+          ]
+        },
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://roura.xyz#person"
+        },
+        "inLanguage": "en-US",
+        "about": [
+          {
+            "@type": "Thing",
+            "name": "Platform Engineering"
+          },
+          {
+            "@type": "Thing",
+            "name": "Internal Developer Platform"
+          },
+          {
+            "@type": "Thing",
+            "name": "GitOps"
+          },
+          {
+            "@type": "Thing",
+            "name": "Kubernetes"
+          }
+        ],
+        "keywords": "Internal Developer Platform, IDP, Platform Engineering, GitOps, Kubernetes, ArgoCD, DevOps, Cloud Native, Kyverno, Observability",
+        "articleSection": "Platform Engineering",
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "{{ config.site_url }}#website"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "{{ config.site_url }}#website",
+        "url": "{{ config.site_url }}",
+        "name": "{{ config.site_name }}",
+        "description": "{{ config.site_description }}",
+        "publisher": {
+          "@type": "Person",
+          "@id": "https://roura.xyz#person"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ config.site_url }}/search/?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "{{ page.canonical_url }}#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "{{ config.site_url }}"
+          }
+          {% if page and page.title %}
+          ,{
+            "@type": "ListItem",
+            "position": 2,
+            "name": "{{ page.title }}",
+            "item": "{{ page.canonical_url }}"
+          }
+          {% endif %}
+        ]
+      },
+      {
+        "@type": "SoftwareSourceCode",
+        "@id": "{{ config.site_url }}#software",
+        "name": "IDP Blueprint",
+        "description": "{{ config.site_description }}",
+        "codeRepository": "https://github.com/rou-cru/idp-blueprint",
+        "programmingLanguage": ["YAML", "Kubernetes", "Helm"],
+        "runtimePlatform": "Kubernetes",
+        "author": {
+          "@type": "Person",
+          "@id": "https://roura.xyz#person"
+        },
+        "license": "https://github.com/rou-cru/idp-blueprint/blob/main/LICENSE",
+        "keywords": "Internal Developer Platform, Platform Engineering, GitOps, Kubernetes, ArgoCD, IDP"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Additional SEO enhancements -->
+  <link rel="author" href="https://roura.xyz">
+  <meta name="format-detection" content="telephone=no">
+
+  {{ super() }}
+{% endblock %}
