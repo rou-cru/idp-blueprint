@@ -1,48 +1,81 @@
----
-title: Argo Events — Event Mesh
----
+# Eventing Components
 
-Argo Events is the shared nervous system of the IDP Blueprint. It listens to Kubernetes, Git, and external systems, then fans out triggers to Argo Workflows, ArgoCD, or any HTTP target. The stack is deployed from `K8s/events/*` and synchronized through `task stacks:events`, so every environment boots the same event bus, governance objects, and controller configuration.
+The eventing stack provides event-driven automation and orchestration capabilities for the platform, enabling reactive workflows and intelligent system responses.
 
-## Deployment layout
+## Overview
+
+Event-driven architecture decouples producers from consumers, allowing the platform to react dynamically to changes in Kubernetes, Git repositories, external systems, and monitoring alerts. This enables automation patterns like:
+
+- Triggering CI/CD workflows on Git push events
+- Executing remediation workflows when SLO burn rates exceed thresholds
+- Orchestrating multi-step processes across platform components
+- Scheduling periodic maintenance tasks
+- Auto-scaling based on custom business metrics
+
+The eventing stack is deployed from `K8s/events/*` and synchronized through `task stacks:events`, ensuring consistent event infrastructure across all environments.
+
+## Core Components
+
+- **[Argo Events](argo-events/index.md)**: Event-driven workflow automation for Kubernetes
+
+## Event Flow Architecture
+
+```
+External Event Sources          Event Mesh           Event Consumers
+┌────────────────────┐         ┌──────────┐         ┌──────────────────┐
+│ Git Webhooks       │────────▶│          │────────▶│ Argo Workflows   │
+│ Prometheus Alerts  │────────▶│   NATS   │────────▶│ ArgoCD Sync      │
+│ Kubernetes Events  │────────▶│ EventBus │────────▶│ HTTP Endpoints   │
+│ Cron Schedules     │────────▶│          │────────▶│ Custom Actions   │
+└────────────────────┘         └──────────┘         └──────────────────┘
+        ▲                            │                       │
+        │                            │                       │
+    EventSources                 Routing                 Sensors
+```
+
+## Key Capabilities
+
+The eventing stack provides:
+
+- **Event Ingestion**: Multiple event source types (webhooks, Kubernetes resources, message queues, cloud events)
+- **Event Routing**: Reliable message bus with at-least-once delivery semantics
+- **Event Processing**: Filter, transform, and aggregate events before triggering actions
+- **Workflow Orchestration**: Trigger Argo Workflows based on event patterns
+- **GitOps Integration**: Invoke ArgoCD syncs intelligently based on repository events
+- **Fan-Out Patterns**: Single event triggers multiple parallel actions
+
+## Common Use Cases
+
+### Continuous Deployment
+Automatically build, test, and deploy applications when code is pushed to Git repositories.
+
+### Incident Response
+Trigger remediation workflows when monitoring alerts fire, reducing mean time to recovery (MTTR).
+
+### Scheduled Automation
+Execute periodic tasks like backups, cleanup jobs, and compliance scans using calendar-based triggers.
+
+### Cross-Service Orchestration
+Coordinate complex workflows across multiple platform components with event-driven coordination.
+
+## Deployment Structure
 
 | Path | Purpose |
 |------|---------|
-| `K8s/events/governance/` | Namespace, `LimitRange`, and `ResourceQuota` applied in early sync waves so the mesh has reserved capacity.
-| `K8s/events/argo-events/values.yaml` | Helm values for the controller + webhook (priority class, tolerations, metrics, resources).
-| `K8s/events/argo-events/eventbus.yaml` | Defines the `EventBus` using native NATS with three replicas.
-| `K8s/events/applicationset-events.yaml` | ApplicationSet that points ArgoCD to every Eventing folder.
+| `K8s/events/governance/` | Namespace, quotas, and resource limits for the eventing stack |
+| `K8s/events/argo-events/` | Argo Events controller, webhook, and EventBus configuration |
+| `K8s/events/applicationset-events.yaml` | ApplicationSet for GitOps-based event infrastructure deployment |
 
-## Scheduling & reliability
+## Integration Points
 
-- Both controller and webhook use the `platform-events` PriorityClass and pin to control-plane nodes through node affinity and tolerations so automation continues even if worker nodes are under pressure (`values.yaml`).
-- Rolling updates use `maxUnavailable: 0` / `maxSurge: 1` to enforce zero-downtime restarts for the controller.
-- The EventBus (`eventbus.yaml`) provisions a three-node NATS cluster with token auth; it is the single default bus referenced by all Sensors.
+The eventing stack integrates with:
 
-## Building sensors and event sources
+- **Argo Workflows**: Primary execution engine for event-triggered workflows
+- **ArgoCD**: Intelligent application syncs triggered by repository events
+- **Prometheus/Alertmanager**: Alert-driven automation and remediation
+- **Git Providers**: Webhook-based CI/CD pipeline triggers
+- **External Systems**: Custom HTTP endpoints and message queues
 
-1. Create a folder under `K8s/events/<source>-<purpose>/`.
-2. Add `EventSource` and `Sensor` manifests that point to the `default` EventBus.
-3. Label everything with the canonical metadata (`app.kubernetes.io/part-of: idp`, `owner: platform-team`, etc.) and include governance files if the folder introduces its own namespace.
-4. Commit and let the ApplicationSet reconcile it—no manual registration is required.
+## Getting Started
 
-Common recipes:
-- Git webhooks → trigger Argo Workflows templates or invoke the ArgoCD API for intelligent syncs.
-- Alertmanager or Prometheus burn-rate alerts → Sensor that dispatches remediation workflows.
-- Cron-style schedules → `Calendar` trigger to fan out maintenance jobs.
-
-## Observability & operations
-
-- Metrics: the controller exposes `/metrics` on port `7777`; a `ServiceMonitor` with selector `prometheus: kube-prometheus` is created automatically so Prometheus scrapes it.
-- Health: `kubectl -n argo-events get pods` verifies controller/webhook readiness; `kubectl -n argo-events get eventbus` shows NATS replicas.
-- Redeploy: `task stacks:events` reapplies the ApplicationSet and Helm release; use it after changing values or adding new sources.
-- Cleanup/testing: `task deploy` already includes the Events stack; `task destroy` removes it with the rest of the platform.
-
-## Extending to other stacks
-
-Treat Events as a cross-cutting concern:
-- CI/CD: Workflows triggered by Sensor payloads instead of manual submissions.
-- Security: Stream Trivy or Kyverno reports into Sensors for auto-ticketing or rollback automation.
-- SRE automation: Watch Gateway/Certificate events and run recovery flows.
-
-Design Sensors so they emit structured CloudEvents (or JSON payloads) that downstream tasks can parse consistently.
+See the [Argo Events documentation](argo-events/index.md) for detailed configuration, event source patterns, sensor recipes, and operational guidance.
