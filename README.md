@@ -545,16 +545,4 @@ repositories manually and can add other env setup steps without caring how the
 environment itself is generated. They will always be ready for you to deploy
 the project.
 
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE)
-file for details.
-
-Feel free to use this as a reference or foundation for your own IDP
-implementations.
-
-**⭐ If you find this project useful, please consider starring it on GitHub!**
-
 
