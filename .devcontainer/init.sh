@@ -49,6 +49,9 @@ helm repo add jetstack https://charts.jetstack.io/
 # -- Backups
 # helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts # Velero Backups
 
+# -- Dev Portal
+helm repo add backstage https://backstage.github.io/charts
+
 # -- Just in Case
 helm repo add bitnami https://charts.bitnami.com/bitnami
 
