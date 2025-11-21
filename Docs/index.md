@@ -284,12 +284,8 @@ For technical support and contributions:
 
 ## About the Author
 
-**IDP Blueprint** is created and maintained by **[Alberto Roura](https://roura.xyz)**, a Platform Engineering specialist focused on building scalable, production-ready Internal Developer Platforms. Learn more about Platform Engineering practices, cloud-native architectures, and developer experience optimization at **[roura.xyz](https://roura.xyz)**.
-
-For professional inquiries, consulting, or collaboration on Platform Engineering initiatives, visit **[roura.xyz](https://roura.xyz)**.
+**IDP Blueprint** is created and maintained by **[Alberto Roura](https://roura.xyz)**, a Platform Engineering specialist. For more Platform Engineering content, architecture insights, and cloud-native best practices, visit **[roura.xyz](https://roura.xyz)**.
 
 ---
 
 **IDP Blueprint** is open source software licensed under the [MIT License](https://github.com/rou-cru/idp-blueprint/blob/main/LICENSE).
-
-*This documentation is part of the Platform Engineering reference portfolio by [Alberto Roura](https://roura.xyz).*
