@@ -62,12 +62,12 @@
 
 /* Ensure header inner has proper padding */
 .md-header__inner {
-  padding: 0 0.8rem;
+  padding: 0 0.4rem;
   max-width: 100%;
-  height: 3rem;
+  height: 2.8rem;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.2rem;
   flex-wrap: nowrap;
 }
 
@@ -82,7 +82,7 @@
   position: static !important;
   background: transparent !important;
   height: auto !important;
-  margin: 0 auto 0 1rem;
+  margin: 0 auto 0 0.5rem;
   order: 2;
   flex-shrink: 1;
   min-width: 0;
@@ -91,7 +91,7 @@
 .md-tabs__list {
   display: flex;
   flex-wrap: nowrap;
-  gap: 0.2rem;
+  gap: 0.1rem;
   margin: 0;
   padding: 0;
   white-space: nowrap;
@@ -105,34 +105,37 @@
 }
 
 .md-tabs__link {
-  padding: 0.35rem 0.6rem;
-  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  height: 2.4rem;
+  padding: 0 0.8rem;
+  font-size: 0.7rem;
   font-weight: 500;
-  opacity: 0.85;
-  transition: all 0.2s;
+  color: rgba(255, 255, 255, 0.7);
+  transition: background-color 0.25s, color 0.25s;
   white-space: nowrap;
+  border-radius: 0.1rem;
 }
 
 .md-tabs__link:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.3rem;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .md-tabs__link--active {
-  opacity: 1;
-  font-weight: 600;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 0.3rem;
+  color: #fff;
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Adjust header title positioning */
 .md-header__title {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
   order: 1;
   margin: 0;
   flex-shrink: 0;
+  color: #fff;
 }
 
 /* Personal link order and styling */
@@ -141,18 +144,47 @@
   flex-shrink: 0;
 }
 
-/* Source link (GitHub) order */
+/* Source link (GitHub) order and styling */
 .md-source {
   order: 5;
   flex-shrink: 0;
   margin: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.1rem;
 }
 
-/* Search button order */
+.md-source:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.md-source__icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.md-source__repository {
+  display: none;
+}
+
+/* Search button order and styling */
 .md-header label[for="__search"] {
   order: 6;
   flex-shrink: 0;
   margin: 0;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.1rem;
+  transition: background-color 0.25s;
+}
+
+.md-header label[for="__search"]:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.md-search__icon {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 /* Header buttons */
@@ -160,15 +192,22 @@
   order: 7;
   margin: 0;
   flex-shrink: 0;
-}
-
-.md-header__button,
-.md-header__title {
-  color: #fff;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 0.1rem;
+  transition: background-color 0.25s, color 0.25s;
 }
 
 .md-header__button:hover {
-  color: #e0e7ff;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.md-header__button svg {
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 /* Reduce left sidebar width */
