@@ -86,7 +86,7 @@ webhook:
       # -- (string) Liveness probe scheme
       scheme: HTTP
     # -- (int) Initial delay before liveness probe
-    initialDelaySeconds: 0
+    initialDelaySeconds: 5
     # -- (int) Timeout for liveness probe
     timeoutSeconds: 1
     # -- (int) Period between liveness probes
@@ -106,7 +106,7 @@ webhook:
       # -- (string) Readiness probe scheme
       scheme: HTTP
     # -- (int) Initial delay before readiness probe
-    initialDelaySeconds: 0
+    initialDelaySeconds: 5
     # -- (int) Timeout for readiness probe
     timeoutSeconds: 1
     # -- (int) Period between readiness probes

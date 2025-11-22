@@ -48,27 +48,27 @@ livenessProbe:
 # -- Readiness probe for the main admission controller.
 readinessProbe:
   # -- (int) Delay before starting readiness checks
-  initialDelaySeconds: 0
+  initialDelaySeconds: 10
   # -- (int) Frequency of readiness probes
-  periodSeconds: 10
+  periodSeconds: 5
   # -- (int) Timeout per readiness probe
   timeoutSeconds: 1
   # -- (int) Successful probes required to be ready
   successThreshold: 1
   # -- (int) Failed readiness probes tolerated
-  failureThreshold: 3
+  failureThreshold: 6
 # -- Startup probe for the main admission controller.
 startupProbe:
   # -- (int) Delay before starting startup probes
-  initialDelaySeconds: 0
+  initialDelaySeconds: 15
   # -- (int) Frequency of startup probes
-  periodSeconds: 10
+  periodSeconds: 5
   # -- (int) Timeout per startup probe
   timeoutSeconds: 1
   # -- (int) Successful startup probes required
   successThreshold: 1
   # -- (int) Failed startup probes tolerated
-  failureThreshold: 30
+  failureThreshold: 40
 
 # @section -- Background Controller
 backgroundController:

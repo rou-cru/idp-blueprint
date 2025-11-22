@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: grafana-demo
     app.kubernetes.io/component: visualization
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
     description: 'HTTPRoute for Grafana dashboards'
     contact: platform-team
     documentation: https://grafana.com/docs/

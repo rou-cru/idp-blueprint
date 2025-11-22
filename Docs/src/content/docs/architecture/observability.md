@@ -5,9 +5,12 @@ sidebar:
   order: 6
 ---
 
-The observability stack covers metrics, logs, and dashboards with minimal footprint. It lives under `K8s/observability/` and is powered by Prometheus, Loki, Fluent-bit, and Grafana.
+The observability stack covers metrics, logs, and dashboards with minimal footprint. It
+  lives under `K8s/observability/` and is powered by Prometheus, Loki, Fluent-bit, and
+  Grafana.
 
-This page is the component view for the “Observability” part of the developer‑facing stacks.
+This page is the component view for the "Observability" part of the developer‑facing
+  stacks.
 
 ## Components at a Glance
 
@@ -22,7 +25,8 @@ This page is the component view for the “Observability” part of the develope
 
 - ApplicationSet: `K8s/observability/applicationset-observability.yaml` watches `K8s/observability/*`.
 - Deploy only observability stack: `task stacks:observability`.
-- Grafana admin credentials are synced from Vault via `ExternalSecret` (see `kube-prometheus-stack/grafana-admin-externalsecret.yaml`).
+- Grafana admin credentials are synced from Vault via `ExternalSecret` (see
+  `kube-prometheus-stack/grafana-admin-externalsecret.yaml`).
 
 ## Data Flow
 

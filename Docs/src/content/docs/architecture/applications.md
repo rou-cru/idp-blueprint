@@ -5,13 +5,18 @@ sidebar:
   order: 8
 ---
 
-> **Context:** This page details the technical implementation of the [GitOps model](../concepts/gitops-model.md) based on the [GitOps philosophy](../concepts/design-philosophy.md#3-gitops).
+> **Context:** This page details the technical implementation of the [GitOps model](../concepts/gitops-model.md)
+  based
+  on the [GitOps philosophy](../concepts/design-philosophy.md#3-gitops).
 
 This document outlines the GitOps strategy for managing all applications and services
-(workloads) deployed on the cluster. This directory (`K8s/`) is the source of truth,
-managed exclusively by ArgoCD.
+  (workloads) deployed on the cluster. This directory (`K8s/`) is the source of truth,
+  managed exclusively by ArgoCD.
 
-This page provides a component view of the GitOps application layer (automation/governance and developer‑facing stacks).
+This page provides a component view of the GitOps application layer (automation/governance
+  and developer‑facing stacks).
+  and developer‑facing stacks).
+  and developer‑facing stacks).
 
 ## Core Pattern: App of AppSets
 
@@ -24,8 +29,8 @@ reduces the blast radius of any configuration errors.
   `applicationset-<stack>.yaml` file.
 - **`ApplicationSet` Role:** This file is responsible for discovering and managing all
   applications _within its own stack directory_.
-- **Root `Application`:** A root ArgoCD `Application` (managed outside this directory)
-  is responsible for deploying the `ApplicationSet` resources themselves.
+- **Root `Application`:** A root ArgoCD `Application` (managed outside this
+  directory) is responsible for deploying the `ApplicationSet` resources themselves.
 
 ### GitOps Workflow Diagram
 
@@ -149,8 +154,7 @@ configuration of these tools declaratively.
 - **Structure:**
   - A directory is created for the application (e.g., `argo-workflows/`).
   - A `kustomization.yaml` file defines the Helm chart in the `helmCharts` section.
-  - A `values.yaml` file contains all custom
-        configuration for that chart.
+  - A `values.yaml` file contains all custom configuration for that chart.
 
 - **Example (`K8s/cicd/argo-workflows/kustomization.yaml`):**
 

@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: pyrra-demo
     app.kubernetes.io/component: slo
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
     description: 'HTTPRoute for Pyrra UI'
     contact: platform-team
     documentation: https://pyrra.dev/

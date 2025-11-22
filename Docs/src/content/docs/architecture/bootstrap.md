@@ -5,10 +5,11 @@ sidebar:
   order: 2
 ---
 
-This directory contains the **static / bootstrap layer** of the platform. Everything
-here must exist _before_ ArgoCD can reconcile Git.
+This directory contains the **static / bootstrap layer** of the platform. Everything here
+  must exist _before_ ArgoCD can reconcile Git.
 
-The components are the same as in the infrastructure core; this page focuses on their **lifecycle over time** (bootstrap sequence) rather than on a new structural level.
+The components are the same as in the infrastructure core; this page focuses on their
+  **lifecycle over time** (bootstrap sequence) rather than on a new structural level.
 
 ## Guiding Principles
 
@@ -31,8 +32,8 @@ Static Kubernetes resources that are not part of a Helm chart installation (e.g.
 - **Location**: Placed inside a subdirectory named after the parent component (e.g.,
   `cert-manager/`).
 - **Naming**: The filename **must** exactly match the `metadata.name` of the resource
-  defined within it (e.g., a `ClusterIssuer` with `name: ca-issuer` is saved in
-  `ca-issuer.yaml`).
+  defined within it (e.g., a `ClusterIssuer` with `name: ca-issuer` is saved
+  in `ca-issuer.yaml`).
 
 ### 3. Bootstrap Resources via Kustomize
 
@@ -43,8 +44,8 @@ Kustomize and apply them with `kustomize build <dir>/ | kubectl apply -f -`.
 - **Purpose**:
   - `namespaces/`: Bootstrap namespace definitions for core components.
   - `cert-manager/`: Issuers and Certificate definitions.
-  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault and
-    the `ExternalSecret` for ArgoCD.
+  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault and the
+    `ExternalSecret` for ArgoCD.
   - `argocd/`: Kustomization to support the Helm chart.
 
 ## Directory layout (short)

@@ -48,14 +48,28 @@ resources:
 # @section -- Health Probes
 livenessProbe:
   # -- (bool) Enable liveness probe
-  enabled: false
+  enabled: true
+  spec:
+    httpGet:
+      # -- (int) Liveness probe port
+      port: "http"
+      # -- (string) Liveness probe path
+      path: /healthz
+    # -- (int) Initial delay before liveness probe
+    initialDelaySeconds: 10
+    # -- (int) Period between liveness probes
+    periodSeconds: 10
+    # -- (int) Timeout for liveness probe
+    timeoutSeconds: 5
+    # -- (int) Failure threshold for liveness probe
+    failureThreshold: 3
 readinessProbe:
   # -- (bool) Enable readiness probe
   enabled: true
   spec:
     httpGet:
       # -- (int) Readiness probe port
-      port: 8081
+      port: "http"
       # -- (string) Readiness probe path
       path: /readyz
     # -- (int) Initial delay before readiness probe

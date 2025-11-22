@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: argo-events-demo
     app.kubernetes.io/component: event-mesh
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
     description: HTTPRoute for Argo Events metrics endpoint
     contact: platform-team
     documentation: https://argoproj.github.io/argo-events/

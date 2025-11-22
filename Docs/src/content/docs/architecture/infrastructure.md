@@ -6,10 +6,11 @@ sidebar:
 ---
 
 This directory contains the **static** or **bootstrap layer** of the platform. These are
-the core components required to bring up a functional Kubernetes cluster _before_ the
-GitOps engine (e.g., ArgoCD) takes over.
+  the core components required to bring up a functional Kubernetes cluster _before_ the
+  GitOps engine (e.g., ArgoCD) takes over.
 
-This page shows the component view of the infrastructure core layer described in the Architecture overview.
+This page shows the component view of the infrastructure core layer described in the
+  Architecture overview.
 
 ## Guiding Principles
 
@@ -32,8 +33,8 @@ Static Kubernetes resources that are not part of a Helm chart installation (e.g.
 - **Location**: Placed inside a subdirectory named after the parent component (e.g.,
   `cert-manager/`).
 - **Naming**: The filename **must** exactly match the `metadata.name` of the resource
-  defined within it (e.g., a `ClusterIssuer` with `name: ca-issuer` is saved in
-  `ca-issuer.yaml`).
+  defined within it (e.g., a `ClusterIssuer` with `name: ca-issuer` is saved
+  in `ca-issuer.yaml`).
 
 ### 3. Bootstrap Resources via Kustomize
 

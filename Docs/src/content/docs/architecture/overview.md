@@ -5,9 +5,13 @@ sidebar:
   order: 1
 ---
 
-This page describes the main architectural elements of IDP Blueprint and how they fit together. It assumes you know Kubernetes basics and want to understand how this IDP is wired as a system.
+This page describes the main architectural elements of IDP Blueprint and how they fit
+  together. It assumes you know Kubernetes basics and want to understand how this IDP is
+  wired as a system.
 
-For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md). Here we stay at system context (L1) and container (L2) levels; detailed component views live in the other Architecture pages.
+For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md).
+  Here we stay at system context (L1) and container (L2) levels; detailed component views
+  live in the other Architecture pages.
 
 ## Context and goals
 

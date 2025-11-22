@@ -4,8 +4,15 @@ server:
   priorityClassName: platform-infrastructure
   # -- Update strategy for zero-downtime updates (StatefulSet)
   updateStrategyType: RollingUpdate
-  affinity:
-    podAntiAffinity: null
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: vault
+              app.kubernetes.io/instance: vault
+              component: server
+          topologyKey: kubernetes.io/hostname
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -57,26 +64,30 @@ server:
       cpu: 500m
   livenessProbe:
     # -- (bool) Enable liveness probe
-    enabled: false
+    enabled: true
     # -- (int) Failure threshold
-    failureThreshold: 2
+    failureThreshold: 3
     # -- (int) Initial delay seconds
-    initialDelaySeconds: 5
+    initialDelaySeconds: 15
     # -- (int) Period seconds
-    periodSeconds: 2
+    periodSeconds: 10
     # -- (int) Success threshold
     successThreshold: 1
     # -- (int) Timeout seconds
-    timeoutSeconds: 5
+    timeoutSeconds: 3
     # -- (list) Exec command
     execCommand: []
   readinessProbe:
     # -- (bool) Enable readiness probe
     enabled: true
     # -- (int) Failure threshold
-    failureThreshold: 2
+    failureThreshold: 3
     # -- (int) Initial delay seconds
     initialDelaySeconds: 5
+    # -- (int) Period seconds
+    periodSeconds: 5
+    # -- (int) Timeout seconds
+    timeoutSeconds: 3
     # -- (string) Readiness probe path
     path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
   serviceMonitor:
