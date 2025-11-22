@@ -1,0 +1,48 @@
+---
+import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
+title: prometheus
+---
+
+![Version: 77.14.0](https://img.shields.io/badge/Version-77.14.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://prometheus.io)
+
+Prometheus monitoring stack with Grafana and Alertmanager
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `77.14.0` |
+| **Chart Type** | `application` |
+| **Upstream Project** | [prometheus](https://prometheus.io) |
+| **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
+
+## Why Prometheus?
+
+Prometheus uses a pull model: it scrapes metrics from targets on a schedule. This provides precise control over cardinality and scrape intervals, which helps prevent metric explosions in resource-constrained environments.
+
+The kube-prometheus-stack Helm chart bundles Prometheus with Grafana, Alertmanager, and pre-configured dashboards for Kubernetes components. This reduces the initial configuration work.
+
+ServiceMonitor CRDs make metrics collection declarative. Instead of manually editing Prometheus config files, you define ServiceMonitor resources and Prometheus discovers them automatically, which fits the GitOps approach.
+
+## Architecture Role
+
+Prometheus operates at **Layer 1** of the platform, the Platform Services layer. It's a transversal service that monitors everything above it.
+
+Key integration points:
+
+- **ServiceMonitors**: Declared by components (Cilium, ArgoCD, Kyverno, etc.) to expose metrics
+- **Grafana**: Queries Prometheus for metrics visualization
+- **Pyrra**: Uses Prometheus metrics to calculate SLO burn rates
+- **Alertmanager**: Receives alerts from Prometheus evaluation rules (currently enabled for Pyrra support)
+
+The configuration uses a pull model with ServiceMonitor CRDs for discovery. Scrape intervals are tuned per target (e.g., 30s for CNI metrics, 60s for application metrics). This balances visibility with resource efficiency.
+
+Prometheus doesn't currently drive any HorizontalPodAutoscalers (HPAs), meaning metrics are used for passive observability rather than active scaling. This is an opportunity for future optimization.
+
+See [Observability Model](../../../architecture/observability.md) for the complete observability architecture.
+
+## Configuration Values
+
+<MarkdownPartial content={require('../../../partials/helm-docs/prometheus_values.generated.md?raw').default} />
+
+<MarkdownPartial content={prometheusValuesRaw} />

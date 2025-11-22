@@ -1,0 +1,161 @@
+---
+title: IDP Blueprint
+description: Production-Ready Internal Developer Platform Reference
+template: splash
+hero:
+  tagline: An enterprise-grade Internal Developer Platform reference architecture. Built with Kubernetes, ArgoCD, and GitOps principles to deliver a complete developer experience in minutes.
+  actions:
+    - text: Start Building
+      link: /getting-started/quickstart/
+      icon: rocket
+      variant: primary
+    - text: View Architecture
+      link: /architecture/overview/
+      icon: right-arrow
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkButton, Icon } from '@astrojs/starlight/components';
+
+## Platform Capabilities
+
+<CardGrid stagger>
+  <Card title="GitOps Native" icon="github">
+    Everything is code. Infrastructure, applications, and policies are reconciled automatically from Git using **ArgoCD** and **ApplicationSets**.
+  </Card>
+  <Card title="Policy as Code" icon="approve-check-circle">
+    Guardrails are built-in. **Kyverno** enforces labels, limits, and security contracts at the cluster level before deployment.
+  </Card>
+  <Card title="Full Observability" icon="magnifier">
+    Day-2 ready. Pre-configured **Prometheus**, **Grafana**, **Loki**, and **Fluent-bit** stacks with dashboards and SLOs managed as code.
+  </Card>
+  <Card title="Secure by Design" icon="lock">
+    No secrets in Git. **Vault** integrates with **External Secrets Operator** to inject credentials securely into Kubernetes Secrets.
+  </Card>
+  <Card title="Automated Networking" icon="laptop">
+    One Gateway to rule them all. **Gateway API** + **Cilium** handle traffic with automated TLS certificates via **cert-manager** and `nip.io`.
+  </Card>
+  <Card title="Local to Prod" icon="laptop">
+    Bootstraps a full enterprise-like environment on your laptop (via k3d) in **< 10 minutes**, mirroring production constraints perfectly.
+  </Card>
+</CardGrid>
+
+---
+
+## High-Level Architecture
+
+A complete logical map of the platform layers, from the developer's commit to the running service.
+
+```d2
+direction: right
+
+classes: {
+  actors: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#38bdf8" }
+  system: { style.fill: "#111827"; style.font-color: white; style.stroke: "#22d3ee" }
+  infra:  { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  gov:    { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  svc:    { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  ux:     { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+External: {
+  class: actors
+  Devs: "Developers"
+  Platform: "Platform Engineers"
+  Security: "Security/Compliance"
+}
+
+IDP: {
+  class: system
+  label: "IDP Blueprint cluster"
+
+  Infra: {
+    class: infra
+    label: "Infrastructure Core"
+    K8s: "Kubernetes API"
+    Cilium
+    Gateway: "Gateway API"
+  }
+
+  Governance: {
+    class: gov
+    label: "Automation & Governance"
+    Argo: "ArgoCD"
+    Kyverno
+    Vault
+    ESO: "External Secrets"
+  }
+
+  Services: {
+    class: svc
+    label: "Platform Services"
+    Prom: "Prometheus"
+    Loki
+    Fluent: "Fluent-bit"
+  }
+
+  UX: {
+    class: ux
+    label: "Developer Experience"
+    Grafana
+    ArgoWorkflows: "Argo Workflows"
+    SonarQube
+    Backstage
+  }
+}
+
+External.Devs -> IDP.Governance.Argo: "Git Push"
+IDP.Governance.Argo -> IDP.Services.Prom: "Sync"
+IDP.Governance.Argo -> IDP.UX.ArgoWorkflows
+IDP.Infra.Gateway -> IDP.UX.Grafana: "HTTPS"
+IDP.Infra.Gateway -> IDP.UX.Backstage
+```
+
+[View Full Architecture Details](/architecture/overview/)
+
+---
+
+## Technology Stack
+
+The best-in-class open source components powering the platform.
+
+<CardGrid>
+  <Card title="Orchestration" icon="seti:kubernetes">
+    **Kubernetes** (k3d/k3s) + **Cilium** CNI for eBPF networking.
+  </Card>
+  <Card title="Delivery" icon="rocket">
+    **ArgoCD** for continuous delivery and **Argo Workflows** for pipelines.
+  </Card>
+  <Card title="Security" icon="seti:lock">
+    **HashiCorp Vault** for secrets, **Trivy** for scanning, and **cert-manager** for PKI.
+  </Card>
+  <Card title="Monitoring" icon="seti:chart">
+    **Prometheus** & **Grafana** for metrics, **Loki** for logs.
+  </Card>
+</CardGrid>
+
+---
+
+## Who is this for?
+
+<CardGrid>
+  <Card title="Platform Engineers" icon="setting">
+    Bootstrap a reference implementation to compare against your internal stack or start fresh with best practices.
+    <br/>
+    [Explore Operational Guides](/operate/)
+  </Card>
+  <Card title="Application Teams" icon="puzzle">
+    Understand how your workloads interact with the platform, policies, and pipelines.
+    <br/>
+    [See CI/CD Components](/components/cicd/)
+  </Card>
+</CardGrid>
+
+---
+
+<div style="text-align: center;">
+  <p>Ready to build?</p>
+  <LinkButton href="/getting-started/quickstart/" variant="primary" icon="rocket" style="font-size: 1.2rem;">
+    Start the Quickstart
+  </LinkButton>
+</div>

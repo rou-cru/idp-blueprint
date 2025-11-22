@@ -1,0 +1,165 @@
+---
+import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
+title: pyrra
+---
+
+![Version: 0.14.0](https://img.shields.io/badge/Version-0.14.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://github.com/pyrra-dev/pyrra)
+
+SLO management and burn-rate alerting using Prometheus metrics
+
+## Component Information
+
+| Property | Value |
+|----------|-------|
+| **Chart Version** | `0.14.0` |
+| **Chart Type** | `application` |
+| **Upstream Project** | [pyrra](https://github.com/pyrra-dev/pyrra) |
+| **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
+
+## Why Pyrra?
+
+Pyrra implements the SLO-as-Code pattern: you declare Service Level Objectives as Kubernetes custom resources (`ServiceLevelObjective`), and Pyrra automatically generates Prometheus recording rules, burn-rate alerts, and dashboards.
+
+This approach prevents alert fatigue. Instead of alerting on every metric spike, Pyrra calculates how fast your error budget is being consumed. If the burn rate is too high, it alerts before the SLO is actually breached, giving you time to respond.
+
+The declarative model fits the GitOps approach. SLOs are versioned in Git, reviewed through pull requests, and deployed alongside application code. This makes reliability objectives explicit and trackable over time.
+
+## Architecture Role
+
+Pyrra operates at **Layer 1** of the platform, the Platform Services layer. It works as a passive observability component that consumes Prometheus metrics.
+
+Key integration points:
+
+- **Prometheus**: Pyrra generates `PrometheusRule` resources that Prometheus evaluates
+- **Grafana**: Pyrra provides a built-in UI for SLO visualization and burn-rate tracking
+- **Alertmanager**: Receives burn-rate alerts from Prometheus when error budgets deplete too quickly
+- **ServiceMonitor**: Exposes Pyrra's own metrics to Prometheus for meta-monitoring
+
+The configuration uses the `ServiceLevelObjective` CRD (API version `pyrra.dev/v1alpha1`) to define SLOs. Each SLO specifies:
+
+- **target**: The percentage threshold (e.g., 99.0 for 99% availability)
+- **window**: The time window for calculating the SLO (e.g., 6h, 24h, 30d)
+- **indicator**: The ratio of good events to total events using PromQL queries
+
+Pyrra continuously evaluates these SLOs and updates burn-rate metrics. When the burn rate exceeds safe thresholds, Prometheus fires alerts to Alertmanager.
+
+See [Observability Model](../../../architecture/observability.md) for the complete observability architecture.
+
+## Current SLO Definitions
+
+The platform includes pre-configured SLOs for core infrastructure components:
+
+| SLO | Target | Window | Metric | Location |
+|-----|--------|--------|--------|----------|
+| **Prometheus Targets Up** | 99.0% | 6h | `up` metric availability | `K8s/observability/slo/prometheus-targets-up-slo.yaml` |
+| **Loki Ingest Availability** | 99.0% | 6h | Successful log ingestion rate | `K8s/observability/slo/loki-ingest-availability-slo.yaml` |
+| **Certificate Readiness** | 99.0% | 6h | Valid certificates | `K8s/observability/slo/certs-ready-slo.yaml` |
+| **Secrets Sync** | 99.0% | 6h | External Secrets sync success | `K8s/observability/slo/secrets-sync-slo.yaml` |
+
+All SLO definitions are in `K8s/observability/slo/` and deployed through the observability ApplicationSet.
+
+## Accessing the Dashboard
+
+Pyrra provides a web UI for visualizing SLOs, burn rates, and error budget consumption:
+
+- **URL**: `https://pyrra.idp.demo` (via Gateway API HTTPRoute)
+- **Credentials**: No authentication by default (protected by network ingress policies)
+- **Features**:
+  - Real-time SLO status across all defined objectives
+  - Multi-window burn rate visualization (1h, 6h, 1d, 3d, 30d)
+  - Historical error budget consumption
+  - Direct links to underlying Prometheus queries
+
+## Adding New SLOs
+
+To define a new SLO:
+
+1. Create a `ServiceLevelObjective` manifest in `K8s/observability/slo/`:
+
+```yaml
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: your-service-availability
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    owner: platform-team
+spec:
+  target: 99.0      # 99% availability
+  window: 6h        # 6-hour sliding window
+  indicator:
+    ratio:
+      good:
+        metric: |
+          sum(rate(http_requests_total{status!~"5.."}[5m]))
+      total:
+        metric: |
+          sum(rate(http_requests_total[5m]))
+```
+
+2. Add the file to `K8s/observability/slo/kustomization.yaml`
+3. Commit and push to Git
+4. ArgoCD syncs the SLO automatically
+5. Pyrra generates PrometheusRules within minutes
+6. View the new SLO in the Pyrra dashboard
+
+## Burn-Rate Alerting
+
+Pyrra uses multi-window multi-burn-rate alerting (recommended by Google SRE):
+
+- **Critical**: 2% budget consumed in 1 hour (14.4x burn rate) → page immediately
+- **Warning**: 5% budget consumed in 6 hours (6x burn rate) → investigate soon
+- **Low**: 10% budget consumed in 3 days (slow leak) → review during business hours
+
+These alerts integrate with Alertmanager routing and can be sent to Slack, PagerDuty, or other notification channels.
+
+## Observability & Operations
+
+- **Metrics**: Pyrra exposes `/metrics` on port `9099`; a `ServiceMonitor` ensures Prometheus scrapes it
+- **Health**: `kubectl -n observability get pods -l app.kubernetes.io/name=pyrra` verifies Pyrra readiness
+- **SLO Status**: `kubectl -n observability get servicelevelobjective` lists all configured SLOs
+- **Redeploy**: `task stacks:observability` reapplies the ApplicationSet and Helm release
+- **Logs**: `kubectl -n observability logs -l app.kubernetes.io/name=pyrra -f` streams Pyrra logs
+
+## Common SLO Patterns
+
+### Availability SLO (Success Rate)
+
+```yaml
+indicator:
+  ratio:
+    good:
+      metric: sum(rate(requests_total{status!~"5.."}[5m]))
+    total:
+      metric: sum(rate(requests_total[5m]))
+```
+
+### Latency SLO (P99 < 500ms)
+
+```yaml
+indicator:
+  ratio:
+    good:
+      metric: histogram_quantile(0.99, rate(http_duration_bucket[5m])) < 0.5
+    total:
+      metric: sum(rate(http_duration_count[5m]))
+```
+
+### Saturation SLO (Resource Usage)
+
+```yaml
+indicator:
+  ratio:
+    good:
+      metric: avg(node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.2
+    total:
+      metric: count(up{job="node-exporter"})
+```
+
+## Configuration Values
+
+<MarkdownPartial content={require('../../../partials/helm-docs/pyrra_values.generated.md?raw').default} />
+
+<MarkdownPartial content={pyrraValuesRaw} />

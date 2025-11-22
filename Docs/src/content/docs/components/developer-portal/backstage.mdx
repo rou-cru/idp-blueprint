@@ -1,0 +1,13 @@
+---
+title: Backstage (Developer Portal)
+---
+
+- **Chart**: `backstage` (pin 2.6.3), desplegado via Kustomize `helmCharts`.
+- **Namespace**: `backstage`, con `LimitRange` y `ResourceQuota` alineados a una instancia web + Postgres.
+- **Secretos**: ExternalSecrets desde Vault (`secret/backstage/app`, `secret/backstage/postgres`), usando `SecretStore` dedicado y SA `external-secrets`.
+- **Exposición**: `HTTPRoute` `backstage.nip.io` en el gateway de la plataforma (TLS termina en Gateway).
+- **Monitoreo**: `ServiceMonitor` etiqueta `prometheus: kube-prometheus` midiendo el servicio `backstage` puerto `http`.
+- **Operación**:
+  - Desplegar aislado: `task stacks:backstage` (requiere `REPO_URL`/`TARGET_REVISION`).
+  - Incluido en despliegue completo (`task stacks:deploy`) via `fuses.backstage` (`config.toml`).
+  - Ajustar `backstage/backstage/values.yaml` para imagen personalizada o integraciones adicionales.

@@ -1,0 +1,10 @@
+---
+interface Props {
+  content: string; // The raw markdown content as a string
+}
+const { content } = Astro.props;
+---
+<div class="markdown-partial">
+  {/* Astro's Markdown component can take a string directly, or we can use set:html */}
+  <Fragment set:html={content} />
+</div>

@@ -1,11 +1,6 @@
 version: '3'
 
 tasks:
-  docs:deps:
-    desc: 'Install MkDocs tooling via uv'
-    cmds:
-      - uv sync --locked
-
   docs:
     desc: 'Generate all automatic documentation'
     cmds:
@@ -23,47 +18,10 @@ tasks:
     cmds:
       - ./Scripts/helm-docs-generate.sh
 
-  docs:build:
-    desc: 'Build MkDocs documentation site'
-    cmds:
-      - task: docs:deps
-      - uv run python -E -m mkdocs build --strict
-    sources:
-      - mkdocs.yml
-      - Docs/**/*.md
-      - Docs/**/*.css
-    generates:
-      - site/index.html
-      - site/sitemap.xml
-
-  docs:serve:
-    desc: 'Serve documentation locally for development'
-    cmds:
-      - task: docs:deps
-      - uv run python -E -m mkdocs serve
-
   docs:linkcheck:
     desc: 'Check for broken links in documentation'
     cmds:
       - ./Scripts/docs-linkcheck.sh
-
-  docs:lint:
-    desc: 'Lint documentation markdown files'
-    cmds:
-      - markdownlint-cli2 --config .config/lint/.markdownlint-cli2.yaml --fix "Docs/**/*.md"
-
-  docs:clean:
-    desc: 'Clean built documentation'
-    cmds:
-      - rm -rf site/
-      - rm -rf .cache/
-
-  docs:all:
-    desc: 'Full documentation pipeline: generate, build, and validate'
-    cmds:
-      - task: docs
-      - task: docs:build
-      - task: docs:linkcheck
 
   config:print:
     desc: 'Print effective configuration (fork-friendly)'
