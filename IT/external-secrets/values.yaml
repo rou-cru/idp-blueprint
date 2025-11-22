@@ -52,7 +52,7 @@ livenessProbe:
   spec:
     httpGet:
       # -- (int) Liveness probe port
-      port: 8081
+      port: "http"
       # -- (string) Liveness probe path
       path: /healthz
     # -- (int) Initial delay before liveness probe
@@ -69,7 +69,7 @@ readinessProbe:
   spec:
     httpGet:
       # -- (int) Readiness probe port
-      port: 8081
+      port: "http"
       # -- (string) Readiness probe path
       path: /readyz
     # -- (int) Initial delay before readiness probe
