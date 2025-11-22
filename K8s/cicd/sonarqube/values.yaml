@@ -25,21 +25,40 @@ sonarqube:
       cpu: 1000m
       # -- (string) Memory limit for SonarQube
       memory: 1.5Gi
+  # -- Startup probe to handle initial SonarQube startup and DB migrations.
+  startupProbe:
+    exec:
+      command:
+        - sh
+        - -c
+        - >
+          if curl -s -f http://localhost:9000/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"';
+          then exit 0;
+          fi;
+          exit 1
+    # -- (int) Delay before starting startup checks
+    initialDelaySeconds: 30
+    # -- (int) Frequency of startup checks
+    periodSeconds: 10
+    # -- (int) Number of startup failures tolerated (30s + 180s = 210s total)
+    failureThreshold: 18
+    # -- (int) Timeout for each startup probe
+    timeoutSeconds: 3
   # -- Liveness probe to check if the SonarQube server is running.
   livenessProbe:
     exec:
       command:
         - sh
         - -c
-        - 'wget --no-proxy --quiet -O /dev/null --timeout=1 --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:9000/api/system/liveness"'
+        - 'wget --no-proxy --quiet -O /dev/null --timeout=3 --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:9000/api/system/liveness"'
     # -- (int) Delay before starting liveness checks
-    initialDelaySeconds: 60
+    initialDelaySeconds: 0
     # -- (int) Frequency of liveness checks
     periodSeconds: 30
     # -- (int) Number of failures tolerated
     failureThreshold: 6
     # -- (int) Timeout for each liveness probe
-    timeoutSeconds: 1
+    timeoutSeconds: 3
   # -- Readiness probe to check if the SonarQube server is ready to accept traffic.
   readinessProbe:
     exec:
@@ -52,13 +71,13 @@ sonarqube:
           fi;
           exit 1
     # -- (int) Delay before starting readiness checks
-    initialDelaySeconds: 60
+    initialDelaySeconds: 0
     # -- (int) Frequency of readiness checks
-    periodSeconds: 30
+    periodSeconds: 10
     # -- (int) Number of readiness failures tolerated
     failureThreshold: 6
     # -- (int) Timeout for each readiness probe
-    timeoutSeconds: 1
+    timeoutSeconds: 3
 
 # -- Required initContainer to set kernel parameters for Elasticsearch.
 initSysctl:

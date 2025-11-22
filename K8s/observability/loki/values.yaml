@@ -64,12 +64,21 @@ singleBinary:
   persistence:
     enabled: true
     size: 2Gi
+  # -- Startup probe for the single binary pod.
+  startupProbe:
+    httpGet:
+      path: /ready
+      port: http-metrics
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 1
+    failureThreshold: 12
   # -- Readiness probe for the single binary pod.
   readinessProbe:
     httpGet:
       path: /ready
       port: http-metrics
-    initialDelaySeconds: 15
+    initialDelaySeconds: 0
     periodSeconds: 10
     timeoutSeconds: 1
     failureThreshold: 3
@@ -79,7 +88,7 @@ singleBinary:
     httpGet:
       path: /ready
       port: http-metrics
-    initialDelaySeconds: 30
+    initialDelaySeconds: 0
     periodSeconds: 10
     timeoutSeconds: 1
     failureThreshold: 3
