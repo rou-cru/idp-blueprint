@@ -120,6 +120,22 @@ volumeMounts:
     mountPath: /fluent-bit/etc/conf
 
 # @section -- Health Probes
+startupProbe:
+  # -- (string) Probe path
+  httpGet:
+    # -- (string) Health check path
+    path: /api/v1/health
+    # -- (string) Port
+    port: http
+  # -- (int) Initial delay seconds
+  initialDelaySeconds: 5
+  # -- (int) Period seconds
+  periodSeconds: 5
+  # -- (int) Timeout seconds
+  timeoutSeconds: 5
+  # -- (int) Failure threshold
+  failureThreshold: 10
+
 readinessProbe:
   # -- (string) Probe path
   httpGet:
@@ -128,7 +144,7 @@ readinessProbe:
     # -- (string) Port
     port: http
   # -- (int) Initial delay seconds
-  initialDelaySeconds: 10
+  initialDelaySeconds: 0
   # -- (int) Period seconds
   periodSeconds: 10
   # -- (int) Timeout seconds
@@ -144,7 +160,7 @@ livenessProbe:
     # -- (string) Port
     port: http
   # -- (int) Initial delay seconds
-  initialDelaySeconds: 30
+  initialDelaySeconds: 0
   # -- (int) Period seconds
   periodSeconds: 10
   # -- (int) Timeout seconds
