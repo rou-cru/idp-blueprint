@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: sonarqube-demo
     app.kubernetes.io/component: code-quality
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
     description: 'HTTPRoute for SonarQube code quality platform'
     contact: platform-team
     documentation: https://docs.sonarqube.org/
