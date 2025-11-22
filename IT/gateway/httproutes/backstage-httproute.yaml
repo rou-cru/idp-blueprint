@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: backstage-demo
     app.kubernetes.io/component: developer-portal
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
     description: 'HTTPRoute for Backstage developer portal'
     contact: platform-team
     documentation: https://backstage.io
