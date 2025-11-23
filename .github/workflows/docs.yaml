@@ -56,6 +56,11 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: Docs/pnpm-lock.yaml
 
+      - name: Install D2
+        run: |
+          curl -fsSL https://d2lang.com/install.sh | sh -s --
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Install dependencies
         working-directory: Docs
         run: pnpm install --frozen-lockfile
