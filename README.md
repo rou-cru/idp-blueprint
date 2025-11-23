@@ -262,7 +262,7 @@ flowchart TB
   Secrets Operator
 
 📖 For detailed architecture documentation, see
-[Docs/architecture/visual.md](Docs/architecture/visual.md)
+[Docs/src/content/docs/architecture/visual.md](Docs/src/content/docs/architecture/visual.md)
 
 ## 📊 Resource Requirements
 
@@ -333,20 +333,19 @@ That's it! Your IDP is ready.
 
 ### Documentation Portal
 
-- Run `mkdocs serve` to browse the full architecture/reference site locally.
-- Highlights:
-  - `Docs/architecture/visual.md` – master system map + diagrams.
-  - `Docs/architecture/bootstrap.md` – Helm/Kustomize boot choreography.
-  - `Docs/architecture/applications.md` – K8s directory architecture and App‑of‑AppSets pattern.
-  - `Docs/architecture/observability.md` – metrics + logging pipelines, dashboards.
-  - `Docs/architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
-  - `Docs/architecture/policies.md` – Kyverno layers, Policy Reporter flow.
-  - `Docs/architecture/cicd.md` – Argo Workflows + SonarQube integration.
-  - `Docs/reference/labels-standard.md` – canonical labels, sync waves, priority classes.
-  - **[FinOps Tags](Docs/reference/finops-tags.md)** – tag-to-cost mapping for
-    FinOps dashboards.
+- From `Docs/`: `pnpm install && pnpm dev` to browse the Astro/Starlight docs at `http://localhost:4321`.
+- Highlights (source paths under `Docs/src/content/docs/`):
+  - `architecture/visual.md` – master system map + diagrams.
+  - `architecture/bootstrap.md` – Helm/Kustomize boot choreography.
+  - `architecture/applications.md` – K8s directory architecture and App‑of‑AppSets pattern.
+  - `architecture/observability.md` – metrics + logging pipelines, dashboards.
+  - `architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
+  - `architecture/policies.md` – Kyverno layers, Policy Reporter flow.
+  - `architecture/cicd.md` – Argo Workflows + SonarQube integration.
+  - `reference/labels-standard.md` – canonical labels, sync waves, priority classes.
+  - `reference/finops-tags.md` – tag-to-cost mapping for FinOps dashboards.
 
-Keep this README open for commands; flip to the MkDocs site when you need the
+Keep this README open for commands; flip to the Starlight site when you need the
 conceptual “why”.
 
 ### Validate & Clean Up

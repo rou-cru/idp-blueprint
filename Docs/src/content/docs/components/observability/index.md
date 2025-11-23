@@ -6,11 +6,11 @@ The observability stack provides monitoring, logging, alerting, and SLO tracking
 
 ## Core Components
 
-- **[Prometheus](prometheus/index.md)**: Prometheus monitoring stack with Grafana and Alertmanager
-- **[Grafana](grafana/index.md)**: Visualization and dashboard platform
-- **[Loki](loki/index.md)**: Log aggregation system designed to store and query logs
-- **[Fluent-bit](fluent-bit/index.md)**: Fast and lightweight log processor and forwarder
-- **[Pyrra](pyrra/index.md)**: SLO management and burn-rate alerting using Prometheus metrics
+- **[Prometheus](prometheus)**: Prometheus monitoring stack with Grafana and Alertmanager
+- **[Grafana](grafana)**: Visualization and dashboard platform
+- **[Loki](loki)**: Log aggregation system designed to store and query logs
+- **[Fluent-bit](fluent-bit)**: Fast and lightweight log processor and forwarder
+- **[Pyrra](pyrra)**: SLO management and burn-rate alerting using Prometheus metrics
 
 ## Observability Capabilities
 
