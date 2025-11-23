@@ -2,10 +2,26 @@ version: '3'
 
 tasks:
   docs:
-    desc: 'Generate all automatic documentation'
+    desc: 'Generate all automatic documentation (Helm values metadata)'
     cmds:
       - task: docs:metadata
       - task: docs:helm
+
+  docs:astro:build:
+    desc: 'Build Astro/Starlight docs site'
+    cmds:
+      - |
+        cd Docs
+        pnpm install --frozen-lockfile
+        pnpm build
+
+  docs:astro:dev:
+    desc: 'Run Astro/Starlight docs in dev mode'
+    cmds:
+      - |
+        cd Docs
+        pnpm install --frozen-lockfile
+        pnpm dev
 
   docs:metadata:
     desc: 'Generate Chart.yaml metadata for all components'

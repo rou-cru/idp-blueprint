@@ -8,9 +8,6 @@ on:
     paths:
       - 'Docs/**'
       - '**/README.md'
-      - 'mkdocs.yml'
-      - 'pyproject.toml'
-      - 'uv.lock'
       - 'Scripts/generate-chart-metadata.sh'
       - 'Scripts/helm-docs-*.sh'
       - '.github/workflows/docs.yaml'
@@ -33,7 +30,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Documentation
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -41,66 +38,46 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for git-revision-date plugin
+          fetch-depth: 0
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v4
 
-      - name: Restore MkDocs cache
-        uses: actions/cache@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          path: .cache
-          key: mkdocs-${{ hashFiles('mkdocs.yml', 'pyproject.toml', 'uv.lock') }}-${{ hashFiles('Docs/**') }}
-          restore-keys: |
-            mkdocs-${{ hashFiles('mkdocs.yml', 'pyproject.toml', 'uv.lock') }}-
-            mkdocs-
+          node-version: 20
+          cache: 'pnpm'
+          cache-dependency-path: Docs/pnpm-lock.yaml
 
-      - name: Prepare Devbox configuration
-        run: ln -sf devbox-minimal.json devbox.json
-        working-directory: .devcontainer
+      - name: Enable corepack
+        run: corepack enable
 
-      - name: Install Devbox
-        uses: jetpack-io/devbox-install-action@v0.11.0
-        with:
-          project-path: .devcontainer
-          enable-cache: true
+      - name: Install dependencies
+        working-directory: Docs
+        run: pnpm install --frozen-lockfile
 
-      - name: Install uv toolchain
-        uses: astral-sh/setup-uv@v3
-        with:
-          uv-version: 'latest'
-
-      - name: Sync documentation dependencies
-        run: uv sync --locked
-
-      - name: Generate documentation (metadata + helm-docs)
-        run: devbox run -- task utils:docs
-        working-directory: .devcontainer
-        timeout-minutes: 5
-
-      - name: Build MkDocs site
-        run: devbox run -- task utils:docs:build
-        working-directory: .devcontainer
-        timeout-minutes: 5
+      - name: Build Astro site
+        working-directory: Docs
+        run: pnpm build
 
       - name: Validate build output
         run: |
-          test -d site/ || { echo "❌ Error: site/ directory not found"; exit 1; }
-          test -f site/index.html || { echo "❌ Error: site/index.html not found"; exit 1; }
-          test -f site/sitemap.xml || { echo "❌ Error: site/sitemap.xml not found"; exit 1; }
+          test -d Docs/dist/ || { echo "❌ Error: Docs/dist/ directory not found"; exit 1; }
+          test -f Docs/dist/index.html || { echo "❌ Error: Docs/dist/index.html not found"; exit 1; }
+          test -f Docs/dist/sitemap.xml || { echo "❌ Error: Docs/dist/sitemap.xml not found"; exit 1; }
           echo "✅ Build output validated successfully"
 
       - name: Check for broken links
-        run: devbox run -- task utils:docs:linkcheck
-        working-directory: .devcontainer
+        run: ./Scripts/docs-linkcheck.sh
         timeout-minutes: 3
         continue-on-error: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site/
+          path: Docs/dist/
 
       - name: Deploy to GitHub Pages
         id: deployment
