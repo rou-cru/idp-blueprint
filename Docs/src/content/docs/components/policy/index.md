@@ -6,8 +6,8 @@ The policy layer enforces organizational standards and security requirements acr
 
 ## Core Components
 
-- **[Kyverno](kyverno/index.md)**: Kubernetes-native policy management and security engine
-- **[Policy Reporter](policy-reporter/index.md)**: Monitoring and observability for policy engine results
+- **[Kyverno](kyverno)**: Kubernetes-native policy management and security engine
+- **[Policy Reporter](policy-reporter)**: Monitoring and observability for policy engine results
 
 ## Policy Capabilities
 

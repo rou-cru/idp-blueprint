@@ -1,52 +1,54 @@
-# Starlight Starter Kit: Basics
+# IDP Blueprint Documentation (Astro/Starlight)
 
-[![Built with Starlight](https://astro.badg.es/v2/built-with-starlight/tiny.svg)](https://starlight.astro.build)
+This folder hosts the documentation site built with **Astro 5 + Starlight**. Use these steps to work on docs locally and keep generated content in sync with the codebase.
 
-```
-pnpm create astro@latest -- --template starlight
-```
+## Quick start
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro + Starlight project, you'll see the following folders and files:
-
-```
-.
-├── public/
-├── src/
-│   ├── assets/
-│   ├── content/
-│   │   └── docs/
-│   └── content.config.ts
-├── astro.config.mjs
-├── package.json
-└── tsconfig.json
+```bash
+cd Docs
+pnpm install      # first time
+pnpm dev          # local site at http://localhost:4321
+pnpm build        # outputs ./dist
+pnpm preview      # serve the production build locally
 ```
 
-Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. Each
-file is exposed as a route based on its file name.
+> Tip: run inside the Dev Container or Devbox so Node/pnpm match the project.
 
-Images can be added to `src/assets/` and embedded in Markdown with a relative link.
+## Layout
 
-Static assets, like favicons, can be placed in the `public/` directory.
+- `src/content/docs/` — all doc pages (md/mdx). Sidebar order comes from `sidebar.order` in front‑matter.
+- `src/partials/helm-docs/` — generated Helm values tables consumed by component pages.
+- `public/` — static assets (favicons, robots.txt, etc.).
 
-## 🧞 Commands
+## Regenerating Helm value partials
 
-All commands are run from the root of the project, from a terminal:
+Component pages embed generated chart values. Refresh them when chart versions change:
 
-| Command                | Action                                           |
-| :--------------------- | :----------------------------------------------- |
-| `pnpm install`         | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
+```bash
+# from repo root
+./Scripts/helm-docs-generate.sh
+```
 
-## 👀 Want to learn more?
+This script updates `src/partials/helm-docs/*_values.generated.md`, which are imported by the component `.mdx` files.
 
-Check out [Starlight’s docs](https://starlight.astro.build/), read
-[the Astro documentation](https://docs.astro.build), or jump into the
-[Astro Discord server](https://astro.build/chat).
+## Linting & link checks
+
+Run the same checks CI uses before a PR:
+
+```bash
+# from repo root
+task lint                 # formatting
+task check                # full quality suite
+./Scripts/docs-linkcheck.sh  # validate outbound links
+```
+
+## Authoring guidelines
+
+- Prefer `.mdx` when you need components; `.md` for text‑only pages.
+- Keep `title`, optional `sidebar.label`, and `order` consistent to avoid sidebar gaps.
+- Use relative links to existing files (e.g., `../architecture/overview`), not legacy MkDocs paths.
+- Large images belong in `src/assets/images/`; reference them with relative paths.
+
+## Publishing
+
+`pnpm build` creates `Docs/dist`. Deploy that folder to your static host (e.g., GitHub Pages, S3/CloudFront). The `docs.yaml` workflow already builds the site—keep it green after changes.
