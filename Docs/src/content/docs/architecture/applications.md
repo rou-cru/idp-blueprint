@@ -48,6 +48,7 @@ Argo: {
     CICD: "ApplicationSet: cicd"
     OBS: "ApplicationSet: observability"
     SEC: "ApplicationSet: security"
+    EVENTS: "ApplicationSet: events"
     DP: "ApplicationSet: backstage"
   }
 }
@@ -58,6 +59,7 @@ Cluster: {
   CICD: "cicd"
   OBS: "observability"
   SEC: "security"
+  EVENTS: "events"
   DP: "backstage"
 }
 
@@ -65,6 +67,7 @@ Git -> Argo: "Root app\n(manages AppSets)"
 Argo.AppSets.CICD -> Cluster.CICD: "generate apps\nargo-workflows/, sonarqube/"
 Argo.AppSets.OBS -> Cluster.OBS: "generate apps\nloki/, kube-prometheus-stack/"
 Argo.AppSets.SEC -> Cluster.SEC: "generate apps\ntrivy-operator/"
+Argo.AppSets.EVENTS -> Cluster.EVENTS: "generate apps\nargo-events/"
 Argo.AppSets.DP -> Cluster.DP: "generate apps\nbackstage/"
 ```
 

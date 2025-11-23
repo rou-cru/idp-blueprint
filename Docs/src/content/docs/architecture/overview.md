@@ -44,6 +44,10 @@ At the highest level, the platform sits between engineers, Git, and a Kubernetes
 
 Everything is driven from Git: changes are pushed to the repo, ArgoCD reconciles the cluster, and observability feeds back into decisions.
 
+:::note[C4 Model - System Context (Level 1)]
+This diagram shows the IDP Blueprint from a system context perspective, focusing on actors and external systems rather than internal components. For a detailed view of internal containers, see the [Container view](#container-view) below.
+:::
+
 ```d2
 direction: right
 
@@ -95,6 +99,10 @@ Actors.Platform -> IDP.Argo: "operate platform"
 ```
 
 ## Container view
+
+:::note[C4 Model - Container (Level 2)]
+This diagram zooms into the IDP Blueprint system to show the major containers (applications and data stores) and how they interact. Each container is a separately deployable/runnable unit.
+:::
 
 The container view groups components into layers and planes:
 
