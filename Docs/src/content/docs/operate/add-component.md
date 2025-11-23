@@ -4,8 +4,6 @@ sidebar:
   label: Add Component
   order: 5
 ---
----
-
 
 Treat every component as code. Adding, changing, or removing should feel like a small, reviewable PR.
 

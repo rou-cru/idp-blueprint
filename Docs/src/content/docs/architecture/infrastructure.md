@@ -12,6 +12,10 @@ This directory contains the **static** or **bootstrap layer** of the platform. T
 This page shows the component view of the infrastructure core layer described in the
   Architecture overview.
 
+:::note[Related Documentation]
+This page focuses on the **structural organization** of bootstrap components. For the **deployment sequence and lifecycle** of these components, see [Bootstrap Layer](bootstrap.md).
+:::
+
 ## Guiding Principles
 
 The structure follows two simple rules to ensure consistency and clarity.

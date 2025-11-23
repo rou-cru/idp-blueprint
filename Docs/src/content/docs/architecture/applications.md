@@ -15,8 +15,6 @@ This document outlines the GitOps strategy for managing all applications and ser
 
 This page provides a component view of the GitOps application layer (automation/governance
   and developer‑facing stacks).
-  and developer‑facing stacks).
-  and developer‑facing stacks).
 
 ## Core Pattern: App of AppSets
 

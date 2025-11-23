@@ -4,8 +4,6 @@ sidebar:
   label: Upgrades
   order: 1
 ---
----
-
 
 Upgrades should feel boring. Make order and gates explicit, and test with disposable clusters before touching shared environments.
 
