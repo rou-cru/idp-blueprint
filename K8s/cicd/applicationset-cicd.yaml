@@ -54,3 +54,11 @@ spec:
           kind: ServiceAccount
           jsonPointers:
             - /secrets
+        - group: external-secrets.io
+          kind: ExternalSecret
+          jsonPointers:
+            - /status
+        - group: apps
+          kind: StatefulSet
+          jsonPointers:
+            - /status

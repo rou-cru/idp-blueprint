@@ -54,3 +54,14 @@ spec:
       kind: ServiceAccount
       jsonPointers:
         - /secrets
+    - group: kyverno.io
+      kind: ClusterPolicy
+      jsonPointers:
+        - /status
+      jqPathExpressions:
+        - .spec.rules[] | select(.name|test("autogen-"))
+    - group: wgpolicyk8s.io
+      kind: PolicyReport
+      jsonPointers:
+        - /status
+        - /summary
