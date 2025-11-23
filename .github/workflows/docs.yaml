@@ -15,10 +15,10 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
-# Prevent concurrent deployments
+# Prevent concurrent deployments - queue them instead of canceling
 concurrency:
   group: docs-deploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 # Required permissions for GitHub Pages
 permissions:
@@ -42,7 +42,12 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.23.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -50,9 +55,6 @@ jobs:
           node-version: 24
           cache: 'pnpm'
           cache-dependency-path: Docs/pnpm-lock.yaml
-
-      - name: Enable corepack
-        run: corepack enable
 
       - name: Install dependencies
         working-directory: Docs

@@ -1,0 +1,75 @@
+name: Close Stale Issues and PRs
+
+on:
+  schedule:
+    # Run daily at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Mark and close stale issues and PRs
+        uses: actions/stale@v9
+        with:
+          # Stale issues configuration
+          days-before-issue-stale: 60
+          days-before-issue-close: 14
+          stale-issue-label: 'stale'
+          exempt-issue-labels: 'pinned,security,help-wanted,good-first-issue,needs-triage,critical'
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has not had recent activity in the last 60 days.
+
+            It will be closed in 14 days if no further activity occurs.
+
+            If you believe this issue is still relevant, please:
+            - Comment on this issue to keep it open
+            - Add the 'pinned' label to prevent it from becoming stale again
+
+            Thank you for your contributions to the IDP Blueprint!
+          close-issue-message: |
+            This issue has been automatically closed due to inactivity.
+
+            If you believe this issue should be reopened, please create a new issue and reference this one.
+
+            Thank you for your contributions!
+
+          # Stale PRs configuration
+          days-before-pr-stale: 30
+          days-before-pr-close: 7
+          stale-pr-label: 'stale'
+          exempt-pr-labels: 'pinned,security,work-in-progress,blocked'
+          stale-pr-message: |
+            This pull request has been automatically marked as stale because it has not had recent activity in the last 30 days.
+
+            It will be closed in 7 days if no further activity occurs.
+
+            If you're still working on this PR, please:
+            - Push new commits
+            - Comment on this PR to keep it open
+            - Add the 'work-in-progress' label if you need more time
+
+            Thank you for your contribution!
+          close-pr-message: |
+            This pull request has been automatically closed due to inactivity.
+
+            If you'd like to continue this work, please:
+            - Rebase your branch on the latest main
+            - Open a new PR referencing this one
+
+            Thank you for your contribution!
+
+          # General configuration
+          operations-per-run: 100
+          remove-stale-when-updated: true
+          ascending: true
+          exempt-draft-pr: true
+
+          # Additional exempt labels (apply to both issues and PRs)
+          exempt-all-milestones: true

@@ -1,0 +1,130 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in the IDP Blueprint
+title: "[Bug]: "
+labels: ["bug", "needs-triage"]
+assignees:
+  - rou-cru
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below to help us fix the issue.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have read the documentation at https://rou-cru.github.io/idp-blueprint/
+          required: true
+        - label: I am using the latest version from the main branch
+          required: false
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component is affected?
+      options:
+        - K3d Cluster
+        - ArgoCD / GitOps
+        - Cilium / Networking
+        - Vault / Secrets Management
+        - Kyverno / Policies
+        - Observability (Prometheus/Grafana/Loki)
+        - CI/CD (Argo Workflows/SonarQube)
+        - cert-manager
+        - Documentation
+        - GitHub Actions / CI
+        - Task Automation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the behavior
+      placeholder: |
+        1. Run `task deploy`
+        2. Wait for ArgoCD to sync
+        3. Check status with `kubectl get pods -A`
+        4. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: The deployment should complete successfully
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: The pod crashed with error X
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide details about your environment
+      value: |
+        - OS: [e.g., macOS 14, Ubuntu 22.04, Windows 11 + WSL2]
+        - Docker version: [run `docker --version`]
+        - k3d version: [run `k3d version`]
+        - Task version: [run `task --version`]
+        - Configuration file: [default config.toml or custom]
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Please provide relevant logs (use `kubectl logs`, `task` output, etc.)
+      placeholder: Paste logs here
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: If using custom config.toml, please share relevant sections (redact secrets!)
+      placeholder: Paste config here
+      render: toml
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or information about the problem
+      placeholder: Any additional information that might help
+    validations:
+      required: false
