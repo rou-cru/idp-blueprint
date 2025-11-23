@@ -62,3 +62,11 @@ spec:
           kind: ServiceAccount
           jsonPointers:
             - /secrets
+        - group: external-secrets.io
+          kind: ExternalSecret
+          jsonPointers:
+            - /status
+        - group: pyrra.dev
+          kind: ServiceLevelObjective
+          jsonPointers:
+            - /status
