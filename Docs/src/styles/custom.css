@@ -1,0 +1,39 @@
+/* Import Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* Inter font for headings */
+:root {
+  --sl-font-family-headings: "Inter", sans-serif;
+  /* Layout adjustments */
+  --sl-content-width: 85%; /* Default is often too narrow, give it more room */
+  --sl-sidebar-width: 16rem; /* Adjust sidebar width if needed */
+}
+
+/* Reduce TOC width and make it collapsible on smaller screens if not already handled */
+/* Starlight handles responsiveness, but we can tweak the max-width of the right sidebar column if we want */
+:root {
+    --sl-toc-width: 14rem; /* Reduced from default (often ~18rem) to give more space to content */
+}
+
+/* Enforce dark mode */
+html {
+  color-scheme: dark;
+}
+
+html[data-theme] {
+  color-scheme: dark;
+}
+
+/* You might need to adjust Starlight's default colors if you completely remove the switcher and want a specific dark theme */
+/* Example:
+:root {
+  --sl-color-white: hsl(220 14% 96%);
+  --sl-color-gray-1: hsl(220 12% 80%);
+  --sl-color-gray-2: hsl(220 14% 60%);
+  --sl-color-gray-3: hsl(220 15% 40%);
+  --sl-color-gray-4: hsl(220 15% 24%);
+  --sl-color-gray-5: hsl(220 15% 16%);
+  --sl-color-gray-6: hsl(220 15% 12%);
+  --sl-color-black: hsl(220 15% 8%);
+}
+*/

@@ -1,0 +1,80 @@
+---
+import StarlightHead from '@astrojs/starlight/components/Head.astro';
+import { SEO } from 'astro-seo';
+
+const { title, description, canonicalUrl } = Astro.props;
+
+const siteName = "IDP Blueprint";
+const siteDescription = "Enterprise-grade Internal Developer Platform Blueprint - Production-ready platform engineering stacks";
+const siteAuthor = "Alberto Roura";
+const siteUrl = "https://idp-blueprint.roura.xyz";
+
+const pageTitle = title ? `${siteName} - ${title}` : `${siteName} - Enterprise Internal Developer Platform`;
+const pageDescription = description || siteDescription;
+const pageCanonicalUrl = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": `${pageCanonicalUrl}#article`,
+      "headline": pageTitle,
+      "description": pageDescription,
+      "author": {
+        "@type": "Person",
+        "@id": "https://roura.xyz#person",
+        "name": siteAuthor,
+        "url": "https://roura.xyz",
+        "jobTitle": "Platform Engineering Specialist",
+        "sameAs": [
+          "https://github.com/rou-cru",
+          "https://linkedin.com/in/albertoroura"
+        ]
+      },
+      "publisher": {
+        "@type": "Person",
+        "@id": "https://roura.xyz#person"
+      },
+      "inLanguage": "en-US",
+      "about": [
+        { "@type": "Thing", "name": "Platform Engineering" },
+        { "@type": "Thing", "name": "Internal Developer Platform" },
+        { "@type": "Thing", "name": "GitOps" },
+        { "@type": "Thing", "name": "Kubernetes" }
+      ],
+      "keywords": "Internal Developer Platform, IDP, Platform Engineering, GitOps, Kubernetes, ArgoCD, DevOps, Cloud Native, Kyverno, Observability",
+      "articleSection": "Platform Engineering",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": `${siteUrl}#website`
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}#website`,
+      "url": siteUrl,
+      "name": siteName,
+      "description": siteDescription,
+      "publisher": {
+        "@type": "Person",
+        "@id": "https://roura.xyz#person"
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint"
+        }
+      }
+    }
+  ]
+};
+---
+
+<!-- Render Starlight's default head (styles, scripts, basic meta) -->
+<StarlightHead {...Astro.props} />
+
+<!-- Inject robust JSON-LD Schema via astro-seo -->
+<SEO
+  jsonLd={jsonLd}
+/>
