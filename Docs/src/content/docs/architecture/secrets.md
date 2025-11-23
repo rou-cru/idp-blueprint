@@ -29,25 +29,56 @@ classes: {
 Cluster: {
   class: infra
   label: "Cluster"
-  VaultNS: { class: control; label: "vault-system\nVault (KV v2)\nTokenReviewer" }
-  ESONS: { class: control; label: "external-secrets-system\nESO controllers" }
+  VaultNS: {
+    class: control
+    label: "vault-system\nVault (KV v2)\nTokenReviewer"
+    shape: cylinder
+    link: https://www.vaultproject.io
+    tooltip: |md
+      HashiCorp Vault stores all secrets.
+      Uses KV v2 engine for versioned secrets.
+    |
+  }
+  ESONS: {
+    class: control
+    label: "external-secrets-system\nESO controllers"
+    link: https://external-secrets.io
+  }
   AppNS: { class: data; label: "App namespaces\nExternalSecret CRs\nKubernetes Secrets\nPods" }
 }
 
 CloudSM: {
   class: ext
   label: "Cloud secret managers"
-  AWS: "AWS Secrets Manager"
-  GCP: "GCP Secret Manager"
-  Azure: "Azure Key Vault"
+  AWS: {
+    label: "AWS Secrets Manager"
+    shape: cloud
+  }
+  GCP: {
+    label: "GCP Secret Manager"
+    shape: cloud
+  }
+  Azure: {
+    label: "Azure Key Vault"
+    shape: cloud
+  }
 }
 
 External: {
   class: ext
   label: "External workloads"
-  Lambda: "AWS Lambda"
-  CloudRun: "GCP Cloud Run"
-  Functions: "Azure Functions"
+  Lambda: {
+    label: "AWS Lambda"
+    shape: cloud
+  }
+  CloudRun: {
+    label: "GCP Cloud Run"
+    shape: cloud
+  }
+  Functions: {
+    label: "Azure Functions"
+    shape: cloud
+  }
   Crossplane: "Crossplane-managed DBs"
 }
 
