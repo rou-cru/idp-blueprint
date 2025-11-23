@@ -8,8 +8,9 @@ sidebar:
 This directory contains the **static / bootstrap layer** of the platform. Everything here
   must exist _before_ ArgoCD can reconcile Git.
 
-The components are the same as in the infrastructure core; this page focuses on their
-  **lifecycle over time** (bootstrap sequence) rather than on a new structural level.
+:::note[Related Documentation]
+The components are the same as in the infrastructure core. This page focuses on their **lifecycle over time** (bootstrap sequence). For the **structural view** of the same components, see [Infrastructure Core](infrastructure.md).
+:::
 
 ## Guiding Principles
 

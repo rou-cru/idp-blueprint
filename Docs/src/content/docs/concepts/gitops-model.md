@@ -53,6 +53,7 @@ Namespaces: {
   OBS: "observability"
   CICD: "cicd"
   SEC: "security"
+  EVENTS: "events"
   DP: "backstage"
 }
 
@@ -62,6 +63,7 @@ Argo.AppSets -> Argo.Apps: "templates"
 Argo.Apps -> Namespaces.OBS: "sync"
 Argo.Apps -> Namespaces.CICD
 Argo.Apps -> Namespaces.SEC
+Argo.Apps -> Namespaces.EVENTS
 Argo.Apps -> Namespaces.DP
 ```
 
