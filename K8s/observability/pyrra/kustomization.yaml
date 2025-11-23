@@ -13,3 +13,4 @@ helmCharts:
     releaseName: pyrra
     namespace: observability
     valuesFile: values.yaml
+    includeCRDs: true
