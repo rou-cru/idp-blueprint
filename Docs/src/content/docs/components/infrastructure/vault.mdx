@@ -1,7 +1,9 @@
 ---
-import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
 title: vault
 ---
+
+import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
+import vaultValuesRaw from '../../../../partials/helm-docs/vault_values.generated.md?raw';
 
 ![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://www.vaultproject.io)
 
@@ -44,7 +46,5 @@ The configuration here uses `dev` mode for the demo (data stored in memory, auto
 See [Secrets Management](../../../architecture/secrets.md) for the complete secrets flow.
 
 ## Configuration Values
-
-<MarkdownPartial content={require('../../../partials/helm-docs/vault_values.generated.md?raw').default} />
 
 <MarkdownPartial content={vaultValuesRaw} />

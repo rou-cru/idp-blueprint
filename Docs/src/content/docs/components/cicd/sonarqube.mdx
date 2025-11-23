@@ -1,7 +1,9 @@
 ---
-import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
 title: sonarqube
 ---
+
+import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
+import sonarqubeValuesRaw from '../../../../partials/helm-docs/sonarqube_values.generated.md?raw';
 
 ![Version: 2025.5.0](https://img.shields.io/badge/Version-2025.5.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://www.sonarsource.com/products/sonarqube)
 
@@ -38,7 +40,5 @@ Key integration points:
 SonarQube runs as a stateful service with persistent storage for scan history and configuration.
 
 ## Configuration Values
-
-<MarkdownPartial content={require('../../../partials/helm-docs/sonarqube_values.generated.md?raw').default} />
 
 <MarkdownPartial content={sonarqubeValuesRaw} />

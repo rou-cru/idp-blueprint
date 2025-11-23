@@ -9,12 +9,12 @@ sidebar:
 
 Upgrades should feel boring. Make order and gates explicit, and test with disposable clusters before touching shared environments.
 
-## Upgrade choreography (texto)
+## Upgrade choreography (concise)
 
-1) **Plan**: leer release notes, chequear matriz de compatibilidad (Cilium, K8s, CRDs).  
-2) **Stage**: cluster efímero (`task deploy`), validar salud + dashboards + SLOs.  
-3) **Prod**: ventana acordada, prechecks, manual gate; aplicar en orden.  
-4) **Observar**: después del roll, validar Apps Healthy/Synced y SLO burn rate.  
+1) **Plan**: read release notes, check compatibility matrix (Cilium, K8s, CRDs).  
+2) **Stage**: ephemeral cluster (`task deploy`), validate health + dashboards + SLOs.  
+3) **Prod**: agreed window, prechecks, manual gate; apply in order.  
+4) **Observe**: after the roll, verify Apps Healthy/Synced and SLO burn rate.  
 
 Recommended order:
 

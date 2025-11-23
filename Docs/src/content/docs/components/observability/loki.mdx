@@ -1,7 +1,9 @@
 ---
-import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
 title: loki
 ---
+
+import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
+import lokiValuesRaw from '../../../../partials/helm-docs/loki_values.generated.md?raw';
 
 ![Version: 6.42.0](https://img.shields.io/badge/Version-6.42.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://grafana.com/oss/loki)
 
@@ -39,7 +41,5 @@ The configuration here runs in single-binary mode with filesystem storage and a 
 See [Observability Model](../../../architecture/observability.md) for how Loki fits into the complete stack.
 
 ## Configuration Values
-
-<MarkdownPartial content={require('../../../partials/helm-docs/loki_values.generated.md?raw').default} />
 
 <MarkdownPartial content={lokiValuesRaw} />

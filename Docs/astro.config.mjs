@@ -39,11 +39,6 @@ export default defineConfig({
         autogenerate: { directory: 'getting-started' },
       },
       {
-        label: 'Guides',
-        collapsed: true,
-        autogenerate: { directory: 'guides' },
-      },
-      {
         label: 'Operate',
         collapsed: true,
         autogenerate: { directory: 'operate' },
@@ -62,11 +57,6 @@ export default defineConfig({
         label: 'Reference',
         collapsed: true,
         autogenerate: { directory: 'reference' },
-      },
-      {
-        label: 'Diagrams',
-        collapsed: true,
-        autogenerate: { directory: 'diagrams' },
       },
       {
         label: 'Components',

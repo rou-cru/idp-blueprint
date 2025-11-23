@@ -1,7 +1,9 @@
 ---
-import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
 title: cilium
 ---
+
+import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
+import ciliumValuesRaw from '../../../../partials/helm-docs/cilium_values.generated.md?raw';
 
 ![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://cilium.io)
 
@@ -48,7 +50,5 @@ The configuration disables some features for the k3d demo environment (BPF host 
 See [Architecture Overview](../../../architecture/overview.md) for how Cilium fits into the broader platform design.
 
 ## Configuration Values
-
-<MarkdownPartial content={require('../../../partials/helm-docs/cilium_values.generated.md?raw').default} />
 
 <MarkdownPartial content={ciliumValuesRaw} />

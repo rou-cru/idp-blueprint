@@ -11,12 +11,12 @@ Treat every component as code. Adding, changing, or removing should feel like a 
 
 ## The recipe (concise)
 
-1. Crea `K8s/<stack>/<name>/`.
-2. Define `kustomization.yaml` (recursos o `helmCharts`).
-3. Aplica etiquetas canónicas (`owner`, `business-unit`, `environment`, `app.kubernetes.io/*`).
+1. Create `K8s/<stack>/<name>/`.
+2. Add `kustomization.yaml` (resources or `helmCharts`).
+3. Apply canonical labels (`owner`, `business-unit`, `environment`, `app.kubernetes.io/*`).
 4. Commit + push.
-5. ApplicationSet detecta la carpeta → ArgoCD crea `Application`.
-6. Sync respeta waves/policies y converge en el cluster.
+5. The ApplicationSet detects the folder → ArgoCD creates the `Application`.
+6. Sync follows waves/policies and converges in the cluster.
 
 Steps:
 

@@ -1,7 +1,9 @@
 ---
-import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
 title: pyrra
 ---
+
+import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
+import pyrraValuesRaw from '../../../../partials/helm-docs/pyrra_values.generated.md?raw';
 
 ![Version: 0.14.0](https://img.shields.io/badge/Version-0.14.0-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://github.com/pyrra-dev/pyrra)
 
@@ -159,7 +161,5 @@ indicator:
 ```
 
 ## Configuration Values
-
-<MarkdownPartial content={require('../../../partials/helm-docs/pyrra_values.generated.md?raw').default} />
 
 <MarkdownPartial content={pyrraValuesRaw} />
