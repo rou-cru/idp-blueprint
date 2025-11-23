@@ -28,14 +28,14 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Prepare Devbox configuration
         run: ln -sf devbox-minimal.json devbox.json
         working-directory: .devcontainer
 
       - name: Install Devbox
-        uses: jetpack-io/devbox-install-action@v0.11.0
+        uses: jetpack-io/devbox-install-action@v0.14.0
         with:
           project-path: .devcontainer
           enable-cache: true
