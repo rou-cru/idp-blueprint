@@ -6,7 +6,7 @@ set -euo pipefail
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
 
-DOCS_DIR="Docs"
+DOCS_DIR="Docs/src/content/docs"
 EXIT_CODE=0
 
 # Find all markdown files and check internal links
@@ -27,6 +27,6 @@ while IFS= read -r file; do
       EXIT_CODE=1
     fi
   done < <(grep -oP '\[([^\]]+)\]\(\K[^)]+(?=\))' "$file" 2>/dev/null || true)
-done < <(find "$DOCS_DIR" -type f -name "*.md")
+done < <(find "$DOCS_DIR" -type f \( -name "*.md" -o -name "*.mdx" \))
 
 exit $EXIT_CODE

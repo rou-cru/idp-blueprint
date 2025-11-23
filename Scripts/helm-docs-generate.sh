@@ -19,7 +19,7 @@ generate_docs() {
 
   helm-docs --template-files="$template"
 
-  # Copy generated README.md into Docs so MkDocs can consume it
+  # Copy generated README.md into Docs so Astro/Starlight can consume it
   local dest
   dest=$(docs_values_path "$root_dir" "$category" "$component" "$dir")
   mkdir -p "$(dirname "$dest")"
