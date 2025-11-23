@@ -123,7 +123,7 @@ docs_values_path() {
   local dir=$4
   local alias
   alias=$(map_component_alias "$dir" "$component")
-  echo "$root_dir/Docs/components/${category}/${alias}/_values.generated.md"
+  echo "$root_dir/Docs/src/partials/helm-docs/${alias}_values.generated.md"
 }
 
 # Process each directory containing values.yaml files

@@ -25,3 +25,5 @@ CLAUDE.md
 Docs/components/**/Chart.yaml
 .memory/graph.db-shm
 .memory/graph.db-wal
+Docs_temp_backup
+.playwright-mcp
