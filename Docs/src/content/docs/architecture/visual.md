@@ -87,3 +87,212 @@ Routes.Backstage -> Backends.S6
 ```
 
 See: [Networking & gateway](../concepts/networking-gateway.md).
+
+## 3. Process Flows
+
+These diagrams show critical platform workflows step-by-step.
+
+### Bootstrap Complete Flow
+
+Shows the complete platform initialization sequence from cluster creation to fully operational state.
+
+```d2
+direction: down
+
+classes: {
+  step: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  platform: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  actor: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa"; style.font-color: white }
+}
+
+User: {
+  class: actor
+  shape: person
+  label: "Platform Engineer"
+}
+
+Bootstrap: {
+  class: step
+  label: "Bootstrap Process"
+
+  Step1: {
+    label: "1. task deploy"
+    desc: "Creates k3d cluster\nInstalls Cilium CNI"
+  }
+
+  Step2: {
+    label: "2. Vault Init"
+    desc: "Deploys Vault\nInitializes & unseals\nCreates secrets"
+  }
+
+  Step3: {
+    label: "3. External Secrets"
+    desc: "Deploys ESO\nConfigures SecretStore\nSyncs first secrets"
+  }
+
+  Step4: {
+    label: "4. ArgoCD"
+    desc: "Deploys ArgoCD\nConfigures repo access\nCreates root Application"
+  }
+
+  Step5: {
+    label: "5. ApplicationSets"
+    desc: "Sync 5 ApplicationSets:\nobservability, events,\ncicd, security, backstage"
+  }
+}
+
+Platform: {
+  class: platform
+  label: "Operational Platform"
+
+  State: {
+    label: "Platform Ready"
+    Components: "All workloads running\nPolicies enforced\nMonitoring active"
+  }
+}
+
+User -> Bootstrap.Step1: "task deploy"
+Bootstrap.Step1 -> Bootstrap.Step2: "cluster ready"
+Bootstrap.Step2 -> Bootstrap.Step3: "Vault operational"
+Bootstrap.Step3 -> Bootstrap.Step4: "secrets available"
+Bootstrap.Step4 -> Bootstrap.Step5: "ArgoCD syncing"
+Bootstrap.Step5 -> Platform.State: "all apps healthy"
+```
+
+See: [Getting Started](../getting-started/quickstart.md) for bootstrap details.
+
+### Secret Synchronization Flow
+
+Shows how secrets flow from Vault to Kubernetes pods via External Secrets Operator.
+
+```d2
+direction: right
+
+classes: {
+  k8s: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  control: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  workload: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+ExternalSecret: {
+  class: k8s
+  label: "ExternalSecret CR"
+  spec: "remoteRef:\n  key: grafana-admin"
+}
+
+ESO: {
+  class: control
+  label: "External Secrets Operator"
+  watch: "Watches ExternalSecrets\nReconciles every 1h"
+}
+
+Vault: {
+  class: data
+  shape: cylinder
+  label: "Vault KV v2"
+  path: "secret/grafana-admin"
+  link: https://www.vaultproject.io
+}
+
+K8sSecret: {
+  class: k8s
+  label: "Kubernetes Secret"
+  data: "admin-password: <base64>"
+}
+
+Pod: {
+  class: workload
+  label: "Grafana Pod"
+  mount: "volumeMount:\n  /etc/secrets"
+}
+
+ExternalSecret -> ESO: "triggers reconcile"
+ESO -> Vault: "read secret/grafana-admin"
+Vault -> ESO: "return {password: xyz}"
+ESO -> K8sSecret: "create/update Secret"
+K8sSecret -> Pod: "mount as volume"
+```
+
+See: [Secrets architecture](secrets.md) for detailed secret management.
+
+### GitOps Synchronization Flow
+
+Shows the complete flow from Git commit to running workload with policy enforcement.
+
+```d2
+direction: down
+
+classes: {
+  git: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa"; style.font-color: white }
+  gitops: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  policy: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  k8s: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  observe: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+GitRepo: {
+  class: git
+  shape: cloud
+  label: "Git Repository"
+  change: "K8s/observability/\nprometheus/values.yaml"
+}
+
+ArgoCD: {
+  class: gitops
+  label: "ArgoCD"
+
+  Detect: {
+    label: "1. Detect Change"
+    method: "Polling or webhook"
+  }
+
+  Diff: {
+    label: "2. Calculate Diff"
+    result: "ConfigMap modified"
+  }
+
+  Sync: {
+    label: "3. Apply to Cluster"
+    action: "kubectl apply"
+  }
+}
+
+Kyverno: {
+  class: policy
+  label: "Kyverno Admission"
+
+  Validate: {
+    label: "Validate Resource"
+    checks: "- Has required labels?\n- Has resource limits?\n- Matches naming?"
+  }
+
+  Mutate: {
+    label: "Mutate if Needed"
+    actions: "- Add default labels\n- Inject sidecars"
+  }
+}
+
+K8sAPI: {
+  class: k8s
+  label: "Kubernetes API"
+  result: "Resource created/updated"
+}
+
+Prometheus: {
+  class: observe
+  label: "Prometheus Pod"
+  state: "Reloaded with new config"
+}
+
+GitRepo -> ArgoCD.Detect: "commit pushed"
+ArgoCD.Detect -> ArgoCD.Diff: "fetch manifests"
+ArgoCD.Diff -> ArgoCD.Sync: "changes detected"
+ArgoCD.Sync -> Kyverno.Validate: "apply request"
+Kyverno.Validate -> Kyverno.Mutate: "validation passed"
+Kyverno.Mutate -> K8sAPI: "mutated resource"
+K8sAPI -> Prometheus: "rolling update"
+```
+
+See: [GitOps model](../concepts/gitops-model.md) and [Policy model](../concepts/security-policy-model.md).

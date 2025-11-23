@@ -51,34 +51,56 @@ This diagram shows the IDP Blueprint from a system context perspective, focusing
 ```d2
 direction: right
 
-classes: { actor: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+classes: { actor: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa"; style.font-color: white }
            ext: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
            system: { style.fill: "#111827"; style.stroke: "#34d399"; style.font-color: white } }
 
 Actors: {
   class: actor
-  Platform: "Platform Engineer"
-  Dev: "Application Developer"
+  Platform: {
+    shape: person
+    label: "Platform Engineer"
+  }
+  Dev: {
+    shape: person
+    label: "Application Developer"
+  }
 }
 
 External: {
   class: ext
-  Git: "Git provider\n(bootstrap, stacks, policies)"
-  Registry: "Container registry"
+  Git: {
+    label: "Git provider\n(bootstrap, stacks, policies)"
+    shape: cloud
+  }
+  Registry: {
+    label: "Container registry"
+    shape: cylinder
+  }
 }
 
 IDP: {
   class: system
   label: "IDP Blueprint cluster"
-  Gateway: "Gateway API + TLS"
-  Argo: "ArgoCD + AppSets"
+  Gateway: {
+    label: "Gateway API + TLS"
+    shape: hexagon
+  }
+  Argo: {
+    label: "ArgoCD + AppSets"
+    link: https://argo-cd.readthedocs.io
+  }
   Observability: {
     Prom: "Prometheus"
-    Loki: "Loki"
+    Loki: {
+      shape: cylinder
+    }
     Graf: "Grafana"
   }
   Security: {
-    Kyverno
+    Kyverno: {
+      link: https://kyverno.io
+    }
     Reporter: "Policy Reporter"
   }
   CICD: {
