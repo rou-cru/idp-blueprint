@@ -69,10 +69,10 @@ export default defineConfig({
       ThemeSelect: './src/components/ThemeSelect.astro', // Disable theme switcher
     },
     pagination: false,
-  }), d2({
+  }), expressiveCode(), mdx(), d2({
     theme: {
       dark: '200',
     },
     sketch: true,
-  }), sitemap(), expressiveCode(), mdx(), mermaid(), icon(), robotsTxt(), favicons(), yeskunallumami({ id: 'placeholder-id' })],
+  }), mermaid(), icon(), robotsTxt(), favicons(), sitemap(), yeskunallumami({ id: 'placeholder-id' })],
 });
