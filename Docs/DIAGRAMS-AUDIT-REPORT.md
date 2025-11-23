@@ -291,44 +291,24 @@ actor: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa" }  # Azul más claro
 
 ---
 
-### 8. Falta Diagramas de Secuencia para Flujos Complejos
+### 8. Falta Diagramas de Flujo para Procesos Complejos
 
 **Severidad**: BAJA
 **Ubicaciones**: Multiple potential use cases
 
-**Flujos que se beneficiarían de diagramas de secuencia D2**:
+**Flujos que se beneficiarían de diagramas de flujo D2**:
 
 1. **Bootstrap completo**:
-   ```
-   User -> task deploy
-     -> Cilium install
-       -> Vault init
-         -> ESO sync
-           -> ArgoCD install
-             -> ApplicationSets sync
-   ```
+   - User -> task deploy -> Cilium install -> Vault init -> ESO sync -> ArgoCD install -> ApplicationSets sync
 
 2. **Secret sync flow**:
-   ```
-   ExternalSecret CR created
-     -> ESO watches
-       -> ESO auth to Vault
-         -> Vault returns secret
-           -> ESO creates K8s Secret
-             -> Pod mounts Secret
-   ```
+   - ExternalSecret CR created -> ESO watches -> ESO auth to Vault -> Vault returns secret -> ESO creates K8s Secret -> Pod mounts Secret
 
 3. **GitOps sync flow**:
-   ```
-   Git commit
-     -> ArgoCD detects
-       -> Kyverno validates
-         -> ArgoCD applies
-           -> Prometheus scrapes
-   ```
+   - Git commit -> ArgoCD detects -> Kyverno validates -> ArgoCD applies -> Prometheus scrapes
 
 **Recomendación**:
-Agregar sección "Sequence Diagrams" en `architecture/visual.md` o crear `architecture/sequences.md`.
+Agregar sección "Process Flows" en `architecture/visual.md` usando diagramas de flujo tradicionales con D2 (no sequence diagrams).
 
 ---
 
@@ -544,25 +524,26 @@ Facilita comprensión de capas y responsabilidades.
 
 ### P3 - BAJA PRIORIDAD (Mejoras Continuas)
 
-7. **Agregar tooltips a componentes complejos**
+7. **Agregar tooltips a componentes complejos** ✅ IMPLEMENTADO
    - Usar sintaxis `tooltip: |md ... |`
    - Agregar contexto adicional inline
 
-8. **Agregar links a documentación externa**
+8. **Agregar links a documentación externa** ✅ IMPLEMENTADO
    - Usar `link:` property
    - Enlaces a docs upstream (ArgoCD, Kyverno, etc.)
 
-9. **Considerar iconos inline**
-   - Usar Terrastruct icons library
-   - Mejorar reconocimiento visual
+9. **Agregar shapes específicas** ✅ IMPLEMENTADO
+   - `shape: person` para actores
+   - `shape: cylinder` para almacenamiento
+   - `shape: hexagon` para gateways
+   - `shape: cloud` para servicios externos
 
-10. **Crear diagramas de secuencia**
+10. **Crear diagramas de flujo para procesos** ✅ IMPLEMENTADO
     - Bootstrap flow
     - Secret sync flow
     - GitOps sync flow
-    - Archivo: `architecture/sequences.md`
 
-11. **Diferenciar colores actor vs infra**
+11. **Diferenciar colores actor vs infra** ✅ IMPLEMENTADO
     - Cambiar color de `actor` class
     - Mejorar distinción visual
 
