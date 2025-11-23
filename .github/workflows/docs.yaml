@@ -15,10 +15,10 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
-# Prevent concurrent deployments
+# Prevent concurrent deployments - queue them instead of canceling
 concurrency:
   group: docs-deploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 # Required permissions for GitHub Pages
 permissions:
@@ -42,7 +42,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
