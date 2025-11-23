@@ -4,18 +4,13 @@ sidebar:
   label: Quickstart
   order: 3
 ---
+
+import { LinkButton } from '@astrojs/starlight/components';
+
 ---
 
 
 Spin up the full IDP locally with one command, then validate access and credentials. Expect eventual consistency for a few minutes while images download.
-
-## Prerequisites
-
-- Recommended: VS Code Dev Containers (repo already includes tooling), or Devbox
-- Or install locally: Docker, k3d, kubectl, helm, kustomize, envsubst (gettext), dasel
-- Review [Prerequisites](prerequisites.md) and ensure `docker login` to avoid rate limits
-- Configure settings in `config.toml` (preferred method): LAN IP override, NodePorts,
-versions, passwords
 
 ## 1. Clone the repository
 
@@ -59,7 +54,9 @@ Ensure they are not in use by other services.
 
 When the Gateway is ready, open the printed URLs. They use a nip.io wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`). Ensure the configured NodePorts are allowed by your OS firewall.
 
-## 4. Credentials
+**We highly recommend using `k9s` to inspect the cluster state visually.**
+
+### Credentials
 
 ArgoCD admin password comes from Vault via External Secrets.
 By default it’s configured in `config.toml`:
@@ -82,28 +79,21 @@ overrides are supported by tasks for testing, but the TOML file is the
 canonical source.
 :::
 
-## 5. Verify
-
-Run basic checks and confirm healthy sync:
-
-```bash
-kubectl get nodes
-kubectl get pods -A
-kubectl get applications -n argocd
-```
-
 See [Verify Installation](verify.md) for expected results and smoke tests.
 
-:::caution
-Browsers will show a warning because the demo uses a self‑signed root CA.
-You may proceed temporarily or import the CA into your OS trust store
-(see Verify Installation for steps).
-:::
-
-## 6. Clean up
+## 4. Clean up
 
 Tear everything down when you’re done:
 
 ```bash
 task destroy
 ```
+
+<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
+  <LinkButton href="/getting-started/prerequisites/" variant="secondary" icon="arrow-left">
+    Back: Prerequisites
+  </LinkButton>
+  <LinkButton href="/getting-started/deployment/" variant="primary" icon="arrow-right">
+    Next: Deployment
+  </LinkButton>
+</div>

@@ -4,8 +4,7 @@ sidebar:
   label: Overview
   order: 1
 ---
----
-
+import { LinkButton } from '@astrojs/starlight/components';
 
 Welcome. In this section you will deploy the platform locally, check that it is healthy, and understand at a high level what you just created.
 
@@ -32,22 +31,8 @@ After completing the quickstart you will have:
 
 All of this is deployed from this repository using `task deploy`.
 
-## What you will learn
-
-In this getting started section you will:
-
-- Check **prerequisites** for your local machine.
-- Run the **quickstart** to deploy the platform.
-- Understand at a high level what happens during deployment.
-- Verify that key components are healthy.
-
-## Reading order
-
-Recommended order:
-
-1. [Prerequisites](prerequisites.md) — tools and baseline resources.
-2. [Quickstart](quickstart.md) — one command to deploy.
-3. [Verify installation](verify.md) — basic checks and expected results.
-4. [First steps](first-steps.md) — guided exploration of the UIs and GitOps flows.
-
-Once you are comfortable with the running cluster, read [Architecture overview](../architecture/overview.md) and [Concepts](../concepts/index.md) to understand the platform design in depth.
+<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
+  <LinkButton href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">
+    Next: Prerequisites
+  </LinkButton>
+</div>

@@ -5,6 +5,8 @@ sidebar:
   order: 5
 ---
 
+import { LinkButton } from '@astrojs/starlight/components';
+
 Let’s confirm things came up as expected and set realistic expectations for the first minutes after deploy.
 
 ## What to expect in the first 5–10 minutes
@@ -13,7 +15,7 @@ Let’s confirm things came up as expected and set realistic expectations for th
 - Pods roll through Pending → Running → Ready as images download
 - It’s okay if not everything is Healthy/Synced immediately
 
-<!-- Sequence diagram removed for a simpler, first-contact explanation. -->
+{/* Sequence diagram removed for a simpler, first-contact explanation. */}
 
 ## Quick Checks
 
@@ -78,11 +80,11 @@ Below are reference screenshots to calibrate expectations right after a fresh de
 
 Endpoints follow your LAN IP as a nip.io wildcard. If your IP is 127.0.0.1:
 
-- ArgoCD: <https://argocd.127-0-0-1.nip.io>
-- Grafana: <https://grafana.127-0-0-1.nip.io>
-- Vault: <https://vault.127-0-0-1.nip.io>
-- Argo Workflows: <https://workflows.127-0-0-1.nip.io>
-- SonarQube: <https://sonarqube.127-0-0-1.nip.io>
+- ArgoCD: [https://argocd.127-0-0-1.nip.io](https://argocd.127-0-0-1.nip.io)
+- Grafana: [https://grafana.127-0-0-1.nip.io](https://grafana.127-0-0-1.nip.io)
+- Vault: [https://vault.127-0-0-1.nip.io](https://vault.127-0-0-1.nip.io)
+- Argo Workflows: [https://workflows.127-0-0-1.nip.io](https://workflows.127-0-0-1.nip.io)
+- SonarQube: [https://sonarqube.127-0-0-1.nip.io](https://sonarqube.127-0-0-1.nip.io)
 
 Reachable from other devices on your LAN using your workstation IP. Ensure the configured NodePorts are allowed by your OS firewall.
 
@@ -134,7 +136,11 @@ kubectl get externalsecrets,secretstores -A
 kubectl -n argocd get secret argocd-secret -o yaml | head -n 20
 ```
 
-## Next
-
-- Continue to [First Steps](first-steps.md)
-- Or explore [Components](../components/infrastructure/index.md)
+<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
+  <LinkButton href="/getting-started/deployment/" variant="secondary" icon="arrow-left">
+    Back: Deployment
+  </LinkButton>
+  <LinkButton href="/operate/add-component/" variant="primary" icon="arrow-right">
+    Next: Operate — Add Component
+  </LinkButton>
+</div>

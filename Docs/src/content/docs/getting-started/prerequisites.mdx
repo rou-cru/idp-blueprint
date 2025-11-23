@@ -4,6 +4,7 @@ sidebar:
   label: Prerequisites
   order: 2
 ---
+import { LinkButton } from '@astrojs/starlight/components';
 
 Before deploying the IDP Blueprint, verify your environment with this quick checklist.
 
@@ -78,3 +79,12 @@ To avoid Docker Hub rate limiting:
 
 - Modern browser with DevTools
 - Your preferred editor/IDE
+
+<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
+  <LinkButton href="/getting-started/overview/" variant="secondary" icon="arrow-left">
+    Back: Overview
+  </LinkButton>
+  <LinkButton href="/getting-started/quickstart/" variant="primary" icon="arrow-right">
+    Next: Quickstart
+  </LinkButton>
+</div>

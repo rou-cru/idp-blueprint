@@ -241,39 +241,6 @@ Pre-configured dashboards are available in Grafana:
 
 **Access:** Navigate to Grafana UI (see [URLs & Credentials](urls-credentials.md))
 
-### Via Prometheus Queries
-
-For ad-hoc analysis, query Prometheus directly:
-
-**Example queries:**
-
-```promql
-# Applications out of sync
-count(argocd_app_info{sync_status="OutOfSync"})
-
-# Pod CPU usage by namespace
-sum(rate(container_cpu_usage_seconds_total[5m])) by (namespace)
-
-# Policy violations in the last hour
-increase(kyverno_policy_results_total{policy_result="fail"}[1h])
-```
-
-**Access:** Navigate to Prometheus UI or use Grafana Explore
-
-### Via Loki Queries
-
-For log-based analysis:
-
-```logql
-# ArgoCD sync errors
-{app="argocd-application-controller"} |= "sync failed"
-
-# Kyverno policy violations
-{app="kyverno"} |= "policy violation"
-```
-
-**Access:** Use Grafana Explore with Loki data source
-
 ## Best Practices for Platform Monitoring
 
 1. **Monitor the Monitors:** Ensure Prometheus itself is healthy. Use federation or external monitoring if needed.

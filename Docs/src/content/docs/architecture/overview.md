@@ -247,4 +247,4 @@ From here, you can dig into specific views:
 - **Observability stack**: [Observability architecture](observability.md)
 - **CI/CD stack**: [CI/CD architecture](cicd.md)
 
-If you have not deployed the platform yet, read [Getting started](../getting-started/overview.md) next and then come back here with a running cluster.
+If you have not deployed the platform yet, read [Getting started](../getting-started/overview/) next and then come back here with a running cluster.

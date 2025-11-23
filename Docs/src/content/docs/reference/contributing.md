@@ -15,7 +15,7 @@ Containers** and **Devbox**. This approach ensures that all contributors use the
 same tooling and dependencies, which are defined as code in the repository.
 
 All required tools (linters, `kubectl`, `helm`, etc.) are automatically installed when
-the container starts. Please refer to the [**Quick Start** guide](../getting-started/quickstart.md)
+the container starts. Please refer to the [**Quick Start** guide](../getting-started/quickstart/)
 for instructions on how to launch the environment.
 
 ## Code Style and Quality Checks

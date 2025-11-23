@@ -37,18 +37,6 @@ flowchart LR
     Metrics --> Billing["FinOps Tool (Kubecost/Cloud)"]
 ```
 
-## Sample Grafana Query
-
-```promql
-sum by (owner, business_unit) (
-  rate(container_cpu_usage_seconds_total{
-    app_kubernetes_io_part_of="idp"
-  }[5m])
-)
-```
-
-Use recording rules (under `kube-prometheus-stack`) to persist these aggregates and feed them into cost dashboards.
-
 ## Best Practices
 
 1. **Validate locally** using `Scripts/validate-consistency.sh` – it checks for missing labels.
