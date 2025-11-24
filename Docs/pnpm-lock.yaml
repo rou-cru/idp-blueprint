@@ -42,8 +42,8 @@ importers:
         specifier: ^1.1.5
         version: 1.1.5
       astro-mermaid:
-        specifier: ^1.1.0
-        version: 1.1.0(astro@5.16.0(@types/node@24.10.1)(jiti@1.21.7)(rollup@4.53.3)(typescript@5.9.3)(yaml@2.8.1))(mermaid@11.12.1)
+        specifier: ^1.2.0
+        version: 1.2.0(astro@5.16.0(@types/node@24.10.1)(jiti@1.21.7)(rollup@4.53.3)(typescript@5.9.3)(yaml@2.8.1))(mermaid@11.12.1)
       astro-minify-html-swc:
         specifier: ^0.1.8
         version: 0.1.8
@@ -83,6 +83,11 @@ packages:
 
   '@antfu/utils@9.3.0':
     resolution: {integrity: sha512-9hFT4RauhcUzqOE4f1+frMKLZrgNog5b06I7VmZQV1BkvwvqrbC8EBZf3L1eEL2AKb6rNKjER0sEvJiSP1FXEA==}
+
+  '@anthropic-ai/claude-code@1.0.128':
+    resolution: {integrity: sha512-uUg5cFMJfeQetQzFw76Vpbro6DAXst2Lpu8aoZWRFSoQVYu5ZSAnbBoxaWmW/IgnHSqIIvtMwzCoqmcA9j9rNQ==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
 
   '@astrojs/check@0.5.10':
     resolution: {integrity: sha512-vliHXM9cu/viGeKiksUM4mXfO816ohWtawTl2ADPgTsd4nUMjFiyAl7xFZhF34yy4hq4qf7jvK1F2PlR3b5I5w==}
@@ -1192,8 +1197,8 @@ packages:
     peerDependencies:
       astro: ^4.12.0 || ^5.0.0
 
-  astro-mermaid@1.1.0:
-    resolution: {integrity: sha512-eW5aqOISq2Uf8goCedSl12d0qy8y77A+jRwKxwYc7LvrEN9HiCQuwTGu3zQvi0mB4+ydwaueaYbFUFSCIs2jrA==}
+  astro-mermaid@1.2.0:
+    resolution: {integrity: sha512-zELK0l0QUJaHBul9uijTr7SP+MN4LherN4sAC4xE7nx8I/TQoEtB36pnyEDMROZY3T3s4Eojw5CC/ezEBKi9RQ==}
     peerDependencies:
       '@mermaid-js/layout-elk': ^0.2.0
       astro: ^4.0.0 || ^5.0.0
@@ -3279,6 +3284,15 @@ snapshots:
 
   '@antfu/utils@9.3.0': {}
 
+  '@anthropic-ai/claude-code@1.0.128':
+    optionalDependencies:
+      '@img/sharp-darwin-arm64': 0.33.5
+      '@img/sharp-darwin-x64': 0.33.5
+      '@img/sharp-linux-arm': 0.33.5
+      '@img/sharp-linux-arm64': 0.33.5
+      '@img/sharp-linux-x64': 0.33.5
+      '@img/sharp-win32-x64': 0.33.5
+
   '@astrojs/check@0.5.10(prettier-plugin-astro@0.14.1)(prettier@3.6.2)(typescript@5.9.3)':
     dependencies:
       '@astrojs/language-server': 2.16.0(prettier-plugin-astro@0.14.1)(prettier@3.6.2)(typescript@5.9.3)
@@ -4383,8 +4397,9 @@ snapshots:
       pathe: 1.1.2
       recast: 0.23.11
 
-  astro-mermaid@1.1.0(astro@5.16.0(@types/node@24.10.1)(jiti@1.21.7)(rollup@4.53.3)(typescript@5.9.3)(yaml@2.8.1))(mermaid@11.12.1):
+  astro-mermaid@1.2.0(astro@5.16.0(@types/node@24.10.1)(jiti@1.21.7)(rollup@4.53.3)(typescript@5.9.3)(yaml@2.8.1))(mermaid@11.12.1):
     dependencies:
+      '@anthropic-ai/claude-code': 1.0.128
       astro: 5.16.0(@types/node@24.10.1)(jiti@1.21.7)(rollup@4.53.3)(typescript@5.9.3)(yaml@2.8.1)
       import-meta-resolve: 4.2.0
       mdast-util-to-string: 4.0.0
