@@ -19,8 +19,8 @@ serviceAccount:
   create: true
 
 service:
-  portName: http
-  port: 7007
+  # Default chart configuration works
+  type: ClusterIP
 
 ingress:
   enabled: false
