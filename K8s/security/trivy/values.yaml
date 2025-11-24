@@ -23,6 +23,9 @@ operator:
   # -- (bool) Enable cluster compliance scanner
   clusterComplianceEnabled: true
 
+  # -- (bool) Enable built-in Trivy Server to support ClientServer mode
+  builtInTrivyServer: true
+
   # @section -- Scan Job Concurrency & Performance
   # -- (int) Maximum number of concurrent scan jobs (default: 10)
   scanJobsConcurrentLimit: 3
@@ -59,7 +62,7 @@ trivy:
   # -- (string) Scanner mode
   mode: ClientServer
   # -- (string) Trivy Server URL
-  serverURL: "http://trivy-server.security.svc:4954"
+  # serverURL: "http://trivy-server.security.svc:4954"
   # -- (bool) Use slower scanning mode (lower CPU/memory usage)
   slow: true
 
