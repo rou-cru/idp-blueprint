@@ -73,7 +73,18 @@ jobs:
         run: |
           test -d Docs/dist/ || { echo "❌ Error: Docs/dist/ directory not found"; exit 1; }
           test -f Docs/dist/index.html || { echo "❌ Error: Docs/dist/index.html not found"; exit 1; }
-          test -f Docs/dist/sitemap.xml || { echo "❌ Error: Docs/dist/sitemap.xml not found"; exit 1; }
+
+          # Sitemap is critical for SEO - check for common formats
+          if [ -f Docs/dist/sitemap-index.xml ] || [ -f Docs/dist/sitemap-0.xml ] || [ -f Docs/dist/sitemap.xml ]; then
+            echo "✅ Sitemap found"
+            ls -la Docs/dist/ | grep -i sitemap || true
+          else
+            echo "❌ Error: No sitemap file found (critical for SEO)"
+            echo "Contents of Docs/dist/:"
+            ls -la Docs/dist/
+            exit 1
+          fi
+
           echo "✅ Build output validated successfully"
 
       - name: Check for broken links
