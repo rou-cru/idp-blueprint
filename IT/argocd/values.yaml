@@ -93,6 +93,17 @@ server:
     enabled: false
     # -- (bool) Enable TLS
     tls: false
+  service:
+    # -- Service ports configuration to support gRPC (HTTP/2)
+    ports:
+      - name: http
+        port: 80
+        targetPort: 8080
+        appProtocol: grpc
+      - name: https
+        port: 443
+        targetPort: 8080
+        appProtocol: grpc
 
 # @section -- Repository Server
 repoServer:
