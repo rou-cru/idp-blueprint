@@ -258,6 +258,21 @@ tasks:
           var: 'DOCKER_REGISTRY_PASSWORD'
           enc: 'base64'
           hash: 'none'
+        - path: 'secret/backstage/app'
+          key: 'backendSecret'
+          var: ''
+          enc: 'base64'
+          hash: 'none'
+        - path: 'secret/backstage/postgres'
+          key: 'adminPassword'
+          var: ''
+          enc: 'base64'
+          hash: 'none'
+        - path: 'secret/backstage/postgres'
+          key: 'appPassword'
+          var: ''
+          enc: 'base64'
+          hash: 'none'
     cmds:
       - for: { var: SECRETS, as: SECRET }
         cmd: ./Scripts/vault-generate.sh {{.SECRET.path}} {{.SECRET.key}} "{{index . .SECRET.var}}" {{.SECRET.enc}} {{.SECRET.hash}}
