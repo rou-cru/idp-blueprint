@@ -6,3 +6,5 @@ devbox.lock
 site/
 .codex/log/
 .codex/sessions/
+node_modules/
+dist/

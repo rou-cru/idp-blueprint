@@ -4,164 +4,164 @@
 # Documentation
 documentation:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Docs/**/*'
-      - '**/*.md'
-      - 'CONTRIBUTING.md'
-      - 'SECURITY.md'
-      - 'LICENSE'
+      - any-glob-to-any-file:
+          - "Docs/**/*"
+          - "**/*.md"
+          - "CONTRIBUTING.md"
+          - "SECURITY.md"
+          - "LICENSE"
 
 # GitHub Actions & CI/CD
 github-actions:
   - changed-files:
-    - any-glob-to-any-file:
-      - '.github/workflows/**/*'
-      - '.github/dependabot.yml'
-      - '.github/labeler.yml'
-      - '.github/ISSUE_TEMPLATE/**/*'
-      - '.github/PULL_REQUEST_TEMPLATE.md'
-      - '.github/CODEOWNERS'
+      - any-glob-to-any-file:
+          - ".github/workflows/**/*"
+          - ".github/dependabot.yml"
+          - ".github/labeler.yml"
+          - ".github/ISSUE_TEMPLATE/**/*"
+          - ".github/PULL_REQUEST_TEMPLATE.md"
+          - ".github/CODEOWNERS"
 
 # Task Automation
 automation:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Taskfile.yaml'
-      - 'Task/**/*.yaml'
-      - 'Scripts/**/*.sh'
+      - any-glob-to-any-file:
+          - "Taskfile.yaml"
+          - "Task/**/*.yaml"
+          - "Scripts/**/*.sh"
 
 # Configuration
 configuration:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'config.toml'
-      - '.config/**/*'
-      - '**/*.toml'
+      - any-glob-to-any-file:
+          - "config.toml"
+          - ".config/**/*"
+          - "**/*.toml"
 
 # ArgoCD / GitOps
 argocd:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Bootstrap/argocd/**/*'
-      - 'Stacks/argocd/**/*'
-      - '**/argocd-*.yaml'
+      - any-glob-to-any-file:
+          - "Bootstrap/argocd/**/*"
+          - "Stacks/argocd/**/*"
+          - "**/argocd-*.yaml"
 
 # Cilium / Networking
 cilium:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Bootstrap/cilium/**/*'
-      - '**/cilium-*.yaml'
+      - any-glob-to-any-file:
+          - "Bootstrap/cilium/**/*"
+          - "**/cilium-*.yaml"
 
 # Vault / Secrets
 vault:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Bootstrap/vault/**/*'
-      - 'Stacks/vault/**/*'
-      - '**/vault-*.yaml'
+      - any-glob-to-any-file:
+          - "Bootstrap/vault/**/*"
+          - "Stacks/vault/**/*"
+          - "**/vault-*.yaml"
 
 # External Secrets
 external-secrets:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Bootstrap/external-secrets/**/*'
-      - '**/external-secret*.yaml'
-      - '**/secret-store*.yaml'
+      - any-glob-to-any-file:
+          - "Bootstrap/external-secrets/**/*"
+          - "**/external-secret*.yaml"
+          - "**/secret-store*.yaml"
 
 # Kyverno / Policies
 kyverno:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Policies/**/*'
-      - 'Stacks/kyverno/**/*'
-      - '**/kyverno-*.yaml'
-      - '**/*policy*.yaml'
+      - any-glob-to-any-file:
+          - "Policies/**/*"
+          - "Stacks/kyverno/**/*"
+          - "**/kyverno-*.yaml"
+          - "**/*policy*.yaml"
 
 # Observability
 observability:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Stacks/prometheus/**/*'
-      - 'Stacks/grafana/**/*'
-      - 'Stacks/loki/**/*'
-      - 'Stacks/fluent-bit/**/*'
-      - '**/prometheus-*.yaml'
-      - '**/grafana-*.yaml'
-      - '**/loki-*.yaml'
+      - any-glob-to-any-file:
+          - "Stacks/prometheus/**/*"
+          - "Stacks/grafana/**/*"
+          - "Stacks/loki/**/*"
+          - "Stacks/fluent-bit/**/*"
+          - "**/prometheus-*.yaml"
+          - "**/grafana-*.yaml"
+          - "**/loki-*.yaml"
 
 # CI/CD Platform
 cicd:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Stacks/argo-workflows/**/*'
-      - 'Stacks/sonarqube/**/*'
-      - '**/argo-workflow*.yaml'
-      - '**/sonarqube-*.yaml'
+      - any-glob-to-any-file:
+          - "Stacks/argo-workflows/**/*"
+          - "Stacks/sonarqube/**/*"
+          - "**/argo-workflow*.yaml"
+          - "**/sonarqube-*.yaml"
 
 # cert-manager
 cert-manager:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Bootstrap/cert-manager/**/*'
-      - '**/cert-manager-*.yaml'
-      - '**/certificate*.yaml'
-      - '**/clusterissuer*.yaml'
+      - any-glob-to-any-file:
+          - "Bootstrap/cert-manager/**/*"
+          - "**/cert-manager-*.yaml"
+          - "**/certificate*.yaml"
+          - "**/clusterissuer*.yaml"
 
 # Gateway API
 gateway:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Bootstrap/gateway/**/*'
-      - '**/gateway*.yaml'
-      - '**/httproute*.yaml'
+      - any-glob-to-any-file:
+          - "Bootstrap/gateway/**/*"
+          - "**/gateway*.yaml"
+          - "**/httproute*.yaml"
 
 # K3d / Cluster
 k3d:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Task/k3d.yaml'
-      - '.devcontainer/**/*'
-      - '**/k3d-*.yaml'
+      - any-glob-to-any-file:
+          - "Task/k3d.yaml"
+          - ".devcontainer/**/*"
+          - "**/k3d-*.yaml"
 
 # Helm Charts
 helm:
   - changed-files:
-    - any-glob-to-any-file:
-      - '**/Chart.yaml'
-      - '**/values*.yaml'
-      - '**/templates/**/*'
+      - any-glob-to-any-file:
+          - "**/Chart.yaml"
+          - "**/values*.yaml"
+          - "**/templates/**/*"
 
 # Kustomize
 kustomize:
   - changed-files:
-    - any-glob-to-any-file:
-      - '**/kustomization.yaml'
-      - '**/kustomization.yml'
+      - any-glob-to-any-file:
+          - "**/kustomization.yaml"
+          - "**/kustomization.yml"
 
 # Security
 security:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'SECURITY.md'
-      - '.config/lint/.trufflehog-ignore'
-      - 'Policies/**/*'
-      - '**/rbac*.yaml'
-      - '**/networkpolicy*.yaml'
+      - any-glob-to-any-file:
+          - "SECURITY.md"
+          - ".config/lint/.trufflehog-ignore"
+          - "Policies/**/*"
+          - "**/rbac*.yaml"
+          - "**/networkpolicy*.yaml"
 
 # Dependencies
 dependencies:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Docs/package.json'
-      - 'Docs/pnpm-lock.yaml'
-      - '.github/dependabot.yml'
+      - any-glob-to-any-file:
+          - "Docs/package.json"
+          - "Docs/pnpm-lock.yaml"
+          - ".github/dependabot.yml"
 
 # Quality / Testing
 quality:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'Task/quality.yaml'
-      - '.config/lint/**/*'
-      - '**/.yamllint'
-      - '**/.markdownlint*'
+      - any-glob-to-any-file:
+          - "Task/quality.yaml"
+          - ".config/lint/**/*"
+          - "**/.yamllint"
+          - "**/.markdownlint*"

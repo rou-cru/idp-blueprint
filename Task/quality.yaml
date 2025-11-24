@@ -26,13 +26,13 @@ tasks:
     desc: 'Lint all shell scripts'
     internal: true
     cmds:
-      - find . -name '*.sh' -type f | grep -v '/.devbox/' | xargs -r shellcheck
+      - find . -name '*.sh' -type f | grep -vE '/(\.devbox|node_modules|dist|\.venv|site)/' | xargs -r shellcheck
 
   lint:dockerfile:
     desc: 'Lint all Dockerfiles'
     internal: true
     cmds:
-      - find . -name Dockerfile -exec hadolint {} +
+      - find . -name Dockerfile | grep -vE '/(node_modules|dist|\.venv|site)/' | xargs -r hadolint
 
   lint:markdown:
     desc: 'Lint all Markdown files'
@@ -84,7 +84,7 @@ tasks:
     desc: 'Scan Infrastructure as Code for misconfigurations'
     internal: true
     cmds:
-      - checkov --directory . --quiet
+      - checkov --directory . --skip-path node_modules --skip-path dist --skip-path .venv --skip-path site --skip-path .cache --quiet
 
   security:secrets:
     desc: 'Scan for hardcoded secrets'

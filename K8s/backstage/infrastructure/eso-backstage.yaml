@@ -12,6 +12,6 @@ metadata:
     business-unit: infrastructure
     environment: demo
   annotations:
-    description: 'ESO ServiceAccount for secret synchronization from Vault'
+    description: "ESO ServiceAccount for secret synchronization from Vault"
     contact: platform-team
     documentation: https://external-secrets.io
