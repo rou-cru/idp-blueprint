@@ -28,6 +28,8 @@ server:
     enabled: true
     # -- (string) HCL configuration for the Raft storage backend
     config: |
+      ui = true
+
       storage "raft" {
         path    = "/vault/data"
         node_id = "vault-0"
