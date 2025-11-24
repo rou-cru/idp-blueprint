@@ -2,6 +2,19 @@
 # -- (string) Priority class for Trivy pods
 priorityClassName: platform-security
 
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+
 # -- (string) Comma-separated list of target workloads
 targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
 
@@ -70,7 +83,7 @@ trivy:
   storageSize: 1Gi
   # -- (string) Storage class for the trivy server PVC
   storageClassName: "local-path"
-  
+
   server:
     # -- (object) Resources for the trivy server container
     resources:
