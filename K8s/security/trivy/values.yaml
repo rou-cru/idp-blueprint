@@ -66,32 +66,20 @@ trivy:
   # -- (bool) Use slower scanning mode (lower CPU/memory usage)
   slow: true
 
-# @section -- Trivy Server
-trivyServer:
-  # -- (bool) Enable Trivy Server deployment
-  enabled: true
-  # -- (string) Database update interval
-  dbUpdateInterval: 12h
-
-  persistence:
-    # -- (bool) Enable persistence
-    enabled: true
-    # -- (string) Storage class
-    storageClass: "local-path"
-    # -- (string) Storage size
-    size: 1Gi
-
-  resources:
-    requests:
-      # -- (string) CPU request
-      cpu: 200m
-      # -- (string) Memory request
-      memory: 512Mi
-    limits:
-      # -- (string) CPU limit
-      cpu: 1000m
-      # -- (string) Memory limit
-      memory: 1Gi
+  # -- (string) Size of the trivy server PVC
+  storageSize: 1Gi
+  # -- (string) Storage class for the trivy server PVC
+  storageClassName: "local-path"
+  
+  server:
+    # -- (object) Resources for the trivy server container
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
 
 # @section -- Observability
 serviceMonitor:
