@@ -183,6 +183,19 @@ path "secret/metadata/*" {
     audience=vault \
     ttl=24h
 
+  log "✅ Vault configured for ESO (Observability namespace)"
+
+  # Create a namespace-specific role for Backstage with ESO
+  kubectl exec -n "$NAMESPACE" vault-0 -- env VAULT_TOKEN="$ROOT_TOKEN" \
+    vault write auth/kubernetes/role/eso-backstage-role \
+    bound_service_account_names=external-secrets \
+    bound_service_account_namespaces=backstage \
+    policies=eso-policy \
+    audience=vault \
+    ttl=24h
+
+  log "✅ Vault configured for ESO (Backstage namespace)"
+
   log "=================================================="
   log "✅ Vault initialization complete!"
   log "Root token and unseal key saved in secret: $SECRET_NAME"
