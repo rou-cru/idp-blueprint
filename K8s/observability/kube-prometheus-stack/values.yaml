@@ -24,8 +24,8 @@ alertmanager:
 
 # @section -- Prometheus
 prometheus:
-  priorityClassName: platform-observability
   prometheusSpec:
+    priorityClassName: platform-observability
     # -- Select ServiceMonitors with label prometheus=kube-prometheus across all namespaces
     serviceMonitorSelector:
       matchLabels:
