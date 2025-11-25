@@ -1,5 +1,36 @@
 direction: down
 
+classes: {
+  control: {
+    style: {
+      fill: "#111827"
+      stroke: "#6366f1"
+      font-color: white
+    }
+  }
+  infra: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+  data: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+  workload: {
+    style: {
+      fill: "#7c3aed"
+      stroke: "#a855f7"
+      font-color: white
+    }
+  }
+}
+
 title: {
   label: "Platform Contracts & Data Flow"
   near: top-center
@@ -13,11 +44,7 @@ title: {
 # Sources layer
 sources: {
   label: "Configuration Sources"
-  style: {
-    fill: "#ecf0f1"
-    stroke: "#95a5a6"
-    stroke-width: 2
-  }
+  class: data
 
   config: {
     shape: document
@@ -63,11 +90,7 @@ sources: {
 # Processing layer
 processing: {
   label: "GitOps & Policy Engine"
-  style: {
-    fill: "#ecf0f1"
-    stroke: "#95a5a6"
-    stroke-width: 2
-  }
+  class: control
 
   appset: {
     shape: hexagon
@@ -101,11 +124,7 @@ processing: {
 # Target layer
 targets: {
   label: "Cluster Resources"
-  style: {
-    fill: "#ecf0f1"
-    stroke: "#95a5a6"
-    stroke-width: 2
-  }
+  class: infra
 
   namespaces: {
     shape: sql_table
@@ -159,11 +178,7 @@ targets: {
 # Contract enforcement indicators
 contracts: {
   label: "Contract Enforcement Points"
-  style: {
-    fill: "#ecf0f1"
-    stroke: "#95a5a6"
-    stroke-width: 2
-  }
+  class: workload
 
   c1: {
     shape: oval

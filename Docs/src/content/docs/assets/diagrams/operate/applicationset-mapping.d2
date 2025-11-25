@@ -1,5 +1,36 @@
 direction: right
 
+classes: {
+  control: {
+    style: {
+      fill: "#111827"
+      stroke: "#6366f1"
+      font-color: white
+    }
+  }
+  infra: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+  data: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+  workload: {
+    style: {
+      fill: "#7c3aed"
+      stroke: "#a855f7"
+      font-color: white
+    }
+  }
+}
+
 title: {
   label: "Git Structure → ArgoCD Applications"
   near: top-center
@@ -14,12 +45,7 @@ title: {
 git_repo: {
   label: "Git Repository Structure"
   shape: rectangle
-  style: {
-    fill: "#2c3e50"
-    font-color: white
-    bold: true
-    font-size: 18
-  }
+  class: data
 
   k8s: {
     label: "K8s/"
@@ -173,12 +199,7 @@ git_repo: {
 argocd_apps: {
   label: "ArgoCD Applications"
   shape: rectangle
-  style: {
-    fill: "#8e44ad"
-    font-color: white
-    bold: true
-    font-size: 18
-  }
+  class: control
 
   obs_apps: {
     label: "Observability Apps"

@@ -1,0 +1,36 @@
+direction: right
+
+classes: {
+  control: {
+    style: {
+      fill: "#111827"
+      stroke: "#6366f1"
+      font-color: white
+    }
+  }
+  infra: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+  data: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+}
+
+Cluster: { class: infra; label: "Kubernetes API" }
+Argo: { class: control; label: "ArgoCD + AppSets\n(GitOps reconcile)" }
+Kyverno: { class: control; label: "Kyverno\n(admission + background)" }
+ESO: { class: control; label: "External Secrets Operator" }
+Vault: { class: data; label: "Vault (KV v2)\nsource of truth" }
+
+Argo -> Cluster: "apply"
+Kyverno <-> Cluster: "validate / mutate"
+ESO -> Cluster: "create/update Secrets"
+Vault -> ESO: "read secrets"
