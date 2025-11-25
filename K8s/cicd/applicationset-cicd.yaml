@@ -58,8 +58,7 @@ spec:
           kind: ExternalSecret
           jsonPointers:
             - /status
-          jqPathExpressions:
-            - .metadata.generation
+            - /metadata/generation
         - group: apps
           kind: StatefulSet
           jsonPointers:

@@ -66,5 +66,4 @@ spec:
           kind: ExternalSecret
           jsonPointers:
             - /status
-          jqPathExpressions:
-            - .metadata.generation
+            - /metadata/generation
