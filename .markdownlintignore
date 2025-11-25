@@ -1,0 +1,36 @@
+# Git directory
+.git/
+
+# Devbox and build artifacts
+.devbox/
+.task/
+devbox.d/
+.venv/
+
+# MkDocs output
+site/
+.cache/
+
+# Node modules (if any)
+node_modules/
+
+# Generated charts
+**/charts/
+
+# Auto-generated documentation
+**/_values.generated.md
+IT/**/README.md
+K8s/**/README.md
+Policies/**/README.md
+
+# AI assistant configs
+.claude/
+.codex/
+.memory/
+.serena/
+.gemini/
+
+# GitHub and dev configs
+.github/
+.devcontainer/
+.config/

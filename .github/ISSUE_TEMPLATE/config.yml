@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentation
+    url: https://rou-cru.github.io/idp-blueprint/
+    about: Read the comprehensive documentation for the IDP Blueprint
+  - name: 💬 Discussions
+    url: https://github.com/rou-cru/idp-blueprint/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/rou-cru/idp-blueprint/security/advisories/new
+    about: Report a security vulnerability privately

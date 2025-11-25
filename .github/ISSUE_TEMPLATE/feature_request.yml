@@ -1,0 +1,161 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for the IDP Blueprint
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees:
+  - rou-cru
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the sections below to help us understand your request.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have read the documentation at https://rou-cru.github.io/idp-blueprint/
+          required: true
+        - label: This feature aligns with the IDP Blueprint's goals (GitOps, Observability, Security, Policy)
+          required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What category does this feature fall into?
+      options:
+        - New Component/Stack
+        - Enhancement to Existing Component
+        - Documentation Improvement
+        - Developer Experience
+        - Performance Optimization
+        - Security Enhancement
+        - Observability Enhancement
+        - CI/CD Improvement
+        - Configuration/Customization
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Related Component
+      description: Which component is this feature for?
+      options:
+        - K3d Cluster
+        - ArgoCD / GitOps
+        - Cilium / Networking
+        - Vault / Secrets Management
+        - Kyverno / Policies
+        - Observability (Prometheus/Grafana/Loki)
+        - CI/CD (Argo Workflows/SonarQube)
+        - cert-manager
+        - Gateway API
+        - Documentation
+        - Task Automation
+        - New Component
+        - Platform-wide
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? Is your feature request related to a problem?
+      placeholder: |
+        I'm always frustrated when...
+        Currently, the platform lacks...
+        As a platform engineer, I need...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: |
+        I would like to add...
+        The platform should...
+        We could implement...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternative solutions or features have you considered?
+      placeholder: |
+        Alternative 1: ...
+        Alternative 2: ...
+        Why the proposed solution is better: ...
+    validations:
+      required: false
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Ideas
+      description: Do you have ideas on how to implement this?
+      placeholder: |
+        - Add new Helm chart for component X
+        - Modify ArgoCD Application in Stacks/
+        - Update Taskfile with new task
+        - Add Kyverno policy for...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical (Blocker for adoption)
+        - High (Significantly improves platform)
+        - Medium (Nice to have)
+        - Low (Future enhancement)
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: What are the benefits of implementing this feature?
+      placeholder: |
+        - Improves developer experience by...
+        - Reduces deployment time by...
+        - Enhances security by...
+        - Aligns with industry best practices...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you be willing to contribute this feature?
+      options:
+        - label: I am willing to submit a PR to implement this feature
+        - label: I can help with documentation
+        - label: I can help with testing
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, diagrams, or references about the feature
+      placeholder: Links to similar implementations, architecture diagrams, etc.
+    validations:
+      required: false

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Lint Helm documentation - verify helm-docs would not make changes
 
 set -euo pipefail

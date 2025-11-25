@@ -3,6 +3,7 @@ version: '3'
 tasks:
   cleanup:
     desc: 'Remove temporary chart directories'
+    internal: true
     cmds:
       - find . -type d -name charts -exec rm -rf {} +
 
@@ -17,26 +18,31 @@ tasks:
 
   lint:yaml:
     desc: 'Lint all YAML files'
+    internal: true
     cmds:
-      - yamllint .
+      - yamllint -c .config/lint/.yamllint .
 
   lint:shell:
     desc: 'Lint all shell scripts'
+    internal: true
     cmds:
-      - find . -name '*.sh' -type f | grep -v '/.devbox/' | xargs -r shellcheck
+      - find . -name '*.sh' -type f | grep -vE '/(\.devbox|node_modules|dist|\.venv|site)/' | xargs -r shellcheck
 
   lint:dockerfile:
     desc: 'Lint all Dockerfiles'
+    internal: true
     cmds:
-      - find . -name Dockerfile -exec hadolint {} +
+      - find . -name Dockerfile | grep -vE '/(node_modules|dist|\.venv|site)/' | xargs -r hadolint
 
   lint:markdown:
     desc: 'Lint all Markdown files'
+    internal: true
     cmds:
-      - markdownlint-cli2 .
+      - markdownlint-cli2 --config .config/lint/.markdownlint-cli2.yaml --fix "Docs/**/*.md" "Docs/**/*.mdx" "*.md" "Policies/tag-policy.md" "Scripts/**/*.md" "Task/**/*.md"
 
   lint:helm:
     desc: 'Validate Helm values documentation completeness'
+    internal: true
     cmds:
       - ./Scripts/helm-docs-lint.sh
 
@@ -52,6 +58,7 @@ tasks:
 
   validate:kustomize:
     desc: 'Validate all Kustomize overlays by building them'
+    internal: true
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
       - for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
@@ -59,13 +66,12 @@ tasks:
 
   validate:kubeval:
     desc: 'Validate Kubernetes manifests - build Kustomize overlays and check schemas'
+    internal: true
     cmds:
       - defer: find . -type d -name charts -exec rm -rf {} +
       - |
-        echo "Validating Kustomize overlays and Kubernetes schemas..."
         for dir in $(find . -type f -name kustomization.yaml -printf '%h\n'); do
-          echo "  Building and validating: $dir"
-          kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas -
+          kustomize build $dir --enable-helm | kubeval --ignore-missing-schemas --quiet -
         done
 
   security:
@@ -76,13 +82,15 @@ tasks:
 
   security:iac:
     desc: 'Scan Infrastructure as Code for misconfigurations'
+    internal: true
     cmds:
-      - checkov --directory . --quiet
+      - checkov --directory . --skip-path node_modules --skip-path dist --skip-path .venv --skip-path site --skip-path .cache --quiet
 
   security:secrets:
     desc: 'Scan for hardcoded secrets'
+    internal: true
     cmds:
-      - trufflehog filesystem . --exclude-paths .trufflehog-ignore --log-level=-1
+      - trufflehog filesystem . --exclude-paths .config/lint/.trufflehog-ignore --log-level=-1
 
   check:
     desc: 'Run all checks (lint, validation, security)'

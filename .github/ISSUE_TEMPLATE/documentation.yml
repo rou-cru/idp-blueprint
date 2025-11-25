@@ -1,0 +1,113 @@
+name: Documentation Issue
+description: Report an issue with documentation or suggest documentation improvements
+title: "[Docs]: "
+labels: ["documentation", "needs-triage"]
+assignees:
+  - rou-cru
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our documentation! Please fill out the sections below.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      description: Please confirm the following before submitting
+      options:
+        - label: I have searched existing issues to ensure this is not a duplicate
+          required: true
+        - label: I have checked the documentation site at https://rou-cru.github.io/idp-blueprint/
+          required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      description: What type of documentation issue is this?
+      options:
+        - Missing Documentation
+        - Incorrect/Outdated Information
+        - Unclear/Confusing Explanation
+        - Typo/Grammar
+        - Broken Link
+        - Missing Example
+        - Architecture/Design Documentation
+        - API/Reference Documentation
+        - Tutorial/Guide Request
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: section
+    attributes:
+      label: Documentation Section
+      description: Which section of the documentation is affected?
+      options:
+        - Getting Started
+        - Quick Start
+        - Architecture Overview
+        - Component Documentation
+        - Configuration Reference
+        - Deployment Guide
+        - Troubleshooting
+        - Contributing Guide
+        - Reference Documentation
+        - API Documentation
+        - README
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: page
+    attributes:
+      label: Page URL or File Path
+      description: Link to the documentation page or file path
+      placeholder: "https://rou-cru.github.io/idp-blueprint/guides/getting-started or Docs/src/content/docs/guides/example.md"
+    validations:
+      required: false
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: What is the issue?
+      description: Describe what's wrong or missing in the documentation
+      placeholder: |
+        - The documentation says X but it should say Y
+        - There's no explanation of how to...
+        - The example doesn't work because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should it say instead?
+      description: How should the documentation be changed or what should be added?
+      placeholder: Describe the correct or improved content
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the documentation issue
+      placeholder: |
+        - Why this is important
+        - Who would benefit from this improvement
+        - Links to related documentation
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you be willing to help fix this?
+      options:
+        - label: I am willing to submit a PR to fix this documentation issue

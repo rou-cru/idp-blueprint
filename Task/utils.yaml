@@ -1,19 +1,31 @@
 version: '3'
 
 tasks:
-  docs:deps:
-    desc: 'Install MkDocs tooling via uv'
-    cmds:
-      - uv sync --locked
-
   docs:
-    desc: 'Generate all automatic documentation'
+    desc: 'Generate all automatic documentation (Helm values metadata)'
     cmds:
       - task: docs:metadata
       - task: docs:helm
 
+  docs:astro:build:
+    desc: 'Build Astro/Starlight docs site'
+    cmds:
+      - |
+        cd Docs
+        pnpm install --frozen-lockfile
+        pnpm build
+
+  docs:astro:dev:
+    desc: 'Run Astro/Starlight docs in dev mode'
+    cmds:
+      - |
+        cd Docs
+        pnpm install --frozen-lockfile
+        pnpm dev
+
   docs:metadata:
     desc: 'Generate Chart.yaml metadata for all components'
+    internal: true
     cmds:
       - ./Scripts/generate-chart-metadata.sh
 
@@ -22,47 +34,24 @@ tasks:
     cmds:
       - ./Scripts/helm-docs-generate.sh
 
-  docs:build:
-    desc: 'Build MkDocs documentation site'
-    cmds:
-      - task: docs:deps
-      - uv run python -E -m mkdocs build --strict
-    sources:
-      - mkdocs.yml
-      - Docs/**/*.md
-      - Docs/**/*.css
-    generates:
-      - site/index.html
-      - site/sitemap.xml
-
-  docs:serve:
-    desc: 'Serve documentation locally for development'
-    cmds:
-      - task: docs:deps
-      - uv run python -E -m mkdocs serve
-
   docs:linkcheck:
     desc: 'Check for broken links in documentation'
     cmds:
       - ./Scripts/docs-linkcheck.sh
 
-  docs:lint:
-    desc: 'Lint documentation markdown files'
+  config:print:
+    desc: 'Print effective configuration (fork-friendly)'
     cmds:
-      - markdownlint-cli2 "Docs/**/*.md"
-
-  docs:clean:
-    desc: 'Clean built documentation'
-    cmds:
-      - rm -rf site/
-      - rm -rf .cache/
-
-  docs:all:
-    desc: 'Full documentation pipeline: generate, build, and validate'
-    cmds:
-      - task: docs
-      - task: docs:build
-      - task: docs:linkcheck
+      - |
+        echo "Configuration (from {{.CONFIG_FILE}}):"
+        echo "  Repo URL:        {{.REPO_URL}}"
+        echo "  Target Revision: {{.TARGET_REVISION}}"
+        echo "  Cluster Name:    {{.CLUSTER_NAME}}"
+        echo "  LAN IP:          {{.LAN_IP}}"
+        echo "  NodePort HTTP:   {{.NODEPORT_HTTP}}"
+        echo "  NodePort HTTPS:  {{.NODEPORT_HTTPS}}"
+        echo "  Prom CRDs Chart: {{.PROMETHEUS_CRDS_VERSION}}"
+        echo "  Fuses: policies={{.FUSE_POLICIES}} observability={{.FUSE_OBSERVABILITY}} cicd={{.FUSE_CICD}} security={{.FUSE_SECURITY}} prod={{.FUSE_PROD}}"
 
   ca:export:
     desc: 'Export CA certificate for browser import (optional)'

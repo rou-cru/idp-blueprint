@@ -1,15 +1,13 @@
 name: Documentation
 
 on:
-  # Trigger on push to main
+  # Only build and deploy on push to main (after merge)
   push:
     branches:
       - main
     paths:
       - 'Docs/**'
-      - 'mkdocs.yml'
-      - 'pyproject.toml'
-      - 'uv.lock'
+      - '**/README.md'
       - 'Scripts/generate-chart-metadata.sh'
       - 'Scripts/helm-docs-*.sh'
       - '.github/workflows/docs.yaml'
@@ -17,20 +15,10 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
-  # Trigger on PR for validation (no deploy)
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'Docs/**'
-      - 'mkdocs.yml'
-      - 'pyproject.toml'
-      - 'uv.lock'
-
-# Prevent concurrent deployments
+# Prevent concurrent deployments - queue them instead of canceling
 concurrency:
-  group: docs-${{ github.ref }}
-  cancel-in-progress: true
+  group: docs-deploy
+  cancel-in-progress: false
 
 # Required permissions for GitHub Pages
 permissions:
@@ -39,93 +27,76 @@ permissions:
   id-token: write
 
 jobs:
-  build:
-    name: Build Documentation
+  build-and-deploy:
+    name: Build and Deploy Documentation
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Full history for git-revision-date plugin
-
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v4
-
-      - name: Restore MkDocs cache
-        uses: actions/cache@v4
-        with:
-          path: .cache
-          key: mkdocs-${{ hashFiles('mkdocs.yml', 'pyproject.toml', 'uv.lock') }}-${{ hashFiles('Docs/**') }}
-          restore-keys: |
-            mkdocs-${{ hashFiles('mkdocs.yml', 'pyproject.toml', 'uv.lock') }}-
-            mkdocs-
-
-      - name: Prepare Devbox configuration
-        run: ln -sf devbox-minimal.json devbox.json
-        working-directory: .devcontainer
-
-      - name: Install Devbox
-        uses: jetpack-io/devbox-install-action@v0.11.0
-        with:
-          project-path: .devcontainer
-          enable-cache: true
-
-      - name: Install uv toolchain
-        uses: astral-sh/setup-uv@v3
-        with:
-          uv-version: 'latest'
-
-      - name: Sync documentation dependencies
-        run: uv sync --locked
-
-      - name: Generate Chart.yaml metadata
-        run: devbox run -- task utils:docs:metadata
-        working-directory: .devcontainer
-
-      - name: Generate Helm documentation
-        run: devbox run -- task utils:docs:helm
-        working-directory: .devcontainer
-
-      - name: Build MkDocs site
-        run: devbox run -- task utils:docs:build
-        working-directory: .devcontainer
-
-      - name: Validate build output
-        run: |
-          test -d site/ || { echo "❌ Error: site/ directory not found"; exit 1; }
-          test -f site/index.html || { echo "❌ Error: site/index.html not found"; exit 1; }
-          test -f site/sitemap.xml || { echo "❌ Error: site/sitemap.xml not found"; exit 1; }
-          echo "✅ Build output validated successfully"
-
-      - name: Check for broken links
-        run: devbox run -- task utils:docs:linkcheck
-        working-directory: .devcontainer
-        continue-on-error: true
-
-      - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site/
-
-      - name: Upload build artifact (PR preview)
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-preview-${{ github.event.pull_request.number }}
-          path: site/
-          retention-days: 7
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.23.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: Docs/pnpm-lock.yaml
+
+      - name: Install D2
+        run: |
+          curl -fsSL https://d2lang.com/install.sh | sh -s --
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        working-directory: Docs
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Astro site
+        working-directory: Docs
+        run: pnpm build
+
+      - name: Validate build output
+        run: |
+          test -d Docs/dist/ || { echo "❌ Error: Docs/dist/ directory not found"; exit 1; }
+          test -f Docs/dist/index.html || { echo "❌ Error: Docs/dist/index.html not found"; exit 1; }
+
+          # Sitemap is critical for SEO - check for common formats
+          if [ -f Docs/dist/sitemap-index.xml ] || [ -f Docs/dist/sitemap-0.xml ] || [ -f Docs/dist/sitemap.xml ]; then
+            echo "✅ Sitemap found"
+            ls -la Docs/dist/ | grep -i sitemap || true
+          else
+            echo "❌ Error: No sitemap file found (critical for SEO)"
+            echo "Contents of Docs/dist/:"
+            ls -la Docs/dist/
+            exit 1
+          fi
+
+          echo "✅ Build output validated successfully"
+
+      - name: Check for broken links
+        run: ./Scripts/docs-linkcheck.sh
+        timeout-minutes: 3
+        continue-on-error: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: Docs/dist/
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
