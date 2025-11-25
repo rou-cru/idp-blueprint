@@ -25,6 +25,21 @@ certificate:
 controller:
   # -- (string) Priority class for controller pods
   priorityClassName: platform-infrastructure
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: role
+                operator: In
+                values:
+                  - infra
+                  - apps
   # -- Rolling update strategy for zero-downtime updates
   deploymentStrategy:
     type: RollingUpdate
@@ -59,6 +74,21 @@ controller:
 server:
   # -- (string) Priority class for server pods
   priorityClassName: platform-infrastructure
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: role
+                operator: In
+                values:
+                  - infra
+                  - apps
   # -- Rolling update strategy for zero-downtime updates
   deploymentStrategy:
     type: RollingUpdate
@@ -98,6 +128,21 @@ server:
 repoServer:
   # -- (string) Priority class
   priorityClassName: platform-infrastructure
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: role
+                operator: In
+                values:
+                  - infra
+                  - apps
   # -- Rolling update strategy for zero-downtime updates
   deploymentStrategy:
     type: RollingUpdate
@@ -138,6 +183,21 @@ redis:
       maxUnavailable: 0
       # -- (int) Maximum surge pods during update
       maxSurge: 1
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: role
+                operator: In
+                values:
+                  - infra
+                  - apps
   resources:
     requests:
       # -- (string) CPU request
@@ -154,6 +214,21 @@ redis:
 applicationSet:
   # -- (string) Priority class
   priorityClassName: platform-infrastructure
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+              - key: role
+                operator: In
+                values:
+                  - infra
+                  - apps
   # -- (bool) Enable ApplicationSet controller
   enabled: true
   # -- Rolling update strategy for zero-downtime updates
