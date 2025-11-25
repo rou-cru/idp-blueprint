@@ -31,6 +31,54 @@ After completing the quickstart you will have:
 
 All of this is deployed from this repository using `task deploy`.
 
+## Un solo comando: qué hace realmente `task deploy`
+
+Con la configuración por defecto (`config.toml` sin tocar) `task deploy` ejecuta esta
+secuencia end‑to‑end. No necesitas pasos manuales ni variables extra; todo se orquesta
+desde el Taskfile.
+
+1) **Crea la base**
+   - Verifica inotify, genera un clúster k3d de 3 nodos y un registry local.
+   - Aplica namespaces y PriorityClasses iniciales.
+2) **Instala CRDs y red**
+   - Instala CRDs de Gateway API y Prometheus Operator.
+   - Despliega Cilium como CNI y espera a que los pods estén `Ready`.
+3) **Certificados y secretos**
+   - Instala cert-manager y aplica el CA/ClusterIssuers.
+   - Instala Vault, lo inicializa y configura roles de Kubernetes para ESO.
+   - Genera los secretos iniciales (ArgoCD, Grafana, SonarQube, Backstage, registry).
+   - Instala External Secrets Operator y espera a que esté disponible.
+4) **GitOps y gateway**
+   - Instala ArgoCD (modo standard), aplica AppProjects por stack.
+   - Aplica ExternalSecrets para credenciales de ArgoCD.
+   - Despliega Gateway API + wildcard TLS, comprueba los NodePorts (30080/30443) y
+     anuncia las URLs nip.io detectadas.
+5) **Piloto automático de stacks (todo habilitado por defecto)**
+   - Aplica la `Application` de Kyverno/Policy Reporter.
+   - Aplica los `ApplicationSet` de observability, cicd, security, backstage y events
+     (los fuses controlan todos salvo events, que siempre se aplica).
+6) **Termina**
+   - Sale con “Success 😌”; ArgoCD continúa reconciliando hasta que todo quede Healthy/Synced.
+
+Fragmentos del log real (resumen de alto nivel):
+
+```
+task: [k3d:k3d:create] ... k3d cluster create idp-demo ...
+task: [bootstrap:cilium:deploy] helm upgrade --install cilium ...
+task: [bootstrap:vault:init] ✅ Vault initialized successfully
+task: [bootstrap:argocd:deploy] helm upgrade --install argocd ...
+task: [bootstrap:gateway:deploy] ✅ NodePorts verified: HTTP=30080, HTTPS=30443
+task: [stacks:observability] applicationset-observability created
+task: [stacks:cicd] applicationset-cicd created
+task: [stacks:security] applicationset-security created
+task: [stacks:backstage] applicationset-backstage created
+task: [stacks:events] applicationset-events created
+Success 😌
+```
+
+El log completo está disponible en `/tmp/task-deploy.log` por si necesitas
+inspeccionar tiempos o mensajes detallados.
+
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
   <LinkButton href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">
     Next: Prerequisites
