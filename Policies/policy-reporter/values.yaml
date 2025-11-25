@@ -33,3 +33,11 @@ ui:
       cpu: 100m
       # -- (string) Memory limit for the UI
       memory: 128Mi
+
+# @section -- Monitoring
+monitoring:
+  enabled: true
+  grafana:
+    enabled: true
+    # Namespace where Grafana is installed (for dashboard discovery)
+    namespace: observability

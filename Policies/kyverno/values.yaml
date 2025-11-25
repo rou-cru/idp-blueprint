@@ -111,3 +111,7 @@ reportsController:
       cpu: 250m
       # -- (string) Memory limit for reports controller
       memory: 256Mi
+
+# @section -- Observability
+grafana:
+  enabled: true

@@ -94,30 +94,17 @@ serviceAccount:
 
 # @section -- Webhook
 webhook:
-  # -- (string) Certificate validity lookahead interval (must be less than cert.renewBefore)
-  lookaheadInterval: "168h"
-  certManager:
-    # -- (bool) Enable cert-manager for webhook certificates
-    enabled: true
-    # -- (bool) Automatically inject CA into webhooks and CRDs
-    addInjectorAnnotations: true
-    cert:
-      # -- (bool) Create certificate resource
-      create: true
-      issuerRef:
-        # -- (string) Issuer group
-        group: cert-manager.io
-        # -- (string) Issuer kind
-        kind: ClusterIssuer
-        # -- (string) Issuer name
-        name: ca-issuer
-      # -- (string) Certificate lifetime (90 days)
-      duration: "2160h"
-      # -- (string) Renew certificate 30 days before expiry
-      renewBefore: "720h"
-      privateKey:
-        # -- (string) Private key rotation policy
-        rotationPolicy: Always
+  # -- (bool) Create webhook
+  create: true
+  # -- (int) Number of replicas
+  replicas: 1
+
+# @section -- Dashboards
+grafanaDashboard:
+  enabled: true
+  sidecarLabel: grafana_dashboard
+  sidecarLabelValue: "1"
+
 
 # @section -- Observability
 serviceMonitor:
