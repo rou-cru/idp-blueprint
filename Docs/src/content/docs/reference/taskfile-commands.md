@@ -38,14 +38,15 @@ CONFIG_FILE=config.prod.toml task deploy
 
 ## Stack management
 
-All stacks are reconciled through ArgoCD ApplicationSets. Use these when iterating on a specific layer:
+ArgoCD drives all stacks. `task deploy` applies Kyverno/Policy Reporter first, then calls `stacks:deploy`, which respects the stack fuses (policies, observability, cicd, security, backstage) and always includes events.
 
-- `task stacks:deploy` — runs every stack respecting the fuses.
-- `task stacks:policies` — Kyverno engine + policies (namespace guardrails, labels, quotas).
+- `task stacks:deploy` — run every stack with fuse gating; events always on.
+- `task stacks:policies` — Kyverno engine + policies (standalone ArgoCD Application).
 - `task stacks:observability` — Prometheus, Grafana, Loki, Fluent-bit, Pyrra.
 - `task stacks:cicd` — Argo Workflows, SonarQube, CI helpers.
 - `task stacks:security` — Trivy operator stack.
 - `task stacks:events` — Argo Events controller/webhook + EventBus.
+- `task stacks:backstage` — Backstage developer portal.
 
 ## Quality & security automation
 
@@ -60,11 +61,12 @@ The `quality` namespace exposes the same batteries that CI runs:
 
 Everything related to docs lives under `utils:docs:*`:
 
-- `task utils:docs` — regenerate Chart metadata and helm-docs snippets.
-- `task docs:build`: Build the documentation site (wraps `astro build`).
-- `task utils:docs:serve` — live-reload server.
+- `task utils:docs` — generate chart metadata then helm-docs snippets.
+- `task utils:docs:metadata` — emit Chart.yaml metadata for every component.
+- `task utils:docs:helm` — render helm-docs partials from values files.
 - `task utils:docs:linkcheck` — broken-link detector.
-- `task utils:docs:all` — generate → build → linkcheck in one go.
+- `task docs:astro:build` — build the Astro/Starlight site.
+- `task docs:astro:dev` — run the docs site locally with live reload.
 
 ## Images & registry helpers
 

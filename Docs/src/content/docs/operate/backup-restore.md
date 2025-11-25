@@ -46,7 +46,3 @@ Checklist:
 - Restore Vault (policies + data); rebind ESO roles.
 - Reapply ArgoCD projects and ApplicationSets; let stacks converge.
 - Verify UIs and secrets consumption; re‑issue certs if needed.
-
-:::tip
-This creates a `.zip` file in your working directory containing the JSON export.
-:::

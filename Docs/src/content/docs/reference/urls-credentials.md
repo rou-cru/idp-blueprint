@@ -89,7 +89,7 @@ kubectl -n argocd get secret argocd-secret \
 **Default Password** (from `config.toml`):
 ```toml
 [passwords]
-grafana_admin = "admin"
+grafana_admin = "graf"
 ```
 
 **Retrieve from Kubernetes**:
@@ -153,7 +153,7 @@ See [Secrets Management](../architecture/secrets.md#security-considerations) for
 **Default Password** (from `config.toml`):
 ```toml
 [passwords]
-sonarqube_admin = "admin"
+sonarqube_admin = "sonar"
 ```
 
 **Retrieve from Kubernetes**:
@@ -171,9 +171,7 @@ kubectl -n cicd get secret sonarqube-admin-password \
 
 ### Argo Workflows
 
-**Authentication**: Uses the same ArgoCD SSO (if configured) or can be accessed directly
-
-**Server Auth Mode**: Server auth mode is configured in the values
+**Authentication**: Server auth mode only (SSO is disabled by default in `values.yaml` but can be enabled if you wire an IdP)
 
 **Access**:
 ```bash

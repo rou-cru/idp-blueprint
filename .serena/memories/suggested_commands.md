@@ -3,17 +3,19 @@
 ## Main Deployment Commands
 
 ```bash
-task deploy                  # Deploy the entire IDP platform (~5-10 min)
-task deploy KUBECTL_TIMEOUT=600s  # Deploy with extended timeout
-task destroy                 # Remove all components and cluster
+task deploy                 # Deploy the entire IDP platform, sync all helm deploys and ArgoCD App files if is already deployed 
+task destroy                # Remove all components and cluster
 task redeploy               # Destroy and deploy from scratch
-task deploy:nocache         # Deploy without registry cache
 ```
 
-## Quality Checks (Run before PRs)
+## Quality Checks
 
 ```bash
 task check                  # Run ALL checks (lint, validation, security)
+```
+## Lint
+
+```bash
 task lint                   # Run all linters
 task lint:yaml              # Lint YAML files only
 task lint:shell             # Lint shell scripts only
@@ -42,13 +44,7 @@ task security:secrets       # Scan for hardcoded secrets (trufflehog)
 ## Documentation
 
 ```bash
-task utils:docs:all                # Generate markdown from helm-docs, build MKDocs and Lint
-```
-
-## Utility Commands
-
-```bash
-task cleanup                # Remove temporary chart directories
+task utils:docs:all                # Generate markdown from helm-docs, build Docs and Lint
 ```
 
 ## Kubernetes Tools (from devbox)
@@ -64,4 +60,4 @@ task cleanup                # Remove temporary chart directories
 ## System Utilities (Linux)
 
 - `git`, `ls`, `cd`, `grep`, `find`
-- `jq`, `yq`, `dasel` - JSON/YAML/TOML processors
+- `jq`, `yq`, `dasel`

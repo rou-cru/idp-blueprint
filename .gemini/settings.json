@@ -1,5 +1,14 @@
 {
   "mcpServers": {
+"grafana": {
+      "command": "mcp-grafana",
+      "args": [],
+      "env": {
+        "GRAFANA_URL": "http://grafana.192-168-65-16.nip.io",
+        "GRAFANA_USERNAME": "admin",
+        "GRAFANA_PASSWORD": "graf"
+      }
+    },
     "serena": {
       "command": "uvx",
       "args": [
