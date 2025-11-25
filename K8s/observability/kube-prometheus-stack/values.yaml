@@ -26,15 +26,11 @@ alertmanager:
 prometheus:
   prometheusSpec:
     priorityClassName: platform-observability
-    # -- Select ServiceMonitors with label prometheus=kube-prometheus across all namespaces
-    serviceMonitorSelector:
-      matchLabels:
-        prometheus: kube-prometheus
+    # -- Select all ServiceMonitors across all namespaces
+    serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
-    # -- Select PodMonitors similarly (if used by components)
-    podMonitorSelector:
-      matchLabels:
-        prometheus: kube-prometheus
+    # -- Select all PodMonitors across all namespaces
+    podMonitorSelector: {}
     podMonitorNamespaceSelector: {}
     # -- Select PrometheusRules from any namespace (needed for Pyrra rules)
     ruleSelector: {}
