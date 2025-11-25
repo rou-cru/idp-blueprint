@@ -67,7 +67,9 @@ export default defineConfig({
     components: {
       Head: './src/components/SeoHead.astro',
       ThemeSelect: './src/components/ThemeSelect.astro', // Disable theme switcher
+      TwoColumnContent: './src/overrides/TwoColumnContent.astro',
     },
+    customCss: ['./src/styles/custom.css'],
     pagination: false,
   }), expressiveCode(), mdx(), d2({
     theme: {

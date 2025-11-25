@@ -1,23 +1,15 @@
 ---
-title: Architecture Overview — The big picture
+title: Overview Architecture
 sidebar:
   label: Overview
   order: 1
 ---
 
-This page describes the main architectural elements of IDP Blueprint and how they fit
-  together. It assumes you know Kubernetes basics and want to understand how this IDP is
-  wired as a system.
-
-For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md).
-  Here we stay at system context (L1) and container (L2) levels; detailed component views
-  live in the other Architecture pages.
-
 ## Context and goals
 
-IDP Blueprint is designed for:
+**IDP Blueprint is designed for:**
 
-- Kubernetes clusters where you want a compact, self‑hosted platform stack (the reference demo uses a 3‑node k3d cluster by default).
+- Kubernetes clusters where you want a compact, self‑hosted platform stack.
 - Edge/on‑prem or constrained environments where scaling out is not the main option, but the same architecture applies to larger clusters.
 - GitOps‑first operation: Git is the source of truth, ArgoCD reconciles the cluster.
 - Cloud‑agnostic use: no managed control planes and no commercial licenses.
@@ -30,23 +22,11 @@ Typical uses:
 
 ## System context
 
-At the highest level, the platform sits between engineers, Git, and a Kubernetes cluster:
+A single Kubernetes cluster sits between engineers and Git. Git owns all intent; ArgoCD reconciles that intent into the cluster; traffic comes back out through Gateway API:
 
-- **Actors**
-  - Platform engineers operate the IDP (bootstrap, upgrades, policies, SLOs).
-  - Application teams deploy workloads onto the platform.
-- **External systems**
-  - Git: source of truth for bootstrap config, GitOps stacks, policies, and SLOs.
-  - Container registry: stores container images for platform components and workloads.
-  - Optional cloud services: external secret managers or backing services.
-- **Deployment target**
-  - A single Kubernetes cluster (local or remote), treated as an implementation detail.
-
-Everything is driven from Git: changes are pushed to the repo, ArgoCD reconciles the cluster, and observability feeds back into decisions.
-
-:::note[C4 Model - System Context (Level 1)]
-This diagram shows the IDP Blueprint from a system context perspective, focusing on actors and external systems rather than internal components. For a detailed view of internal containers, see the [Container view](#container-view) below.
-:::
+- **Actors**: Platform engineers operate the stack; application teams ship workloads through it.
+- **External systems**: Git provider for source of truth, container registry for images, optional cloud services such as external secret stores.
+- **Deployment target**: One cluster (local k3d or remote), treated as interchangeable infrastructure.
 
 ```d2
 direction: right

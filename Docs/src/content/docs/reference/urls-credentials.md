@@ -5,8 +5,6 @@ sidebar:
   order: 3
 ---
 
-This page only describes the addressing model. Steps for retrieving or resetting credentials live in **Getting Started → Verify** and in the per-component docs.
-
 ## Service URLs
 
 All services are exposed via Gateway API with wildcard TLS certificates using nip.io DNS. The IP address in the URL is your LAN IP with dots replaced by dashes.
@@ -58,14 +56,14 @@ All services use TLS certificates issued by a local Certificate Authority (CA) m
 
 To avoid browser warnings, import the platform CA certificate into your system trust store:
 
-**1. Export the CA Certificate**:
+**Export the CA Certificate**
 
 ```bash
 kubectl -n cert-manager get secret idp-demo-ca-secret \
   -o jsonpath='{.data.tls\.crt}' | base64 -d > idp-demo-ca.crt
 ```
 
-**2. Import on macOS**:
+**Import on macOS**:
 
 ```bash
 # Open Keychain Access
@@ -76,14 +74,14 @@ sudo security add-trusted-cert -d -r trustRoot \
   -k /Library/Keychains/System.keychain idp-demo-ca.crt
 ```
 
-**3. Import on Linux (Debian/Ubuntu)**:
+**Import on Linux (Ubuntu)**:
 
 ```bash
 sudo cp idp-demo-ca.crt /usr/local/share/ca-certificates/
 sudo update-ca-certificates
 ```
 
-**4. Import on Windows**:
+**Import on Windows**:
 
 ```powershell
 # Open Certificate Manager
@@ -94,7 +92,7 @@ Import-Certificate -FilePath idp-demo-ca.crt `
   -CertStoreLocation Cert:\LocalMachine\Root
 ```
 
-**5. Import in Firefox** (uses its own certificate store):
+**Import in Firefox** (uses its own certificate store):
 
 1. Settings → Privacy & Security → Certificates → View Certificates
 2. Authorities → Import
