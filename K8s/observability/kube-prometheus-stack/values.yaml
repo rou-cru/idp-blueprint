@@ -106,12 +106,15 @@ grafana:
     - grafana-polystat-panel
     - marcusolsson-json-datasource
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
+  defaultDashboardsEnabled: true
   sidecar:
     dashboards:
       enabled: true
       label: grafana_dashboard
       # -- An empty labelValue searches for the presence of the label, regardless of its value.
       labelValue: ""
+      # -- Search in all namespaces for dashboards.
+      searchNamespace: ALL
   # -- Advanced Grafana configuration via grafana.ini
   grafana.ini:
     users:
