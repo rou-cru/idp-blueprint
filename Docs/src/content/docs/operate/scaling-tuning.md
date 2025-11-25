@@ -6,24 +6,11 @@ sidebar:
 ---
 ---
 
-Make capacity intentional: prioritize what must stay up, keep metrics/logs affordable, and avoid cardinality explosions.
-
-## Prioridades y pools (sin diagrama)
-
-- Infra / Policy / Observ corren en nodos de infra.
-- CICD y Dash en nodos de workload (excepto control plane como lifeboat).
-- Cada `values.yaml` debe definir `priorityClassName`; Kyverno lo valida.
-
-Rules of thumb:
-
-- Every values file sets `priorityClassName` (the repo checks for this).
-- Keep DaemonSets lean; they run everywhere (Cilium, Fluent‑bit, Node Exporter).
-
 ## Resource sizing strategy
 
 This demo applies a **three-layer capacity model**: component-level definitions, namespace governance, and priority-based scheduling.
 
-### Layer 1: Component resources (values.yaml)
+### Layer 1: Component resources
 
 Every component defines explicit `requests` and `limits`:
 
@@ -35,10 +22,10 @@ Example from `K8s/observability/fluent-bit/values.yaml`:
 ```yaml
 resources:
   requests:
-    cpu: 25m      # Minimal guaranteed
+    cpu: 25m
     memory: 64Mi
   limits:
-    cpu: 100m     # Can burst up to this
+    cpu: 100m
     memory: 128Mi
 ```
 
@@ -51,7 +38,7 @@ resources:
 
 Check any `*-values.yaml` to see applied sizing.
 
-### Layer 2: Namespace quotas (governance/)
+### Layer 2: Namespace quotas
 
 Each stack has a `governance/resourcequota.yaml` that sets hard ceilings:
 
@@ -77,8 +64,8 @@ kubectl describe resourcequota -n observability
 You'll see current usage vs. hard limits. For example:
 
 ```
-requests.cpu: 1050m/1500m    # 70% utilized
-limits.memory: 3600Mi/4Gi     # 87% utilized
+requests.cpu: 1050m/1500m
+limits.memory: 3600Mi/4Gi
 ```
 
 ### Layer 3: Priority classes
