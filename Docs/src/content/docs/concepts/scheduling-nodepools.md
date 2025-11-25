@@ -1,5 +1,5 @@
 ---
-title: Scheduling, Priority, and Node Pools — making capacity intentional
+title: Scheduling & NodePools
 sidebar:
   label: Scheduling & NodePools
   order: 5
