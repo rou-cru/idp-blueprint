@@ -1,1 +1,195 @@
-argo-workflows-values.yaml
+# @section -- CRDs
+crds:
+  # -- Install and manage CRDs.
+  install: true
+  # -- Keep CRDs on chart uninstall.
+  keep: true
+
+# @section -- Controller
+controller:
+  # -- Rolling update strategy for zero-downtime updates
+  deploymentStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # -- (int) Maximum unavailable pods during update (0 for zero-downtime)
+      maxUnavailable: 0
+      # -- (int) Maximum surge pods during update
+      maxSurge: 1
+  # -- Resource requests and limits for the controller.
+  resources:
+    requests:
+      # -- (string) CPU request for the controller
+      cpu: 100m
+      # -- (string) Memory request for the controller
+      memory: 256Mi
+    limits:
+      # -- (string) CPU limit for the controller
+      cpu: 500m
+      # -- (string) Memory limit for the controller
+      memory: 512Mi
+  # -- Namespaces where the controller will manage workflows.
+  workflowNamespaces:
+    - cicd
+  # -- Create RBAC resources for the controller.
+  rbac:
+    # -- (bool) Create controller RBAC resources
+    create: true
+  # -- Service account for the controller.
+  serviceAccount:
+    # -- (bool) Create controller service account
+    create: true
+    # -- (string) Service account name for the controller
+    name: argo-workflow-controller
+  # -- Enable Prometheus metrics endpoint.
+  metricsConfig:
+    # -- (bool) Enable controller metrics endpoint
+    enabled: true
+  # -- Create a ServiceMonitor for Prometheus.
+  serviceMonitor:
+    # -- (bool) Create ServiceMonitor for controller metrics
+    enabled: true
+    additionalLabels:
+      # -- (string) Prometheus selector label
+      prometheus: kube-prometheus
+  # -- Default TTL strategy for completed workflows.
+  workflowDefaults:
+    spec:
+      ttlStrategy:
+        # -- (int) TTL after completion (seconds)
+        secondsAfterCompletion: 3600
+        # -- (int) TTL after success (seconds)
+        secondsAfterSuccess: 1800
+        # -- (int) TTL after failure (seconds)
+        secondsAfterFailure: 7200
+      # -- Garbage collection strategy for completed pods.
+      podGC:
+        # -- (string) Pod GC strategy
+        strategy: OnPodCompletion
+        # -- (string) Delay before deleting completed pods
+        deleteDelayDuration: 60s
+  # -- Retention policy for completed workflows.
+  retentionPolicy:
+    # -- (int) Number of successful workflows to retain
+    completed: 10
+    # -- (int) Number of failed workflows to retain
+    failed: 5
+    # -- (int) Number of errored workflows to retain
+    errored: 5
+  # -- Restrict template referencing to be within the same namespace.
+  workflowRestrictions:
+    # -- (string) Template reference mode
+    templateReferencing: Strict
+  # -- Enable node events for workflows.
+  nodeEvents:
+    # -- (bool) Emit Kubernetes events for nodes
+    enabled: true
+  # -- Enable workflow events.
+  workflowEvents:
+    # -- (bool) Emit workflow lifecycle events
+    enabled: true
+  # -- Priority class for the controller pod.
+  priorityClassName: platform-cicd
+  # -- Persistence configuration for the controller.
+  # Completely disable archive and persistence for k3d environment
+  # Omitting the persistence section disables database requirement
+  # Workflows will be stored only in etcd (Kubernetes native storage)
+  # -- Maximum number of parallel workflows.
+  # -- (int) Parallel workflows allowed
+  parallelism: 10
+
+# @section -- Server
+server:
+  # -- Enable the Argo Workflows server.
+  # Required for web UI and API access
+  # -- (bool) Enable the controller server component
+  enabled: true
+  # -- Secure mode disabled when behind TLS-terminating gateway
+  # The Gateway handles TLS, so the server receives plain HTTP
+  # -- (bool) Require TLS on the server pod
+  secure: false
+  # -- Resource requests and limits for the server.
+  resources:
+    requests:
+      # -- (string) CPU request for the server
+      cpu: 50m
+      # -- (string) Memory request for the server
+      memory: 128Mi
+    limits:
+      # -- (string) CPU limit for the server
+      cpu: 250m
+      # -- (string) Memory limit for the server
+      memory: 256Mi
+  # -- Create RBAC resources for the server.
+  rbac:
+    # -- (bool) Create RBAC for the server deployment
+    create: true
+  # -- Service account for the server.
+  serviceAccount:
+    # -- (bool) Create the server service account
+    create: true
+    # -- (string) Service account name for the server
+    name: argo-workflow-server
+  # -- Authentication modes for the server.
+  authModes:
+    - server
+  # -- Enable Single Sign-On (SSO).
+  sso:
+    # -- (bool) Enable SSO integration
+    enabled: false
+  # -- Priority class for the server pod.
+  priorityClassName: platform-cicd
+
+# @section -- Workflow Executor
+executor:
+  # -- Resource requests and limits for the executor.
+  resources:
+    requests:
+      # -- (string) CPU request for workflow executors
+      cpu: 50m
+      # -- (string) Memory request for workflow executors
+      memory: 64Mi
+    limits:
+      # -- (string) CPU limit for workflow executors
+      cpu: 250m
+      # -- (string) Memory limit for workflow executors
+      memory: 128Mi
+
+# @section -- Workflow Service Account
+workflow:
+  # -- Service account for workflows.
+  serviceAccount:
+    # -- (bool) Create workflow service account
+    create: true
+    # -- (string) Workflow service account name
+    name: argo-workflow
+  # -- RBAC resources for workflows.
+  rbac:
+    # -- (bool) Create workflow RBAC resources
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources: ["secrets"]
+        verbs: ["get"]
+
+# @section -- Workflow Defaults
+workflowDefaults:
+  spec:
+    # -- Priority class for workflow pods.
+    priorityClassName: cicd-execution
+    # -- Service account for workflow pods.
+    serviceAccountName: argo-workflow
+
+# @section -- Artifact Repository
+artifactRepository:
+  # -- Archive logs to the artifact repository.
+  archiveLogs: false
+  # -- S3 artifact repository configuration.
+  s3: {}
+  # -- GCS artifact repository configuration.
+  gcs: {}
+  # -- Azure artifact repository configuration.
+  azure: {}
+  # -- Reference to a custom artifact repository.
+  artifactRepositoryRef: {}
+  # -- Custom artifact repository configuration.
+  customArtifactRepository: {}

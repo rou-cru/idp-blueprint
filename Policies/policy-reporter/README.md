@@ -1,12 +1,12 @@
 # policy-reporter
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 3.5.0](https://img.shields.io/badge/Version-3.5.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `3.5.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 

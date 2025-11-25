@@ -1,12 +1,12 @@
 # external-secrets
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 0.20.2](https://img.shields.io/badge/Version-0.20.2-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `0.20.2` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -44,6 +44,11 @@ The following table lists the configurable parameters:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key | string | `"node-role.kubernetes.io/control-plane"` |  |
+| affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"Exists"` |  |
+| deploymentStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| deploymentStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| deploymentStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | livenessProbe.enabled | bool | `false` | Enable liveness probe |
 | readinessProbe.enabled | bool | `true` | Enable readiness probe |
 | readinessProbe.spec.failureThreshold | int | `3` | Failure threshold for readiness probe |
@@ -62,6 +67,9 @@ The following table lists the configurable parameters:
 | serviceMonitor.honorLabels | bool | `true` | Honor labels from service |
 | serviceMonitor.interval | string | `"60s"` | Scrape interval |
 | serviceMonitor.scrapeTimeout | string | `"40s"` | Scrape timeout |
+| tolerations[0].effect | string | `"NoSchedule"` |  |
+| tolerations[0].key | string | `"node-role.kubernetes.io/control-plane"` |  |
+| tolerations[0].operator | string | `"Exists"` |  |
 | webhook.certManager.addInjectorAnnotations | bool | `true` | Automatically inject CA into webhooks and CRDs |
 | webhook.certManager.cert.create | bool | `true` | Create certificate resource |
 | webhook.certManager.cert.duration | string | `"2160h"` | Certificate lifetime (90 days) |

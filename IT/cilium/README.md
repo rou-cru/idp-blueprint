@@ -1,12 +1,12 @@
 # cilium
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 1.18.2](https://img.shields.io/badge/Version-1.18.2-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `1.18.2` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -92,6 +92,9 @@ The following table lists the configurable parameters:
 | operator.resources.limits.memory | string | `"512Mi"` | Memory limit |
 | operator.resources.requests.cpu | string | `"100m"` | CPU request |
 | operator.resources.requests.memory | string | `"128Mi"` | Memory request |
+| operator.updateStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| operator.updateStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| operator.updateStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | prometheus.dashboards.enabled | bool | `true` | Create ConfigMap with official Cilium dashboard |
 | prometheus.dashboards.namespace | string | `"default"` | Namespace for dashboard ConfigMap |
 | prometheus.enabled | bool | `true` | Enable metrics exposition |

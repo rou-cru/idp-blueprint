@@ -1,12 +1,12 @@
 # trivy
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `0.31.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -26,6 +26,10 @@ The following table lists the configurable parameters:
 | operator.exposedSecretScannerEnabled | bool | `true` | Enable exposed secret scanner |
 | operator.infraAssessmentScannerEnabled | bool | `false` | Disable infrastructure assessment scanner |
 | operator.rbacAssessmentScannerEnabled | bool | `true` | Enable RBAC assessment scanner |
+| operator.scanJobTimeout | string | `"5m"` | Timeout for scan jobs |
+| operator.scanJobsConcurrentLimit | int | `3` | Maximum number of concurrent scan jobs (default: 10) |
+| operator.scanJobsRetryDelay | string | `"30s"` | Delay before retrying failed scan jobs |
+| operator.scanNodeCollectorLimit | int | `1` | Maximum number of concurrent node collector jobs (default: 1) |
 | operator.vulnerabilityScannerEnabled | bool | `true` | Enable vulnerability scanner |
 | priorityClassName | string | `"platform-security"` | Priority class for Trivy pods |
 | resources.limits.cpu | string | `"500m"` | CPU limit |
@@ -37,6 +41,7 @@ The following table lists the configurable parameters:
 | targetWorkloads | string | `"pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"` | Comma-separated list of target workloads |
 | trivy.mode | string | `"ClientServer"` | Scanner mode |
 | trivy.serverURL | string | `"http://trivy-server.security.svc:4954"` | Trivy Server URL |
+| trivy.slow | bool | `true` | Use slower scanning mode (lower CPU/memory usage) |
 | trivyServer.dbUpdateInterval | string | `"12h"` | Database update interval |
 | trivyServer.enabled | bool | `true` | Enable Trivy Server deployment |
 | trivyServer.persistence.enabled | bool | `true` | Enable persistence |

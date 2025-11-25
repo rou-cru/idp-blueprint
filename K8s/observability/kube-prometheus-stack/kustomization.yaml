@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - grafana-admin-externalsecret.yaml
+  - dashboards/pyrra-slos-dashboard.yaml
 
 helmCharts:
   - name: kube-prometheus-stack
@@ -10,4 +11,4 @@ helmCharts:
     version: 77.14.0
     releaseName: prometheus
     namespace: observability
-    valuesFile: kube-prometheus-stack-values.yaml
+    valuesFile: values.yaml

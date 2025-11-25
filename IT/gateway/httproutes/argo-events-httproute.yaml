@@ -1,0 +1,28 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: argo-events
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/name: argo-events
+    app.kubernetes.io/instance: argo-events-demo
+    app.kubernetes.io/component: event-mesh
+  annotations:
+    description: HTTPRoute for Argo Events metrics endpoint
+    contact: platform-team
+    documentation: https://argoproj.github.io/argo-events/
+spec:
+  parentRefs:
+    - name: idp-gateway
+      namespace: kube-system
+  hostnames:
+    - events.${DNS_SUFFIX}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: argo-events-controller-manager-metrics-service
+          port: 8080

@@ -1,0 +1,85 @@
+# @section -- Backstage image
+image:
+  repository: backstage/backstage
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# @section -- Pod settings
+replicaCount: 1
+priorityClassName: platform-dashboards
+resources:
+  requests:
+    cpu: 300m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+serviceAccount:
+  create: true
+
+service:
+  # Default chart configuration works
+  type: ClusterIP
+
+ingress:
+  enabled: false
+
+# Extra secrets for backend auth cookie and DB password
+extraEnv:
+  - name: BACKEND_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: backstage-app-secrets
+        key: BACKEND_SECRET
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: backstage-app-secrets
+        key: POSTGRES_PASSWORD
+
+appConfig:
+  app:
+    title: Backstage
+    baseUrl: https://backstage.${DNS_SUFFIX}
+  backend:
+    baseUrl: https://backstage.${DNS_SUFFIX}
+    listen:
+      port: 7007
+    cors:
+      origin: https://backstage.${DNS_SUFFIX}
+    database:
+      # Use the built-in Bitnami PostgreSQL subchart
+      client: pg
+      connection:
+        host: backstage-postgresql-hl
+        port: 5432
+        user: backstage
+        password: ${POSTGRES_PASSWORD}
+        database: backstage
+        ssl:
+          enabled: false
+
+# @section -- PostgreSQL (Bitnami subchart)
+postgresql:
+  enabled: true
+  auth:
+    username: backstage
+    database: backstage
+    existingSecret: backstage-postgresql
+    secretKeys:
+      adminPasswordKey: postgres-password
+      userPasswordKey: password
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    podAnnotations:
+      argocd.argoproj.io/sync-wave: "1"

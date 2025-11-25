@@ -4,6 +4,8 @@ kind: Kustomization
 # List all namespace definitions to be applied.
 resources:
   - argocd.yaml
+  - argo-events.yaml
+  - backstage.yaml
   - cert-manager.yaml
   - cicd.yaml
   - external-secrets-system.yaml

@@ -1,12 +1,12 @@
 # sonarqube
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 2025.5.0](https://img.shields.io/badge/Version-2025.5.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `2025.5.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -34,12 +34,13 @@ The following table lists the configurable parameters:
 | postgresql.resources.limits.memory | string | `"256Mi"` | Memory limit for PostgreSQL |
 | postgresql.resources.requests.cpu | string | `"100m"` | CPU request for PostgreSQL |
 | postgresql.resources.requests.memory | string | `"128Mi"` | Memory request for PostgreSQL |
-| setAdminPassword | object | `{"currentPasswordSecretKey":"currentPassword","currentPasswordSecretName":"sonarqube-admin-credentials","enabled":true,"passwordSecretKey":"password","passwordSecretName":"sonarqube-admin-credentials"}` | Admin password from Vault ExternalSecret. |
+| setAdminPassword | object | `{"currentPasswordSecretKey":"currentPassword","currentPasswordSecretName":"sonarqube-admin-credentials","enabled":true,"passwordSecretKey":"password","passwordSecretName":"sonarqube-admin-credentials","resources":{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}}` | Admin password from Vault ExternalSecret. |
 | setAdminPassword.currentPasswordSecretKey | string | `"currentPassword"` | Key for the existing admin password |
 | setAdminPassword.currentPasswordSecretName | string | `"sonarqube-admin-credentials"` | Secret that stores the current password for rotation |
 | setAdminPassword.enabled | bool | `true` | Pull admin password from Vault-managed secret |
 | setAdminPassword.passwordSecretKey | string | `"password"` | Key within the admin password secret |
 | setAdminPassword.passwordSecretName | string | `"sonarqube-admin-credentials"` | Secret containing admin credentials |
+| setAdminPassword.resources | object | `{"limits":{"cpu":"100m","memory":"128Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` | Resource limits for password change hook job |
 | sonarqube.env | list | `[{"name":"SONAR_WEB_JAVAADDITIONALOPTS","value":"-Dsonar.web.proxyScheme=https"}]` | Environment variables for reverse proxy configuration Required when SonarQube is behind a reverse proxy that terminates TLS |
 | sonarqube.livenessProbe | object | `{"exec":{"command":["sh","-c","wget --no-proxy --quiet -O /dev/null --timeout=1 --header=\"X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE\" \"http://localhost:9000/api/system/liveness\""]},"failureThreshold":6,"initialDelaySeconds":60,"periodSeconds":30,"timeoutSeconds":1}` | Liveness probe to check if the SonarQube server is running. |
 | sonarqube.livenessProbe.failureThreshold | int | `6` | Number of failures tolerated |

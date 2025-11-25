@@ -1,0 +1,28 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: pyrra
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/name: pyrra
+    app.kubernetes.io/instance: pyrra-demo
+    app.kubernetes.io/component: slo
+  annotations:
+    description: 'HTTPRoute for Pyrra UI'
+    contact: platform-team
+    documentation: https://pyrra.dev/
+spec:
+  parentRefs:
+    - name: idp-gateway
+      namespace: kube-system
+  hostnames:
+    - "pyrra.${DNS_SUFFIX}"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: pyrra
+          port: 9099

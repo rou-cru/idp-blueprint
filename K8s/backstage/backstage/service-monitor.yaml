@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backstage
+  namespace: backstage
+  labels:
+    app.kubernetes.io/name: backstage
+    app.kubernetes.io/instance: backstage
+    app.kubernetes.io/component: developer-portal
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+    prometheus: kube-prometheus
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backstage
+  namespaceSelector:
+    matchNames:
+      - backstage
+  endpoints:
+    - port: http
+      interval: 30s

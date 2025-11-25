@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: argocd-server-demo
     app.kubernetes.io/component: ui
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
     description: 'HTTPRoute for ArgoCD UI and API'
     contact: platform-team
     documentation: https://argo-cd.readthedocs.io/

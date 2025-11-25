@@ -1,12 +1,12 @@
 # fluent-bit
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 0.54.0](https://img.shields.io/badge/Version-0.54.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `0.54.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -25,7 +25,7 @@ The following table lists the configurable parameters:
 | config.outputs | string | `"[OUTPUT]\n    Name loki\n    Match *\n    Host loki.observability.svc.cluster.local\n    Port 3100\n    # -- Automatically add all Kubernetes labels to the log record.\n    auto_kubernetes_labels true\n    # -- Number of retries before dropping logs.\n    Retry_Limit 5\n"` |  |
 | config.service | string | `"[SERVICE]\n    Flush {{ .Values.flush }}\n    Log_Level {{ .Values.logLevel }}\n    HTTP_Server On\n    HTTP_Listen 0.0.0.0\n    HTTP_Port {{ .Values.metricsPort }}\n    Health_Check On\n"` |  |
 | daemonSetVolumeMounts | list | `[{"mountPath":"/var/log","name":"varlog"},{"mountPath":"/var/lib/docker/containers","name":"varlibdockercontainers","readOnly":true},{"mountPath":"/var/fluent-bit/state","name":"fluentbitstate"}]` | DaemonSet volume mounts |
-| daemonSetVolumes | list | `[{"hostPath":{"path":"/var/log"},"name":"varlog"},{"hostPath":{"path":"/var/lib/docker/containers"},"name":"varlibdockercontainers"},{"hostPath":{"path":"/var/fluent-bit/state"},"name":"fluentbitstate"},{"configMap":{"defaultMode":493,"name":"{{ include \"fluent-bit.fullname\" . }}-scripts"},"name":"scripts"}]` | DaemonSet volumes |
+| daemonSetVolumes | list | `[{"hostPath":{"path":"/var/log"},"name":"varlog"},{"hostPath":{"path":"/var/lib/docker/containers"},"name":"varlibdockercontainers"},{"hostPath":{"path":"/var/fluent-bit/state"},"name":"fluentbitstate"}]` | DaemonSet volumes |
 | dashboards.annotations | object | `{}` | Annotations |
 | dashboards.deterministicUid | bool | `false` | Deterministic UID |
 | dashboards.enabled | bool | `true` | Enable dashboards |
@@ -34,7 +34,6 @@ The following table lists the configurable parameters:
 | dashboards.namespace | string | `""` | Namespace |
 | flush | int | `1` | Time to wait before flushing data (in seconds) |
 | hotReload.enabled | bool | `true` | Enable hot reload |
-| hotReload.extraWatchVolumes | list | `[{"mountPath":"/watch/scripts","name":"scripts"}]` | Extra volumes to watch |
 | hotReload.image.digest | string | `nil` | Image digest |
 | hotReload.image.pullPolicy | string | `"IfNotPresent"` | Pull policy |
 | hotReload.image.repository | string | `"ghcr.io/jimmidyson/configmap-reload"` | Image repository |

@@ -1,12 +1,12 @@
 # kyverno
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 3.5.2](https://img.shields.io/badge/Version-3.5.2-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `3.5.2` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -16,8 +16,19 @@ The following table lists the configurable parameters:
 
 ## Values
 
+### Deployment Strategy
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| admissionController | object | `{"strategy":{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}}` | Rolling update strategy for zero-downtime updates |
+
+### Other Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| admissionController.strategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Deployment strategy for admission controller |
+| admissionController.strategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| admissionController.strategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | backgroundController.resources.limits.cpu | string | `"250m"` | CPU limit for background controller |
 | backgroundController.resources.limits.memory | string | `"256Mi"` | Memory limit for background controller |
 | backgroundController.resources.requests.cpu | string | `"100m"` | CPU request for background controller |

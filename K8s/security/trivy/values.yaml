@@ -1,1 +1,102 @@
-trivy-values.yaml
+# @section -- General
+# -- (string) Priority class for Trivy pods
+priorityClassName: platform-security
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+
+# -- (string) Comma-separated list of target workloads
+targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
+
+# -- (string) Namespaces to be excluded from scanning
+excludeNamespaces: "kube-system,argocd,cert-manager,vault-system,kyverno-system"
+
+# @section -- Operator
+operator:
+  # -- (bool) Enable vulnerability scanner
+  vulnerabilityScannerEnabled: true
+  # -- (bool) Enable configuration audit scanner
+  configAuditScannerEnabled: true
+  # -- (bool) Enable RBAC assessment scanner
+  rbacAssessmentScannerEnabled: true
+  # -- (bool) Enable exposed secret scanner
+  exposedSecretScannerEnabled: true
+  # -- (bool) Disable infrastructure assessment scanner
+  infraAssessmentScannerEnabled: false
+  # -- (bool) Enable cluster compliance scanner
+  clusterComplianceEnabled: true
+
+  # -- (bool) Enable built-in Trivy Server to support ClientServer mode
+  builtInTrivyServer: true
+
+  # @section -- Scan Job Concurrency & Performance
+  # -- (int) Maximum number of concurrent scan jobs (default: 10)
+  scanJobsConcurrentLimit: 3
+  # -- (int) Maximum number of concurrent node collector jobs (default: 1)
+  scanNodeCollectorLimit: 1
+  # -- (string) Timeout for scan jobs
+  scanJobTimeout: 5m
+  # -- (string) Delay before retrying failed scan jobs
+  scanJobsRetryDelay: 30s
+
+# @section -- Compliance
+compliance:
+  # -- (bool) Enable compliance reporting
+  enabled: true
+  # -- (list) Compliance specifications to run
+  specs:
+    - "k8s-pss-baseline-0.1"
+
+# @section -- Resources
+resources:
+  requests:
+    # -- (string) CPU request
+    cpu: 100m
+    # -- (string) Memory request
+    memory: 128Mi
+  limits:
+    # -- (string) CPU limit
+    cpu: 500m
+    # -- (string) Memory limit
+    memory: 512Mi
+
+# @section -- Scanner
+trivy:
+  # -- (string) Scanner mode
+  mode: ClientServer
+  # -- (string) Trivy Server URL
+  # serverURL: "http://trivy-server.security.svc:4954"
+  # -- (bool) Use slower scanning mode (lower CPU/memory usage)
+  slow: true
+
+  # -- (string) Size of the trivy server PVC
+  storageSize: 1Gi
+  # -- (string) Storage class for the trivy server PVC
+  storageClassName: "local-path"
+
+  server:
+    # -- (object) Resources for the trivy server container
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+# @section -- Observability
+serviceMonitor:
+  # -- (bool) Enable ServiceMonitor
+  enabled: true
+  # -- (bool) Honor labels on collisions
+  honorLabels: true

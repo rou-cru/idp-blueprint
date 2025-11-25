@@ -1,0 +1,24 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: loki-ingest-availability
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: loki-ingest
+    app.kubernetes.io/instance: loki-ingest-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+spec:
+  target: "99.0"
+  window: 6h
+  indicator:
+    ratio:
+      errors:
+        metric: |
+          sum(rate(loki_request_duration_seconds_count{status_code=~"5..",route=~"(?i).*(push|ingest).*"}[5m]))
+      total:
+        metric: |
+          sum(rate(loki_request_duration_seconds_count{route=~"(?i).*(push|ingest).*"}[5m]))

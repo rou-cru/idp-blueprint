@@ -9,7 +9,6 @@ metadata:
     app.kubernetes.io/instance: argo-workflows-demo
     app.kubernetes.io/component: workflow-engine
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
     description: HTTPRoute for Argo Workflows UI and API
     contact: platform-team
     documentation: https://argo-workflows.readthedocs.io/
