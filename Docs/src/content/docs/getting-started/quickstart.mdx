@@ -33,9 +33,10 @@ task deploy
 
 - Creates k3d cluster `idp-demo`
 - Bootstraps Cilium, cert-manager, Vault, External Secrets, ArgoCD, Gateway
-- Deploys stacks via ArgoCD ApplicationSets (observability, CI/CD, security,
-  policies) – ApplicationSets generate many ArgoCD Applications from the
-  `K8s/` folder structure (see
+- Brings up Kyverno + Policy Reporter first (standalone ArgoCD Application), then
+  ArgoCD ApplicationSets for the stacks: observability, CI/CD, security, events,
+  and backstage (stack fuses gate everything except events). ApplicationSets
+  expand folders under `K8s/` into many ArgoCD Applications (see
   [`GitOps, Policy, and Eventing`](../concepts/gitops-model.md))
 
 Time: ~5–10 minutes depending on network and hardware.

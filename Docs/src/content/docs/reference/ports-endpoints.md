@@ -20,6 +20,7 @@ Examples for 127.0.0.1:
 - SonarQube: `https://sonarqube.127-0-0-1.nip.io`
 - Argo Events: `https://events.127-0-0-1.nip.io`
 - Pyrra (SLO UI): `https://pyrra.127-0-0-1.nip.io`
+- Backstage: `https://backstage.127-0-0-1.nip.io`
 
 ## NodePorts — local demo
 

@@ -191,12 +191,10 @@ The project uses a two-tiered strategy for managing Helm chart versions,
 depending on how each component is deployed:
 
 1. **Core Infrastructure Components (Managed by `Taskfile.yaml`)**
-    - **Components**: Cilium, Cert-Manager, Vault, ArgoCD.
-    - **Method**: These components are deployed imperatively via
-      `helm upgrade` tasks within the `Taskfile.yaml`.
-    - **Version Source**: Their chart versions are centralized in the `vars:` section of
-      the `Taskfile.yaml`. This allows for top-level control over
-      critical infrastructure versions.
+    - **Components**: Cilium, cert-manager, Vault, ArgoCD.
+    - **Method**: Deployed imperatively via `helm upgrade` tasks in the bootstrap Taskfile.
+    - **Version Source**: `config.toml [versions]` (e.g., `cilium`, `cert_manager`, `vault`, `argocd`).
+      Tasks read these values through `Scripts/config-get.sh`, so changing the TOML is the single point to pin or bump chart versions.
 
 2. **Application Stack Components (Managed by GitOps)**
     - **Components**: Argo Workflows, SonarQube, Loki, Prometheus, Trivy, etc.

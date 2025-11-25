@@ -19,12 +19,13 @@ policies = true        # Kyverno + Policies app
 security = true        # Security stack (Trivy Operator)
 observability = true   # Prometheus + Grafana + Loki + Fluent-bit (+ Pyrra)
 cicd = true            # Argo Workflows + templates
+backstage = true       # Backstage developer portal
 prod = false           # Hardened profile (HA switches)
 ```
 
 Runtime behavior:
 
-- `task stacks:deploy` reads fuses and applies only the enabled stacks.
+- `task stacks:deploy` reads fuses and applies only the enabled stacks (events are always on).
 - `fuses.prod = true` enables production hardening (today: HA for ArgoCD; future: more dials).
 
 Try it:
