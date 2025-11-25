@@ -1,0 +1,10 @@
+.git/
+devbox.lock
+.devbox/
+.cache/
+.venv/
+site/
+.codex/log/
+.codex/sessions/
+node_modules/
+dist/

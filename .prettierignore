@@ -1,11 +1,15 @@
 # Ignore Helm templates and charts
 **/templates/
-charts/
+**/charts/
 
 # Ignore git and devbox directories
 .git/
 .devbox/
 
 # Ignore build artifacts or vendor directories
-dist/
+**/dist/
+**/node_modules/
 vendor/
+.venv/
+site/
+.cache/

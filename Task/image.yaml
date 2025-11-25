@@ -52,6 +52,7 @@ tasks:
   registry:clean:
     desc: 'Remove registry cache data'
     silent: true
+    internal: true
     requires:
       vars:
         - REGISTRY_CACHE_PATH

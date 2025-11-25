@@ -57,10 +57,65 @@ tasks:
     cmds:
       - envsubst < applicationset-security.yaml | kubectl apply -f -
 
+  events:
+    desc: 'Deploy the Events Stack via ArgoCD (Argo Events)'
+    dir: K8s/events
+    preconditions:
+      - sh: command -v envsubst
+        msg: 'envsubst is required but not installed. Run: brew install gettext'
+      - sh: command -v kubectl
+        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    env:
+      REPO_URL: '{{.REPO_URL}}'
+      TARGET_REVISION: '{{.TARGET_REVISION}}'
+    cmds:
+      - envsubst < applicationset-events.yaml | kubectl apply -f -
+
+  backstage:
+    desc: 'Deploy the Backstage developer portal via ArgoCD'
+    dir: K8s/backstage
+    preconditions:
+      - sh: command -v envsubst
+        msg: 'envsubst is required but not installed. Run: brew install gettext'
+      - sh: command -v kubectl
+        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    env:
+      REPO_URL: '{{.REPO_URL}}'
+      TARGET_REVISION: '{{.TARGET_REVISION}}'
+    cmds:
+      - envsubst < applicationset-backstage.yaml | kubectl apply -f -
+
   deploy:
-    desc: 'Deploy all application stacks via ArgoCD ApplicationSets'
-    deps:
-      - observability
-      - cicd
-      # Trivy (security) must come last
-      - security
+    desc: 'Deploy all application stacks via ArgoCD ApplicationSets (feature-gated)'
+    cmds:
+      - |
+        if [ "{{.FUSE_POLICIES}}" != "false" ]; then
+          task stacks:policies || exit 1
+        else
+          echo "Skipping policies"
+        fi
+      - |
+        if [ "{{.FUSE_OBSERVABILITY}}" != "false" ]; then
+          task stacks:observability || exit 1
+        else
+          echo "Skipping observability"
+        fi
+      - |
+        if [ "{{.FUSE_CICD}}" != "false" ]; then
+          task stacks:cicd || exit 1
+        else
+          echo "Skipping cicd"
+        fi
+      - |
+        if [ "{{.FUSE_SECURITY}}" != "false" ]; then
+          task stacks:security || exit 1
+        else
+          echo "Skipping security"
+        fi
+      - |
+        if [ "{{.FUSE_BACKSTAGE}}" != "false" ]; then
+          task stacks:backstage || exit 1
+        else
+          echo "Skipping backstage"
+        fi
+      - task stacks:events

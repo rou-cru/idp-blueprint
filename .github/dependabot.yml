@@ -1,0 +1,57 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Keep GitHub Actions up to date
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "rou-cru"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  # Keep pnpm dependencies up to date (Documentation site)
+  - package-ecosystem: "npm"
+    directory: "/Docs"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "documentation"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    open-pull-requests-limit: 10
+    versioning-strategy: increase
+    groups:
+      astro:
+        patterns:
+          - "@astrojs/*"
+          - "astro"
+          - "astro-*"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"

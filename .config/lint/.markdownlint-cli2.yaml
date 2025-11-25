@@ -1,0 +1,69 @@
+# .markdownlint-cli2.yaml
+
+# Respect .gitignore patterns
+
+gitignore: true
+
+# Explicit ignores for build artifacts and caches
+
+ignores:
+
+- ".git/**"
+- ".devbox/**"
+- ".task/**"
+- "devbox.d/**"
+- ".venv/**"
+- "site/**"
+- ".cache/**"
+- "node_modules/**"
+- "**/charts/**"
+- ".claude/**"
+- ".codex/**"
+- ".memory/**"
+- ".serena/**"
+- ".gemini/**"
+- ".github/**"
+- ".devcontainer/**"
+- ".config/**"
+- "**/_values.generated.md"
+- "IT/**/README.md"
+- "K8s/**/README.md"
+- "Policies/**/README.md"
+- "AUDIT_REPORT_MKDOCS.md"
+
+# Linting rules configuration
+
+config:
+
+# Enforce dashes for unordered lists
+
+  MD004:
+    style: dash
+
+# Allow longer lines to match Prettier's configuration
+
+  MD013:
+    line_length: 88
+
+# Allow the use of inline HTML like <details> and <summary>
+
+  MD033:
+    allowed_elements:
+      [
+        'details',
+        'summary',
+        'strong',
+        'em',
+        'br',
+        'img',
+        'a',
+        'p',
+        'h1',
+        'h2',
+        'picture',
+        'source',
+        'table',
+        'tr',
+        'td',
+        'sup',
+      ]
