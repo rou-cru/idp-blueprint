@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  render:
+    desc: 'Render D2 diagrams to SVG'
+    cmds:
+      - ./Scripts/d2-render.sh
+
+  lint:
+    desc: 'Lint documentation'
+    cmds:
+      - ./Scripts/docs-linkcheck.sh
