@@ -1,0 +1,208 @@
+direction: down
+
+title: {
+  label: "Three-Layer Capacity Model"
+  near: top-center
+  shape: text
+  style: {
+    font-size: 24
+    bold: true
+  }
+}
+
+# Top: Kubernetes Scheduler
+scheduler: {
+  shape: hexagon
+  label: "Kubernetes Scheduler\nDecision Engine"
+  style: {
+    fill: "#326CE5"
+    font-color: white
+    bold: true
+    font-size: 18
+  }
+}
+
+# Layer 3: Priority Classes
+layer3_title: {
+  shape: rectangle
+  label: "Layer 3: Priority Classes"
+  style: {
+    fill: "#e74c3c"
+    font-color: white
+    bold: true
+    font-size: 16
+  }
+}
+
+layer3_data: {
+  shape: sql_table
+  label: "Priority Hierarchy"
+  style: {
+    fill: "#c0392b"
+    font-color: white
+  }
+
+  p1: "platform-infrastructure: 1M" {
+    style.fill: "#34495e"
+  }
+  p2: "platform-policy: 100k" {
+    style.fill: "#34495e"
+  }
+  p3: "platform-observability: 10k" {
+    style.fill: "#34495e"
+  }
+  p4: "platform-dashboards: 5k" {
+    style.fill: "#34495e"
+  }
+  p5: "unclassified-workload: 0" {
+    style.fill: "#7f8c8d"
+  }
+}
+
+layer3_behavior: {
+  shape: document
+  label: "Eviction under pressure\nLower priority preempted first"
+  style: {
+    fill: "#95a5a6"
+    font-color: black
+    font-size: 12
+  }
+}
+
+# Layer 2: Namespace Quotas
+layer2_title: {
+  shape: rectangle
+  label: "Layer 2: Namespace Quotas"
+  style: {
+    fill: "#f39c12"
+    font-color: white
+    bold: true
+    font-size: 16
+  }
+}
+
+layer2_data: {
+  shape: sql_table
+  label: "ResourceQuota (observability)"
+  style: {
+    fill: "#e67e22"
+    font-color: white
+  }
+
+  q1: "requests.cpu: 1500m" {
+    style.fill: "#d35400"
+  }
+  q2: "limits.cpu: 4000m" {
+    style.fill: "#d35400"
+  }
+  q3: "requests.memory: 2Gi" {
+    style.fill: "#d35400"
+  }
+  q4: "limits.memory: 4Gi" {
+    style.fill: "#d35400"
+  }
+}
+
+layer2_behavior: {
+  shape: document
+  label: "Hard ceiling enforcement\nAdmission rejects exceeding pods"
+  style: {
+    fill: "#95a5a6"
+    font-color: black
+    font-size: 12
+  }
+}
+
+# Layer 1: Component Resources
+layer1_title: {
+  shape: rectangle
+  label: "Layer 1: Component Resources"
+  style: {
+    fill: "#27ae60"
+    font-color: white
+    bold: true
+    font-size: 16
+  }
+}
+
+layer1_data: {
+  shape: sql_table
+  label: "Pod Spec (Prometheus)"
+  style: {
+    fill: "#229954"
+    font-color: white
+  }
+
+  r1: "requests.cpu: 50m" {
+    style.fill: "#1e8449"
+  }
+  r2: "requests.memory: 128Mi" {
+    style.fill: "#1e8449"
+  }
+  r3: "limits.cpu: 200m" {
+    style.fill: "#1e8449"
+  }
+  r4: "limits.memory: 512Mi" {
+    style.fill: "#1e8449"
+  }
+}
+
+layer1_behavior: {
+  shape: document
+  label: "Guaranteed allocation\nCgroup enforcement"
+  style: {
+    fill: "#95a5a6"
+    font-color: black
+    font-size: 12
+  }
+}
+
+# Summary note
+summary: {
+  shape: page
+  label: "Demo Footprint: ~4GB total\nProduction Pattern: Scale quotas per environment"
+  style: {
+    fill: "#ecf0f1"
+    font-color: "#2c3e50"
+    font-size: 14
+    italic: true
+  }
+}
+
+# Connections
+scheduler -> layer3_title: "Checks priority" {
+  style: {
+    stroke-width: 2
+    animated: true
+  }
+}
+
+layer3_title -> layer3_data
+
+scheduler -> layer2_title: "Validates quota" {
+  style: {
+    stroke-width: 2
+    animated: true
+  }
+}
+
+layer2_title -> layer2_data
+
+scheduler -> layer1_title: "Schedules pod" {
+  style: {
+    stroke-width: 2
+    animated: true
+  }
+}
+
+layer1_title -> layer1_data
+
+layer3_data -> layer3_behavior
+layer2_data -> layer2_behavior
+layer1_data -> layer1_behavior
+
+layer1_behavior -> summary: {
+  style: {
+    stroke-dash: 3
+  }
+}

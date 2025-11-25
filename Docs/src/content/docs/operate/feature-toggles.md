@@ -6,7 +6,6 @@ sidebar:
 ---
 ---
 
-
 This IDP exposes stack‑level toggles (“fuses”) so you can shape a deployment before syncing anything. Start simple with stack switches, then evolve toward finer‑grained controls per component.
 
 ## Stack fuses

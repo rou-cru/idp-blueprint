@@ -221,6 +221,7 @@ TLS.WildcardCert -> L7.Gateway: "mounts as Secret"
 Cilium supports NetworkPolicies for L3/L4 and L7 network segmentation. This platform has Cilium configured but NetworkPolicies are not yet implemented.
 
 **Planned NetworkPolicy strategy**:
+
 - Default-deny in production namespaces
 - Explicit allow rules for required communication
 - L7 policies for HTTP-specific controls (e.g., only allow GET/POST)
@@ -251,8 +252,6 @@ For low‑level details and configuration knobs, see the
 - The Gateway is the only public entry point.
 - Host‑based routes keep URLs predictable: `https://argocd.${DNS_SUFFIX}`.
 - TLS is internal, too: prefer mTLS inside the mesh (planned with Cilium policies).
-
-![Grafana](../assets/images/after-deploy/grafana-home.jpg){ loading=lazy }
 
 ## Practical notes
 

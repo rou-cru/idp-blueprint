@@ -1,5 +1,5 @@
 ---
-title: Getting Started — Install & Deployment
+title: Deployment Guide
 sidebar:
   label: Deployment Guide
   order: 4
@@ -16,31 +16,61 @@ This is your guided tour of what “task deploy” does. It’s automated by des
 - Install GitOps (ArgoCD) and expose endpoints via Gateway + TLS
 - Apply policies and let ApplicationSets sync the stacks – ApplicationSets
   generate the ArgoCD Applications for each stack based on folders under
-  `K8s/` using sync waves to control deployment order (see [GitOps Model](../concepts/gitops-model.md#sync-waves--ordering-without-scripts) for wave definitions)
+  `K8s/` using sync waves to control deployment order (see [GitOps Model](../concepts/gitops-model.md#sync-waves--ordering-without-scripts) for wave definitions). Stack deployment is controlled by [fuses](../overview/#feature-toggles-fuses) defined in `config.toml`.
 
-### Platform Components
+### Platform Components (mirrors the Taskfile flow)
 
 ```d2
 direction: right
 
-classes: { step: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#22d3ee" } }
-
-Bootstrap: {
-  class: step
-  K3d: "Create k3d cluster"
-  Core: "Install core (Cilium, cert-manager, Vault, ESO)"
-  Argo: "Install ArgoCD + AppProjects"
-  Gateway: "Apply Gateway API + wildcard cert"
-  Policies: "Deploy Kyverno + Policy Reporter"
+classes: {
+  phase: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#22d3ee" }
+  leaf:  { style.fill: "#0b1224"; style.font-color: "#cbd5f5"; style.stroke: "#38bdf8" }
 }
 
-GitOps: {
-  class: step
-  Stacks: "Sync stacks (observability, CI/CD, security, backstage)"
-  Govern: "Enforce quotas/limits/labels"
+"Cluster bootstrap": {
+  class: phase
+  K3d: "k3d cluster + registry"
+  Namespaces: "base namespaces + priority classes"
 }
 
-Bootstrap.K3d -> Bootstrap.Core -> Bootstrap.Argo -> Bootstrap.Gateway -> Bootstrap.Policies -> GitOps.Stacks -> GitOps.Govern
+"Infra boot": {
+  class: phase
+  CRDs: "Gateway & Prom CRDs"
+  Cilium: "Cilium CNI"
+  CertMgr: "cert-manager + CA/issuers"
+  Vault: "Vault deploy + init/unseal"
+  ESO: "External Secrets Operator"
+}
+
+"GitOps & ingress": {
+  class: phase
+  ArgoCD: "ArgoCD + AppProjects"
+  ArgoSecret: "ExternalSecret (admin)"
+  Gateway: "Gateway API + wildcard TLS + NodePorts"
+}
+
+Policies: {
+  class: phase
+  Kyverno: "Kyverno engine"
+  Reporter: "Policy Reporter"
+}
+
+"AppSets fan-out": {
+  class: phase
+  Observability: { class: leaf; label: "Observability" }
+  CICD:          { class: leaf; label: "CI/CD" }
+  Security:      { class: leaf; label: "Security" }
+  Backstage:     { class: leaf; label: "Backstage" }
+  Events:        { class: leaf; label: "Events (always on)" }
+}
+
+"Cluster bootstrap" -> "Infra boot" -> "GitOps & ingress" -> Policies -> "AppSets fan-out"
+
+"AppSets fan-out".Observability -> "AppSets fan-out".CICD
+"AppSets fan-out".Observability -> "AppSets fan-out".Security
+"AppSets fan-out".Observability -> "AppSets fan-out".Backstage
+"AppSets fan-out".Observability -> "AppSets fan-out".Events
 ```
 
 ## Configure via config.toml
@@ -68,24 +98,6 @@ argocd = "8.6.0"
 argocd_admin = "argo"
 grafana_admin = "graf"
 ```
-
-Note: CLI overrides exist for testing, but `config.toml` is the canonical source.
-
-## After deploy — what “good” looks like
-
-- ArgoCD UI reachable via Gateway (nip.io hostnames)
-  
-  ![ArgoCD Applications — expected convergence to Healthy/Synced](../assets/images/after-deploy/argocd-apps-healthy.jpg)
-
-- Core pods ready across namespaces (k9s view)
-  
-  ![k9s — pods across namespaces settling after deploy](../assets/images/after-deploy/k9s-overview.jpg)
-
-- Observability online (Grafana with Prometheus and Loki datasources)
-  
-  ![Grafana — home with Prometheus/Loki datasources available](../assets/images/after-deploy/grafana-home.jpg)
-
-{/* Troubleshooting intentionally omitted in this page to avoid redundancy. Use the dedicated reference when needed. */}
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
   <LinkButton href="/getting-started/quickstart/" variant="secondary" icon="arrow-left">

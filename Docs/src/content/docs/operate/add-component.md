@@ -33,8 +33,165 @@ Tips:
 
 Every stack ships with a `governance/` folder that is synced ahead of the workloads. It contains the namespace definition plus the mandatory `LimitRange` and `ResourceQuota` for that stack (`argocd.argoproj.io/sync-wave` keeps the order deterministic). Copy the pattern from any existing stack such as `K8s/events/governance/*` or `K8s/cicd/governance/*`:
 
-1. `namespace.yaml` — canonical labels (`app.kubernetes.io/part-of`, `owner`, `business-unit`, `environment`) and sync wave `-2`.
+1. `namespace.yaml` — canonical labels (`app.kubernetes.io/part-of`, `owner`, `business-unit`, `environment`) and sync wave annotation:
+
+   ```yaml
+   metadata:
+     annotations:
+       argocd.argoproj.io/sync-wave: "-2"  # Ensures namespace creation before resources
+   ```
+
 2. `limitrange.yaml` — guardrails for default requests/limits sized for the stack.
 3. `resourcequota.yaml` — hard ceilings to keep noisy neighbors in check.
 
-This overlay is part of the platform contract (“Namespace governance” in [Contracts & Guardrails](contracts.md)); omitting it will fail reviews and breaks capacity planning.
+This overlay is part of the platform contract ("Namespace governance" in [Contracts & Guardrails](contracts.md)); omitting it will fail reviews and breaks capacity planning.
+
+## Complete example: Adding Kubecost
+
+Step-by-step walkthrough for adding Kubecost to the observability stack.
+
+### Create folder structure
+
+```bash
+mkdir -p K8s/observability/kubecost
+cd K8s/observability/kubecost
+```
+
+### Create kustomization.yaml
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "3"
+
+helmCharts:
+  - name: cost-analyzer
+    repo: https://kubecost.github.io/cost-analyzer/
+    version: 2.4.3
+    releaseName: kubecost
+    namespace: observability
+    valuesFile: values.yaml
+    includeCRDs: true
+```
+
+### Create values.yaml
+
+```yaml
+# @section -- General
+# -- Priority class for Kubecost pods
+priorityClassName: platform-observability
+
+# @section -- Cost Analyzer
+kubecostProductConfigs:
+  # -- Cluster name for cost attribution
+  clusterName: idp-demo
+
+# @section -- Resources
+resources:
+  requests:
+    # -- CPU request
+    cpu: 100m
+    # -- Memory request
+    memory: 256Mi
+  limits:
+    # -- CPU limit
+    cpu: 500m
+    # -- Memory limit
+    memory: 1Gi
+
+# @section -- Prometheus Integration
+prometheus:
+  # -- Use existing Prometheus instance
+  external:
+    enabled: true
+    url: http://prometheus-kube-prometheus-prometheus.observability.svc:9090
+
+# @section -- ServiceMonitor
+serviceMonitor:
+  # -- Enable ServiceMonitor for Prometheus Operator
+  enabled: true
+  additionalLabels:
+    # -- Prometheus selector label
+    prometheus: kube-prometheus
+
+# @section -- Ingress
+ingress:
+  # -- Enable ingress for Kubecost UI
+  enabled: false
+  # Note: Use Gateway API HTTPRoute instead (see step 5)
+```
+
+### Create README.md with helm-docs
+
+```bash
+# Generate documentation from values.yaml comments
+helm-docs --chart-search-root=. --template-files=README.md.gotmpl
+```
+
+### (Optional) Expose via Gateway API
+
+Create `K8s/observability/kubecost/httproute.yaml`:
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kubecost
+  namespace: observability
+  labels:
+    app.kubernetes.io/name: kubecost
+    app.kubernetes.io/part-of: idp
+spec:
+  parentRefs:
+    - name: platform-gateway
+      namespace: kube-system
+  hostnames:
+    - "kubecost.${DNS_SUFFIX}"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: kubecost-cost-analyzer
+          port: 9090
+```
+
+Update kustomization.yaml to include it:
+
+```yaml
+resources:
+  - httproute.yaml
+```
+
+### Commit and verify
+
+```bash
+git add K8s/observability/kubecost/
+git commit -m "feat(observability): add Kubecost for cost attribution"
+git push
+
+# Verify ApplicationSet detection
+kubectl get applications -n argocd | grep kubecost
+
+# Wait for sync
+argocd app wait observability-kubecost --health
+
+# Check deployment
+kubectl get pods -n observability -l app.kubernetes.io/name=kubecost
+
+# Access UI (if HTTPRoute was created)
+echo "https://kubecost.$(dasel -f config.toml -r toml '.network.lan_ip').nip.io"
+```
+
+### Result
+
+The observability ApplicationSet automatically detects the new `K8s/observability/kubecost/` folder and creates the `observability-kubecost` Application. ArgoCD syncs it according to the sync wave (after core infrastructure but before SLOs), and the component integrates with the existing Prometheus instance for cost metrics.
+
+## Visual flow
+
+The entire process from Git commit to running workload:
+
+![Component Addition Flow](../assets/diagrams/operate/add-component-flow.svg)

@@ -461,7 +461,5 @@ tar -czf support-bundle-$(date +%Y%m%d-%H%M%S).tar.gz support-bundle/
 
 ## See Also
 
-- [Troubleshooting](../reference/troubleshooting.md) - Detailed problem diagnosis
 - [URLs & Credentials](../reference/urls-credentials.md) - Service access information
-- [Taskfile Commands](../reference/taskfile-commands.md) - Platform-specific task commands
 - [Disaster Recovery](../operate/disaster-recovery.md) - Recovery procedures

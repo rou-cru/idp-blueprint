@@ -1,7 +1,7 @@
 ---
 title: Contributing
 sidebar:
-  order: 2
+  order: 1
 ---
 
 This document outlines the conventions and best practices to follow when contributing to

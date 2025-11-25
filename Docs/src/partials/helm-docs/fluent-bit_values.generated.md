@@ -1,6 +1,6 @@
 # fluent-bit
 
-![Version: 0.54.0](https://img.shields.io/badge/Version-0.54.0-informational?style=flat-square) 
+![Version: 0.54.0](https://img.shields.io/badge/Version-0.54.0-informational?style=flat-square)
 
 ## Component Information
 
@@ -75,4 +75,3 @@ The following table lists the configurable parameters:
 | resources.requests.memory | string | `"64Mi"` | Memory request |
 | serviceMonitor.enabled | bool | `false` | Enable ServiceMonitor |
 | volumeMounts | list | `[{"mountPath":"/fluent-bit/etc/conf","name":"config"}]` | Volume mounts |
-

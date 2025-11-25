@@ -3,7 +3,6 @@ title: Operate — run the platform in practice
 ---
 ---
 
-
 This section focuses on day‑2 operation: backups, upgrades, scaling, and recovery. It assumes you have deployed the platform and understand the basics of its architecture.
 
 There is no new mental model here; we reuse the same Desired/Observed/Actionable loops from [Concepts](../concepts/index.md). The emphasis is on concrete runbooks.
@@ -23,4 +22,3 @@ Start with these documents when operating the platform:
 - [Upgrades](../operate/upgrades.md) — order, gates, and rollback strategies.
 - [Scaling & tuning](../operate/scaling-tuning.md) — key knobs (retention, cardinality, priorities).
 - [Disaster recovery](../operate/disaster-recovery.md) — rebuild from Git and restore secrets.
-- [Troubleshooting playbook](../reference/troubleshooting.md) — common issues and diagnostics.

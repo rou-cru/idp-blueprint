@@ -2,25 +2,25 @@
 title: Label Standards
 sidebar:
   label: Labels
-  order: 6
+  order: 5
 ---
 
 This document defines the canonical label values and standards used
 across the IDP Blueprint repository.
 
-## Canonical Label Values
+## Canonical Label Values (defaults)
 
-All resources in the platform should use these standard values for consistency:
+These defaults come from the demo profile (`config.toml`) and can be overridden per environment. Keep the keys; adjust the values as needed for your org.
 
 ### Business Labels
 
-- **owner**: `platform-team`
-- **business-unit**: `infrastructure`
-- **environment**: `demo`
+- **owner**: defaults to `platform-team`
+- **business-unit**: defaults to `infrastructure`
+- **environment**: defaults to `demo`
 
 ### Application Labels
 
-- **app.kubernetes.io/part-of**: `idp`
+- **app.kubernetes.io/part-of**: defaults to `idp`
 
 ## Label Requirements by Resource Type
 
@@ -87,6 +87,7 @@ main classes are:
 
 - **platform-infrastructure** (`value: 1000000`) – Vault, ArgoCD, cert-manager,
   External Secrets Operator and other core control planes
+- **platform-events** (`value: 200000`) – Argo Events controller, webhook, EventBus
 - **platform-policy** (`value: 100000`) – Kyverno admission/background
   controllers
 - **platform-security** (`value: 12000`) – Trivy security scanners
@@ -105,6 +106,7 @@ main classes are:
 Guidelines:
 
 - Platform components SHOULD set one of the `platform-*` PriorityClasses.
+- Eventing components SHOULD use `platform-events`.
 - CI/CD execution pods SHOULD use `cicd-execution`.
 - User workloads MAY use `user-workloads` or rely on the global default
   `unclassified-workload`, depending on environment guarantees.
@@ -164,7 +166,7 @@ All changes should be validated against:
 1. Kyverno policies in `Policies/rules/`
 2. Kustomize build: `kustomize build <directory>`
 3. Helm lint: `helm lint --values <values-file>`
-4. The validation script: `scripts/validate-consistency.sh`
+4. The validation script: `Scripts/validate-consistency.sh`
 
 ## References
 

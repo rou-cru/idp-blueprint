@@ -17,6 +17,7 @@ The following versions of the IDP Blueprint are currently supported with securit
 | Older releases | :x: | Please upgrade to latest |
 
 **Note:** This is a **reference implementation** intended for learning and development environments. For production deployments, please:
+
 - Review all configurations
 - Harden secrets management
 - Customize security policies
@@ -56,6 +57,7 @@ Please include the following in your report:
 - **Resolution Timeline:** Depends on severity and complexity
 
 We aim to:
+
 1. Confirm receipt of your report within 2 business days
 2. Provide an initial assessment within 7 days
 3. Keep you informed of our progress
@@ -116,6 +118,7 @@ When using the IDP Blueprint, we recommend:
 ### Default Passwords
 
 The blueprint includes **default passwords** in `config.toml` for:
+
 - ArgoCD admin
 - Grafana admin
 - SonarQube admin
@@ -126,6 +129,7 @@ The blueprint includes **default passwords** in `config.toml` for:
 ### Dev Mode Components
 
 Some components run in **development mode** by default:
+
 - **Vault:** Uses in-memory storage (no persistence, unseals automatically)
 - **ArgoCD:** Insecure admin password
 - **No authentication** on some services
@@ -135,6 +139,7 @@ Some components run in **development mode** by default:
 ### Exposed Ports
 
 K3d exposes NodePorts `30080` and `30443` by default. These are:
+
 - Safe on localhost
 - **Unsafe** if your machine is accessible from network
 - Should be restricted with firewall rules
@@ -142,6 +147,7 @@ K3d exposes NodePorts `30080` and `30443` by default. These are:
 ### Secrets in Git
 
 **NEVER commit:**
+
 - Real passwords or API keys
 - TLS private keys
 - Vault tokens
@@ -149,6 +155,7 @@ K3d exposes NodePorts `30080` and `30443` by default. These are:
 - Any production secrets
 
 The repository includes:
+
 - `.config/lint/.trufflehog-ignore` to prevent common secrets
 - `task quality:security` to scan for secrets
 - GitHub Actions secret scanning
@@ -186,6 +193,7 @@ When we receive a security report:
 5. We will publish the advisory
 
 We follow **coordinated disclosure**:
+
 - We will work with you on timing
 - Typical embargo: 90 days or until fix is available
 - We will credit you (unless you prefer anonymity)
@@ -201,13 +209,15 @@ We appreciate security researchers who help us keep the IDP Blueprint secure:
 ## Contact
 
 For security concerns:
+
 - **GitHub Security Advisories:** [Report a vulnerability](https://github.com/rou-cru/idp-blueprint/security/advisories/new)
 - **Email:** [REPLACE WITH YOUR EMAIL]
 - **PGP Key:** [Optional: Add PGP key fingerprint]
 
 For general questions:
-- **GitHub Discussions:** https://github.com/rou-cru/idp-blueprint/discussions
-- **Issues:** https://github.com/rou-cru/idp-blueprint/issues
+
+- **GitHub Discussions:** <https://github.com/rou-cru/idp-blueprint/discussions>
+- **Issues:** <https://github.com/rou-cru/idp-blueprint/issues>
 
 ## References
 

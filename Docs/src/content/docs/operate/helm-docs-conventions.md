@@ -6,7 +6,6 @@ sidebar:
 ---
 ---
 
-
 Document values where they live. `helm-docs` turns comments into tables users can trust.
 
 ## Comment style
@@ -15,7 +14,49 @@ Document values where they live. `helm-docs` turns comments into tables users ca
 - `# -- <description>` for each value
 - `# @default -- <value>` to capture defaults (when helpful)
 
+## Complete example
+
+This is how `K8s/observability/pyrra/values.yaml` looks with proper documentation:
+
+```yaml
+# @section -- General
+# -- Priority class for Pyrra pods
+priorityClassName: platform-observability
+
+# @section -- Resources
+resources:
+  requests:
+    # -- CPU request
+    cpu: 50m
+    # -- Memory request
+    memory: 64Mi
+  limits:
+    # -- CPU limit
+    cpu: 200m
+    # -- Memory limit
+    memory: 256Mi
+
+# @section -- ServiceMonitor
+# -- Create a ServiceMonitor for Prometheus Operator
+serviceMonitor:
+  # -- Enable ServiceMonitor for Pyrra
+  enabled: true
+  additionalLabels:
+    # -- Prometheus selector label
+    prometheus: kube-prometheus
+```
+
+**Generates** `README.md` table:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `priorityClassName` | string | `"platform-observability"` | Priority class for Pyrra pods |
+| `resources.requests.cpu` | string | `"50m"` | CPU request |
+| `resources.requests.memory` | string | `"64Mi"` | Memory request |
+| ... | ... | ... | ... |
+
 ## Workflow
 
 - Update comments as you change values files.
-- Lint docs before PRs (`Scripts/helm-docs-lint.sh`) if configured.
+- Generate docs: `task utils:docs:helm` or `helm-docs` in component directory.
+- Lint docs before PRs: `Scripts/helm-docs-lint.sh`.
