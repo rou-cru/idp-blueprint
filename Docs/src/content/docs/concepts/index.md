@@ -1,5 +1,5 @@
 ---
-title: Concepts — the mental model of this IDP
+title: Mental model
 ---
 
 This section explains how the main parts of the platform relate to each other so you can reason about changes and extend the IDP safely.

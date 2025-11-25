@@ -15,23 +15,8 @@ Before deploying, make sure your machine meets the basics below. Devbox (or the 
 | CPU | 4 cores | 6+ cores |
 | Memory | 8 GB | 12+ GB |
 | Storage | 20 GB free | 30+ GB free |
-| OS | Linux, macOS, or Windows (WSL2) | — |
-| Docker | Installed and running | — |
-| Network | Internet to pull images | — |
-| Ports | `nodeport_http`/`nodeport_https` (defaults 30080/30443) must be free | — |
+| OS | Linux or WSL2 | MacOS |
 
-### Tooling
-
-- Use Devbox (or the VS Code Dev Container) and you get: Docker CLI, k3d, kubectl, helm, kustomize, task, envsubst, dasel. Git is assumed present.
-- If you work on the host without Devbox, install Docker and these CLIs yourself.
-
-:::note
-Dev Containers include everything; “Reopen in Container” is the fastest path. On host, `devbox shell` installs and pins the toolchain for you.
-:::
-
-:::note[Cluster resource sizing (demo)]
-Minimum 4 CPU / 8 GB RAM; recommended 6 CPU / 12 GB RAM; ~20 GB disk.
-:::
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
   <LinkButton href="/getting-started/overview/" variant="secondary" icon="arrow-left">

@@ -5,10 +5,7 @@ sidebar:
   order: 5
 ---
 
-This document defines the canonical label values and standards used
-across the IDP Blueprint repository.
-
-## Canonical Label Values (defaults)
+## Default Label Values
 
 These defaults come from the demo profile (`config.toml`) and can be overridden per environment. Keep the keys; adjust the values as needed for your org.
 
@@ -24,7 +21,7 @@ These defaults come from the demo profile (`config.toml`) and can be overridden 
 
 ## Label Requirements by Resource Type
 
-### Namespaces (Required by Kyverno Policy: enforce-namespace-labels)
+### Namespaces
 
 All namespaces MUST include:
 
@@ -36,7 +33,7 @@ labels:
   environment: demo
 ```
 
-### Workloads (Audited by Kyverno Policy: require-component-labels)
+### Workloads
 
 Deployments, StatefulSets, and DaemonSets SHOULD include:
 
@@ -85,22 +82,22 @@ and are part of the scheduling model described in
 Use them to express **relative importance** rather than absolute guarantees. The
 main classes are:
 
-- **platform-infrastructure** (`value: 1000000`) – Vault, ArgoCD, cert-manager,
+- **platform-infrastructure** – Vault, ArgoCD, cert-manager,
   External Secrets Operator and other core control planes
-- **platform-events** (`value: 200000`) – Argo Events controller, webhook, EventBus
-- **platform-policy** (`value: 100000`) – Kyverno admission/background
+- **platform-events** – Argo Events controller, webhook, EventBus
+- **platform-policy** – Kyverno admission/background
   controllers
-- **platform-security** (`value: 12000`) – Trivy security scanners
-- **platform-observability** (`value: 10000`) – Prometheus, Loki, Fluent Bit,
+- **platform-security** – Trivy security scanners
+- **platform-observability** – Prometheus, Loki, Fluent Bit,
   Policy Reporter and related telemetry
-- **platform-cicd** (`value: 7500`) – long‑lived CI/CD services (Argo
+- **platform-cicd** – long‑lived CI/CD services (Argo
   Workflows, SonarQube, backing databases)
-- **platform-dashboards** (`value: 5000`) – Grafana, Alertmanager and other
+- **platform-dashboards** – Grafana, Alertmanager and other
   dashboards
-- **user-workloads** (`value: 3000`) – user applications deployed via GitOps
-- **cicd-execution** (`value: 2500`) – short‑lived CI/CD execution pods (e.g.
+- **user-workloads** – user applications deployed via GitOps
+- **cicd-execution** – short‑lived CI/CD execution pods (e.g.
   workflow pods, ephemeral builds)
-- **unclassified-workload** (`value: 0`, `globalDefault: true`) – default for
+- **unclassified-workload** – default for
   any workload without an explicit PriorityClass
 
 Guidelines:
