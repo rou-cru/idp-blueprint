@@ -37,9 +37,20 @@ spec:
           - ServerSideApply=true
           - PruneLast=true
           - ApplyOutOfSyncOnly=true
+          - RespectIgnoreDifferences=true
         retry:
           limit: 10
           backoff:
             duration: 10s
             factor: 2
             maxDuration: 10m
+      ignoreDifferences:
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+            - /metadata/labels
+        - group: ""
+          kind: ServiceAccount
+          jsonPointers:
+            - /secrets

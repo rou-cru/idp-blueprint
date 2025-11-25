@@ -1,1 +1,113 @@
-kyverno-values.yaml
+# @section -- CRD Management
+crds:
+  # -- (bool) Install Kyverno CRDs
+  install: true
+
+# @section -- Priority Class
+# -- Priority class for Kyverno admission controller
+priorityClassName: platform-policy
+
+# -- Rolling update strategy for zero-downtime updates
+# @section -- Deployment Strategy
+admissionController:
+  # -- Deployment strategy for admission controller
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # -- (int) Maximum unavailable pods during update (0 for zero-downtime)
+      maxUnavailable: 0
+      # -- (int) Maximum surge pods during update
+      maxSurge: 1
+
+# @section -- Resource Management
+# -- Resources for the main admission controller.
+resources:
+  requests:
+    # -- (string) CPU request for admission controller
+    cpu: 100m
+    # -- (string) Memory request for admission controller
+    memory: 128Mi
+  limits:
+    # -- (string) CPU limit for admission controller
+    cpu: 250m
+    # -- (string) Memory limit for admission controller
+    memory: 256Mi
+
+# -- Liveness probe for the main admission controller.
+livenessProbe:
+  # -- (int) Delay before starting liveness checks
+  initialDelaySeconds: 0
+  # -- (int) Frequency of liveness probes
+  periodSeconds: 10
+  # -- (int) Timeout per liveness probe
+  timeoutSeconds: 1
+  # -- (int) Successful probes required to mark ready
+  successThreshold: 1
+  # -- (int) Failed probes tolerated before restart
+  failureThreshold: 3
+# -- Readiness probe for the main admission controller.
+readinessProbe:
+  # -- (int) Delay before starting readiness checks
+  initialDelaySeconds: 10
+  # -- (int) Frequency of readiness probes
+  periodSeconds: 5
+  # -- (int) Timeout per readiness probe
+  timeoutSeconds: 1
+  # -- (int) Successful probes required to be ready
+  successThreshold: 1
+  # -- (int) Failed readiness probes tolerated
+  failureThreshold: 6
+# -- Startup probe for the main admission controller.
+startupProbe:
+  # -- (int) Delay before starting startup probes
+  initialDelaySeconds: 15
+  # -- (int) Frequency of startup probes
+  periodSeconds: 5
+  # -- (int) Timeout per startup probe
+  timeoutSeconds: 1
+  # -- (int) Successful startup probes required
+  successThreshold: 1
+  # -- (int) Failed startup probes tolerated
+  failureThreshold: 40
+
+# @section -- Background Controller
+backgroundController:
+  resources:
+    requests:
+      # -- (string) CPU request for background controller
+      cpu: 100m
+      # -- (string) Memory request for background controller
+      memory: 128Mi
+    limits:
+      # -- (string) CPU limit for background controller
+      cpu: 250m
+      # -- (string) Memory limit for background controller
+      memory: 256Mi
+
+# @section -- Cleanup Controller
+cleanupController:
+  resources:
+    requests:
+      # -- (string) CPU request for cleanup controller
+      cpu: 100m
+      # -- (string) Memory request for cleanup controller
+      memory: 128Mi
+    limits:
+      # -- (string) CPU limit for cleanup controller
+      cpu: 250m
+      # -- (string) Memory limit for cleanup controller
+      memory: 256Mi
+
+# @section -- Reports Controller
+reportsController:
+  resources:
+    requests:
+      # -- (string) CPU request for reports controller
+      cpu: 100m
+      # -- (string) Memory request for reports controller
+      memory: 128Mi
+    limits:
+      # -- (string) CPU limit for reports controller
+      cpu: 250m
+      # -- (string) Memory limit for reports controller
+      memory: 256Mi

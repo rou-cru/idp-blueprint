@@ -13,8 +13,8 @@ metadata:
     environment: demo
 spec:
   hard:
-    # Increased to accommodate Jenkins StatefulSet (250m+50m requests, 1+0.1 limits)
-    # plus SonarQube and other CICD workloads
+    # Sized to accommodate CI/CD workloads in the cicd namespace
+    # (Argo Workflows controller/server, SonarQube, and related jobs)
     requests.cpu: "3000m"
     requests.memory: "6Gi"
     limits.cpu: "8000m"

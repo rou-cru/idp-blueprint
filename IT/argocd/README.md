@@ -1,12 +1,12 @@
 # argocd
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 8.6.0](https://img.shields.io/badge/Version-8.6.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `8.6.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -26,6 +26,9 @@ The following table lists the configurable parameters:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| applicationSet.deploymentStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| applicationSet.deploymentStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| applicationSet.deploymentStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | applicationSet.enabled | bool | `true` | Enable ApplicationSet controller |
 | applicationSet.metrics.enabled | bool | `true` | Enable metrics |
 | applicationSet.metrics.serviceMonitor.enabled | bool | `true` | Enable ServiceMonitor |
@@ -45,7 +48,7 @@ The following table lists the configurable parameters:
 | configs.cm."kustomize.buildOptions" | string | `"--enable-helm"` | Enable Helm support in Kustomize builds |
 | configs.cm."resource.exclusions" | string | `"### Network resources created by the Kubernetes control plane and excluded to reduce the number of watched events and UI clutter\n- apiGroups:\n  - ''\n  - discovery.k8s.io\n  kinds:\n  - Endpoints\n  - EndpointSlice\n### Internal Kubernetes resources excluded reduce the number of watched events\n- apiGroups:\n  - coordination.k8s.io\n  kinds:\n  - Lease\n### Internal Kubernetes Authz/Authn resources excluded reduce the number of watched events\n- apiGroups:\n  - authentication.k8s.io\n  - authorization.k8s.io\n  kinds:\n  - SelfSubjectReview\n  - TokenReview\n  - LocalSubjectAccessReview\n  - SelfSubjectAccessReview\n  - SelfSubjectRulesReview\n  - SubjectAccessReview\n### Intermediate Certificate Request excluded reduce the number of watched events\n- apiGroups:\n  - certificates.k8s.io\n  kinds:\n  - CertificateSigningRequest\n- apiGroups:\n  - cert-manager.io\n  kinds:\n  - CertificateRequest\n### Cilium internal resources excluded reduce the number of watched events and UI Clutter\n- apiGroups:\n  - cilium.io\n  kinds:\n  - CiliumIdentity\n  - CiliumEndpoint\n  - CiliumEndpointSlice\n### Kyverno intermediate and reporting resources excluded reduce the number of watched events and improve performance\n- apiGroups:\n  - kyverno.io\n  - reports.kyverno.io\n  - wgpolicyk8s.io\n  kinds:\n  - PolicyReport\n  - ClusterPolicyReport\n  - EphemeralReport\n  - ClusterEphemeralReport\n  - AdmissionReport\n  - ClusterAdmissionReport\n  - BackgroundScanReport\n  - ClusterBackgroundScanReport\n  - UpdateRequest\n"` | Exclude high-frequency resources from reconciliation |
 | configs.cm."statusbadge.enabled" | string | `true` | Enable status badges |
-| configs.cm."timeout.reconciliation" | string | `"180s"` | Timeout to discover new manifest versions |
+| configs.cm."timeout.reconciliation" | string | `"60s"` | Timeout to discover new manifest versions |
 | configs.params | object | `{"server.insecure":true}` | ArgoCD server command-line parameters Required for TLS termination at reverse proxy/gateway |
 | configs.params."server.insecure" | bool | `true` | Run server without TLS (required when behind TLS-terminating proxy) The Gateway handles TLS termination, so ArgoCD receives plain HTTP |
 | configs.repositories.aqua.name | string | `"aqua"` | Repository name |
@@ -95,6 +98,9 @@ The following table lists the configurable parameters:
 | configs.repositories.sonarsource.url | string | `"https://SonarSource.github.io/helm-chart-sonarqube"` | Repository URL |
 | configs.secret.argocdServerAdminPassword | string | Vault-generated bcrypt hash | Admin password hash (managed by Vault) |
 | configs.secret.createSecret | bool | `true` | Create secret for admin credentials |
+| controller.deploymentStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| controller.deploymentStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| controller.deploymentStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | controller.metrics.enabled | bool | `true` | Enable Prometheus metrics |
 | controller.metrics.serviceMonitor.enabled | bool | `true` | Enable ServiceMonitor for Prometheus Operator |
 | controller.metrics.serviceMonitor.interval | string | `"30s"` | Scrape interval for GitOps reconciliation tracking |
@@ -108,10 +114,16 @@ The following table lists the configurable parameters:
 | crds.keep | bool | `true` | Keep CRDs on chart uninstall |
 | dex.enabled | bool | `false` | Enable Dex federated OpenID Connect provider |
 | ha.enabled | bool | `false` | Enable High Availability mode for production deployments |
+| redis.deploymentStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| redis.deploymentStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| redis.deploymentStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | redis.resources.limits.cpu | string | `"250m"` | CPU limit |
 | redis.resources.limits.memory | string | `"256Mi"` | Memory limit |
 | redis.resources.requests.cpu | string | `"100m"` | CPU request |
 | redis.resources.requests.memory | string | `"128Mi"` | Memory request |
+| repoServer.deploymentStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| repoServer.deploymentStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| repoServer.deploymentStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | repoServer.metrics.enabled | bool | `true` | Enable metrics |
 | repoServer.metrics.serviceMonitor.enabled | bool | `true` | Enable ServiceMonitor |
 | repoServer.metrics.serviceMonitor.interval | string | `"60s"` | Scrape interval for background git operations |
@@ -121,6 +133,9 @@ The following table lists the configurable parameters:
 | repoServer.resources.limits.memory | string | `"512Mi"` | Memory limit |
 | repoServer.resources.requests.cpu | string | `"250m"` | CPU request |
 | repoServer.resources.requests.memory | string | `"256Mi"` | Memory request |
+| server.deploymentStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| server.deploymentStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| server.deploymentStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | server.ingress.enabled | bool | `false` | Enable ingress |
 | server.ingress.tls | bool | `false` | Enable TLS |
 | server.metrics.enabled | bool | `true` | Enable metrics |

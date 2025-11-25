@@ -1,12 +1,12 @@
 # loki
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 6.42.0](https://img.shields.io/badge/Version-6.42.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `6.42.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 

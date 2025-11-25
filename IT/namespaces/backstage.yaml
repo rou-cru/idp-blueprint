@@ -1,0 +1,12 @@
+# Defines the namespace for the Backstage developer portal.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backstage
+  labels:
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    description: "Namespace for the Backstage developer portal."

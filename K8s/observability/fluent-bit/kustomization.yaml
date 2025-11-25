@@ -6,4 +6,4 @@ helmCharts:
     version: 0.54.0
     releaseName: fluent-bit
     namespace: observability
-    valuesFile: fluent-bit-values.yaml
+    valuesFile: values.yaml

@@ -4,7 +4,7 @@ metadata:
   name: cicd
   namespace: argocd
 spec:
-  description: CI/CD stack (Jenkins, SonarQube)
+  description: CI/CD stack (Argo Workflows, SonarQube)
   sourceRepos:
     - '${REPO_URL}'
   destinations:

@@ -1,12 +1,12 @@
 # vault
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 0.31.0](https://img.shields.io/badge/Version-0.31.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `0.31.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -18,6 +18,9 @@ The following table lists the configurable parameters:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| server.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key | string | `"node-role.kubernetes.io/control-plane"` |  |
+| server.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"Exists"` |  |
+| server.affinity.podAntiAffinity | string | `nil` |  |
 | server.dataStorage.enabled | bool | `true` | Enable persistence |
 | server.dataStorage.size | string | `"1Gi"` | Storage size |
 | server.livenessProbe.enabled | bool | `false` | Enable liveness probe |
@@ -41,6 +44,10 @@ The following table lists the configurable parameters:
 | server.serviceMonitor.scrapeTimeout | string | `"40s"` | Scrape timeout |
 | server.standalone.config | string | `"storage \"raft\" {\n  path    = \"/vault/data\"\n  node_id = \"vault-0\"\n}\nlistener \"tcp\" {\n  address         = \"0.0.0.0:8200\"\n  tls_disable     = \"true\"\n  telemetry {\n    unauthenticated_metrics_access = true\n  }\n}\ntelemetry {\n  prometheus_retention_time = \"30s\"\n  disable_hostname          = true\n}\naudit \"file\" {\n  path = \"/vault/logs/audit.log\"\n}\n"` | HCL configuration for the Raft storage backend |
 | server.standalone.enabled | bool | `true` | Enables standalone server configuration |
+| server.tolerations[0].effect | string | `"NoSchedule"` |  |
+| server.tolerations[0].key | string | `"node-role.kubernetes.io/control-plane"` |  |
+| server.tolerations[0].operator | string | `"Exists"` |  |
+| server.updateStrategyType | string | `"RollingUpdate"` | Update strategy for zero-downtime updates (StatefulSet) |
 | ui.enabled | bool | `true` | Enable Vault UI |
 | ui.service.type | string | `"ClusterIP"` | Service type |
 

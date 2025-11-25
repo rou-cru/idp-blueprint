@@ -1,12 +1,12 @@
 # cert-manager
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: v1.19.0](https://img.shields.io/badge/Version-v1.19.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `v1.19.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -34,6 +34,12 @@ The following table lists the configurable parameters:
 |-----|------|---------|-------------|
 | prometheus | object | `{"enabled":true,"servicemonitor":{"enabled":true,"interval":"60s","scrapeTimeout":"40s"}}` | Prometheus metrics configuration |
 
+### Deployment Strategy
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| strategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+
 ### Webhook
 
 | Key | Type | Default | Description |
@@ -44,6 +50,8 @@ The following table lists the configurable parameters:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].key | string | `"node-role.kubernetes.io/control-plane"` |  |
+| affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[0].matchExpressions[0].operator | string | `"Exists"` |  |
 | cainjector.resources.limits.cpu | string | `"200m"` | CPU limit |
 | cainjector.resources.limits.memory | string | `"256Mi"` | Memory limit |
 | cainjector.resources.requests.cpu | string | `"100m"` | CPU request |
@@ -59,6 +67,11 @@ The following table lists the configurable parameters:
 | resources.limits.memory | string | `"512Mi"` | Memory limit |
 | resources.requests.cpu | string | `"250m"` | CPU request |
 | resources.requests.memory | string | `"256Mi"` | Memory request |
+| strategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| strategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
+| tolerations[0].effect | string | `"NoSchedule"` |  |
+| tolerations[0].key | string | `"node-role.kubernetes.io/control-plane"` |  |
+| tolerations[0].operator | string | `"Exists"` |  |
 | webhook.livenessProbe | object | `{"failureThreshold":3,"httpGet":{"path":"/livez","port":6080,"scheme":"HTTP"},"initialDelaySeconds":0,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Liveness probe for the webhook pod |
 | webhook.livenessProbe.failureThreshold | int | `3` | Failure threshold for liveness probe |
 | webhook.livenessProbe.httpGet | object | `{"path":"/livez","port":6080,"scheme":"HTTP"}` | HTTP GET configuration |

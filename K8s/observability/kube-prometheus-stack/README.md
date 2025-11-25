@@ -1,12 +1,12 @@
 # kube-prometheus-stack
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 77.14.0](https://img.shields.io/badge/Version-77.14.0-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `77.14.0` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -18,7 +18,12 @@ The following table lists the configurable parameters:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| alertmanager.enabled | bool | `false` | Disabled by default. This blueprint uses Grafana Unified Alerting as the primary platform for managing alerts from all datasources (Prometheus, Loki, etc.), providing a single, integrated user experience. |
+| alertmanager.alertmanagerSpec.priorityClassName | string | `"platform-observability"` | Priority class for Alertmanager pod |
+| alertmanager.alertmanagerSpec.resources.limits.cpu | string | `"100m"` | CPU limit |
+| alertmanager.alertmanagerSpec.resources.limits.memory | string | `"128Mi"` | Memory limit |
+| alertmanager.alertmanagerSpec.resources.requests.cpu | string | `"25m"` | CPU request |
+| alertmanager.alertmanagerSpec.resources.requests.memory | string | `"64Mi"` | Memory request |
+| alertmanager.enabled | bool | `true` | Enable Alertmanager for alert routing (required for Pyrra burn-rate alerts) |
 | crds | object | `{"enabled":false}` | Disables the installation of CRDs, as they are managed separately. |
 | grafana."grafana.ini" | object | `{"users":{"allow_sign_up":false,"default_theme":"dark"}}` | Advanced Grafana configuration via grafana.ini |
 | grafana."grafana.ini".users.allow_sign_up | bool | `false` | Disables the user sign-up page. |
@@ -50,13 +55,19 @@ The following table lists the configurable parameters:
 | prometheus-node-exporter.resources.requests.cpu | string | `"15m"` | CPU request |
 | prometheus-node-exporter.resources.requests.memory | string | `"24Mi"` | Memory request |
 | prometheus.priorityClassName | string | `"platform-observability"` |  |
+| prometheus.prometheusSpec.podMonitorNamespaceSelector | object | `{}` |  |
+| prometheus.prometheusSpec.podMonitorSelector | object | `{"matchLabels":{"prometheus":"kube-prometheus"}}` | Select PodMonitors similarly (if used by components) |
 | prometheus.prometheusSpec.resources.limits.cpu | string | `"250m"` | CPU limit |
 | prometheus.prometheusSpec.resources.limits.memory | string | `"512Mi"` | Memory limit |
 | prometheus.prometheusSpec.resources.requests.cpu | string | `"100m"` | CPU request |
 | prometheus.prometheusSpec.resources.requests.memory | string | `"384Mi"` | Memory request |
 | prometheus.prometheusSpec.retention | string | `"6h"` | Metrics retention time. |
+| prometheus.prometheusSpec.ruleNamespaceSelector | object | `{}` |  |
+| prometheus.prometheusSpec.ruleSelector | object | `{}` | Select PrometheusRules from any namespace (needed for Pyrra rules) |
 | prometheus.prometheusSpec.scrapeInterval | string | `"60s"` | Global scrape interval for all ServiceMonitors (unless overridden). |
 | prometheus.prometheusSpec.scrapeTimeout | string | `"40s"` | Global scrape timeout for all ServiceMonitors (unless overridden). |
+| prometheus.prometheusSpec.serviceMonitorNamespaceSelector | object | `{}` |  |
+| prometheus.prometheusSpec.serviceMonitorSelector | object | `{"matchLabels":{"prometheus":"kube-prometheus"}}` | Select ServiceMonitors with label prometheus=kube-prometheus across all namespaces |
 | prometheus.prometheusSpec.storageSpec | object | `{"volumeClaimTemplate":{"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Gi"}}}}}` | Enable persistence for Prometheus TSDB. 1Gi supports 6h retention for ~50 pods with 4x overhead margin. Data survives pod restarts but is lost on cluster destruction. |
 | prometheusOperator | object | `{"priorityClassName":"platform-observability","resources":{"limits":{"cpu":"50m","memory":"64Mi"},"requests":{"cpu":"25m","memory":"32Mi"}}}` | Resource limits and requests for the Prometheus Operator. |
 | prometheusOperator.priorityClassName | string | `"platform-observability"` | Priority class |

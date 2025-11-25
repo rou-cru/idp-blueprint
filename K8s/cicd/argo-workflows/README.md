@@ -1,12 +1,12 @@
 # argo-workflows
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) 
+![Version: 0.45.27](https://img.shields.io/badge/Version-0.45.27-informational?style=flat-square) 
 
 ## Component Information
 
 | Property | Value |
 |----------|-------|
-| **Chart Version** | `0.1.0` |
+| **Chart Version** | `0.45.27` |
 | **Chart Type** | `` |
 | **Upstream Project** | N/A |
 
@@ -24,15 +24,14 @@ The following table lists the configurable parameters:
 | artifactRepository.customArtifactRepository | object | `{}` | Custom artifact repository configuration. |
 | artifactRepository.gcs | object | `{}` | GCS artifact repository configuration. |
 | artifactRepository.s3 | object | `{}` | S3 artifact repository configuration. |
+| controller.deploymentStrategy | object | `{"rollingUpdate":{"maxSurge":1,"maxUnavailable":0},"type":"RollingUpdate"}` | Rolling update strategy for zero-downtime updates |
+| controller.deploymentStrategy.rollingUpdate.maxSurge | int | `1` | Maximum surge pods during update |
+| controller.deploymentStrategy.rollingUpdate.maxUnavailable | int | `0` | Maximum unavailable pods during update (0 for zero-downtime) |
 | controller.metricsConfig | object | `{"enabled":true}` | Enable Prometheus metrics endpoint. |
 | controller.metricsConfig.enabled | bool | `true` | Enable controller metrics endpoint |
 | controller.nodeEvents | object | `{"enabled":true}` | Enable node events for workflows. |
 | controller.nodeEvents.enabled | bool | `true` | Emit Kubernetes events for nodes |
 | controller.parallelism | int | `10` | Parallel workflows allowed |
-| controller.persistence | object | `{"archive":false,"connectionPool":{"maxIdleConns":0,"maxOpenConns":0}}` | Persistence configuration for the controller. Completely disable archive and persistence for k3d environment |
-| controller.persistence.archive | bool | `false` | Archive workflow results |
-| controller.persistence.connectionPool.maxIdleConns | int | `0` | Maximum idle DB connections |
-| controller.persistence.connectionPool.maxOpenConns | int | `0` | Maximum open DB connections |
 | controller.priorityClassName | string | `"platform-cicd"` | Priority class for the controller pod. |
 | controller.rbac | object | `{"create":true}` | Create RBAC resources for the controller. |
 | controller.rbac.create | bool | `true` | Create controller RBAC resources |

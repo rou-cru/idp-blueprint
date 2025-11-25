@@ -13,7 +13,7 @@ metadata:
     environment: demo
 spec:
   hard:
-    requests.cpu: "800m"
+    requests.cpu: "1500m"
     requests.memory: "2Gi"
-    limits.cpu: "2500m"
+    limits.cpu: "4000m"
     limits.memory: "4Gi"
