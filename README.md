@@ -1,6 +1,8 @@
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Documentation](https://github.com/rou-cru/idp-blueprint/actions/workflows/docs.yaml/badge.svg?branch=main)](https://github.com/rou-cru/idp-blueprint/actions/workflows/docs.yaml)
+
 # IDP-blueprint
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-k3d-blue?style=flat-square&logo=kubernetes)](https://k3d.io/)
 [![Docker](https://img.shields.io/badge/Docker-Dev_Containers-blue?style=flat-square&logo=docker)](https://containers.dev/)
 [![Task](https://img.shields.io/badge/Automation-Task-violet?style=flat-square&logo=task)](https://taskfile.dev/)
@@ -260,7 +262,7 @@ flowchart TB
   Secrets Operator
 
 📖 For detailed architecture documentation, see
-[Docs/architecture/visual.md](Docs/architecture/visual.md)
+[Docs/src/content/docs/architecture/visual.md](Docs/src/content/docs/architecture/visual.md)
 
 ## 📊 Resource Requirements
 
@@ -331,20 +333,19 @@ That's it! Your IDP is ready.
 
 ### Documentation Portal
 
-- Run `mkdocs serve` to browse the full architecture/reference site locally.
-- Highlights:
-  - `Docs/architecture/visual.md` – master system map + diagrams.
-  - `Docs/architecture/bootstrap.md` – Helm/Kustomize boot choreography.
-  - `Docs/architecture/applications.md` – K8s directory architecture and App‑of‑AppSets pattern.
-  - `Docs/architecture/observability.md` – metrics + logging pipelines, dashboards.
-  - `Docs/architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
-  - `Docs/architecture/policies.md` – Kyverno layers, Policy Reporter flow.
-  - `Docs/architecture/cicd.md` – Argo Workflows + SonarQube integration.
-  - `Docs/reference/labels-standard.md` – canonical labels, sync waves, priority classes.
-  - **[FinOps Tags](Docs/reference/finops-tags.md)** – tag-to-cost mapping for
-    FinOps dashboards.
+- From `Docs/`: `pnpm install && pnpm dev` to browse the Astro/Starlight docs at `http://localhost:4321`.
+- Highlights (source paths under `Docs/src/content/docs/`):
+  - `architecture/visual.md` – master system map + diagrams.
+  - `architecture/bootstrap.md` – Helm/Kustomize boot choreography.
+  - `architecture/applications.md` – K8s directory architecture and App‑of‑AppSets pattern.
+  - `architecture/observability.md` – metrics + logging pipelines, dashboards.
+  - `architecture/secrets.md` – Vault ⇔ ESO flows, rotation lifecycle.
+  - `architecture/policies.md` – Kyverno layers, Policy Reporter flow.
+  - `architecture/cicd.md` – Argo Workflows + SonarQube integration.
+  - `reference/labels-standard.md` – canonical labels, sync waves, priority classes.
+  - `reference/finops-tags.md` – tag-to-cost mapping for FinOps dashboards.
 
-Keep this README open for commands; flip to the MkDocs site when you need the
+Keep this README open for commands; flip to the Starlight site when you need the
 conceptual “why”.
 
 ### Validate & Clean Up
@@ -409,23 +410,15 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
 
 ## 🗺️ Roadmap
 
-- [ ] Add Backstage as developer portal
+- [x] Add Backstage as developer portal
 - [ ] Crossplane for infrastructure as code
 - [ ] OpenTelemetry Collector + Tempo for distributed tracing
 - [ ] Cost optimization dashboard
 - [ ] Implement NetworkPolicies for enhanced security and namespace isolation
 
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE)
-file for details.
-
-Feel free to use this as a reference or foundation for your own IDP
-implementations.
-
 ## 🙏 Acknowledgments
 
-This project integrates and builds upon excellent open-source tools from the
+This project integrates and builds open-source tools from the
 Cloud Native ecosystem:
 
 - ArgoCD by Argo Project
@@ -550,7 +543,3 @@ performs an automatic initialization step:
 repositories manually and can add other env setup steps without caring how the
 environment itself is generated. They will always be ready for you to deploy
 the project.
-
----
-
-**⭐ If you find this project useful, please consider starring it on GitHub!**
