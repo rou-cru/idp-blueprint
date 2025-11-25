@@ -66,6 +66,8 @@ spec:
           kind: ExternalSecret
           jsonPointers:
             - /status
+          jqPathExpressions:
+            - .metadata.generation
         - group: pyrra.dev
           kind: ServiceLevelObjective
           jsonPointers:

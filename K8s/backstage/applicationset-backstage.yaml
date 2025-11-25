@@ -62,3 +62,9 @@ spec:
           kind: ServiceAccount
           jsonPointers:
             - /secrets
+        - group: external-secrets.io
+          kind: ExternalSecret
+          jsonPointers:
+            - /status
+          jqPathExpressions:
+            - .metadata.generation
