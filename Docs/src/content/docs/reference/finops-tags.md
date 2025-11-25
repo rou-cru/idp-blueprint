@@ -2,7 +2,7 @@
 title: FinOps Tagging & Cost Attribution
 sidebar:
   label: FinOps Tags
-  order: 7
+  order: 6
 ---
 
 The platform front-loads tagging so you can attribute resource usage—even on a laptop demo—before expanding to cloud cost tools.

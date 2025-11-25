@@ -1,5 +1,5 @@
 ---
-title: Verify Installation — See the loops in action
+title: Verify Installation
 sidebar:
   label: Verify Installation
   order: 5
@@ -15,7 +15,7 @@ Let’s confirm things came up as expected and set realistic expectations for th
 - Pods roll through Pending → Running → Ready as images download
 - It’s okay if not everything is Healthy/Synced immediately
 
-{/* Sequence diagram removed for a simpler, first-contact explanation. */}
+{/*Sequence diagram removed for a simpler, first-contact explanation.*/}
 
 ## Quick Checks
 
@@ -66,70 +66,71 @@ Gateway -> UIs.Vault
 Gateway -> UIs.Backstage
 ```
 
-## Reference screens
+### What you'll see in the ArgoCD UI
 
-Below are reference screenshots to calibrate expectations right after a fresh deploy. Your exact timing may vary while images download and pods become Ready.
-
-![k9s — pods across namespaces](../assets/images/verify/k9s-overview.jpg)
-
-![ArgoCD — Applications appearing and converging](../assets/images/verify/argocd-apps.jpg)
-
-### Qué verás en la UI de ArgoCD
-
-- Lista de Applications con columnas *Sync* (Git vs clúster) y *Health* (estado de los recursos). Es normal ver algunos `OutOfSync` justo después del despliegue mientras terminan de aplicar.
-- En la barra lateral izquierda están los proyectos (por ejemplo `cicd`, `observability`, `backstage`).
-- Cada tarjeta permite abrir el diagrama de recursos para explorar Deployments, Services y ConfigMaps.
+- Application cards with *Sync* (Git vs. cluster) and *Health* columns. It's normal to see some `OutOfSync` right after deploy while things converge.
+- Projects in the left sidebar (e.g., `cicd`, `observability`, `backstage`) - these correspond to the [fuses](../overview/#feature-toggles-fuses) enabled in your `config.toml`.
+- Each card opens a resource graph so you can inspect Deployments, Services, and ConfigMaps.
 
 ![ArgoCD — listado de Applications](../assets/images/verify/argocd_all_applications.png)
 
-### Ejemplo: detalle de una Application
+### Example: inside an Application
 
-Al abrir una Application (p. ej. `observability-kube-prometheus-stack`) verás un grafo de recursos y una tabla con:
-- Ruta Git (`K8s/observability/kube-prometheus-stack`) y rama (`main`).
-- Destino (`https://kubernetes.default.svc`, namespace `observability`).
-- Botones para *Refresh* y *Sync* que activan el reconciliador.
+Opening an Application (e.g., `observability-kube-prometheus-stack`) shows a resource graph plus metadata:
+
+- Git source (`K8s/observability/kube-prometheus-stack`) and revision (`main`).
+- Destination (`https://kubernetes.default.svc`, namespace `observability`).
+- *Refresh* and *Sync* buttons to trigger reconciliation on demand.
 
 ![ArgoCD — detalle de Application](../assets/images/verify/argocd_view_fluentbit-app.png)
 
-### Alternativa por CLI/TUI: k9s
+### CLI/TUI alternative: k9s
 
-Si prefieres consola, usa la TUI `k9s` (incluida en el entorno). Comando rápido:
+Prefer a terminal? Use the bundled `k9s` TUI. Quick start:
 
 ```bash
 k9s -A
 ```
 
-Desde allí puedes saltar con `:ns`, `:pods`, `:deploy` y ver eventos en vivo mientras ArgoCD sincroniza.
+From there jump with `:ns`, `:pods`, `:deploy` and watch events live while ArgoCD syncs.
 
 ![k9s — explorando recursos](../assets/images/verify/k9s_xray.png)
 
-![Grafana — home/dashboard with datasources wired](../assets/images/verify/grafana-home.jpg)
-
 ## Access Endpoints
 
-Endpoints follow your LAN IP as a nip.io wildcard. If your IP is 127.0.0.1:
+`task deploy` prints the exact service URLs using your detected LAN IP (not 127.0.0.1 in normal cases). Example output:
 
-- ArgoCD: [https://argocd.127-0-0-1.nip.io](https://argocd.127-0-0-1.nip.io)
-- Grafana: [https://grafana.127-0-0-1.nip.io](https://grafana.127-0-0-1.nip.io)
-- Vault: [https://vault.127-0-0-1.nip.io](https://vault.127-0-0-1.nip.io)
-- Argo Workflows: [https://workflows.127-0-0-1.nip.io](https://workflows.127-0-0-1.nip.io)
-- SonarQube: [https://sonarqube.127-0-0-1.nip.io](https://sonarqube.127-0-0-1.nip.io)
+![Gateway URLs printed by task deploy](../assets/images/verify/gateway-urls.png)
+
+Patterns (replace with your IP-dashed value):
+
+- ArgoCD: `https://argocd.<ip-dashed>.nip.io`
+- Grafana: `https://grafana.<ip-dashed>.nip.io`
+- Vault: `https://vault.<ip-dashed>.nip.io`
+- Argo Workflows: `https://workflows.<ip-dashed>.nip.io`
+- SonarQube: `https://sonarqube.<ip-dashed>.nip.io`
 
 Reachable from other devices on your LAN using your workstation IP. Ensure the configured NodePorts are allowed by your OS firewall.
+
+:::caution
+If you can’t reach the endpoints from another device, open NodePorts `30080`/`30443` (or the values in `config.toml`) in your OS firewall.
+:::
 
 ## Login Notes
 
 - ArgoCD admin username: `admin`
-- ArgoCD admin password: stored como bcrypt en el Secret; usa el valor en `config.toml` (`passwords.argocd_admin`, default `argo`).
-- Para CLI desde tu LAN usa `--plaintext` porque ArgoCD corre en modo `insecure` (HTTP detrás del Gateway):
+- ArgoCD admin password: stored as bcrypt in the Secret; use the value in `config.toml` (`passwords.argocd_admin`, default `argo`).
+- For CLI from your LAN, use `--plaintext` because ArgoCD runs in `insecure` mode (HTTP behind the Gateway):
 
 ```bash
-argocd login argocd.<ip-dashed>.nip.io --username admin --password <valor-de-config.toml> --plaintext
+argocd login argocd.<ip-dashed>.nip.io --username admin --password <value-from-config.toml> --plaintext
 ```
 
 ## Certificate Warnings
 
 TLS uses a local, self‑signed root CA. Browsers will warn on first visit. You can proceed, or import the CA:
+
+![Browser warning — self-signed TLS prompt](../assets/images/verify/browser-warning.png)
 
 ```bash
 # Export the root CA from cert-manager
@@ -145,26 +146,14 @@ kubectl -n cert-manager get secret idp-demo-ca-secret \
 Certificates are issued automatically by cert-manager using a wildcard certificate for `*.127-0-0-1.nip.io`.
 :::
 
-## “Good Enough” smoke checks — eventual-consistency friendly
+## Quick smoke checks (eventual consistency friendly)
 
-- [ ] ArgoCD shows Applications present; several may still be syncing, but status improves over a few minutes
-- [ ] Grafana UI loads; Prometheus and Loki datasources appear after their pods are Ready
-- [ ] Trivy Operator starts creating VulnerabilityReports as workloads settle
-- [ ] External Secrets creates Kubernetes Secrets shortly after Vault init completes
-
-If you prefer a checklist:
-
-```bash
-# Show Applications and their statuses
-kubectl -n argocd get applications
-
-# Confirm Prometheus targets render (when Ready)
-kubectl -n observability get pods | rg prometheus | cat
-
-# ESO synced secrets exist
-kubectl get externalsecrets,secretstores -A
-kubectl -n argocd get secret argocd-secret -o yaml | head -n 20
-```
+| Goal | Command | Success signal |
+| --- | --- | --- |
+| ArgoCD apps appear and converge | `kubectl -n argocd get applications` | Apps listed; `Sync` moves toward `Synced` over a few minutes |
+| Grafana up with datasources | Open `https://grafana.<ip>.nip.io` | UI loads; Prometheus/Loki datasources present |
+| Trivy Operator running | `kubectl -n security get pods | rg trivy` | `trivy-operator` and `trivy-server` pods Ready |
+| External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
   <LinkButton href="/getting-started/deployment/" variant="secondary" icon="arrow-left">

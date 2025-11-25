@@ -1,0 +1,329 @@
+direction: down
+
+title: {
+  label: "Platform Contracts & Data Flow"
+  near: top-center
+  shape: text
+  style: {
+    font-size: 24
+    bold: true
+  }
+}
+
+# Sources layer
+sources: {
+  label: "Configuration Sources"
+  style: {
+    fill: "#ecf0f1"
+    stroke: "#95a5a6"
+    stroke-width: 2
+  }
+
+  config: {
+    shape: document
+    
+    label: "config.toml\n[versions]\n[fuses]\n[passwords]"
+    style: {
+      fill: "#3498db"
+      font-color: white
+    }
+  }
+
+  git_structure: {
+    shape: package
+    
+    label: "Git Structure\nK8s/<stack>/"
+    style: {
+      fill: "#2ecc71"
+      font-color: white
+    }
+  }
+
+  vault: {
+    shape: cylinder
+    
+    label: "Vault\nsecret/data/*"
+    style: {
+      fill: "#9b59b6"
+      font-color: white
+    }
+  }
+
+  kyverno: {
+    shape: hexagon
+    
+    label: "Kyverno\nPolicies"
+    style: {
+      fill: "#e74c3c"
+      font-color: white
+    }
+  }
+}
+
+# Processing layer
+processing: {
+  label: "GitOps & Policy Engine"
+  style: {
+    fill: "#ecf0f1"
+    stroke: "#95a5a6"
+    stroke-width: 2
+  }
+
+  appset: {
+    shape: hexagon
+    
+    label: "ApplicationSet\n+ envsubst"
+    style: {
+      fill: "#e67e22"
+      font-color: white
+    }
+  }
+
+  eso: {
+    shape: step
+    label: "External\nSecrets\nOperator"
+    style: {
+      fill: "#16a085"
+      font-color: white
+    }
+  }
+
+  admission: {
+    shape: diamond
+    label: "Kyverno\nAdmission"
+    style: {
+      fill: "#c0392b"
+      font-color: white
+    }
+  }
+}
+
+# Target layer
+targets: {
+  label: "Cluster Resources"
+  style: {
+    fill: "#ecf0f1"
+    stroke: "#95a5a6"
+    stroke-width: 2
+  }
+
+  namespaces: {
+    shape: sql_table
+    
+    label: "Namespaces"
+    style: {
+      fill: "#34495e"
+      font-color: white
+    }
+
+    labels_required: {
+      label: "✓ app.kubernetes.io/part-of\n✓ owner\n✓ business-unit\n✓ environment"
+      style: {
+        fill: "#2c3e50"
+        font-color: white
+        font-size: 11
+      }
+    }
+  }
+
+  workloads: {
+    shape: sql_table
+    
+    label: "Workloads"
+    style: {
+      fill: "#34495e"
+      font-color: white
+    }
+
+    contracts: {
+      label: "✓ priorityClassName\n✓ resources.requests\n✓ resources.limits\n✓ component labels"
+      style: {
+        fill: "#2c3e50"
+        font-color: white
+        font-size: 11
+      }
+    }
+  }
+
+  secrets: {
+    shape: cylinder
+    
+    label: "Secrets\ncreationPolicy: Merge"
+    style: {
+      fill: "#34495e"
+      font-color: white
+    }
+  }
+}
+
+# Contract enforcement indicators
+contracts: {
+  label: "Contract Enforcement Points"
+  style: {
+    fill: "#ecf0f1"
+    stroke: "#95a5a6"
+    stroke-width: 2
+  }
+
+  c1: {
+    shape: oval
+    label: "prometheus:\nkube-prometheus"
+    style: {
+      fill: "#1abc9c"
+      font-color: white
+      font-size: 12
+    }
+  }
+
+  c2: {
+    shape: oval
+    label: "grafana_dashboard:\n1"
+    style: {
+      fill: "#1abc9c"
+      font-color: white
+      font-size: 12
+    }
+  }
+
+  c3: {
+    shape: oval
+    label: "Gateway API\nHTTPRoute"
+    style: {
+      fill: "#1abc9c"
+      font-color: white
+      font-size: 12
+    }
+  }
+
+  c4: {
+    shape: oval
+    label: "Priority\nClasses"
+    style: {
+      fill: "#1abc9c"
+      font-color: white
+      font-size: 12
+    }
+  }
+
+  c5: {
+    shape: oval
+    label: "ResourceQuota\nLimitRange"
+    style: {
+      fill: "#1abc9c"
+      font-color: white
+      font-size: 12
+    }
+  }
+}
+
+# Flow connections
+sources.config -> processing.appset: "version pins" {
+  style: {
+    stroke-width: 2
+    animated: true
+  }
+}
+
+sources.git_structure -> processing.appset: "directory scan" {
+  style: {
+    stroke-width: 2
+    animated: true
+  }
+}
+
+sources.vault -> processing.eso: "KV v2 paths" {
+  style: {
+    stroke-width: 2
+    animated: true
+  }
+}
+
+sources.kyverno -> processing.admission: "policies" {
+  style: {
+    stroke-width: 2
+    animated: true
+  }
+}
+
+processing.appset -> targets.namespaces: "creates" {
+  style: {
+    stroke-width: 2
+  }
+}
+
+processing.appset -> targets.workloads: "deploys" {
+  style: {
+    stroke-width: 2
+  }
+}
+
+processing.eso -> targets.secrets: "syncs" {
+  style: {
+    stroke-width: 2
+  }
+}
+
+processing.admission -> targets.namespaces: "validates" {
+  style: {
+    stroke-width: 2
+    stroke: "#e74c3c"
+    stroke-dash: 3
+  }
+}
+
+processing.admission -> targets.workloads: "validates" {
+  style: {
+    stroke-width: 2
+    stroke: "#e74c3c"
+    stroke-dash: 3
+  }
+}
+
+# Contract connections
+targets.workloads -> contracts.c1: "ServiceMonitor" {
+  style: {
+    stroke-dash: 3
+  }
+}
+
+targets.workloads -> contracts.c2: "ConfigMap" {
+  style: {
+    stroke-dash: 3
+  }
+}
+
+targets.workloads -> contracts.c3: "Ingress" {
+  style: {
+    stroke-dash: 3
+  }
+}
+
+targets.workloads -> contracts.c4: "Scheduling" {
+  style: {
+    stroke-dash: 3
+  }
+}
+
+targets.namespaces -> contracts.c5: "Governance" {
+  style: {
+    stroke-dash: 3
+  }
+}
+
+# Validation summary
+validation: {
+  shape: page
+  label: "Validation: Scripts/validate-consistency.sh\nChecks: labels, priorities, deprecated APIs"
+  style: {
+    fill: "#f39c12"
+    font-color: white
+    font-size: 14
+    bold: true
+  }
+}
+
+contracts -> validation: {
+  style: {
+    stroke-dash: 3
+  }
+}

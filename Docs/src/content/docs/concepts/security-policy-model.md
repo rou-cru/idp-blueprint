@@ -54,7 +54,9 @@ The combination of GitOps and policy validation creates strong integrity guarant
 
 **Policy enforcement mode:**
 
-Most policies run in `audit` mode, which reports violations but doesn't block deployments. This follows a "paved road" philosophy: guide users toward best practices without creating friction. The exception is `enforce-namespace-labels`, which runs in `enforce` mode to guarantee namespaces have required metadata for cost attribution and governance.
+- Helm chart default (`validationFailureAction`) is **audit**; we keep that for most policies to guide without blocking.
+- Individual policies can still be `enforce` (e.g., namespace labels) where safety is required.
+- If you need stricter gating, change `validationFailureAction` in `Policies/kyverno/values.yaml` and bump specific policies first; document the intent in the commit rather than hardcoding numbers here.
 
 ### Availability
 

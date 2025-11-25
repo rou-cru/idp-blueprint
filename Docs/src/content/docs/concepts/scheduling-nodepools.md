@@ -215,6 +215,7 @@ ResourcePressure.Eviction.First -> Examples.WorkflowPod: "evicted if needed"
 Critical infrastructure pods (Vault, ArgoCD, Prometheus) have **tolerations for control-plane taint**. This allows them to schedule on the control plane node as a "lifeboat" if all infrastructure nodes fail.
 
 **Toleration example**:
+
 ```yaml
 tolerations:
 - key: node-role.kubernetes.io/control-plane
@@ -224,19 +225,14 @@ tolerations:
 
 This ensures observability and GitOps remain functional even if only the control plane survives.
 
-### Priority Values Reference
+### How PriorityClasses are defined here
 
-| Priority | Value | Purpose | Eviction Risk |
-|----------|-------|---------|---------------|
-| platform-infrastructure | 10000 | Never evicted | None |
-| platform-events | 9500 | Event mesh critical | None |
-| platform-policy | 9000 | Admission control | None |
-| platform-security | 8500 | Scanning essential | Very Low |
-| platform-observability | 8000 | Monitoring critical | Low |
-| platform-cicd | 7000 | Controller essential | Low |
-| platform-dashboards | 6000 | UI nice-to-have | Medium |
-| cicd-execution | 5000 | Workflow pods | High |
-| user-workloads | 1000 | App workloads | Very High |
+- **Source of truth:** `IT/priorityclasses/priorityclasses.yaml` is what ArgoCD applies; keep it authoritative.
+- **Shape, not numbers:** We use four intent buckets — control plane, platform services, shared UIs, and execution/user workloads. Exact integers are less important than the ordering between buckets.
+- **Eviction policy:** Higher buckets are protected from preemption/eviction; execution/user tiers are allowed to move first when nodes are under pressure.
+- **Lifeboat:** Control-plane tolerations let critical pods fall back to the control-plane node if infra nodes are lost (see tolerations in each chart’s values).
+
+When adjusting priorities, change the manifests first; update this page only to describe the rationale and the relative ordering.
 | unclassified-workload | 0 | Missing priority | Evicted First |
 
 Key points:
@@ -251,8 +247,6 @@ Key points:
 - Pool separation reduces noisy neighbors; DaemonSets run everywhere (Cilium,
   Fluent‑bit, Node Exporter).
 - HA is a dial: enable for control planes as you grow.
-
-![Cluster view](../assets/images/after-deploy/k9s-overview.jpg){ loading=lazy }
 
 ## Zero-Downtime Rolling Updates
 

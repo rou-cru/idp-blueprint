@@ -1,6 +1,6 @@
 # external-secrets
 
-![Version: 0.20.2](https://img.shields.io/badge/Version-0.20.2-informational?style=flat-square) 
+![Version: 0.20.2](https://img.shields.io/badge/Version-0.20.2-informational?style=flat-square)
 
 ## Component Information
 
@@ -80,4 +80,3 @@ The following table lists the configurable parameters:
 | webhook.certManager.cert.renewBefore | string | `"720h"` | Renew certificate 30 days before expiry |
 | webhook.certManager.enabled | bool | `true` | Enable cert-manager for webhook certificates |
 | webhook.lookaheadInterval | string | `"168h"` | Certificate validity lookahead interval (must be less than cert.renewBefore) |
-

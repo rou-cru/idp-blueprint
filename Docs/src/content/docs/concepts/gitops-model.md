@@ -69,23 +69,22 @@ Argo.Apps -> Namespaces.DP
 
 ## Sync Waves — ordering without scripts
 
-ArgoCD applies resources in ascending `argocd.argoproj.io/sync-wave` order. This
-lets you express dependencies declaratively instead of writing orchestration
-scripts.
+ArgoCD applies resources in ascending `argocd.argoproj.io/sync-wave` order. We
+use waves to express dependency intent, not to encode fragile numbers.
 
-In this blueprint the main waves are:
+How to read our repo:
 
-- **-3** – bootstrap namespaces in `IT/namespaces/*.yaml` (cluster‑level
-  infrastructure)
-- **-2** – application/gov namespaces such as `K8s/*/governance/namespace.yaml`
-- **-1** – SecretStores and other cluster prerequisites
-- **0** – ExternalSecrets and most standard applications (default)
-- **1** – governance objects like `LimitRange` and `ResourceQuota`
-- **2** – Gateway and HTTPRoutes (expose services once backends are ready)
-- **3** – SLO/UIs that depend on earlier layers (e.g. SLO dashboards)
+- **Default (0):** Most resources stay at the default; absence of the annotation means “standard order.”
+- **Foundations (negative):** Bootstrap or pre-req objects (namespaces, SecretStores) get negative waves so they land before dependents.
+- **Post-foundation (positive):** Routes, dashboards, or anything that depends on backends use positive waves.
 
-Use negative waves for **foundations**, `0` as the common case, and positive
-waves for **optional or edge‑exposed** resources.
+Examples in code:
+
+- Namespaces for each stack carry negative waves in `K8s/*/governance/namespace.yaml`.
+- HTTPRoutes and other edge objects use positive waves in `IT/gateway/httproutes/*.yaml`.
+- SLO/UIs (e.g., `K8s/observability/slo/*`) use higher positive waves to wait for data sources.
+
+When adding a resource, pick the smallest annotation that expresses the dependency, and keep the manifests as the source of truth. The specific integers may change; the intent (foundation → core → edge) should not.
 
 ## Policy — turning conventions into guarantees
 
@@ -147,5 +146,3 @@ Sensors -> Triggers.HTTP
 ## Secrets in the loop
 
 ESO authenticates to Vault and writes K8s Secrets. Workloads consume only K8s Secrets. Use `creationPolicy: Merge` when charts need to add internal keys later.
-
-![ArgoCD apps](../assets/images/after-deploy/argocd-apps-healthy.jpg){ loading=lazy }

@@ -1,6 +1,6 @@
 # kyverno
 
-![Version: 3.5.2](https://img.shields.io/badge/Version-3.5.2-informational?style=flat-square) 
+![Version: 3.5.2](https://img.shields.io/badge/Version-3.5.2-informational?style=flat-square)
 
 ## Component Information
 
@@ -66,4 +66,3 @@ The following table lists the configurable parameters:
 | startupProbe.periodSeconds | int | `10` | Frequency of startup probes |
 | startupProbe.successThreshold | int | `1` | Successful startup probes required |
 | startupProbe.timeoutSeconds | int | `1` | Timeout per startup probe |
-
