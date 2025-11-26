@@ -1,363 +1,56 @@
 direction: right
 
 classes: {
-  control: {
-    style: {
-      fill: "#111827"
-      stroke: "#6366f1"
-      font-color: white
-    }
-  }
-  infra: {
-    style: {
-      fill: "#0f172a"
-      stroke: "#38bdf8"
-      font-color: white
-    }
-  }
-  data: {
-    style: {
-      fill: "#0f766e"
-      stroke: "#34d399"
-      font-color: white
-    }
-  }
-  workload: {
-    style: {
-      fill: "#7c3aed"
-      stroke: "#a855f7"
-      font-color: white
-    }
-  }
+  data: { style: { fill: "#0f766e"; stroke: "#34d399"; font-color: white } }
+  control: { style: { fill: "#111827"; stroke: "#6366f1"; font-color: white } }
+  package: { style: { fill: "#34495e"; font-color: white; stroke-width: 0 } }
+  app: { style: { fill: "#9b59b6"; font-color: white; stroke-width: 0 } }
 }
 
-title: {
-  label: "Git Structure → ArgoCD Applications"
-  near: top-center
-  shape: text
-  style: {
-    font-size: 24
-    bold: true
-  }
-}
-
-# Left side: Git Repository
-git_repo: {
-  label: "Git Repository Structure"
-  shape: rectangle
+Git: {
   class: data
-
-  k8s: {
-    label: "K8s/"
-    shape: package
-    style: {
-      fill: "#34495e"
-      font-color: white
-    }
-
-    observability: {
-      label: "observability/"
-      shape: package
-      style: {
-        fill: "#3498db"
-        font-color: white
-      }
-
-      appset_obs: {
-        label: "applicationset-observability.yaml"
-        shape: document
-        style: {
-          fill: "#2980b9"
-          font-color: white
-          font-size: 12
-        }
-      }
-
-      gov_obs: {
-        label: "governance/"
-        shape: package
-        style: {
-          fill: "#5dade2"
-          font-color: black
-        }
-      }
-
-      fluent: {
-        label: "fluent-bit/"
-        shape: package
-        style: {
-          fill: "#5dade2"
-          font-color: black
-        }
-      }
-
-      loki: {
-        label: "loki/"
-        shape: package
-        style: {
-          fill: "#5dade2"
-          font-color: black
-        }
-      }
-
-      prometheus: {
-        label: "kube-prometheus-stack/"
-        shape: package
-        style: {
-          fill: "#5dade2"
-          font-color: black
-        }
-      }
-    }
-
-    cicd: {
-      label: "cicd/"
-      shape: package
-      style: {
-        fill: "#e67e22"
-        font-color: white
-      }
-
-      appset_cicd: {
-        label: "applicationset-cicd.yaml"
-        shape: document
-        style: {
-          fill: "#d35400"
-          font-color: white
-          font-size: 12
-        }
-      }
-
-      gov_cicd: {
-        label: "governance/"
-        shape: package
-        style: {
-          fill: "#f39c12"
-          font-color: black
-        }
-      }
-
-      workflows: {
-        label: "argo-workflows/"
-        shape: package
-        style: {
-          fill: "#f39c12"
-          font-color: black
-        }
-      }
-
-      sonar: {
-        label: "sonarqube/"
-        shape: package
-        style: {
-          fill: "#f39c12"
-          font-color: black
-        }
-      }
-    }
-
-    security: {
-      label: "security/"
-      shape: package
-      style: {
-        fill: "#27ae60"
-        font-color: white
-      }
-
-      appset_sec: {
-        label: "applicationset-security.yaml"
-        shape: document
-        style: {
-          fill: "#229954"
-          font-color: white
-          font-size: 12
-        }
-      }
-
-      gov_sec: {
-        label: "governance/"
-        shape: package
-        style: {
-          fill: "#52be80"
-          font-color: black
-        }
-      }
-
-      trivy: {
-        label: "trivy/"
-        shape: package
-        style: {
-          fill: "#52be80"
-          font-color: black
-        }
-      }
-    }
+  label: "Git Repository (K8s/)"
+  
+  Observability: {
+    class: package
+    label: "observability/"
+    tooltip: "Contains: prometheus, loki, fluent-bit"
+  }
+  
+  CICD: {
+    class: package
+    label: "cicd/"
+    tooltip: "Contains: argo-workflows, sonarqube"
+  }
+  
+  Security: {
+    class: package
+    label: "security/"
+    tooltip: "Contains: trivy"
   }
 }
 
-# Right side: ArgoCD Applications
-argocd_apps: {
-  label: "ArgoCD Applications"
-  shape: rectangle
+ArgoCD: {
   class: control
-
-  obs_apps: {
+  label: "ArgoCD Control Plane"
+  
+  ObsApps: {
+    class: app
     label: "Observability Apps"
-    shape: rectangle
-    style: {
-      fill: "#9b59b6"
-      font-color: white
-    }
-
-    app1: {
-      label: "observability-governance"
-      shape: oval
-      
-      style: {
-        fill: "#5dade2"
-        font-color: black
-      }
-    }
-
-    app2: {
-      label: "observability-fluent-bit"
-      shape: oval
-      
-      style: {
-        fill: "#5dade2"
-        font-color: black
-      }
-    }
-
-    app3: {
-      label: "observability-loki"
-      shape: oval
-      
-      style: {
-        fill: "#5dade2"
-        font-color: black
-      }
-    }
-
-    app4: {
-      label: "observability-kube-prometheus-stack"
-      shape: oval
-      
-      style: {
-        fill: "#5dade2"
-        font-color: black
-      }
-    }
   }
-
-  cicd_apps: {
+  
+  CICDApps: {
+    class: app
     label: "CI/CD Apps"
-    shape: rectangle
-    style: {
-      fill: "#9b59b6"
-      font-color: white
-    }
-
-    app5: {
-      label: "cicd-governance"
-      shape: oval
-      
-      style: {
-        fill: "#f39c12"
-        font-color: black
-      }
-    }
-
-    app6: {
-      label: "cicd-argo-workflows"
-      shape: oval
-      
-      style: {
-        fill: "#f39c12"
-        font-color: black
-      }
-    }
-
-    app7: {
-      label: "cicd-sonarqube"
-      shape: oval
-      
-      style: {
-        fill: "#f39c12"
-        font-color: black
-      }
-    }
   }
-
-  sec_apps: {
+  
+  SecApps: {
+    class: app
     label: "Security Apps"
-    shape: rectangle
-    style: {
-      fill: "#9b59b6"
-      font-color: white
-    }
-
-    app8: {
-      label: "security-governance"
-      shape: oval
-      
-      style: {
-        fill: "#52be80"
-        font-color: black
-      }
-    }
-
-    app9: {
-      label: "security-trivy"
-      shape: oval
-      
-      style: {
-        fill: "#52be80"
-        font-color: black
-      }
-    }
   }
 }
 
-# Connections with generators
-git_repo.k8s.observability.appset_obs -> argocd_apps.obs_apps: "Directory\nGenerator" {
-  style: {
-    stroke-width: 3
-    animated: true
-    stroke: "#3498db"
-  }
-}
-
-git_repo.k8s.cicd.appset_cicd -> argocd_apps.cicd_apps: "Directory\nGenerator" {
-  style: {
-    stroke-width: 3
-    animated: true
-    stroke: "#e67e22"
-  }
-}
-
-git_repo.k8s.security.appset_sec -> argocd_apps.sec_apps: "Directory\nGenerator" {
-  style: {
-    stroke-width: 3
-    animated: true
-    stroke: "#27ae60"
-  }
-}
-
-# Pattern note
-pattern: {
-  shape: page
-  label: "Pattern: K8s/<stack>/<component>/ → <stack>-<component>\nGit structure = Cluster state"
-  style: {
-    fill: "#ecf0f1"
-    font-color: "#2c3e50"
-    font-size: 14
-    bold: true
-  }
-}
-
-argocd_apps -> pattern: {
-  style: {
-    stroke-dash: 3
-  }
-}
+# Generators
+Git.Observability -> ArgoCD.ObsApps: "Generates"
+Git.CICD -> ArgoCD.CICDApps: "Generates"
+Git.Security -> ArgoCD.SecApps: "Generates"
