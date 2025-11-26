@@ -55,6 +55,7 @@ sonarqube_admin = "Sonar-Secret-123"
 sonarqube_monitoring = "sonar"
 kyverno_admin = "kyver"
 vault_admin = "vault"
+backstage_dex_client = "backstage-demo-secret"
 
 [registry]
 url = "docker.io"
