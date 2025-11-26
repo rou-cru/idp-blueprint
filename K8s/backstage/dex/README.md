@@ -18,6 +18,21 @@ Los siguientes usuarios están pre-configurados:
 
 ## 🚀 Despliegue
 
+### Estrategia de Configuración Dinámica (Runtime Configuration)
+
+> [!NOTE]
+> **Contexto Técnico:** Dex utiliza un archivo de configuración estático (YAML) y no soporta nativamente la sustitución de variables de entorno. Además, los ConfigMaps de Kubernetes son inmutables durante su ciclo de vida.
+
+Para soportar el entorno dinámico de este Blueprint (donde el `DNS_SUFFIX` cambia según la IP del host), implementamos el patrón **Runtime Config Generation**:
+
+1. **Inyección de Variable:** El proceso de despliegue (`Task`) calcula el `DNS_SUFFIX` local e inyecta esta variable en el Pod de Dex mediante un parche en el `ApplicationSet` de ArgoCD.
+2. **Generación al Vuelo:** El contenedor de Dex utiliza un script de inicio (wrapper) que:
+   - Copia la plantilla de configuración desde `/etc/dex/cfg/config.yaml` (ConfigMap) a `/tmp`.
+   - Reemplaza el literal `${DNS_SUFFIX}` con el valor real de la variable de entorno.
+   - Inicia Dex apuntando a esta configuración generada.
+
+Este enfoque garantiza que Dex funcione correctamente sin importar el dominio base, manteniendo la infraestructura como código y compatible con GitOps.
+
 ### Pre-requisitos
 
 1. **Vault configurado** con el secret de Dex:
@@ -28,22 +43,20 @@ Los siguientes usuarios están pre-configurados:
    ```
    Ver [VAULT-SETUP.md](./VAULT-SETUP.md) para más detalles.
 
-2. **DNS configurado** con la variable `${DNS_SUFFIX}` resuelta.
-
-3. **Ingress Controller** (nginx) instalado y funcionando.
+2. **Task CLI** instalado para ejecutar los comandos de despliegue que manejan la sustitución de variables.
 
 ### Aplicar Manifiestos
 
-#### Opción 1: Via Kustomize
+La forma recomendada de desplegar es utilizando el Taskfile del proyecto, que orquesta todo el flujo:
+
 ```bash
-kubectl apply -k K8s/backstage/dex/
+# Desplegar todo el stack de Backstage (incluyendo Dex)
+task stacks:backstage
 ```
 
-#### Opción 2: Via ArgoCD
-Si estás usando ArgoCD, los manifiestos se sincronizarán automáticamente según las sync waves configuradas.
-
+Esto ejecutará internamente:
 ```bash
-argocd app sync backstage
+envsubst < applicationset-backstage.yaml | kubectl apply -f -
 ```
 
 ### Verificar Despliegue
