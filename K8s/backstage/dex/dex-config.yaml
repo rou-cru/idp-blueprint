@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dex-config
+  namespace: backstage
+  labels:
+    app.kubernetes.io/name: dex
+    app.kubernetes.io/instance: dex
+    app.kubernetes.io/component: identity-provider
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    description: 'Dex OIDC provider configuration for Backstage authentication'
+    contact: platform-team
+data:
+  config.yaml: |
+    issuer: https://dex.${DNS_SUFFIX}
+    
+    storage:
+      type: memory
+    
+    web:
+      http: 0.0.0.0:5556
+    
+    telemetry:
+      http: 0.0.0.0:5558
+    
+    # OAuth2 clients
+    oauth2:
+      skipApprovalScreen: true
+      responseTypes: ["code", "token", "id_token"]
+    
+    staticClients:
+      - id: backstage
+        redirectURIs:
+          - 'https://backstage.${DNS_SUFFIX}/api/auth/oidc/handler/frame'
+        name: 'Backstage'
+        secret: backstage-demo-secret
+    
+    # Demo users for Backstage
+    enablePasswordDB: true
+    staticPasswords:
+      - email: "admin@example.com"
+        hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"  # password
+        username: "admin"
+        userID: "08a8684b-db88-4b73-90a9-3cd1661f5466"
+        groups:
+          - admins
+          - developers
+      
+      - email: "developer@example.com"
+        hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"  # password
+        username: "developer"
+        userID: "41331323-6f44-45e6-b3b9-2c4b8b6294ad"
+        groups:
+          - developers
+      
+      - email: "guest@example.com"
+        hash: "$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W"  # password
+        username: "guest"
+        userID: "d1c84b21-1e8f-4c38-9c88-8b6a6c0e3e1a"
+        groups:
+          - guests
+    
+    # Expiry settings
+    expiry:
+      deviceRequests: "5m"
+      signingKeys: "6h"
+      idTokens: "24h"
+      refreshTokens:
+        reuseInterval: "3s"
+        validIfNotUsedFor: "2160h"  # 90 days
+        absoluteLifetime: "3960h"     # 165 days

@@ -1,0 +1,276 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: provision-app-workflow
+  namespace: cicd
+  labels:
+    app.kubernetes.io/name: provision-app-workflow
+    app.kubernetes.io/component: workflow-template
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    description: 'Workflow template for provisioning containerized apps from Backstage'
+    contact: platform-team
+spec:
+  serviceAccountName: argo-workflow
+  entrypoint: provision-app
+  
+  arguments:
+    parameters:
+      - name: app-name
+        value: "demo-app"
+      - name: repo-url
+        value: "https://github.com/example/repo"
+      - name: owner
+        value: "platform-team"
+      - name: business-unit
+        value: "engineering"
+      - name: environment
+        value: "dev"
+      - name: container-port
+        value: "80"
+      - name: replicas
+        value: "1"
+      - name: docker-registry
+        value: "docker.io"
+      - name: docker-image-name
+        value: "roucru/demo-app"
+      - name: docker-image-tag
+        value: "latest"
+  
+  templates:
+    - name: provision-app
+      steps:
+        - - name: create-namespace
+            template: create-namespace-template
+        
+        - - name: build-and-push-image
+            template: build-and-push-image-template
+        
+        - - name: create-argocd-app
+            template: create-argocd-app-template
+        
+        - - name: wait-for-deployment
+            template: wait-for-deployment-template
+
+    # Step 1: Create Namespace with IDP labels
+    - name: create-namespace-template
+      script:
+        image: bitnami/kubectl:latest
+        command: [bash]
+        source: |
+          #!/bin/bash
+          set -e
+          
+          echo "Creating namespace {{workflow.parameters.app-name}}..."
+          
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: {{workflow.parameters.app-name}}
+            annotations:
+              argocd.argoproj.io/sync-wave: "-2"
+              created-by: backstage
+              created-at: "$(date -Iseconds)"
+            labels:
+              app.kubernetes.io/name: {{workflow.parameters.app-name}}
+              app.kubernetes.io/part-of: user-applications
+              owner: {{workflow.parameters.owner}}
+              business-unit: {{workflow.parameters.business-unit}}
+              environment: {{workflow.parameters.environment}}
+              managed-by: idp
+          EOF
+          
+          echo "✅ Namespace created successfully"
+          
+          echo "Creating ResourceQuota..."
+          
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: ResourceQuota
+          metadata:
+            name: {{workflow.parameters.app-name}}-quota
+            namespace: {{workflow.parameters.app-name}}
+          spec:
+            hard:
+              requests.cpu: "2"
+              requests.memory: 4Gi
+              limits.cpu: "4"
+              limits.memory: 8Gi
+              pods: "10"
+              services: "5"
+          EOF
+          
+          echo "✅ ResourceQuota created"
+          
+          echo "Creating LimitRange..."
+          
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: LimitRange
+          metadata:
+            name: {{workflow.parameters.app-name}}-limits
+            namespace: {{workflow.parameters.app-name}}
+          spec:
+            limits:
+              - max:
+                  cpu: "1"
+                  memory: 2Gi
+                min:
+                  cpu: 50m
+                  memory: 64Mi
+                default:
+                  cpu: 200m
+                  memory: 512Mi
+                defaultRequest:
+                  cpu: 100m
+                  memory: 256Mi
+                type: Container
+          EOF
+          
+          echo "✅ LimitRange created"
+          echo "🎉 Namespace {{workflow.parameters.app-name}} fully provisioned!"
+
+    # Step 2: Build and Push Container Image
+    - name: build-and-push-image-template
+      inputs:
+        artifacts:
+          - name: source-code
+            path: /workspace
+            git:
+              repo: "{{workflow.parameters.repo-url}}"
+              depth: 1
+      container:
+        image: gcr.io/kaniko-project/executor:latest
+        command:
+          - /kaniko/executor
+        args:
+          - --dockerfile=/workspace/Dockerfile
+          - --context=/workspace
+          - --destination={{workflow.parameters.docker-image-name}}:{{workflow.parameters.docker-image-tag}}
+          - --destination={{workflow.parameters.docker-image-name}}:$(git -C /workspace rev-parse --short HEAD || echo "latest")
+          - --cache=true
+          - --cache-ttl=24h
+          - --compressed-caching=false
+        volumeMounts:
+          - name: docker-config
+            mountPath: /kaniko/.docker
+      volumes:
+        - name: docker-config
+          secret:
+            secretName: docker-credentials
+            items:
+              - key: .dockerconfigjson
+                path: config.json
+
+    # Step 3: Create ArgoCD Application
+    - name: create-argocd-app-template
+      script:
+        image: bitnami/kubectl:latest
+        command: [bash]
+        source: |
+          #!/bin/bash
+          set -e
+          
+          echo "Creating ArgoCD Application for {{workflow.parameters.app-name}}..."
+          
+          cat <<EOF | kubectl apply -f -
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: {{workflow.parameters.app-name}}
+            namespace: argocd
+            labels:
+              app.kubernetes.io/name: {{workflow.parameters.app-name}}
+              app.kubernetes.io/part-of: user-applications
+              owner: {{workflow.parameters.owner}}
+              business-unit: {{workflow.parameters.business-unit}}
+              environment: {{workflow.parameters.environment}}
+              managed-by: backstage
+            finalizers:
+              - resources-finalizer.argocd.argoproj.io
+          spec:
+            project: default
+            source:
+              repoURL: {{workflow.parameters.repo-url}}
+              targetRevision: HEAD
+              path: k8s
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: {{workflow.parameters.app-name}}
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
+                allowEmpty: false
+              syncOptions:
+                - CreateNamespace=false
+                - PrunePropagationPolicy=foreground
+                - PruneLast=true
+              retry:
+                limit: 5
+                backoff:
+                  duration: 10s
+                  factor: 2
+                  maxDuration: 3m
+          EOF
+          
+          echo "✅ ArgoCD Application created"
+          echo "🚀 Application will sync automatically!"
+
+    # Step 4: Wait for Deployment to be Ready
+    - name: wait-for-deployment-template
+      script:
+        image: bitnami/kubectl:latest
+        command: [bash]
+        source: |
+          #!/bin/bash
+          set -e
+          
+          echo "Waiting for deployment in namespace {{workflow.parameters.app-name}}..."
+          
+          # Wait up to 5 minutes for deployment to exist
+          timeout=300
+          elapsed=0
+          while [ $elapsed -lt $timeout ]; do
+            if kubectl get deployment -n {{workflow.parameters.app-name}} 2>/dev/null | grep -q .; then
+              echo "✅ Deployment found!"
+              break
+            fi
+            echo "Waiting for deployment to be created by ArgoCD... ($elapsed/$timeout seconds)"
+            sleep 10
+            elapsed=$((elapsed + 10))
+          done
+          
+          if [ $elapsed -ge $timeout ]; then
+            echo "⚠️  Timeout waiting for deployment"
+            exit 1
+          fi
+          
+          # Wait for deployment to be ready
+          echo "Waiting for deployment to be ready..."
+          kubectl wait --for=condition=available --timeout=5m \
+            deployment -n {{workflow.parameters.app-name}} --all
+          
+          echo "✅ Deployment is ready!"
+          echo ""
+          echo "======================================"
+          echo "🎉 APPLICATION SUCCESSFULLY DEPLOYED!"
+          echo "======================================"
+          echo ""
+          echo "App Name: {{workflow.parameters.app-name}}"
+          echo "Namespace: {{workflow.parameters.app-name}}"
+          echo "Owner: {{workflow.parameters.owner}}"
+          echo "Environment: {{workflow.parameters.environment}}"
+          echo ""
+          echo "View status:"
+          echo "  kubectl get all -n {{workflow.parameters.app-name}}"
+          echo ""
+          echo "ArgoCD Application:"
+          echo "  https://argocd.\${DNS_SUFFIX}/applications/{{workflow.parameters.app-name}}"
+          echo ""
+          echo "======================================"

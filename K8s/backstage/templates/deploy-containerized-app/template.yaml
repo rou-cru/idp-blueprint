@@ -1,0 +1,226 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: deploy-containerized-app
+  title: Deploy Containerized App (From Public Repo)
+  description: |
+    🛒 Pick any public GitHub repo with a Dockerfile and deploy it to the IDP! 
+    Like shopping at a supermarket - just grab what you need from the shelf.
+  tags:
+    - kubernetes
+    - docker
+    - argocd
+    - recommended
+  links:
+    - title: Documentation
+      url: https://backstage.${DNS_SUFFIX}/docs/golden-path
+      icon: docs
+spec:
+  owner: platform-team
+  type: service
+  
+  parameters:
+    - title: Application Details
+      required:
+        - appName
+        - repoUrl
+      properties:
+        appName:
+          title: Application Name
+          type: string
+          description: Name for your application (lowercase, alphanumeric, hyphens only)
+          pattern: '^[a-z0-9]+(-[a-z0-9]+)*$'
+          ui:autofocus: true
+          ui:help: 'Example: my-cool-app'
+        
+        repoUrl:
+          title: GitHub Repository URL
+          type: string
+          description: |
+            🛒 URL of any public GitHub repository with a Dockerfile in root.
+            Examples:
+            - https://github.com/nginxinc/docker-nginx
+            - https://github.com/stefanprodan/podinfo
+            - https://github.com/kelseyhightower/hello-kubernetes
+          ui:help: 'Must be a public repo with Dockerfile at root level'
+        
+        description:
+          title: Description
+          type: string
+          description: Brief description of what this app does
+          default: Deployed via IDP Self-Service
+    
+    - title: Organizational Details
+      required:
+        - owner
+        - businessUnit
+      properties:
+        owner:
+          title: Owner Team
+          type: string
+          description: The team that owns this application
+          enum:
+            - platform-team
+            - backend-team
+            - frontend-team
+            - data-team
+            - devops-team
+          enumNames:
+            - 'Platform Team'
+            - 'Backend Team'
+            - 'Frontend Team'
+            - 'Data Team'
+            - 'DevOps Team'
+          default: platform-team
+        
+        businessUnit:
+          title: Business Unit
+          type: string
+          description: Which business unit this belongs to
+          enum:
+            - infrastructure
+            - engineering
+            - product
+            - operations
+          enumNames:
+            - 'Infrastructure'
+            - 'Engineering'
+            - 'Product'
+            - 'Operations'
+          default: engineering
+    
+    - title: Deployment Configuration
+      required:
+        - environment
+        - containerPort
+      properties:
+        environment:
+          title: Environment
+          type: string
+          description: Target environment for deployment
+          enum:
+            - dev
+            - staging
+            - prod
+          enumNames:
+            - 'Development'
+            - 'Staging'
+            - 'Production'
+          default: dev
+        
+        containerPort:
+          title: Container Port
+          type: number
+          description: Port that the container exposes
+          default: 80
+          minimum: 1
+          maximum: 65535
+        
+        replicas:
+          title: Number of Replicas
+          type: number
+          description: How many pod replicas to run
+          default: 1
+          minimum: 1
+          maximum: 10
+
+  steps:
+    - id: fetch-repo
+      name: Fetch Repository
+      action: fetch:plain
+      input:
+        url: ${{ parameters.repoUrl }}
+        targetPath: ./app
+
+    - id: validate-dockerfile
+      name: Validate Dockerfile Exists
+      action: fs:read
+      input:
+        path: ./app/Dockerfile
+
+    - id: generate-k8s-manifests
+      name: Generate Kubernetes Manifests
+      action: fetch:template
+      input:
+        url: ./templates/k8s
+        targetPath: ./k8s
+        values:
+          appName: ${{ parameters.appName }}
+          repoUrl: ${{ parameters.repoUrl }}
+          owner: ${{ parameters.owner }}
+          businessUnit: ${{ parameters.businessUnit }}
+          environment: ${{ parameters.environment }}
+          containerPort: ${{ parameters.containerPort }}
+          replicas: ${{ parameters.replicas }}
+          description: ${{ parameters.description }}
+          dockerRegistry: docker.io
+          dockerImageName: roucru/${{ parameters.appName }}
+
+    - id: generate-catalog-info
+      name: Generate Catalog Info
+      action: fetch:template
+      input:
+        url: ./templates/catalog
+        targetPath: ./
+        values:
+          appName: ${{ parameters.appName }}
+          repoUrl: ${{ parameters.repoUrl }}
+          owner: ${{ parameters.owner }}
+          businessUnit: ${{ parameters.businessUnit }}
+          environment: ${{ parameters.environment }}
+          description: ${{ parameters.description }}
+
+    - id: trigger-provisioning
+      name: Trigger Provisioning Workflow
+      action: http:backstage:request
+      input:
+        method: POST
+        path: /api/proxy/argo-events/backstage/provision
+        headers:
+          Content-Type: application/json
+        body:
+          eventType: provision-app
+          appName: ${{ parameters.appName }}
+          repoUrl: ${{ parameters.repoUrl }}
+          owner: ${{ parameters.owner }}
+          businessUnit: ${{ parameters.businessUnit }}
+          environment: ${{ parameters.environment }}
+          containerPort: ${{ parameters.containerPort }}
+          replicas: ${{ parameters.replicas }}
+          dockerRegistry: docker.io
+          dockerImageName: roucru/${{ parameters.appName }}
+          dockerImageTag: latest
+
+    - id: register
+      name: Register Component in Catalog
+      action: catalog:register
+      input:
+        catalogInfoUrl: ${{ steps['publish-catalog'].output.catalogInfoUrl }}
+        optional: true
+
+  output:
+    links:
+      - title: View Component in Catalog
+        url: ${{ steps.register.output.entityRef }}
+      - title: View in ArgoCD
+        url: https://argocd.${DNS_SUFFIX}/applications/${{ parameters.appName }}
+      - title: View Workflow Status
+        url: https://argo-workflows.${DNS_SUFFIX}/workflows/cicd
+    text:
+      - title: Provisioning Started
+        content: |
+          🚀 Your application **${{ parameters.appName }}** is being provisioned!
+          
+          **What's happening now:**
+          1. ✅ Validated Dockerfile exists in repo
+          2. ⏳ Creating namespace with IDP labels
+          3. ⏳ Creating ArgoCD Application  
+          4. ⏳ Building container image from ${{ parameters.repoUrl }}
+          5. ⏳ Pushing to docker.io/roucru/${{ parameters.appName }}
+          6. ⏳ Deploying to Kubernetes
+          
+          **Check progress:**
+          - ArgoCD: https://argocd.${DNS_SUFFIX}
+          - Argo Workflows: https://argo-workflows.${DNS_SUFFIX}
+          
+          Your app will be available at the namespace: **${{ parameters.appName }}**

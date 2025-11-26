@@ -4,3 +4,4 @@ resources:
   - docker-build-push.yaml
   - remediate-argocd-unhealthy.yaml
   - remediate-externalsecret-failure.yaml
+  - provision-app-workflow.yaml
