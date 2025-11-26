@@ -26,6 +26,9 @@ spec:
         targetRevision: ${TARGET_REVISION}
         path: '{{path}}'
         kustomize:
+          images:
+            - name: backstage/backstage
+              newTag: '${BACKSTAGE_VERSION}'
           patches:
             - target:
                 kind: Deployment

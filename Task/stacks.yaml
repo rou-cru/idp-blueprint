@@ -82,6 +82,8 @@ tasks:
     env:
       REPO_URL: '{{.REPO_URL}}'
       TARGET_REVISION: '{{.TARGET_REVISION}}'
+      BACKSTAGE_VERSION:
+        sh: ./Scripts/config-get.sh versions.backstage '{{.CONFIG_FILE}}'
       DNS_SUFFIX:
         sh: |
           value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)

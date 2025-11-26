@@ -21,6 +21,8 @@ external_secrets = "0.20.2"
 vault = "0.31.0"
 argocd = "8.6.0"
 argo_events = "2.4.12"
+backstage = "1.45.0"
+
 
 [operational]
 kubectl_timeout = "300s"
