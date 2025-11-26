@@ -18,84 +18,9 @@ This page gives a cross-cutting component view of Vault + ESO and how they inter
 
 ## Architecture Diagram
 
-```d2
-direction: right
+![Secrets Management Architecture](../../../assets/diagrams/architecture/secrets-architecture.svg)
 
-classes: {
-  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
-  control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-  data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
-  ext: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-}
-
-Cluster: {
-  class: infra
-  label: "Cluster"
-  VaultNS: {
-    class: control
-    label: "vault-system\nVault (KV v2)\nTokenReviewer"
-    shape: cylinder
-    link: https://www.vaultproject.io
-    tooltip: |md
-      HashiCorp Vault stores all secrets.
-      Uses KV v2 engine for versioned secrets.
-    |
-  }
-  ESONS: {
-    class: control
-    label: "external-secrets-system\nESO controllers"
-    link: https://external-secrets.io
-  }
-  AppNS: { class: data; label: "App namespaces\nExternalSecret CRs\nKubernetes Secrets\nPods" }
-}
-
-CloudSM: {
-  class: ext
-  label: "Cloud secret managers"
-  AWS: {
-    label: "AWS Secrets Manager"
-    shape: cloud
-  }
-  GCP: {
-    label: "GCP Secret Manager"
-    shape: cloud
-  }
-  Azure: {
-    label: "Azure Key Vault"
-    shape: cloud
-  }
-}
-
-External: {
-  class: ext
-  label: "External workloads"
-  Lambda: {
-    label: "AWS Lambda"
-    shape: cloud
-  }
-  CloudRun: {
-    label: "GCP Cloud Run"
-    shape: cloud
-  }
-  Functions: {
-    label: "Azure Functions"
-    shape: cloud
-  }
-  Crossplane: "Crossplane-managed DBs"
-}
-
-Cluster.VaultNS -> Cluster.ESONS: "auth (K8s SA) + read KV"
-Cluster.ESONS -> Cluster.AppNS: "create/update Secrets"
-Cluster.AppNS -> Cluster.AppNS: "Pods mount or env"
-
-Cluster.ESONS -> CloudSM.AWS: "PushSecret (optional)"
-Cluster.ESONS -> CloudSM.GCP
-Cluster.ESONS -> CloudSM.Azure
-CloudSM.AWS -> External.Lambda: "consume"
-CloudSM.AWS -> External.Crossplane
-CloudSM.GCP -> External.CloudRun
-CloudSM.Azure -> External.Functions
-```
+> **Source:** [secrets-architecture.d2](../../../assets/diagrams/architecture/secrets-architecture.d2)
 
 ## Flow Explanation
 

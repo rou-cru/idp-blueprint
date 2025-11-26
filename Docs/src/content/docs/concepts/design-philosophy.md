@@ -223,24 +223,9 @@ Prometheus discovers this ServiceMonitor automatically and starts scraping.
 
 The five philosophies aren't independent—they form an interconnected system:
 
-```
-Infrastructure as Code
-        ↓
-   (defines)
-        ↓
-Declarative Configuration
-        ↓
-   (enables)
-        ↓
-      GitOps
-     ↙     ↘
-Security    Observability
-as Code     as Code
-     ↘     ↙
-  (provide)
-        ↓
-Actionable Feedback Loop
-```
+![Design Philosophy Flow](../../../assets/diagrams/concepts/design-philosophy-flow.svg)
+
+> **Source:** [design-philosophy-flow.d2](../../../assets/diagrams/concepts/design-philosophy-flow.d2)
 
 **Example Flow:**
 

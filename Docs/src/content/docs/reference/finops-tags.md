@@ -28,14 +28,9 @@ The platform front-loads tagging so you can attribute resource usage—even on a
 
 ## Flow from Labels to Dashboards
 
-```mermaid
-flowchart LR
-    Git[Git Labels] --> Kyverno[Kyverno Enforcement]
-    Kyverno --> K8s[Kubernetes Resources]
-    K8s --> Metrics[Prometheus Metrics]
-    Metrics --> Grafana[Grafana Dashboards]
-    Metrics --> Billing["FinOps Tool (Kubecost/Cloud)"]
-```
+![FinOps Tags Flow](../../../assets/diagrams/reference/finops-tags-flow.svg)
+
+> **Source:** [finops-tags-flow.d2](../../../assets/diagrams/reference/finops-tags-flow.d2)
 
 ## Best Practices
 

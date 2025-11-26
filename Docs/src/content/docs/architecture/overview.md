@@ -43,54 +43,9 @@ The container view groups components into layers and planes:
 
 All components are either bootstrapped once from `IT/` (infrastructure core) or continuously reconciled from `K8s/` (stacks).
 
-```d2
-direction: right
+![Container View](../../../assets/diagrams/architecture/container-view.svg)
 
-classes: {
-  infra: { style: { fill: "#0f172a"; stroke: "#38bdf8"; font-color: white } }
-  svc:   { style: { fill: "#0f766e"; stroke: "#34d399"; font-color: white } }
-  gov:   { style: { fill: "#111827"; stroke: "#6366f1"; font-color: white } }
-  ux:    { style: { fill: "#7c3aed"; stroke: "#a855f7"; font-color: white } }
-}
-
-Infra: {
-  label: "Infrastructure Layer"
-  K8s: { class: infra; label: "K8s API" }
-  Gateway: { class: infra; label: "Gateway API" }
-  Cilium: { class: infra }
-}
-
-Services: {
-  label: "Platform Services"
-  Vault: { class: svc }
-  ESO: { class: svc; label: "External Secrets" }
-  Observability: {
-    class: svc
-    label: "Metrics & Logs"
-    tooltip: "Prometheus, Loki, Fluent-bit"
-  }
-}
-
-Governance: {
-  label: "Governance Layer"
-  ArgoCD: { class: gov }
-  Kyverno: { class: gov }
-}
-
-UX: {
-  label: "Developer Portals"
-  Grafana: { class: ux }
-  Backstage: { class: ux }
-  Workflows: { class: ux; label: "Argo Workflows" }
-}
-
-# Key Flows
-Infra.Gateway -> UX: "Routes traffic"
-Governance.ArgoCD -> Services: "Deploys"
-Governance.ArgoCD -> UX: "Deploys"
-Services.ESO -> Services.Vault: "Syncs secrets"
-Governance.Kyverno -> Infra.K8s: "Enforces policy"
-```
+> **Source:** [container-view.d2](../../../assets/diagrams/architecture/container-view.d2)
 
 ## Platform layers
 
