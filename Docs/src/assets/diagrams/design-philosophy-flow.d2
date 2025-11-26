@@ -1,0 +1,20 @@
+direction: down
+
+classes: {
+  layer: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  concept: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+}
+
+IaC: { class: layer; label: "Infrastructure as Code" }
+Declarative: { class: layer; label: "Declarative Configuration" }
+GitOps: { class: layer; label: "GitOps" }
+Security: { class: concept; label: "Security\nas Code" }
+Observability: { class: concept; label: "Observability\nas Code" }
+Feedback: { class: concept; label: "Actionable Feedback Loop" }
+
+IaC -> Declarative: "defines"
+Declarative -> GitOps: "enables"
+GitOps -> Security
+GitOps -> Observability
+Security -> Feedback: "provide"
+Observability -> Feedback: "provide"

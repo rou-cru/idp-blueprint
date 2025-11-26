@@ -1,0 +1,19 @@
+direction: right
+
+classes: {
+  node: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  process: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+}
+
+Git: { class: node; label: "Git Labels" }
+Kyverno: { class: process; label: "Kyverno Enforcement" }
+K8s: { class: node; label: "Kubernetes Resources" }
+Metrics: { class: process; label: "Prometheus Metrics" }
+Grafana: { class: node; label: "Grafana Dashboards" }
+Billing: { class: node; label: "FinOps Tool\n(Kubecost/Cloud)" }
+
+Git -> Kyverno
+Kyverno -> K8s
+K8s -> Metrics
+Metrics -> Grafana
+Metrics -> Billing

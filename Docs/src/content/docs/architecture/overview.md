@@ -15,59 +15,7 @@ The platform serves three primary use cases. Engineers can evaluate a realistic 
 
 A single Kubernetes cluster sits between engineers and Git. Git owns all intent, ArgoCD reconciles that intent into the cluster, and traffic flows back out through Gateway API. Platform engineers operate the stack while application teams ship workloads through it. External systems include the Git provider as source of truth, container registries for images, and optional cloud services for external secret stores. The deployment target is one cluster—either local k3d or remote—treated as interchangeable infrastructure.
 
-```d2
-direction: right
-
-classes: {
-  actor: {
-    shape: person
-    style: {
-      fill: "#1e3a8a"
-      stroke: "#60a5fa"
-      font-color: white
-    }
-  }
-  system: {
-    style: {
-      fill: "#111827"
-      stroke: "#34d399"
-      font-color: white
-    }
-  }
-  ext: {
-    style: {
-      fill: "#0f172a"
-      stroke: "#22d3ee"
-      font-color: white
-    }
-  }
-}
-
-Platform Engineer: { class: actor }
-Application Developer: { class: actor }
-
-IDP: {
-  class: system
-  label: "IDP Blueprint\n(Kubernetes Cluster)"
-}
-
-Git: {
-  class: ext
-  label: "Git Provider"
-}
-
-Registry: {
-  class: ext
-  label: "Container Registry"
-}
-
-Platform Engineer -> Git: "Configures"
-Application Developer -> Git: "Commits code"
-Git -> IDP: "Syncs state"
-Registry -> IDP: "Provides images"
-IDP -> Application Developer: "Serves apps"
-Platform Engineer -> IDP: "Observes"
-```
+[System Context Diagram](diagrams.d2.md#L1)
 
 ## Container view
 
