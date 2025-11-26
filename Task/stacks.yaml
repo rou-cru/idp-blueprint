@@ -76,12 +76,19 @@ tasks:
     dir: K8s/backstage
     preconditions:
       - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
+        msg: 'envsubst is required but not installed. Run: brew install get text'
       - sh: command -v kubectl
         msg: 'kubectl is required but not installed. Run: brew install kubectl'
     env:
       REPO_URL: '{{.REPO_URL}}'
       TARGET_REVISION: '{{.TARGET_REVISION}}'
+      DNS_SUFFIX:
+        sh: |
+          value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
+          if [ -z "$value" ] || [ "$value" = "''" ]; then
+            value=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1")
+          fi
+          echo "$(echo "$value" | tr '.' '-').nip.io"
     cmds:
       - envsubst < applicationset-backstage.yaml | kubectl apply -f -
 
