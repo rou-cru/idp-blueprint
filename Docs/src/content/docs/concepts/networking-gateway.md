@@ -192,29 +192,10 @@ Services.VaultSvc -> Pods.VaultPod
 TLS.CertManager -> TLS.CA: "uses"
 TLS.CA -> TLS.WildcardCert: "issues"
 TLS.WildcardCert -> L7.Gateway: "mounts as Secret"
-```
 
 ### Network Flow Explanation
 
-1. **L3/L4 Layer (Node & CNI)**:
-   - External client connects to NodePort (30443) on any cluster node
-   - Cilium CNI handles pod networking using eBPF datapath
-   - NodePort Service forwards traffic to Gateway implementation
-
-2. **L7 Layer (Gateway API)**:
-   - `GatewayClass` defines how Gateways are implemented (cilium-nodeport)
-   - `Gateway` resource creates HTTPS listener on *.nip.io with TLS termination
-   - `HTTPRoute` resources define hostname-based routing to backend Services
-
-3. **TLS/PKI Layer**:
-   - cert-manager automates certificate lifecycle
-   - ClusterIssuer uses internal CA (idp-demo-ca)
-   - Wildcard certificate (*.nip.io) is issued and mounted into Gateway
-
-4. **Backend Layer**:
-   - Services provide stable ClusterIP endpoints
-   - Cilium load balances across pod endpoints
-   - Pods serve actual application traffic
+External clients connect to NodePort (30443) on any cluster node where Cilium CNI handles pod networking using eBPF datapath and the NodePort Service forwards traffic to the Gateway implementation. The GatewayClass defines how Gateways are implemented (cilium-nodeport), the Gateway resource creates an HTTPS listener on *.nip.io with TLS termination, and HTTPRoute resources define hostname-based routing to backend Services. cert-manager automates the certificate lifecycle where ClusterIssuer uses internal CA (idp-demo-ca) and a wildcard certificate (*.nip.io) is issued and mounted into the Gateway. Services provide stable ClusterIP endpoints while pods implement the actual application logic.
 
 ### NetworkPolicies
 

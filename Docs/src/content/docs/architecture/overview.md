@@ -7,26 +7,13 @@ sidebar:
 
 ## Context and goals
 
-**IDP Blueprint is designed for:**
+IDP Blueprint provides a compact, self-hosted platform stack for Kubernetes clusters. The architecture supports edge, on-premises, and constrained environments where horizontal scaling is limited, though the same patterns apply to larger deployments. The platform operates GitOps-first with Git as the source of truth and ArgoCD handling reconciliation. No managed control planes or commercial licenses are required, making it fully cloud-agnostic.
 
-- Kubernetes clusters where you want a compact, self‑hosted platform stack.
-- Edge/on‑prem or constrained environments where scaling out is not the main option, but the same architecture applies to larger clusters.
-- GitOps‑first operation: Git is the source of truth, ArgoCD reconciles the cluster.
-- Cloud‑agnostic use: no managed control planes and no commercial licenses.
-
-Typical uses:
-
-- Evaluate a realistic platform stack on a laptop or lab cluster.
-- Prototype an internal developer platform without committing to a vendor.
-- Train platform, SRE, and security engineers on GitOps and policy‑driven operation.
+The platform serves three primary use cases. Engineers can evaluate a realistic platform stack on a laptop or lab cluster without cloud dependencies. Teams can prototype internal developer platforms without vendor commitments. Organizations can train platform, SRE, and security engineers on GitOps and policy-driven operations with hands-on infrastructure.
 
 ## System context
 
-A single Kubernetes cluster sits between engineers and Git. Git owns all intent; ArgoCD reconciles that intent into the cluster; traffic comes back out through Gateway API:
-
-- **Actors**: Platform engineers operate the stack; application teams ship workloads through it.
-- **External systems**: Git provider for source of truth, container registry for images, optional cloud services such as external secret stores.
-- **Deployment target**: One cluster (local k3d or remote), treated as interchangeable infrastructure.
+A single Kubernetes cluster sits between engineers and Git. Git owns all intent, ArgoCD reconciles that intent into the cluster, and traffic flows back out through Gateway API. Platform engineers operate the stack while application teams ship workloads through it. External systems include the Git provider as source of truth, container registries for images, and optional cloud services for external secret stores. The deployment target is one cluster—either local k3d or remote—treated as interchangeable infrastructure.
 
 ```d2
 direction: right
@@ -172,37 +159,15 @@ This layering is reflected in the repository layout and in the deployment order.
 
 ## GitOps backbone
 
-The control plane of this IDP is Git‑driven:
+The control plane operates through Git-driven automation across three layers. Bootstrap (`IT/`) handles one-time installation of core infrastructure including Cilium, Vault, ESO, cert-manager, ArgoCD, and Gateway API, along with minimal namespaces and RBAC. GitOps (`K8s/`) manages continuously reconciled state through stacks grouped by concern—observability, CI/CD, and security—with one ApplicationSet per stack that discovers subdirectories and generates ArgoCD Applications. Policies (`Policies/`) define Kyverno rules and related configuration.
 
-- Bootstrap (`IT/`) brings up:
-  - Cilium, Vault, ESO, cert‑manager, ArgoCD, Gateway API.
-  - Minimal namespaces and RBAC to host platform components.
-- GitOps (`K8s/`) defines:
-  - Stacks grouped by concern (observability, CI/CD, security).
-  - One ApplicationSet per stack; each ApplicationSet discovers subdirectories and creates ArgoCD Applications.
-- Policies (`Policies/`) define:
-  - Kyverno policies and related configuration.
-
-Changes to any of these folders are applied through ArgoCD. Manual changes in the cluster are treated as drift and reverted.
-
-For a deeper look at this control backbone, see [GitOps model](../concepts/gitops-model.md) and [K8s directory architecture](applications.md).
+ArgoCD applies all changes from these directories to the cluster. Manual cluster modifications are treated as drift and automatically reverted. For implementation details, see [GitOps model](../concepts/gitops-model.md) and [K8s directory architecture](applications.md).
 
 ## Resilience on a small cluster
 
-On a 3‑node edge cluster, high availability looks different from large cloud setups. The design focuses on:
+High availability on a 3-node edge cluster requires a different approach than large cloud deployments. The design prioritizes tiered criticality: the core control plane (Kubernetes API and etcd) receives highest priority, critical infrastructure like ArgoCD and Prometheus must survive node loss, and everything else can degrade or restart later. Scheduling uses PriorityClasses to separate infrastructure from workloads, node labels to define pools (control plane, infra, workloads), and tolerations that allow critical components to use the control plane node as a lifeboat.
 
-- **Tiered criticality**
-  - Core control plane (Kubernetes API, etcd) is highest priority.
-  - Critical infrastructure (ArgoCD, Prometheus) must survive node loss.
-  - Everything else can be degraded or restarted later.
-- **Scheduling and priorities**
-  - PriorityClasses separate infrastructure from workloads.
-  - Node labels enable “pools” (control plane, infra, workloads).
-  - Tolerations let critical components use the control plane node as a lifeboat.
-
-When a node fails, the goal is to preserve visibility (Prometheus, Loki) and the ability to repair (ArgoCD) even if some stacks are degraded.
-
-See [Scheduling, priority, and node pools](../concepts/scheduling-nodepools.md) and [Disaster recovery](../operate/disaster-recovery.md) for details.
+When a node fails, the platform preserves visibility through Prometheus and Loki while maintaining the ability to repair via ArgoCD, even if some stacks run in degraded mode. See [Scheduling, priority, and node pools](../concepts/scheduling-nodepools.md) and [Disaster recovery](../operate/disaster-recovery.md) for operational details.
 
 ## Selection criteria (why these technologies)
 

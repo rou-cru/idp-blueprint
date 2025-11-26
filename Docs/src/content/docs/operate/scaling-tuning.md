@@ -31,10 +31,7 @@ resources:
 
 **Sizing philosophy applied here:**
 
-- DaemonSets (Fluent-bit, Node Exporter): minimal footprint since they run on every node
-- Control plane (ArgoCD, operators): modest; mostly I/O-bound
-- Observability (Prometheus, Loki): sized for 3-node demo with ~20 workloads
-- CI/CD (Workflows, SonarQube): larger; ephemeral burst capacity
+The sizing strategy varies by component role. DaemonSets like Fluent-bit and Node Exporter use minimal footprints since they run on every node. Control plane components (ArgoCD, operators) receive modest allocations as they are mostly I/O-bound. Observability stack components (Prometheus, Loki) are sized for a 3-node demo running approximately 20 workloads. CI/CD components (Workflows, SonarQube) get larger allocations to handle ephemeral burst capacity.
 
 Check any `*-values.yaml` to see applied sizing.
 
