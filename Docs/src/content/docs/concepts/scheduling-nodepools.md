@@ -9,189 +9,13 @@ The platform treats capacity as a product feature. PriorityClasses and pools ens
 
 ## Mental model
 
-```d2
-direction: right
-
-classes: { prio: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
-           pool: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
-
-Priorities: {
-  class: prio
-  Infra: "platform-infrastructure\n(Vault, ArgoCD, cert-manager)"
-  Events: "platform-events\n(Argo Events)"
-  Observ: "platform-observability\n(Prometheus, Loki)"
-  Policy: "platform-policy\n(Kyverno)"
-  CICD: "platform-cicd / cicd-execution\n(Workflows controller + pods)"
-  Dash: "platform-dashboards\n(Grafana)"
-  Users: "user-workloads\n(default)"
-}
-
-Pools: {
-  class: pool
-  Control: "Control plane node"
-  Infra: "Infra nodes"
-  Work: "Workload nodes"
-}
-
-Priorities.Infra -> Pools.Infra
-Priorities.Events -> Pools.Infra
-Priorities.Observ -> Pools.Infra
-Priorities.Policy -> Pools.Infra
-Priorities.Infra -> Pools.Infra
-Priorities.Events -> Pools.Infra
-Priorities.Observ -> Pools.Infra
-Priorities.Policy -> Pools.Infra
-Priorities.CICD -> Pools.Work
-Priorities.Dash -> Pools.Work
-Priorities.Users -> Pools.Work
-```
+![Scheduling Mental Model](scheduling-nodepools-1.svg)
 
 ## Detailed Scheduling Architecture
 
 This diagram shows how Kubernetes scheduler makes placement decisions based on PriorityClasses, node labels, taints/tolerations, and resource availability.
 
-```d2
-direction: down
-
-classes: {
-  sched: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-  prio: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
-  node: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
-  pod: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
-}
-
-Scheduler: {
-  class: sched
-  label: "Kubernetes Scheduler"
-
-  Decision: {
-    label: "Scheduling Decision"
-    Priority: "1. Check PriorityClass"
-    Resources: "2. Check resources (requests)"
-    Affinity: "3. Check node selector/affinity"
-    Taints: "4. Check taints/tolerations"
-    Pressure: "5. Eviction if needed"
-  }
-}
-
-PriorityClasses: {
-  class: prio
-  label: "PriorityClasses (IT/priorityclasses/)"
-
-  Tier1: {
-    label: "Tier 1 - Critical Infrastructure"
-    Infra: "platform-infrastructure (10000)\nVault, ArgoCD, cert-manager"
-    Events: "platform-events (9500)\nArgo Events"
-  }
-
-  Tier2: {
-    label: "Tier 2 - Essential Platform"
-    Policy: "platform-policy (9000)\nKyverno"
-    Security: "platform-security (8500)\nTrivy"
-    Observability: "platform-observability (8000)\nPrometheus, Loki"
-  }
-
-  Tier3: {
-    label: "Tier 3 - Developer Services"
-    CICD: "platform-cicd (7000)\nWorkflows Controller"
-    Dashboards: "platform-dashboards (6000)\nGrafana, Backstage"
-  }
-
-  Tier4: {
-    label: "Tier 4 - Execution & Users"
-    Execution: "cicd-execution (5000)\nWorkflow pods"
-    Users: "user-workloads (1000)"
-    Unclassified: "unclassified-workload (0)"
-  }
-}
-
-Nodes: {
-  class: node
-  label: "Node Pools"
-
-  ControlPlane: {
-    label: "Control Plane Node"
-    Labels: "node-role: control-plane"
-    Taints: "NoSchedule (control-plane)"
-    Tolerations: "Critical pods only"
-  }
-
-  InfraNodes: {
-    label: "Infrastructure Nodes"
-    Labels: "node-role: infrastructure"
-    Resources: "High memory/CPU"
-    Workloads: "Vault, ArgoCD, Prometheus"
-  }
-
-  WorkloadNodes: {
-    label: "Workload Nodes"
-    Labels: "node-role: workload"
-    Resources: "Balanced"
-    Workloads: "CI/CD, Dashboards, User apps"
-  }
-}
-
-ResourcePressure: {
-  class: sched
-  label: "Resource Pressure Scenario"
-
-  State: "Node memory 85% used"
-
-  Action: {
-    label: "Scheduler Actions"
-    Step1: "1. Block new low-priority pods"
-    Step2: "2. Evict lowest priority pods"
-    Step3: "3. Preserve Tier 1-2 workloads"
-  }
-
-  Eviction: {
-    label: "Eviction Order (lowest first)"
-    First: "unclassified-workload (0)"
-    Second: "user-workloads (1000)"
-    Third: "cicd-execution (5000)"
-    Protected: "platform-* (6000+) protected"
-  }
-}
-
-Examples: {
-  class: pod
-  label: "Example Pod Placements"
-
-  VaultPod: {
-    label: "Vault Pod"
-    Priority: "platform-infrastructure (10000)"
-    NodeSelector: "node-role: infrastructure"
-    Tolerations: "control-plane (as lifeboat)"
-    Result: "→ Infra Node (or Control if needed)"
-  }
-
-  GrafanaPod: {
-    label: "Grafana Pod"
-    Priority: "platform-dashboards (6000)"
-    NodeSelector: "none"
-    Result: "→ Workload Node"
-  }
-
-  WorkflowPod: {
-    label: "Workflow Execution Pod"
-    Priority: "cicd-execution (5000)"
-    NodeSelector: "none"
-    Result: "→ Workload Node\n(evicted first if pressure)"
-  }
-}
-
-Scheduler.Decision.Priority -> PriorityClasses: "consult"
-PriorityClasses.Tier1 -> Nodes.InfraNodes: "prefer infra nodes"
-PriorityClasses.Tier1 -> Nodes.ControlPlane: "tolerate (lifeboat)"
-PriorityClasses.Tier2 -> Nodes.InfraNodes
-PriorityClasses.Tier3 -> Nodes.WorkloadNodes
-PriorityClasses.Tier4 -> Nodes.WorkloadNodes
-
-Nodes -> ResourcePressure.State: "monitor"
-ResourcePressure.Action -> PriorityClasses.Tier4: "evict first"
-ResourcePressure.Eviction.Protected -> Examples.VaultPod: "always protected"
-ResourcePressure.Eviction.First -> Examples.WorkflowPod: "evicted if needed"
-```
+![Detailed Scheduling Architecture](scheduling-nodepools-2.svg)
 
 ### Scheduling Decision Flow
 
@@ -227,26 +51,14 @@ This ensures observability and GitOps remain functional even if only the control
 
 ### How PriorityClasses are defined here
 
-- **Source of truth:** `IT/priorityclasses/priorityclasses.yaml` is what ArgoCD applies; keep it authoritative.
-- **Shape, not numbers:** We use four intent buckets — control plane, platform services, shared UIs, and execution/user workloads. Exact integers are less important than the ordering between buckets.
-- **Eviction policy:** Higher buckets are protected from preemption/eviction; execution/user tiers are allowed to move first when nodes are under pressure.
-- **Lifeboat:** Control-plane tolerations let critical pods fall back to the control-plane node if infra nodes are lost (see tolerations in each chart’s values).
+`IT/priorityclasses/priorityclasses.yaml` is the authoritative source applied by ArgoCD. We use four intent buckets—control plane, platform services, shared UIs, and execution/user workloads—where the relative ordering matters more than exact integer values. Higher buckets are protected from preemption, while execution and user tiers are evicted first under pressure. Critical pods tolerate control-plane taints to use the control plane as a "lifeboat" if infrastructure nodes fail.
 
 When adjusting priorities, change the manifests first; update this page only to describe the rationale and the relative ordering.
 | unclassified-workload | 0 | Missing priority | Evicted First |
 
 Key points:
 
-- PriorityClasses are declared in `IT/priorityclasses/priorityclasses.yaml` and
-  include: `platform-infrastructure`, `platform-events`, `platform-policy`,
-  `platform-security`, `platform-observability`, `platform-cicd`,
-  `platform-dashboards`, `user-workloads`, `cicd-execution`, and the global
-  default `unclassified-workload`.
-- Every chart sets `priorityClassName` where appropriate (enforced by checks).
-  Fail fast if missing.
-- Pool separation reduces noisy neighbors; DaemonSets run everywhere (Cilium,
-  Fluent‑bit, Node Exporter).
-- HA is a dial: enable for control planes as you grow.
+PriorityClasses are declared in `IT/priorityclasses/priorityclasses.yaml` and include tiers for infrastructure, events, policy, security, observability, CI/CD, dashboards, and user workloads. Every chart must set a `priorityClassName` to fail fast if missing. Pool separation reduces noisy neighbors, while DaemonSets like Cilium and Fluent-bit run everywhere. High availability is a dial that can be enabled for control planes as the platform grows.
 
 ## Zero-Downtime Rolling Updates
 

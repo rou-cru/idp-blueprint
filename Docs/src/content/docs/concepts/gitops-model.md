@@ -13,57 +13,13 @@ This IDP is GitOps‑first, policy‑driven, and event‑oriented. The goal is o
 
 The platform separates initial provisioning from continuous operation. Bootstrap (`IT/`) handles one-time installation of control planes and base services including Cilium, cert-manager, Vault/ESO, ArgoCD, and Gateway. This layer is code but not continuously reconciled. GitOps (`K8s/`) manages continuously reconciled state through ApplicationSets that watch directories and generate Applications.
 
-```d2
-direction: right
-
-classes: { infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
-           gitops: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white } }
-
-IT: { class: infra; label: "Bootstrap (IT/)\nOne-time install\nCilium, cert-manager, Vault, ESO, ArgoCD, Gateway" }
-GitOps: { class: gitops; label: "GitOps (K8s/)\nContinuous reconcile\nStacks via ApplicationSets" }
-
-IT -> GitOps: "seed control planes"
-```
+![Bootstrap vs GitOps](gitops-model-1.svg)
 
 ## AppProjects and ApplicationSets — guardrails and generation
 
 AppProjects define blast radius by constraining source repositories and deployment destinations (see `IT/argocd/appproject-*.yaml`). ApplicationSets map directories to Applications, triggering one rollout per commit.
 
-```d2
-direction: right
-
-classes: { git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-           ns: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
-
-Repo: { class: git; label: "Git\nK8s/* stacks" }
-
-Argo: {
-  class: control
-  label: "ArgoCD"
-  Projects: "AppProjects\n(blast radius)"
-  AppSets: "ApplicationSets\n(one per stack)"
-  Apps: "Applications\n(one per component)"
-}
-
-Namespaces: {
-  class: ns
-  OBS: "observability"
-  CICD: "cicd"
-  SEC: "security"
-  EVENTS: "events"
-  DP: "backstage"
-}
-
-Repo -> Argo.AppSets: "directories → generators"
-Argo.AppSets -> Argo.Projects: "scoped"
-Argo.AppSets -> Argo.Apps: "templates"
-Argo.Apps -> Namespaces.OBS: "sync"
-Argo.Apps -> Namespaces.CICD
-Argo.Apps -> Namespaces.SEC
-Argo.Apps -> Namespaces.EVENTS
-Argo.Apps -> Namespaces.DP
-```
+![AppProjects and ApplicationSets](gitops-model-2.svg)
 
 ## Sync Waves — ordering without scripts
 
@@ -83,46 +39,13 @@ Argo Events makes “what happens next” explicit: route events into Sensors, t
 
 Typical recipes:
 
-- SLO burn → rollback → notify.
-- GitHub PR → build+test → preview.
-- ArgoCD OutOfSync → refresh/sync → gate on policy.
+Typical recipes include triggering a rollback and notification when an SLO burn alert fires, or running build and test pipelines for GitHub PRs to generate previews. For ArgoCD, an OutOfSync event can trigger a refresh or sync operation gated by policy checks.
 
-```d2
-direction: right
-
-classes: { event: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-           action: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
-
-Sources: {
-  class: event
-  Alert: "Alertmanager"
-  GitHub: "GitHub webhooks"
-  K8s: "K8s resource events"
-}
-
-Sensors: { class: control; label: "Argo Events Sensors\n(filters + routing)" }
-
-Triggers: {
-  class: action
-  WF: "Argo Workflows"
-  ACD: "ArgoCD API"
-  HTTP: "HTTP/webhook"
-}
-
-Sources.Alert -> Sensors
-Sources.GitHub -> Sensors
-Sources.K8s -> Sensors
-Sensors -> Triggers.WF
-Sensors -> Triggers.ACD
-Sensors -> Triggers.HTTP
-```
+![Eventing](gitops-model-3.svg)
 
 ## Sync policy, drift, and safety
 
-- Automated prune + self‑heal keep the cluster aligned with Git.
-- Server‑side apply and out‑of‑sync only reduce noisy diffs.
-- Ignore non‑deterministic fields (e.g., webhook caBundle) to avoid drift noise.
+Automated prune and self‑heal settings keep the cluster aligned with Git, while server‑side apply and out‑of‑sync only options reduce noisy diffs. Non‑deterministic fields like webhook `caBundle` are ignored to avoid unnecessary drift.
 
 ## Secrets in the loop
 

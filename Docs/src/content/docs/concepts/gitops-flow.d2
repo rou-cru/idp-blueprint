@@ -1,0 +1,33 @@
+direction: down
+
+classes: {
+  git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+  control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  cluster: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  observ: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+Git: {
+  class: git
+  label: "Git Repository\n(Desired State)"
+}
+
+Argo: {
+  class: control
+  label: "ArgoCD\n(Continuous Reconciliation)"
+}
+
+Cluster: {
+  class: cluster
+  label: "Kubernetes Cluster\n(Observed State)"
+}
+
+Observability: {
+  class: observ
+  label: "Prometheus/Grafana\n(Actionable Insights)"
+}
+
+Git -> Argo: "defines"
+Argo -> Cluster: "syncs"
+Cluster -> Observability: "metrics"
+Observability -> Git: "feedback loop"
