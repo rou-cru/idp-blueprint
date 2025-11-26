@@ -19,8 +19,6 @@ spec:
   indicator:
     ratio:
       errors:
-        metric: |
-          sum(rate(vault_core_handle_request_count{status="failure"}[5m]))
+        metric: vault_core_handle_request_count{status="failure"}
       total:
-        metric: |
-          sum(rate(vault_core_handle_request_count[5m]))
+        metric: vault_core_handle_request_count
