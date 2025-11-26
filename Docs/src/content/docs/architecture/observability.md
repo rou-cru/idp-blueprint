@@ -23,10 +23,7 @@ This page is the component view for the "Observability" part of the developer‑
 
 ### Repo wiring & tasks
 
-- ApplicationSet: `K8s/observability/applicationset-observability.yaml` watches `K8s/observability/*`.
-- Deploy only observability stack: `task stacks:observability`.
-- Grafana admin credentials are synced from Vault via `ExternalSecret` (see
-  `kube-prometheus-stack/grafana-admin-externalsecret.yaml`).
+The ApplicationSet in `K8s/observability/applicationset-observability.yaml` watches `K8s/observability/*`. Deploy only the observability stack with `task stacks:observability`. Grafana admin credentials are synced from Vault via `ExternalSecret` (`kube-prometheus-stack/grafana-admin-externalsecret.yaml`).
 
 ## Data Flow
 
@@ -75,18 +72,11 @@ UX.Pyrra -> Observability.Prom: "reads SLO burn rates"
 
 ## Instrumentation Strategy
 
-1. **ServiceMonitors everywhere** – Each stack component (ArgoCD, Kyverno, Trivy, etc.) exposes metrics and is annotated with the `prometheus: kube-prometheus` label so the Prometheus Operator scrapes it automatically.
-2. **Common labels** – `app.kubernetes.io/*` labels ensure dashboards can group data by stack or owner (ties into FinOps tagging).
-3. **Lightweight retention** – Prometheus stores ~2 days of data; Loki uses boltdb-shipper with 5Gi PVC to stay laptop-friendly. Adjust in `kube-prometheus-stack-values.yaml` and `loki-values.yaml` if you need longer retention.
-4. **Dashboards bundled** – Grafana sidecars import dashboards located in `K8s/observability/kube-prometheus-stack/dashboards/`. Add JSON there to keep everything GitOps-managed.
+Each stack component (ArgoCD, Kyverno, Trivy, etc.) exposes metrics via ServiceMonitors annotated with the `prometheus: kube-prometheus` label so the Prometheus Operator scrapes them automatically. Common `app.kubernetes.io/*` labels ensure dashboards can group data by stack or owner, tying into FinOps tagging. Prometheus stores approximately 2 days of data while Loki uses boltdb-shipper with 5Gi PVC to stay laptop-friendly (adjust in `kube-prometheus-stack-values.yaml` and `loki-values.yaml` for longer retention). Grafana sidecars import dashboards from `K8s/observability/kube-prometheus-stack/dashboards/`, keeping everything GitOps-managed.
 
 ## Alerting
 
-The Prometheus stack enables Alertmanager but does not send notifications by default. To enable alerts:
-
-1. Create a `Secret` named `alertmanager-kube-prometheus-stack-alertmanager` with your receiver configuration.
-2. Update `alertmanager.config` in `kube-prometheus-stack-values.yaml` to reference the secret or inline config.
-3. Commit and let ArgoCD roll out the change.
+The Prometheus stack enables Alertmanager but does not send notifications by default. To enable alerts, create a `Secret` named `alertmanager-kube-prometheus-stack-alertmanager` with your receiver configuration, update `alertmanager.config` in `kube-prometheus-stack-values.yaml` to reference the secret or inline config, and commit to let ArgoCD roll out the change.
 
 ### Verify
 
@@ -96,9 +86,7 @@ The Prometheus stack enables Alertmanager but does not send notifications by def
 
 ## Custom Dashboards Workflow
 
-- Platform engineer adds/updates JSON under `K8s/observability/kube-prometheus-stack/dashboards/`.
-- Commit → ApplicationSet syncs → Grafana sidecar reloads dashboards.
-- Verify in Grafana UI. No separate diagram needed.
+Platform engineers add or update JSON files under `K8s/observability/kube-prometheus-stack/dashboards/`. After committing, the ApplicationSet syncs and the Grafana sidecar reloads dashboards automatically. Verify changes in the Grafana UI.
 
 ## Extending the Stack
 

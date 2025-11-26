@@ -11,8 +11,7 @@ This IDP is GitOps‑first, policy‑driven, and event‑oriented. The goal is o
 
 ## Two layers of change: Bootstrap vs GitOps
 
-- Bootstrap (`IT/`): one‑time installation for control planes and base services (Cilium, cert‑manager, Vault/ESO, ArgoCD, Gateway). It’s code, but not continuously reconciled.
-- GitOps (`K8s/`): continuously reconciled state. ApplicationSets watch directories and generate Applications.
+The platform separates initial provisioning from continuous operation. Bootstrap (`IT/`) handles one-time installation of control planes and base services including Cilium, cert-manager, Vault/ESO, ArgoCD, and Gateway. This layer is code but not continuously reconciled. GitOps (`K8s/`) manages continuously reconciled state through ApplicationSets that watch directories and generate Applications.
 
 ```d2
 direction: right
@@ -28,8 +27,7 @@ IT -> GitOps: "seed control planes"
 
 ## AppProjects and ApplicationSets — guardrails and generation
 
-- AppProjects define blast radius (source repos + destinations). See `IT/argocd/appproject-*.yaml`.
-- ApplicationSets map folders → Applications. One commit = one rollout.
+AppProjects define blast radius by constraining source repositories and deployment destinations (see `IT/argocd/appproject-*.yaml`). ApplicationSets map directories to Applications, triggering one rollout per commit.
 
 ```d2
 direction: right
@@ -69,32 +67,15 @@ Argo.Apps -> Namespaces.DP
 
 ## Sync Waves — ordering without scripts
 
-ArgoCD applies resources in ascending `argocd.argoproj.io/sync-wave` order. We
-use waves to express dependency intent, not to encode fragile numbers.
+ArgoCD applies resources in ascending `argocd.argoproj.io/sync-wave` order. Waves express dependency intent rather than encoding fragile numeric sequences. Most resources use the default wave (0), indicating standard order. Foundation or prerequisite objects like namespaces and SecretStores receive negative waves to deploy before dependents. Routes, dashboards, and components that depend on backends use positive waves.
 
-How to read our repo:
-
-- **Default (0):** Most resources stay at the default; absence of the annotation means “standard order.”
-- **Foundations (negative):** Bootstrap or pre-req objects (namespaces, SecretStores) get negative waves so they land before dependents.
-- **Post-foundation (positive):** Routes, dashboards, or anything that depends on backends use positive waves.
-
-Examples in code:
-
-- Namespaces for each stack carry negative waves in `K8s/*/governance/namespace.yaml`.
-- HTTPRoutes and other edge objects use positive waves in `IT/gateway/httproutes/*.yaml`.
-- SLO/UIs (e.g., `K8s/observability/slo/*`) use higher positive waves to wait for data sources.
+The codebase demonstrates this pattern consistently. Namespaces for each stack carry negative waves in `K8s/*/governance/namespace.yaml`. HTTPRoutes and edge objects use positive waves in `IT/gateway/httproutes/*.yaml`. SLO and UI components (`K8s/observability/slo/*`) use higher positive waves to wait for data sources.
 
 When adding a resource, pick the smallest annotation that expresses the dependency, and keep the manifests as the source of truth. The specific integers may change; the intent (foundation → core → edge) should not.
 
 ## Policy — turning conventions into guarantees
 
-Kyverno validates at admission (and can mutate/generate). Use it to encode platform rules so every namespace and workload ships with the right labels, limits, and safety constraints.
-
-Examples to enforce:
-
-- Namespace labels (owner, business-unit, environment).
-- Component labels on Deployments/StatefulSets/DaemonSets.
-- Default NetworkPolicies (planned hardening).
+Kyverno validates at admission and can mutate or generate resources. The platform uses it to encode rules ensuring every namespace and workload includes appropriate labels, limits, and safety constraints. Common enforcement targets include namespace labels (owner, business-unit, environment), component labels on Deployments/StatefulSets/DaemonSets, and default NetworkPolicies for future hardening.
 
 ## Eventing — a programmable nervous system
 

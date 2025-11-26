@@ -49,9 +49,7 @@ Reporter -> Author: "dashboards & alerts"
 
 ### Repo wiring & tasks
 
-- Bootstrap runs `task stacks:policies` after ArgoCD, applying `Policies/app-kyverno.yaml` with `REPO_URL`/`TARGET_REVISION` envsubst.
-- To redeploy policies only: `task stacks:policies`.
-- Lint/check before pushing: `task quality:lint` and `task quality:check`.
+Bootstrap runs `task stacks:policies` after ArgoCD, applying `Policies/app-kyverno.yaml` with `REPO_URL`/`TARGET_REVISION` envsubst. Redeploy policies only with `task stacks:policies`. Lint and check before pushing using `task quality:lint` and `task quality:check`.
 
 ## Sync Waves & Priority
 
