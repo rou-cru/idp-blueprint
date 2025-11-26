@@ -285,5 +285,5 @@ The platform accepts these trade-offs in exchange for reproducibility, auditabil
 - [GitOps Model](gitops-model.md): Deep dive into the GitOps workflow
 - [Security & Policy Model](security-policy-model.md): How Security as Code manifests
 - [Observability Model](../architecture/observability.md): How Observability as Code works
-- [ArgoCD Component](../components/infrastructure/argocd/index.md): GitOps engine
-- [Kyverno Component](../components/policy/kyverno/index.md): Policy engine
+- [ArgoCD Component](../components/infrastructure/argocd.mdx): GitOps engine
+- [Kyverno Component](../components/policy/kyverno.mdx): Policy engine

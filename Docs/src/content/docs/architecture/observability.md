@@ -19,11 +19,16 @@ This page is the component view for the "Observability" part of the developer‑
 | Prometheus | `K8s/observability/kube-prometheus-stack/` | Scrapes cluster + workload metrics, exposes Alertmanager + Grafana. |
 | Fluent-bit | `K8s/observability/fluent-bit/` | Tails container logs on every node and forwards to Loki. |
 | Loki | `K8s/observability/loki/` | Stores logs in boltDB shipper mode (single replica for k3d). |
+| Pyrra | `K8s/observability/pyrra/` | SLO management with Prometheus integration. |
+
+![Pyrra UI Placeholder](../../../assets/images/pyrra-ui.png)
 | Grafana | Bundled via Prometheus stack | Serves dashboards, integrates with Prometheus + Loki datasources automatically. |
 
 ### Repo wiring & tasks
 
 The ApplicationSet in `K8s/observability/applicationset-observability.yaml` watches `K8s/observability/*`. Deploy only the observability stack with `task stacks:observability`. Grafana admin credentials are synced from Vault via `ExternalSecret` (`kube-prometheus-stack/grafana-admin-externalsecret.yaml`).
+
+![Grafana UI Placeholder](../../../assets/images/grafana-ui.png)
 
 ## Data Flow
 

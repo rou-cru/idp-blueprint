@@ -28,7 +28,7 @@ task deploy
 
 - Creates k3d cluster `idp-demo`
 - Bootstraps core: Cilium, cert-manager, Vault, External Secrets, ArgoCD, Gateway
-- Deploys Kyverno/Policy Reporter, then ApplicationSets for observability, CI/CD, security, events, and backstage (gated by [fuses](../overview/#feature-toggles-fuses) except events)
+- Deploys Kyverno/Policy Reporter, then ApplicationSets for observability, CI/CD, security, events, and backstage (gated by [fuses](../architecture/overview.md#feature-toggles-fuses) except events)
 
 Time: ~5–10 minutes depending on network and hardware.
 

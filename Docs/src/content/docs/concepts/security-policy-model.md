@@ -125,7 +125,7 @@ Future improvements include implementing default-deny NetworkPolicies, enforcing
 
 ## References
 
-- [Kyverno Component](../components/policy/kyverno/index.md): Policy engine details
-- [Vault Component](../components/infrastructure/vault/index.md): Secrets management
+- [Kyverno Component](../components/policy/kyverno.mdx): Policy engine details
+- [Vault Component](../components/infrastructure/vault.mdx): Secrets management
 - [Disaster Recovery](../operate/disaster-recovery.md): Availability strategy
 - [Feature Toggles](../operate/feature-toggles.md): Policy mode configuration
