@@ -16,7 +16,8 @@ resources:
     memory: 1Gi
 
 serviceAccount:
-  create: true
+  create: false
+  name: backstage-kubernetes
 
 service:
   # Default chart configuration works
@@ -24,6 +25,17 @@ service:
 
 ingress:
   enabled: false
+
+# Mount the catalog users ConfigMap
+extraVolumes:
+  - name: catalog-users
+    configMap:
+      name: backstage-demo-users
+
+extraVolumeMounts:
+  - name: catalog-users
+    mountPath: /opt/app-root/src/catalog-users.yaml
+    subPath: users.yaml
 
 # Extra secrets for backend auth cookie and DB password
 extraEnv:
@@ -47,6 +59,12 @@ appConfig:
   app:
     title: Backstage
     baseUrl: https://backstage.${DNS_SUFFIX}
+  catalog:
+    locations:
+      - type: file
+        target: /opt/app-root/src/catalog-users.yaml
+        rules:
+          - allow: [User, Group]
   backend:
     baseUrl: https://backstage.${DNS_SUFFIX}
     listen:
@@ -79,6 +97,26 @@ appConfig:
             resolvers:
               - resolver: emailMatchingUserEntityProfileEmail
               - resolver: emailLocalPartMatchingUserEntityName
+  kubernetes:
+    serviceLocatorMethod:
+      type: 'multiTenant'
+    clusterLocatorMethods:
+      - type: 'config'
+        clusters:
+          - name: local-cluster
+            url: https://kubernetes.default.svc
+            authProvider: 'serviceAccount'
+            skipTLSVerify: false
+            skipMetricsLookup: false
+            dashboardUrl: https://kubernetes-dashboard.${DNS_SUFFIX}
+            dashboardApp: standard
+    customResources:
+      - group: 'argoproj.io'
+        apiVersion: 'v1alpha1'
+        plural: 'rollouts'
+      - group: 'argoproj.io'
+        apiVersion: 'v1alpha1'
+        plural: 'applications'
 
 # @section -- PostgreSQL (Bitnami subchart)
 postgresql:

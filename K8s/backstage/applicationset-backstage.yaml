@@ -25,7 +25,17 @@ spec:
         repoURL: ${REPO_URL}
         targetRevision: ${TARGET_REVISION}
         path: '{{path}}'
-        kustomize: {}
+        kustomize:
+          patches:
+            - target:
+                kind: Deployment
+                name: dex
+              patch: |
+                - op: add
+                  path: /spec/template/spec/containers/0/env
+                  value:
+                    - name: DNS_SUFFIX
+                      value: "${DNS_SUFFIX}"
       destination:
         server: https://kubernetes.default.svc
         namespace: backstage
