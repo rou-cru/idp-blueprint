@@ -12,6 +12,7 @@ helmCharts:
 resources:
   - backstage-app-externalsecret.yaml
   - backstage-postgres-externalsecret.yaml
+  - backstage-kubernetes-rbac.yaml
   - service-monitor.yaml
 
 labels:

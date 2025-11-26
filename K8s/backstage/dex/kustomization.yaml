@@ -16,6 +16,5 @@ commonLabels:
   business-unit: infrastructure
   environment: demo
 
-# Replace DNS_SUFFIX placeholder with actual value
-# This can be done via kustomize's replacements or ConfigMap generator
-# For now, assuming DNS_SUFFIX is replaced at deployment time
+# DNS_SUFFIX is replaced via envsubst at deployment time
+# Usage: kustomize build K8s/backstage/dex | envsubst | kubectl apply -f -
