@@ -22,13 +22,7 @@ We employ a modular, scalable pattern where multiple `ApplicationSet` resources 
 instead of a single monolithic one. This provides flexibility, clear ownership, and
 reduces the blast radius of any configuration errors.
 
-- **One `ApplicationSet` per Stack:** Each primary directory within `K8s/` (e.g.,
-  `observability/`, `cicd/`) represents a "stack" of tools. Each stack contains its own
-  `applicationset-<stack>.yaml` file.
-- **`ApplicationSet` Role:** This file is responsible for discovering and managing all
-  applications _within its own stack directory_.
-- **Root `Application`:** A root ArgoCD `Application` (managed outside this
-  directory) is responsible for deploying the `ApplicationSet` resources themselves.
+Each primary directory under `K8s/` defines a stack (e.g., `observability/`, `cicd/`). For every stack there is an `applicationset-<stack>.yaml` file that discovers and manages the applications within that stack. A root ArgoCD `Application`, defined outside the `K8s/` directory, deploys the `ApplicationSet` resources.
 
 ### GitOps Workflow Diagram
 
@@ -77,11 +71,7 @@ Certain foundational, cross-cutting components like the policy engine are deploy
 first, before the main application stacks. This ensures the cluster's "rules of the
 road" are active before other workloads are deployed.
 
-- **Policy Stack:** The policy engine (Kyverno) and the policies themselves are managed
-  by a standalone ArgoCD `Application` defined in `Policies/app-kyverno.yaml`. This
-  application is deployed directly during the bootstrap phase (e.g., via
-  `Taskfile.yaml`) and points to the `Policies/` directory, which uses Kustomize to
-  orchestrate the deployment of the entire stack.
+The policy engine (Kyverno) and its policies are deployed as a standalone ArgoCD `Application` defined in `Policies/app-kyverno.yaml`. This application is installed during the bootstrap phase via `Taskfile.yaml` and points to the `Policies/` directory, where Kustomize orchestrates the full stack.
 
 This approach provides a secure bootstrap process at the cost of being a slight
 exception to the general "App of AppSets" pattern.
@@ -111,9 +101,7 @@ K8s/
     └── namespace.yaml
 ```
 
-- `namespace.yaml`: defines the stack namespace and common labels/annotations.
-- `applicationset-<stack>.yaml`: ApplicationSet that discovers apps within the stack.
-- `<app-name>/kustomization.yaml`: Kustomize entrypoint for a component; ArgoCD targets this file.
+The stack directory contains `namespace.yaml` to define the namespace and common labels, an `applicationset-<stack>.yaml` to discover stack applications, and each component’s `<app-name>/kustomization.yaml` serves as the Kustomize entry point targeted by ArgoCD.
 
 ## Application Manifests & Kustomize
 
@@ -128,12 +116,7 @@ Two primary patterns for Kustomize are established in this project.
 This is the standard approach for **in-house applications** or for grouping a set of
 related Kubernetes manifests.
 
-- **When to Use It:** For internally developed microservices, governance policies
-    (`ResourceQuota`, `LimitRange`), or any set of YAML manifests you manage directly.
-- **Structure:**
-  - A directory is created for the component (e.g., `governance/`).
-  - YAML files (`limitrange.yaml`, `resourcequota.yaml`) are placed inside.
-  - The `kustomization.yaml` file lists them in the `resources` section.
+Pattern 1 aggregates local resources for in‑house applications or governance policies. A dedicated directory holds the component’s YAML files (e.g., `limitrange.yaml`, `resourcequota.yaml`) and a `kustomization.yaml` lists them under `resources`.
 
 - **Example (`K8s/cicd/governance/kustomization.yaml`):**
 
@@ -151,11 +134,7 @@ This is the **preferred, standard method** for deploying **third-party applicati
 or any software available as a Helm chart. It allows us to version and manage the
 configuration of these tools declaratively.
 
-- **When to Use It:** For tools like Argo Workflows, Loki, Prometheus, Trivy, etc.
-- **Structure:**
-  - A directory is created for the application (e.g., `argo-workflows/`).
-  - A `kustomization.yaml` file defines the Helm chart in the `helmCharts` section.
-  - A `values.yaml` file contains all custom configuration for that chart.
+Pattern 2 uses Helm chart orchestration for third‑party applications. The component directory includes a `kustomization.yaml` that declares the Helm chart in `helmCharts`, and a `values.yaml` provides custom configuration.
 
 - **Example (`K8s/cicd/argo-workflows/kustomization.yaml`):**
 
