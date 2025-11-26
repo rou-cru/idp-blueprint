@@ -38,7 +38,7 @@ reasons:
 Gateway API separates infrastructure concerns (listeners, TLS, IPs) from application routing, allowing `HTTPRoute` objects to be owned by teams. It offers first-class support for advanced routing like header matching and traffic weighting without relying on vendor-specific annotations. Since Cilium provides a native implementation, no additional ingress controller is needed, aligning with the Kubernetes ecosystem's convergence on this standard.
 
 For low‑level details and configuration knobs, see the
-[`Gateway API` component documentation](../components/infrastructure/gateway-api/index.md).
+[`Gateway API` component documentation](../components/infrastructure/gateway-api.mdx).
 
 ## What to remember
 

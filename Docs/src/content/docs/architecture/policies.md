@@ -47,6 +47,8 @@ Reporter -> Author: "dashboards & alerts"
 - `Policies/kustomization.yaml` – Installs both the Kyverno Helm release and all policy manifests.
 - `Policies/policy-reporter/` – Deploys Policy Reporter + UI for at-a-glance status.
 
+![Policy Reporter UI Placeholder](../../../assets/images/policy-reporter-ui.png)
+
 ### Repo wiring & tasks
 
 Bootstrap runs `task stacks:policies` after ArgoCD, applying `Policies/app-kyverno.yaml` with `REPO_URL`/`TARGET_REVISION` envsubst. Redeploy policies only with `task stacks:policies`. Lint and check before pushing using `task quality:lint` and `task quality:check`.

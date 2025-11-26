@@ -21,6 +21,8 @@ AppProjects define blast radius by constraining source repositories and deployme
 
 ![AppProjects and ApplicationSets](gitops-model-2.svg)
 
+![ArgoCD UI Placeholder](../../../assets/images/argocd-ui.png)
+
 ## Sync Waves — ordering without scripts
 
 ArgoCD applies resources in ascending `argocd.argoproj.io/sync-wave` order. Waves express dependency intent rather than encoding fragile numeric sequences. Most resources use the default wave (0), indicating standard order. Foundation or prerequisite objects like namespaces and SecretStores receive negative waves to deploy before dependents. Routes, dashboards, and components that depend on backends use positive waves.

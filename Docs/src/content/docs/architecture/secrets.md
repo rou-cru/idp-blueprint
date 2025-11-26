@@ -14,6 +14,8 @@ to synchronize secrets both within the Kubernetes cluster and to external cloud 
 
 This page gives a cross-cutting component view of Vault + ESO and how they interact with both in-cluster and external workloads.
 
+![Vault UI Placeholder](../../../assets/images/vault-ui.png)
+
 ## Architecture Diagram
 
 ```d2
