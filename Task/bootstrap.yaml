@@ -55,6 +55,9 @@ vars:
     sh: ./Scripts/config-get.sh passwords.sonarqube_admin '{{.CONFIG_FILE}}'
   SONARQUBE_MONITORING_PASSCODE:
     sh: ./Scripts/config-get.sh passwords.sonarqube_monitoring '{{.CONFIG_FILE}}'
+   BACKSTAGE_DEX_CLIENT_SECRET:
+    sh: ./Scripts/config-get.sh passwords.backstage_dex_client '{{.CONFIG_FILE}}'
+
 
   # Docker Registry Configuration
   DOCKER_REGISTRY_URL:
@@ -263,7 +266,13 @@ tasks:
           var: ''
           enc: 'base64'
           hash: 'none'
+        - path: 'secret/backstage/app'
+          key: 'dexClientSecret'
+          var: 'BACKSTAGE_DEX_CLIENT_SECRET'
+          enc: 'base64'
+          hash: 'none'
         - path: 'secret/backstage/postgres'
+
           key: 'adminPassword'
           var: ''
           enc: 'base64'
