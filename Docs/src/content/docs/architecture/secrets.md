@@ -97,7 +97,7 @@ CloudSM.Azure -> External.Functions
 
 ## Flow Explanation
 
-### Inside Cluster (ESO `ExternalSecret`)
+### Inside Cluster
 
 **Vault → ESO → Kubernetes Secrets → Pods**
 
@@ -128,7 +128,7 @@ spec:
       key: secret/data/prod/database
 ```
 
-### Outside Cluster (ESO `PushSecret`)
+### Outside Cluster
 
 **Vault → ESO → Cloud Secret Managers → External Workloads**
 
@@ -201,7 +201,7 @@ and pushing them to external systems.
 
 ## Use Cases
 
-### In-Cluster Workloads (ESO `ExternalSecret`)
+### In-Cluster Workloads
 
 ✅ **Use `ExternalSecret` when:**
 
@@ -215,7 +215,7 @@ and pushing them to external systems.
 - CI/CD pipelines running in CI namespaces (for example Argo Workflows pods).
 - Web applications requiring API keys.
 
-### External Workloads (ESO `PushSecret`)
+### External Workloads
 
 ✅ **Use `PushSecret` when:**
 
@@ -232,7 +232,7 @@ and pushing them to external systems.
 
 ## Security Considerations
 
-### Demo Environment (Current)
+### Demo Environment
 
 ⚠️ **NOT for production:**
 
@@ -253,7 +253,7 @@ and pushing them to external systems.
 
 ## Deployment Workflow
 
-### Initial Setup (One-Time)
+### Initial Setup
 
 ```bash
 # 1. Deploy Vault (sealed, uninitialized)
@@ -381,18 +381,18 @@ spec:
 
 ## Migration Path from Current State
 
-### From: Custom Init Sidecar (Old)
+### From: Custom Init Sidecar
 
 A previous version of this blueprint used a custom sidecar container with a bash script
 to initialize Vault and inject secrets. This is now deprecated.
 
-### To: ESO + Manual Init (Current)
+### To: ESO + Manual Init
 
 The current, stable architecture uses a one-time manual initialization script for
 Vault (`task vault:init`) and relies on **External Secrets Operator** for
 all subsequent secret synchronization.
 
-### Future: Vault Operator (Bank-Vaults)
+### Future: Vault Operator
 
 For environments requiring fully automated, declarative management
 of Vault itself (including auto-unseal, HA configuration, etc.),

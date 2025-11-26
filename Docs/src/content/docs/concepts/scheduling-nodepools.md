@@ -46,7 +46,7 @@ Priorities.Dash -> Pools.Work
 Priorities.Users -> Pools.Work
 ```
 
-## Detailed Scheduling Architecture (C3)
+## Detailed Scheduling Architecture
 
 This diagram shows how Kubernetes scheduler makes placement decisions based on PriorityClasses, node labels, taints/tolerations, and resource availability.
 

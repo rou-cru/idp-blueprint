@@ -434,7 +434,7 @@ kubectl rollout status deployment -n <namespace> <deployment-name>
 
 ## Quick Diagnostic Commands
 
-### Platform Health Check (One-Liner)
+### Platform Health Check
 
 ```bash
 # Check critical components in one command
