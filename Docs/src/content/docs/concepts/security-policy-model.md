@@ -11,9 +11,7 @@ This document describes the security architecture and policy governance model of
 
 The platform's security model is built on three foundational principles:
 
-1. **Defense in Depth:** Multiple layers of security controls, so compromise of one layer doesn't compromise the entire system
-2. **Least Privilege:** Components and workloads have only the permissions necessary for their function
-3. **Security as Code:** Security policies and configurations are declarative, version-controlled, and automatically enforced
+The platform's security model relies on defense in depth to ensure multiple layers of controls, least privilege to restrict permissions to the minimum necessary, and security as code to enforce declarative, version-controlled policies.
 
 ## The CIA Triad Assessment
 
@@ -25,17 +23,11 @@ Confidentiality protects sensitive data from unauthorized access.
 
 **Current state:**
 
-- **Vault:** Centralized secrets management with access control policies
-- **External Secrets Operator:** Synchronizes secrets without exposing them in Git
-- **RBAC:** Kubernetes role-based access control restricts API access
-- **TLS:** Cert-Manager automates certificate issuance for encrypted communication
-- **No secrets in Git:** All sensitive data flows through Vault, not committed to repositories
+Vault provides centralized secrets management with access control policies, while the External Secrets Operator synchronizes these secrets without exposing them in Git. Kubernetes RBAC restricts API access, and Cert-Manager automates TLS certificate issuance. Crucially, no sensitive data is committed to repositories; all secrets flow through Vault.
 
 **Gaps:**
 
-- **NetworkPolicies:** The Cilium NetworkPolicy engine is configured but not actively used. Without network segmentation, pods can communicate freely within the cluster, potentially exposing sensitive services.
-- **Pod Security Standards:** No Pod Security Admission policies are enforced, allowing privileged containers if misconfigured.
-- **Encryption at rest:** Kubernetes Secrets are stored in etcd but not encrypted at rest in this demo configuration.
+The Cilium NetworkPolicy engine is configured but not actively used, allowing free communication between pods. Additionally, Pod Security Standards are not enforced, permitting privileged containers if misconfigured, and Kubernetes Secrets in etcd are not currently encrypted at rest.
 
 ### Integrity
 
@@ -43,10 +35,7 @@ Integrity ensures data and systems haven't been tampered with.
 
 **Current state:**
 
-- **GitOps (ArgoCD):** Git is the single source of truth. Manual changes are automatically reverted (selfHeal: true). This creates an audit trail and prevents drift.
-- **Policy Validation (Kyverno):** Resources are validated against policies before admission to the cluster. Currently runs in `audit` mode for most policies.
-- **Immutable Infrastructure:** Containers are immutable. Changes require building new images, not modifying running containers.
-- **Image Scanning (Trivy):** Can scan container images for vulnerabilities (integrated but not enforcing gates yet).
+GitOps via ArgoCD ensures Git remains the single source of truth, creating an audit trail and automatically reverting manual changes. Kyverno validates resources against policies before admission, while immutable containers require new builds for any changes. Trivy provides integrated image scanning for vulnerabilities.
 
 **Strengths:**
 
@@ -54,9 +43,7 @@ The combination of GitOps and policy validation creates strong integrity guarant
 
 **Policy enforcement mode:**
 
-- Helm chart default (`validationFailureAction`) is **audit**; we keep that for most policies to guide without blocking.
-- Individual policies can still be `enforce` (e.g., namespace labels) where safety is required.
-- If you need stricter gating, change `validationFailureAction` in `Policies/kyverno/values.yaml` and bump specific policies first; document the intent in the commit rather than hardcoding numbers here.
+The default Helm chart `validationFailureAction` is set to **audit** to guide users without blocking deployments. Individual policies requiring strict safety, such as namespace labels, can be set to `enforce`. To increase strictness, update `Policies/kyverno/values.yaml` and document the intent in the commit.
 
 ### Availability
 
@@ -64,15 +51,11 @@ Availability ensures systems remain accessible when needed.
 
 **Current state:**
 
-- **Tiered Criticality:** Services are categorized by importance, with scheduling policies that ensure critical components survive node failures (see [Disaster Recovery](../operate/disaster-recovery.md)).
-- **Monitoring & Alerting:** Prometheus and Grafana provide visibility into system health.
-- **GitOps Reconciliation:** ArgoCD continuously reconciles desired state, automatically repairing drift.
+Services are categorized by tiered criticality to ensure key components survive node failures. Prometheus and Grafana provide visibility into system health, while ArgoCD continuously reconciles the desired state to repair drift.
 
 **Gaps:**
 
-- **No High Availability:** Most components run single replicas. This is intentional for the demo/edge environment, but reduces availability.
-- **No HorizontalPodAutoscalers:** Applications don't scale automatically based on load.
-- **Limited Redundancy:** In a 3-node edge cluster, losing two nodes results in severely degraded functionality.
+Most components run as single replicas to suit the edge environment, avoiding the resource overhead of high availability but reducing redundancy. HorizontalPodAutoscalers are not configured, and losing two nodes in a three-node cluster will severely degrade functionality.
 
 **Trade-off:**
 
@@ -86,9 +69,7 @@ The platform implements security across multiple layers:
 
 **Cilium CNI** provides the network layer, with capabilities for:
 
-- **NetworkPolicies:** L3/L4 and L7 network segmentation (currently configured but not used)
-- **Hubble:** Network traffic visibility without application instrumentation
-- **Service Mesh:** Sidecar-free mesh with potential for mTLS (not yet enabled)
+Cilium CNI provides the network layer, offering L3/L4 and L7 segmentation via NetworkPolicies, traffic visibility through Hubble, and a sidecar-free service mesh.
 
 **Current gap:** NetworkPolicies are not implemented. This means pods can communicate freely, which is convenient but less secure. Implementing default-deny NetworkPolicies would significantly improve the confidentiality posture.
 
@@ -104,10 +85,7 @@ The platform implements security across multiple layers:
 
 **Kyverno** validates, mutates, and generates resources during admission. Policies enforce:
 
-- Required labels for governance and cost attribution
-- Resource limits and requests
-- Best practices (e.g., no latest tags)
-- Image verification (capability exists, not fully used)
+Kyverno enforces policies during admission, requiring labels for governance, setting resource limits, and validating best practices like avoiding latest tags. Image verification capabilities exist but are not fully utilized.
 
 Running in `audit` mode means violations are reported but not blocked. This is a conscious choice to reduce friction while building policy maturity. Policies can be migrated to `enforce` mode as the platform and its users mature.
 
@@ -133,31 +111,17 @@ Understanding what threats this architecture defends against (and what it doesn'
 
 ### Threats Addressed
 
-1. **Accidental Misconfiguration:** Kyverno policies catch common mistakes before they reach production.
-2. **Secret Exposure:** Vault + External Secrets prevent hardcoded secrets in Git or container images.
-3. **Unauthorized Changes:** GitOps with selfHeal prevents manual changes from persisting.
-4. **Supply Chain Attacks:** Trivy scans can detect vulnerable dependencies in container images.
-5. **Resource Exhaustion:** PriorityClasses and resource limits prevent noisy neighbors.
+Kyverno catches misconfigurations, while Vault and External Secrets prevent secret exposure. GitOps prevents unauthorized changes from persisting, Trivy detects supply chain vulnerabilities, and PriorityClasses prevent resource exhaustion.
 
 ### Threats Not Fully Addressed
 
-1. **Lateral Movement:** Without NetworkPolicies, a compromised pod can access other services.
-2. **Privileged Escalation:** No Pod Security Admission means privileged containers are possible if configured.
-3. **Data Encryption at Rest:** Secrets in etcd are not encrypted at rest in this configuration.
-4. **DDoS:** No rate limiting or DDoS protection at the network level.
-5. **Insider Threats:** RBAC provides some protection, but full audit logging and anomaly detection are limited.
+Lateral movement remains possible without NetworkPolicies, and privileged escalation risks exist without Pod Security Admission. Data encryption at rest is not enabled for etcd, and there is no specific DDoS protection or advanced insider threat detection.
 
 ## Security Roadmap
 
 Areas for future improvement:
 
-1. **Implement NetworkPolicies:** Start with default-deny and explicitly allow necessary traffic.
-2. **Enable Pod Security Standards:** Enforce baseline or restricted policies via Pod Security Admission.
-3. **Encrypt Secrets at Rest:** Enable etcd encryption for Kubernetes Secrets.
-4. **Enable mTLS:** Use Cilium's service mesh capabilities for encrypted pod-to-pod communication.
-5. **Migrate Policies to Enforce Mode:** Gradually move Kyverno policies from `audit` to `enforce` as maturity increases.
-6. **Image Signature Verification:** Use Kyverno's image verification to require signed images.
-7. **Enhanced Audit Logging:** Configure Kubernetes audit logs and forward to Loki for centralized analysis.
+Future improvements include implementing default-deny NetworkPolicies, enforcing Pod Security Standards, and enabling etcd encryption. The roadmap also covers enabling mTLS via Cilium, migrating Kyverno policies to enforce mode, requiring image signature verification, and centralizing audit logs in Loki.
 
 ## References
 
