@@ -26,6 +26,17 @@ service:
 ingress:
   enabled: false
 
+# Mount the catalog users ConfigMap
+extraVolumes:
+  - name: catalog-users
+    configMap:
+      name: backstage-demo-users
+
+extraVolumeMounts:
+  - name: catalog-users
+    mountPath: /opt/app-root/src/catalog-users.yaml
+    subPath: users.yaml
+
 # Extra secrets for backend auth cookie and DB password
 extraEnv:
   - name: BACKEND_SECRET
@@ -48,6 +59,12 @@ appConfig:
   app:
     title: Backstage
     baseUrl: https://backstage.${DNS_SUFFIX}
+  catalog:
+    locations:
+      - type: file
+        target: /opt/app-root/src/catalog-users.yaml
+        rules:
+          - allow: [User, Group]
   backend:
     baseUrl: https://backstage.${DNS_SUFFIX}
     listen:
