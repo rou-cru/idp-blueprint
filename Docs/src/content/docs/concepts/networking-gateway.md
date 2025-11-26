@@ -71,7 +71,7 @@ Routes.Backstage -> Backends.B
 PKI -> Gateway: "TLS termination"
 ```
 
-## Detailed Networking Architecture (C3)
+## Detailed Networking Architecture
 
 This diagram shows the complete network path from external clients through Cilium CNI to backend pods.
 
@@ -216,7 +216,7 @@ TLS.WildcardCert -> L7.Gateway: "mounts as Secret"
    - Cilium load balances across pod endpoints
    - Pods serve actual application traffic
 
-### NetworkPolicies (Future)
+### NetworkPolicies
 
 Cilium supports NetworkPolicies for L3/L4 and L7 network segmentation. This platform has Cilium configured but NetworkPolicies are not yet implemented.
 
