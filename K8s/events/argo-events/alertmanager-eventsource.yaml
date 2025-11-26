@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: alertmanager
+  namespace: events
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/name: alertmanager-eventsource
+spec:
+  webhook:
+    slo-alerts:
+      port: "12000"
+      endpoint: /webhook
+      method: POST

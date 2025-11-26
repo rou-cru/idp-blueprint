@@ -10,3 +10,6 @@ resources:
   - certs-ready-slo.yaml
   - prometheus-targets-up-slo.yaml
   - loki-ingest-availability-slo.yaml
+  - gateway-api-availability-slo.yaml
+  - argocd-application-health-slo.yaml
+  - vault-api-availability-slo.yaml
