@@ -24,13 +24,31 @@ classes: {
   }
 }
 
-Cluster: { class: infra; label: "Kubernetes API" }
-Argo: { class: control; label: "ArgoCD + AppSets\n(GitOps reconcile)" }
-Kyverno: { class: control; label: "Kyverno\n(admission + background)" }
-ESO: { class: control; label: "External Secrets Operator" }
-Vault: { class: data; label: "Vault (KV v2)\nsource of truth" }
+Cluster: {
+  class: infra
+  label: "Kubernetes API"
+}
 
-Argo -> Cluster: "apply"
-Kyverno <-> Cluster: "validate / mutate"
-ESO -> Cluster: "create/update Secrets"
-Vault -> ESO: "read secrets"
+ControlPlane: {
+  label: "Control Plane"
+  style: {
+    fill: "transparent"
+    stroke: "#6366f1"
+    stroke-dash: 3
+  }
+  
+  Argo: { class: control; label: "ArgoCD" }
+  Kyverno: { class: control }
+  ESO: { class: control; label: "External Secrets" }
+}
+
+Vault: {
+  class: data
+  label: "Vault"
+}
+
+# Flows
+ControlPlane.Argo -> Cluster: "Applies manifests"
+ControlPlane.Kyverno <-> Cluster: "Validates/Mutates"
+ControlPlane.ESO -> Cluster: "Syncs Secrets"
+Vault -> ControlPlane.ESO: "Source of Truth"
