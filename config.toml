@@ -50,7 +50,8 @@ wait_timeout = "60s"
 # Empty strings instruct Vault helpers to generate random secrets.
 argocd_admin = "argo"
 grafana_admin = "graf"
-sonarqube_admin = "sonar"
+# SonarQube admin password requires a minimum of 12 characters and at least one uppercase letter.
+sonarqube_admin = "Sonar-Secret-123"
 sonarqube_monitoring = "sonar"
 kyverno_admin = "kyver"
 vault_admin = "vault"
