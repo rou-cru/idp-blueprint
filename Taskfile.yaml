@@ -138,6 +138,8 @@ includes:
     taskfile: ./Task/quality.yaml
   utils:
     taskfile: ./Task/utils.yaml
+  docs:
+    taskfile: ./Task/docs.yaml
 
 tasks:
   deploy:

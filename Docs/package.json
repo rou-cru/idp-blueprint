@@ -8,7 +8,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "d2:render": "../../Scripts/d2-render.sh"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",

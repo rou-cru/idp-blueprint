@@ -1,5 +1,36 @@
 direction: down
 
+classes: {
+  control: {
+    style: {
+      fill: "#111827"
+      stroke: "#6366f1"
+      font-color: white
+    }
+  }
+  infra: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+  data: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+  workload: {
+    style: {
+      fill: "#7c3aed"
+      stroke: "#a855f7"
+      font-color: white
+    }
+  }
+}
+
 title: {
   label: "Three-Layer Capacity Model"
   near: top-center
@@ -14,12 +45,7 @@ title: {
 scheduler: {
   shape: hexagon
   label: "Kubernetes Scheduler\nDecision Engine"
-  style: {
-    fill: "#326CE5"
-    font-color: white
-    bold: true
-    font-size: 18
-  }
+  class: control
 }
 
 # Layer 3: Priority Classes

@@ -1,5 +1,36 @@
 direction: right
 
+classes: {
+  control: {
+    style: {
+      fill: "#111827"
+      stroke: "#6366f1"
+      font-color: white
+    }
+  }
+  infra: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+  data: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+  workload: {
+    style: {
+      fill: "#7c3aed"
+      stroke: "#a855f7"
+      font-color: white
+    }
+  }
+}
+
 title: {
   label: "Component Addition Flow"
   near: top-center
@@ -12,46 +43,30 @@ title: {
 
 # Git Commit
 git: {
+  class: data
   shape: page
   label: "Git Commit\nK8s/observability/kubecost/"
-  style: {
-    fill: "#2ecc71"
-    font-color: white
-    bold: true
-  }
 }
 
 # ApplicationSet Detection
 appset: {
+  class: control
   shape: hexagon
   label: "ApplicationSet Generator\nDirectory scan"
-  style: {
-    fill: "#3498db"
-    font-color: white
-    bold: true
-  }
 }
 
 # Application Creation
 argocd: {
+  class: control
   shape: cylinder
   label: "ArgoCD\nobservability-kubecost\nApplication"
-  style: {
-    fill: "#e67e22"
-    font-color: white
-    bold: true
-  }
 }
 
 # Sync & Deploy
 cluster: {
+  class: infra
   shape: cloud
   label: "Cluster Sync\ngovernance → component"
-  style: {
-    fill: "#9b59b6"
-    font-color: white
-    bold: true
-  }
 }
 
 # Connections with labels
@@ -78,15 +93,9 @@ argocd -> cluster: "deploys" {
 
 # Result indicator
 result: {
+  class: workload
   shape: document
   label: "✓ Component Running\n✓ Automatically Integrated"
-  style: {
-    fill: "#1abc9c"
-    font-color: white
-    bold: true
-    stroke: "#16a085"
-    stroke-width: 2
-  }
 }
 
 cluster -> result: {

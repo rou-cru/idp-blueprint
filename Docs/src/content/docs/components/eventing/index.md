@@ -18,7 +18,7 @@ The eventing stack is deployed from `K8s/events/*` and synchronized through `tas
 
 ## Core Components
 
-- **[Argo Events](argo-events)**: Event-driven workflow automation for Kubernetes
+- **[Argo Events](argo-events.mdx)**: Event-driven dependency manager. Automation for Kubernetes
 
 ## Event Flow Architecture
 
@@ -84,4 +84,4 @@ The eventing stack integrates with:
 
 ## Getting Started
 
-See the [Argo Events documentation](argo-events/index.md) for detailed configuration, event source patterns, sensor recipes, and operational guidance.
+See the [Argo Events documentation](argo-events.mdx) for detailed configuration, event source patterns, sensor recipes, and operational guidance.

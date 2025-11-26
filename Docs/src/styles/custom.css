@@ -5,14 +5,19 @@
 :root {
   --sl-font-family-headings: "Inter", sans-serif;
   /* Layout adjustments */
-  --sl-content-width: 85%; /* Default is often too narrow, give it more room */
-  --sl-sidebar-width: 16rem; /* Adjust sidebar width if needed */
+  --sl-content-width: 100%;
+  /* Default is often too narrow, give it more room */
+  --sl-sidebar-width: 14rem;
+  /* Narrower left nav */
+  --sl-toc-width: 12rem;
+  /* ~180px TOC (about half of previous ~360px) */
 }
 
 /* Reduce TOC width and make it collapsible on smaller screens if not already handled */
 /* Starlight handles responsiveness, but we can tweak the max-width of the right sidebar column if we want */
 :root {
-    --sl-toc-width: 14rem; /* Reduced from default (often ~18rem) to give more space to content */
+  --sl-toc-width: 12rem;
+  /* keep in sync */
 }
 
 /* Enforce dark mode */
@@ -22,6 +27,12 @@ html {
 
 html[data-theme] {
   color-scheme: dark;
+}
+
+/* Center all table cell text for consistent layout */
+table th,
+table td {
+  text-align: center;
 }
 
 /* You might need to adjust Starlight's default colors if you completely remove the switcher and want a specific dark theme */

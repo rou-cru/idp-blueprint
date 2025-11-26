@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: remediate-argocd-unhealthy
+  namespace: cicd
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: remediation
+    app.kubernetes.io/name: remediate-argocd
+annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  entrypoint: force-sync
+  serviceAccountName: argo-workflow
+  arguments:
+    parameters:
+      - name: app-name
+        value: "unknown"
+      - name: namespace
+        value: "argocd"
+  
+  templates:
+    - name: force-sync
+      inputs:
+        parameters:
+          - name: app-name
+          - name: namespace
+      container:
+        image: argoproj/argocd:v2.13.0
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "=== ArgoCD Application Remediation ==="
+            echo "Application: {{inputs.parameters.app-name}}"
+            echo "Namespace: {{inputs.parameters.namespace}}"
+            echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo ""
+            
+            # Force sync the application
+            argocd app sync {{inputs.parameters.app-name}} \
+              --force \
+              --prune \
+              --server argocd-server.argocd.svc.cluster.local:443 \
+              --insecure \
+              --grpc-web \
+              --auth-token $ARGOCD_TOKEN || {
+                echo "ERROR: Failed to sync application"
+                exit 1
+              }
+            
+            echo ""
+            echo "✓ Application sync completed successfully"
+        env:
+          - name: ARGOCD_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: argo-workflow-argocd-token
+                key: token
+                optional: true

@@ -14,6 +14,8 @@ to synchronize secrets both within the Kubernetes cluster and to external cloud 
 
 This page gives a cross-cutting component view of Vault + ESO and how they interact with both in-cluster and external workloads.
 
+![Vault UI Placeholder](../../../assets/images/vault-ui.png)
+
 ## Architecture Diagram
 
 ```d2
@@ -97,18 +99,11 @@ CloudSM.Azure -> External.Functions
 
 ## Flow Explanation
 
-### Inside Cluster (ESO `ExternalSecret`)
+### Inside Cluster
 
 **Vault → ESO → Kubernetes Secrets → Pods**
 
-1. **Vault** stores secrets in its KV v2 engine at paths like `secret/data/*`.
-2. **ESO** watches for `ExternalSecret` custom resources in application namespaces.
-3. **ESO** authenticates to Vault using a configured `ClusterSecretStore` which
-  leverages Kubernetes service account authentication.
-4. **ESO** fetches the specified secrets from Vault and creates
-  or updates native **Kubernetes Secrets**.
-5. **Application Pods** mount these Kubernetes Secrets as volumes
-  or environment variables, completely unaware of Vault.
+Vault stores secrets in its KV v2 engine at paths like `secret/data/*`. ESO watches for `ExternalSecret` custom resources in application namespaces and authenticates to Vault using a configured `ClusterSecretStore` that leverages Kubernetes service account authentication. ESO fetches the specified secrets from Vault and creates or updates native Kubernetes Secrets. Application Pods mount these Kubernetes Secrets as volumes or environment variables, completely unaware of Vault.
 
 **Example:**
 
@@ -128,16 +123,11 @@ spec:
       key: secret/data/prod/database
 ```
 
-### Outside Cluster (ESO `PushSecret`)
+### Outside Cluster
 
 **Vault → ESO → Cloud Secret Managers → External Workloads**
 
-1. **Vault** stores secrets (same source of truth).
-2. **ESO** uses a `PushSecret` custom resource to read secrets from Vault.
-3. **ESO** propagates/pushes these secrets to external providers like
-  **AWS Secrets Manager, GCP Secret Manager, or Azure Key Vault**.
-4. **External workloads** (e.g., AWS Lambda, GCP Cloud Run) consume secrets
-  from their native cloud secret manager.
+Vault stores secrets as the same source of truth. ESO uses a `PushSecret` custom resource to read secrets from Vault and propagates these secrets to external providers like AWS Secrets Manager, GCP Secret Manager, or Azure Key Vault. External workloads (e.g., AWS Lambda, GCP Cloud Run) consume secrets from their native cloud secret manager.
 
 **Example - Push to AWS:**
 
@@ -166,16 +156,7 @@ spec:
 
 ### 1. Single Source of Truth
 
-**Vault is authoritative** for all secrets. No secrets are created directly in:
-
-- Kubernetes Secrets (ESO creates them from Vault).
-- AWS/GCP/Azure Secret Managers (ESO pushes them from Vault).
-
-**Benefits:**
-
-- **Centralized Audit Trail:** All secret access is logged in Vault.
-- **Consistent Rotation:** Rotate a secret in Vault, and ESO propagates the change everywhere.
-- **No Vendor Lock-in:** The core secret store remains vendor-neutral.
+Vault is authoritative for all secrets. No secrets are created directly in Kubernetes Secrets (ESO creates them from Vault) or AWS/GCP/Azure Secret Managers (ESO pushes them from Vault). This centralization provides a centralized audit trail where all secret access is logged in Vault, consistent rotation where secrets updated in Vault propagate everywhere via ESO, and no vendor lock-in since the core secret store remains vendor-neutral.
 
 ### 2. Unified Operator
 
@@ -190,18 +171,11 @@ and pushing them to external systems.
 
 ### 3. Zero-Touch Secret Consumption
 
-**Developers never handle raw secrets.** The process is declarative:
-
-1. A developer defines an `ExternalSecret` or `PushSecret` manifest in their
-  application's Git repository.
-2. The GitOps controller (ArgoCD) applies the manifest.
-3. ESO automatically fetches the secret from Vault and makes it available to the application.
-4. Rotation is transparent: when the secret is updated in Vault,
-  ESO updates the corresponding Kubernetes Secret or pushes the change to the cloud provider.
+Developers never handle raw secrets. The process is declarative: a developer defines an `ExternalSecret` or `PushSecret` manifest in their application's Git repository, the GitOps controller (ArgoCD) applies the manifest, and ESO automatically fetches the secret from Vault making it available to the application. Rotation is transparent—when the secret is updated in Vault, ESO updates the corresponding Kubernetes Secret or pushes the change to the cloud provider.
 
 ## Use Cases
 
-### In-Cluster Workloads (ESO `ExternalSecret`)
+### In-Cluster Workloads
 
 ✅ **Use `ExternalSecret` when:**
 
@@ -215,7 +189,7 @@ and pushing them to external systems.
 - CI/CD pipelines running in CI namespaces (for example Argo Workflows pods).
 - Web applications requiring API keys.
 
-### External Workloads (ESO `PushSecret`)
+### External Workloads
 
 ✅ **Use `PushSecret` when:**
 
@@ -232,28 +206,19 @@ and pushing them to external systems.
 
 ## Security Considerations
 
-### Demo Environment (Current)
+### Demo Environment
 
 ⚠️ **NOT for production:**
 
-- TLS uses self‑signed certificates and Vault clients set `skipTLSVerify: true` during development.
-- Vault is initialized with a single unseal key.
-- The root token is logged during the init script.
-- Unseal keys and the root token are stored in a Kubernetes Secret.
+The demo environment uses self-signed TLS certificates with Vault clients setting `skipTLSVerify: true` during development. Vault is initialized with a single unseal key, the root token is logged during the init script, and both unseal keys and root token are stored in a Kubernetes Secret.
 
 ### Production Hardening
 
-**Must implement:**
-
-1. **TLS Everywhere:** Enforce encrypted traffic between all components.
-2. **Auto-Unseal with Cloud KMS:** Use a cloud provider's KMS to automatically unseal Vault.
-3. **Multi-Share Unseal Keys:** Require a quorum of operators to unseal Vault manually if auto-unseal fails.
-4. **RBAC Policies:** Implement least-privilege access control within Vault.
-5. **Network Policies:** Restrict network access to the Vault service, ideally only allowing ESO to connect.
+Production deployments must enforce encrypted traffic between all components via TLS everywhere, use cloud provider KMS to automatically unseal Vault, require a quorum of operators to manually unseal Vault if auto-unseal fails through multi-share unseal keys, implement least-privilege access control within Vault via RBAC policies, and restrict network access to the Vault service ideally allowing only ESO to connect through Network Policies.
 
 ## Deployment Workflow
 
-### Initial Setup (One-Time)
+### Initial Setup
 
 ```bash
 # 1. Deploy Vault (sealed, uninitialized)
@@ -381,18 +346,18 @@ spec:
 
 ## Migration Path from Current State
 
-### From: Custom Init Sidecar (Old)
+### From: Custom Init Sidecar
 
 A previous version of this blueprint used a custom sidecar container with a bash script
 to initialize Vault and inject secrets. This is now deprecated.
 
-### To: ESO + Manual Init (Current)
+### To: ESO + Manual Init
 
 The current, stable architecture uses a one-time manual initialization script for
 Vault (`task vault:init`) and relies on **External Secrets Operator** for
 all subsequent secret synchronization.
 
-### Future: Vault Operator (Bank-Vaults)
+### Future: Vault Operator
 
 For environments requiring fully automated, declarative management
 of Vault itself (including auto-unseal, HA configuration, etc.),
@@ -400,9 +365,7 @@ migrating to an operator like Bank-Vaults is the recommended next step.
 
 **When to migrate:**
 
-- When you need a High-Availability Vault cluster (e.g., 3+ replicas with Raft).
-- When you require fully automatic unsealing using a cloud KMS.
-- When zero manual intervention in Vault's lifecycle is a hard requirement.
+Migration to a Vault operator becomes necessary when deploying a High-Availability Vault cluster (e.g., 3+ replicas with Raft), requiring fully automatic unsealing using a cloud KMS, or when zero manual intervention in Vault's lifecycle is a hard requirement.
 
 ## References
 

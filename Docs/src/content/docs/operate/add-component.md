@@ -7,7 +7,7 @@ sidebar:
 
 Treat every component as code. Adding, changing, or removing should feel like a small, reviewable PR.
 
-## The recipe (concise)
+## The recipe
 
 1. Create `K8s/<stack>/<name>/`.
 2. Add `kustomization.yaml` (resources or `helmCharts`).
@@ -16,18 +16,10 @@ Treat every component as code. Adding, changing, or removing should feel like a 
 5. The ApplicationSet detects the folder → ArgoCD creates the `Application`.
 6. Sync follows waves/policies and converges in the cluster.
 
-Steps:
 
-- Create a folder under the right stack (for example `K8s/observability/<name>`).
-- Add a Kustomize overlay; optionally use `helmCharts` with a `*-values.yaml`.
-- Apply canonical labels; set `priorityClassName` and reasonable `resources`.
-- Commit and push; the ApplicationSet generates the Application.
-
-Tips:
-
-- Prefer sync waves and explicit dependencies when components interact.
-- Add a `ServiceMonitor` with label `prometheus: kube-prometheus`.
-- Expose UI via Gateway with an `HTTPRoute` if relevant.
+:::Tip
+Expose UI via Gateway with an `HTTPRoute` if relevant.
+:::
 
 ## Governance overlay pattern
 
@@ -123,14 +115,7 @@ ingress:
   # Note: Use Gateway API HTTPRoute instead (see step 5)
 ```
 
-### Create README.md with helm-docs
-
-```bash
-# Generate documentation from values.yaml comments
-helm-docs --chart-search-root=. --template-files=README.md.gotmpl
-```
-
-### (Optional) Expose via Gateway API
+### Expose via Gateway API (Optional)
 
 Create `K8s/observability/kubecost/httproute.yaml`:
 

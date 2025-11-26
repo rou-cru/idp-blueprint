@@ -118,15 +118,7 @@ Git is the single source of truth for the desired state of the system. A GitOps 
 
 **The GitOps Flow:**
 
-```
-Git Repository (Desired State)
-     ↓
-ArgoCD (Continuous Reconciliation)
-     ↓
-Kubernetes Cluster (Observed State)
-     ↓
-Prometheus/Grafana (Actionable Insights)
-```
+![GitOps Flow](gitops-flow.svg)
 
 This creates a feedback loop:
 
@@ -138,9 +130,7 @@ This creates a feedback loop:
 
 - **Audit Trail:** Every change is a Git commit with author, timestamp, and rationale
 - **Rollback:** `git revert` to undo changes
-- **Disaster Recovery:** Re-deploy from Git if the cluster is lost
-- **Collaboration:** Multiple engineers can propose changes via pull requests
-- **Consistency:** No environment-specific manual steps
+Disaster recovery becomes a matter of re-deploying from Git if the cluster is lost. This model fosters collaboration by allowing multiple engineers to propose changes via pull requests, ensuring consistency by eliminating environment-specific manual steps.
 
 **Next Steps:**
 
@@ -295,5 +285,5 @@ The platform accepts these trade-offs in exchange for reproducibility, auditabil
 - [GitOps Model](gitops-model.md): Deep dive into the GitOps workflow
 - [Security & Policy Model](security-policy-model.md): How Security as Code manifests
 - [Observability Model](../architecture/observability.md): How Observability as Code works
-- [ArgoCD Component](../components/infrastructure/argocd/index.md): GitOps engine
-- [Kyverno Component](../components/policy/kyverno/index.md): Policy engine
+- [ArgoCD Component](../components/infrastructure/argocd.mdx): GitOps engine
+- [Kyverno Component](../components/policy/kyverno.mdx): Policy engine

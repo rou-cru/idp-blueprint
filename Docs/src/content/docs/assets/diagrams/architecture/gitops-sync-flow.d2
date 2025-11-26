@@ -1,0 +1,101 @@
+direction: down
+
+classes: {
+  git: {
+    style: {
+      fill: "#1e3a8a"
+      stroke: "#60a5fa"
+      font-color: white
+    }
+  }
+  gitops: {
+    style: {
+      fill: "#111827"
+      stroke: "#6366f1"
+      font-color: white
+    }
+  }
+  policy: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+  k8s: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+  observe: {
+    style: {
+      fill: "#7c3aed"
+      stroke: "#a855f7"
+      font-color: white
+    }
+  }
+}
+
+GitRepo: {
+  class: git
+  shape: cloud
+  label: "Git Repository"
+  change: "K8s/observability/\nprometheus/values.yaml"
+}
+
+ArgoCD: {
+  class: gitops
+  label: "ArgoCD"
+
+  Detect: {
+    label: "1. Detect Change"
+    method: "Polling or webhook"
+  }
+
+  Diff: {
+    label: "2. Calculate Diff"
+    result: "ConfigMap modified"
+  }
+
+  Sync: {
+    label: "3. Apply to Cluster"
+    action: "kubectl apply"
+  }
+}
+
+Kyverno: {
+  class: policy
+  label: "Kyverno Admission"
+
+  Validate: {
+    label: "Validate Resource"
+    checks: "- Has required labels?\n- Has resource limits?\n- Matches naming?"
+  }
+
+  Mutate: {
+    label: "Mutate if Needed"
+    actions: "- Add default labels\n- Inject sidecars"
+  }
+}
+
+K8sAPI: {
+  class: k8s
+  label: "Kubernetes API"
+  result: "Resource created/updated"
+}
+
+Prometheus: {
+  class: observe
+  label: "Prometheus Pod"
+  state: "Reloaded with new config"
+}
+
+GitRepo -> ArgoCD.Detect: "commit pushed"
+ArgoCD.Detect -> ArgoCD.Diff: "fetch manifests"
+ArgoCD.Diff -> ArgoCD.Sync: "changes detected"
+ArgoCD.Sync -> Kyverno.Validate: "apply request"
+Kyverno.Validate -> Kyverno.Mutate: "validation passed"
+Kyverno.Mutate -> K8sAPI: "mutated resource"
+K8sAPI -> Prometheus: "rolling update"

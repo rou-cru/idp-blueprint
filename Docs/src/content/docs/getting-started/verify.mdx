@@ -69,7 +69,7 @@ Gateway -> UIs.Backstage
 ### What you'll see in the ArgoCD UI
 
 - Application cards with *Sync* (Git vs. cluster) and *Health* columns. It's normal to see some `OutOfSync` right after deploy while things converge.
-- Projects in the left sidebar (e.g., `cicd`, `observability`, `backstage`) - these correspond to the [fuses](../overview/#feature-toggles-fuses) enabled in your `config.toml`.
+- Projects in the left sidebar (e.g., `cicd`, `observability`, `backstage`) - these correspond to the [fuses](../architecture/overview.md#feature-toggles-fuses) enabled in your `config.toml`.
 - Each card opens a resource graph so you can inspect Deployments, Services, and ConfigMaps.
 
 ![ArgoCD — listado de Applications](../assets/images/verify/argocd_all_applications.png)

@@ -1,0 +1,54 @@
+direction: right
+
+classes: {
+  control: {
+    style: {
+      fill: "#111827"
+      stroke: "#6366f1"
+      font-color: white
+    }
+  }
+  infra: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+  data: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+}
+
+Cluster: {
+  class: infra
+  label: "Kubernetes API"
+}
+
+ControlPlane: {
+  label: "Control Plane"
+  style: {
+    fill: "transparent"
+    stroke: "#6366f1"
+    stroke-dash: 3
+  }
+  
+  Argo: { class: control; label: "ArgoCD" }
+  Kyverno: { class: control }
+  ESO: { class: control; label: "External Secrets" }
+}
+
+Vault: {
+  class: data
+  label: "Vault"
+}
+
+# Flows
+ControlPlane.Argo -> Cluster: "Applies manifests"
+ControlPlane.Kyverno <-> Cluster: "Validates/Mutates"
+ControlPlane.ESO -> Cluster: "Syncs Secrets"
+Vault -> ControlPlane.ESO: "Source of Truth"

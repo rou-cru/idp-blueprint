@@ -1,0 +1,84 @@
+direction: right
+
+classes: {
+  gateway: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#22d3ee"
+      font-color: white
+    }
+  }
+  route: {
+    style: {
+      fill: "#0f766e"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+  backend: {
+    style: {
+      fill: "#7c3aed"
+      stroke: "#a855f7"
+      font-color: white
+    }
+  }
+  actor: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#38bdf8"
+      font-color: white
+    }
+  }
+}
+
+User: { class: actor }
+
+Gateway: {
+  class: gateway
+  label: "Gateway API\n(*.nip.io)"
+}
+
+# Grouping routes by stack to reduce spaghetti
+Stacks: {
+  style: {
+    fill: "transparent"
+    stroke-width: 0
+  }
+
+  Observability: {
+    class: route
+    label: "Observability"
+    tooltip: "Grafana, Prometheus"
+  }
+
+  Security: {
+    class: route
+    label: "Security"
+    tooltip: "Vault, SonarQube"
+  }
+
+  CICD: {
+    class: route
+    label: "CI/CD"
+    tooltip: "ArgoCD, Workflows"
+  }
+  
+  Portal: {
+    class: route
+    label: "Portal"
+    tooltip: "Backstage"
+  }
+}
+
+Backends: {
+  class: backend
+  label: "Cluster Services"
+}
+
+User -> Gateway: "HTTPS"
+Gateway -> Stacks.Observability
+Gateway -> Stacks.Security
+Gateway -> Stacks.CICD
+Gateway -> Stacks.Portal
+
+Stacks -> Backends: "Forwards traffic"

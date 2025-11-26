@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: backstage
+  namespace: events
+  labels:
+    app.kubernetes.io/name: backstage-eventsource
+    app.kubernetes.io/instance: backstage
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    description: 'Webhook EventSource for Backstage provisioning events'
+    contact: platform-team
+spec:
+  webhook:
+    # Webhook for app provisioning events from Backstage templates
+    provision:
+      port: "12001"
+      endpoint: /backstage/provision
+      method: POST

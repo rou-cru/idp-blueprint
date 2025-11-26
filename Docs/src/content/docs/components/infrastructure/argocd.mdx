@@ -23,9 +23,9 @@ Declarative GitOps continuous delivery for Kubernetes
 ArgoCD continuously reconciles what's defined in Git with what's running in the cluster. The platform uses it for several specific features:
 
 - **ApplicationSets**: Generate Applications dynamically from templates, enabling patterns like "deploy to all namespaces matching this label" (see
-  [`GitOps, Policy, and Eventing`](../../../concepts/gitops-model.md) for the App‑of‑AppSets model)
+  [`GitOps, Policy, and Eventing`](../../concepts/gitops-model.md) for the App‑of‑AppSets model)
 - **Sync Waves**: Orchestrate deployment order (namespaces before CRDs, CRDs before applications); see the Sync Waves section in
-  [`GitOps, Policy, and Eventing`](../../../concepts/gitops-model.md)
+  [`GitOps, Policy, and Eventing`](../../concepts/gitops-model.md)
 - **Prometheus Metrics**: Observability into sync status, reconciliation loops, and resource health
 - **Multicluster Support**: Can manage multiple clusters from a single control plane
 - **UI**: Visual representation of application deployment status
@@ -50,7 +50,7 @@ The configuration here uses `resourceTrackingMethod: annotation` for better perf
 
 ArgoCD has `selfHeal: true` enabled in ApplicationSets, meaning any manual changes to resources are automatically reverted to match Git. This enforces GitOps discipline and ensures the cluster state is always reproducible.
 
-See [GitOps Model](../../../concepts/gitops-model.md) for how ArgoCD orchestrates the entire platform.
+See [GitOps Model](../../concepts/gitops-model.md) for how ArgoCD orchestrates the entire platform.
 
 ## Redis Cache
 

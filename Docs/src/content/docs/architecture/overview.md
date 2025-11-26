@@ -1,123 +1,72 @@
 ---
-title: Architecture Overview — The big picture
+title: Overview Architecture
 sidebar:
   label: Overview
   order: 1
 ---
 
-This page describes the main architectural elements of IDP Blueprint and how they fit
-  together. It assumes you know Kubernetes basics and want to understand how this IDP is
-  wired as a system.
-
-For the product‑level mental model and feedback loops, see [Concepts](../concepts/index.md).
-  Here we stay at system context (L1) and container (L2) levels; detailed component views
-  live in the other Architecture pages.
-
 ## Context and goals
 
-IDP Blueprint is designed for:
+IDP Blueprint provides a compact, self-hosted platform stack for Kubernetes clusters. The architecture supports edge, on-premises, and constrained environments where horizontal scaling is limited, though the same patterns apply to larger deployments. The platform operates GitOps-first with Git as the source of truth and ArgoCD handling reconciliation. No managed control planes or commercial licenses are required, making it fully cloud-agnostic.
 
-- Kubernetes clusters where you want a compact, self‑hosted platform stack (the reference demo uses a 3‑node k3d cluster by default).
-- Edge/on‑prem or constrained environments where scaling out is not the main option, but the same architecture applies to larger clusters.
-- GitOps‑first operation: Git is the source of truth, ArgoCD reconciles the cluster.
-- Cloud‑agnostic use: no managed control planes and no commercial licenses.
-
-Typical uses:
-
-- Evaluate a realistic platform stack on a laptop or lab cluster.
-- Prototype an internal developer platform without committing to a vendor.
-- Train platform, SRE, and security engineers on GitOps and policy‑driven operation.
+The platform serves three primary use cases. Engineers can evaluate a realistic platform stack on a laptop or lab cluster without cloud dependencies. Teams can prototype internal developer platforms without vendor commitments. Organizations can train platform, SRE, and security engineers on GitOps and policy-driven operations with hands-on infrastructure.
 
 ## System context
 
-At the highest level, the platform sits between engineers, Git, and a Kubernetes cluster:
-
-- **Actors**
-  - Platform engineers operate the IDP (bootstrap, upgrades, policies, SLOs).
-  - Application teams deploy workloads onto the platform.
-- **External systems**
-  - Git: source of truth for bootstrap config, GitOps stacks, policies, and SLOs.
-  - Container registry: stores container images for platform components and workloads.
-  - Optional cloud services: external secret managers or backing services.
-- **Deployment target**
-  - A single Kubernetes cluster (local or remote), treated as an implementation detail.
-
-Everything is driven from Git: changes are pushed to the repo, ArgoCD reconciles the cluster, and observability feeds back into decisions.
-
-:::note[C4 Model - System Context (Level 1)]
-This diagram shows the IDP Blueprint from a system context perspective, focusing on actors and external systems rather than internal components. For a detailed view of internal containers, see the [Container view](#container-view) below.
-:::
+A single Kubernetes cluster sits between engineers and Git. Git owns all intent, ArgoCD reconciles that intent into the cluster, and traffic flows back out through Gateway API. Platform engineers operate the stack while application teams ship workloads through it. External systems include the Git provider as source of truth, container registries for images, and optional cloud services for external secret stores. The deployment target is one cluster—either local k3d or remote—treated as interchangeable infrastructure.
 
 ```d2
 direction: right
 
-classes: { actor: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa"; style.font-color: white }
-           ext: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-           system: { style.fill: "#111827"; style.stroke: "#34d399"; style.font-color: white } }
-
-Actors: {
-  class: actor
-  Platform: {
+classes: {
+  actor: {
     shape: person
-    label: "Platform Engineer"
+    style: {
+      fill: "#1e3a8a"
+      stroke: "#60a5fa"
+      font-color: white
+    }
   }
-  Dev: {
-    shape: person
-    label: "Application Developer"
+  system: {
+    style: {
+      fill: "#111827"
+      stroke: "#34d399"
+      font-color: white
+    }
+  }
+  ext: {
+    style: {
+      fill: "#0f172a"
+      stroke: "#22d3ee"
+      font-color: white
+    }
   }
 }
 
-External: {
-  class: ext
-  Git: {
-    label: "Git provider\n(bootstrap, stacks, policies)"
-    shape: cloud
-  }
-  Registry: {
-    label: "Container registry"
-    shape: cylinder
-  }
-}
+Platform Engineer: { class: actor }
+Application Developer: { class: actor }
 
 IDP: {
   class: system
-  label: "IDP Blueprint cluster"
-  Gateway: {
-    label: "Gateway API + TLS"
-    shape: hexagon
-  }
-  Argo: {
-    label: "ArgoCD + AppSets"
-    link: https://argo-cd.readthedocs.io
-  }
-  Observability: {
-    Prom: "Prometheus"
-    Loki: {
-      shape: cylinder
-    }
-    Graf: "Grafana"
-  }
-  Security: {
-    Kyverno: {
-      link: https://kyverno.io
-    }
-    Reporter: "Policy Reporter"
-  }
-  CICD: {
-    Workflows: "Argo Workflows"
-    Sonar: "SonarQube"
-  }
-  Portal: "Backstage"
+  label: "IDP Blueprint\n(Kubernetes Cluster)"
 }
 
-Actors.Platform -> External.Git
-Actors.Dev -> External.Git
+Git: {
+  class: ext
+  label: "Git Provider"
+}
 
-External.Git -> IDP.Argo: "manifests"
-External.Registry -> IDP.Argo: "images"
-IDP.Gateway -> Actors.Dev: "UIs/APIs (HTTPS)"
-Actors.Dev -> IDP.Portal: "use catalog/docs"
-Actors.Platform -> IDP.Argo: "operate platform"
+Registry: {
+  class: ext
+  label: "Container Registry"
+}
+
+Platform Engineer -> Git: "Configures"
+Application Developer -> Git: "Commits code"
+Git -> IDP: "Syncs state"
+Registry -> IDP: "Provides images"
+IDP -> Application Developer: "Serves apps"
+Platform Engineer -> IDP: "Observes"
 ```
 
 ## Container view
@@ -150,61 +99,49 @@ All components are either bootstrapped once from `IT/` (infrastructure core) or 
 direction: right
 
 classes: {
-  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
-  svc:   { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
-  gov:   { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-  ux:    { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+  infra: { style: { fill: "#0f172a"; stroke: "#38bdf8"; font-color: white } }
+  svc:   { style: { fill: "#0f766e"; stroke: "#34d399"; font-color: white } }
+  gov:   { style: { fill: "#111827"; stroke: "#6366f1"; font-color: white } }
+  ux:    { style: { fill: "#7c3aed"; stroke: "#a855f7"; font-color: white } }
 }
 
 Infra: {
-  class: infra
-  label: "Infrastructure core"
-  K8s: "Kubernetes API + etcd"
-  Cilium: "Cilium CNI"
-  Gateway: "Gateway API"
-  Cert: "cert-manager"
+  label: "Infrastructure Layer"
+  K8s: { class: infra; label: "K8s API" }
+  Gateway: { class: infra; label: "Gateway API" }
+  Cilium: { class: infra }
 }
 
 Services: {
-  class: svc
-  label: "Platform services"
-  Vault
-  ESO: "External Secrets Operator"
-  Prom: "Prometheus"
-  Loki
-  Fluent: "Fluent-bit"
+  label: "Platform Services"
+  Vault: { class: svc }
+  ESO: { class: svc; label: "External Secrets" }
+  Observability: {
+    class: svc
+    label: "Metrics & Logs"
+    tooltip: "Prometheus, Loki, Fluent-bit"
+  }
 }
 
 Governance: {
-  class: gov
-  label: "Automation & governance"
-  Argo: "ArgoCD + ApplicationSets"
-  Kyverno
-  Reporter: "Policy Reporter"
+  label: "Governance Layer"
+  ArgoCD: { class: gov }
+  Kyverno: { class: gov }
 }
 
 UX: {
-  class: ux
-  label: "Developer-facing"
-  Grafana
-  Pyrra
-  Workflows: "Argo Workflows"
-  Sonar: "SonarQube"
-  Trivy: "Trivy Operator"
-  Backstage
+  label: "Developer Portals"
+  Grafana: { class: ux }
+  Backstage: { class: ux }
+  Workflows: { class: ux; label: "Argo Workflows" }
 }
 
-Infra.Cert -> Services.Vault: "issue certs"
-Services.ESO -> Services.Vault: "read secrets"
-Governance.Argo -> Services.Prom
-Governance.Argo -> Services.Loki
-Governance.Argo -> UX.Workflows
-Governance.Argo -> UX.Sonar
-Governance.Argo -> UX.Backstage
-Governance.Kyverno -> UX.Workflows: "policies"
-Infra.Gateway -> UX.Grafana: "HTTPS routes"
-Infra.Gateway -> UX.Backstage
-Infra.Gateway -> UX.Sonar
+# Key Flows
+Infra.Gateway -> UX: "Routes traffic"
+Governance.ArgoCD -> Services: "Deploys"
+Governance.ArgoCD -> UX: "Deploys"
+Services.ESO -> Services.Vault: "Syncs secrets"
+Governance.Kyverno -> Infra.K8s: "Enforces policy"
 ```
 
 ## Platform layers
@@ -222,37 +159,15 @@ This layering is reflected in the repository layout and in the deployment order.
 
 ## GitOps backbone
 
-The control plane of this IDP is Git‑driven:
+The control plane operates through Git-driven automation across three layers. Bootstrap (`IT/`) handles one-time installation of core infrastructure including Cilium, Vault, ESO, cert-manager, ArgoCD, and Gateway API, along with minimal namespaces and RBAC. GitOps (`K8s/`) manages continuously reconciled state through stacks grouped by concern—observability, CI/CD, and security—with one ApplicationSet per stack that discovers subdirectories and generates ArgoCD Applications. Policies (`Policies/`) define Kyverno rules and related configuration.
 
-- Bootstrap (`IT/`) brings up:
-  - Cilium, Vault, ESO, cert‑manager, ArgoCD, Gateway API.
-  - Minimal namespaces and RBAC to host platform components.
-- GitOps (`K8s/`) defines:
-  - Stacks grouped by concern (observability, CI/CD, security).
-  - One ApplicationSet per stack; each ApplicationSet discovers subdirectories and creates ArgoCD Applications.
-- Policies (`Policies/`) define:
-  - Kyverno policies and related configuration.
-
-Changes to any of these folders are applied through ArgoCD. Manual changes in the cluster are treated as drift and reverted.
-
-For a deeper look at this control backbone, see [GitOps model](../concepts/gitops-model.md) and [K8s directory architecture](applications.md).
+ArgoCD applies all changes from these directories to the cluster. Manual cluster modifications are treated as drift and automatically reverted. For implementation details, see [GitOps model](../concepts/gitops-model.md) and [K8s directory architecture](applications.md).
 
 ## Resilience on a small cluster
 
-On a 3‑node edge cluster, high availability looks different from large cloud setups. The design focuses on:
+High availability on a 3-node edge cluster requires a different approach than large cloud deployments. The design prioritizes tiered criticality: the core control plane (Kubernetes API and etcd) receives highest priority, critical infrastructure like ArgoCD and Prometheus must survive node loss, and everything else can degrade or restart later. Scheduling uses PriorityClasses to separate infrastructure from workloads, node labels to define pools (control plane, infra, workloads), and tolerations that allow critical components to use the control plane node as a lifeboat.
 
-- **Tiered criticality**
-  - Core control plane (Kubernetes API, etcd) is highest priority.
-  - Critical infrastructure (ArgoCD, Prometheus) must survive node loss.
-  - Everything else can be degraded or restarted later.
-- **Scheduling and priorities**
-  - PriorityClasses separate infrastructure from workloads.
-  - Node labels enable “pools” (control plane, infra, workloads).
-  - Tolerations let critical components use the control plane node as a lifeboat.
-
-When a node fails, the goal is to preserve visibility (Prometheus, Loki) and the ability to repair (ArgoCD) even if some stacks are degraded.
-
-See [Scheduling, priority, and node pools](../concepts/scheduling-nodepools.md) and [Disaster recovery](../operate/disaster-recovery.md) for details.
+When a node fails, the platform preserves visibility through Prometheus and Loki while maintaining the ability to repair via ArgoCD, even if some stacks run in degraded mode. See [Scheduling, priority, and node pools](../concepts/scheduling-nodepools.md) and [Disaster recovery](../operate/disaster-recovery.md) for operational details.
 
 ## Selection criteria (why these technologies)
 

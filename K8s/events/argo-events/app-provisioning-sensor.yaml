@@ -1,0 +1,114 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: app-provisioning
+  namespace: events
+  labels:
+    app.kubernetes.io/name: app-provisioning-sensor
+    app.kubernetes.io/instance: app-provisioning
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    description: 'Sensor to trigger app provisioning workflows from Backstage'
+    contact: platform-team
+spec:
+  dependencies:
+    - name: provision-event
+      eventSourceName: backstage
+      eventName: provision
+      filters:
+        data:
+          - path: "body.eventType"
+            type: string
+            comparator: "="
+            value:
+              - "provision-app"
+  
+  triggers:
+    - template:
+        name: provision-application
+        conditions: "provision-event"
+        argoWorkflow:
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: provision-app-
+                namespace: cicd
+                labels:
+                  app.kubernetes.io/part-of: idp
+                  triggered-by: backstage
+                  workflow-type: provisioning
+              spec:
+                serviceAccountName: argo-workflow
+                workflowTemplateRef:
+                  name: provision-app-workflow
+                arguments:
+                  parameters:
+                    - name: app-name
+                      value: "unknown"
+                    - name: repo-url
+                      value: "https://github.com/default/repo"
+                    - name: owner
+                      value: "platform-team"
+                    - name: business-unit
+                      value: "engineering"
+                    - name: environment
+                      value: "dev"
+                    - name: container-port
+                      value: "80"
+                    - name: replicas
+                      value: "1"
+                    - name: docker-registry
+                      value: "docker.io"
+                    - name: docker-image-name
+                      value: "roucru/default-app"
+                    - name: docker-image-tag
+                      value: "latest"
+          parameters:
+            - src:
+                dependencyName: provision-event
+                dataKey: body.appName
+              dest: spec.arguments.parameters.0.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.repoUrl
+              dest: spec.arguments.parameters.1.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.owner
+              dest: spec.arguments.parameters.2.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.businessUnit
+              dest: spec.arguments.parameters.3.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.environment
+              dest: spec.arguments.parameters.4.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.containerPort
+              dest: spec.arguments.parameters.5.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.replicas
+              dest: spec.arguments.parameters.6.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.dockerRegistry
+              dest: spec.arguments.parameters.7.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.dockerImageName
+              dest: spec.arguments.parameters.8.value
+            - src:
+                dependencyName: provision-event
+                dataKey: body.dockerImageTag
+              dest: spec.arguments.parameters.9.value
