@@ -1,0 +1,26 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: argocd-application-health
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: argocd-application-health
+    app.kubernetes.io/instance: argocd-health-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+    tier: critical
+spec:
+  target: "99.5"
+  window: 6h
+  description: "ArgoCD-managed applications should maintain healthy status"
+  indicator:
+    ratio:
+      errors:
+        metric: |
+          count(argocd_app_info{health_status!="Healthy"})
+      total:
+        metric: |
+          count(argocd_app_info)

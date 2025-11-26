@@ -21,6 +21,19 @@ alertmanager:
         cpu: 100m
         # -- (string) Memory limit
         memory: 128Mi
+  # -- Alertmanager configuration
+  config:
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      receiver: 'argo-events-webhook'
+    receivers:
+      - name: 'argo-events-webhook'
+        webhook_configs:
+          - url: 'http://alertmanager-eventsource-svc.events.svc.cluster.local:12000/webhook'
+            send_resolved: true
 
 # @section -- Prometheus
 prometheus:

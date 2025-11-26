@@ -1,0 +1,26 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: vault-api-availability
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: vault-api-availability
+    app.kubernetes.io/instance: vault-api-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+    tier: critical
+spec:
+  target: "99.9"
+  window: 6h
+  description: "Vault API should successfully handle secret requests"
+  indicator:
+    ratio:
+      errors:
+        metric: |
+          sum(rate(vault_core_handle_request_count{status="failure"}[5m]))
+      total:
+        metric: |
+          sum(rate(vault_core_handle_request_count[5m]))

@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: slo-remediation
+  namespace: events
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/name: slo-remediation-sensor
+spec:
+  dependencies:
+    - name: slo-alert
+      eventSourceName: alertmanager
+      eventName: slo-alerts
+      filters:
+        data:
+          - path: "body.alerts.#.labels.slo"
+            type: string
+            comparator: "!="
+            value:
+              - ""
+  
+  triggers:
+    # Trigger 1: ArgoCD Application Unhealthy
+    - template:
+        name: remediate-argocd
+        conditions: "slo-alert"
+        argoWorkflow:
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: remediate-argocd-
+                namespace: cicd
+              spec:
+                serviceAccountName: argo-workflow
+                workflowTemplateRef:
+                  name: remediate-argocd-unhealthy
+                arguments:
+                  parameters:
+                    - name: app-name
+                      value: "unknown"
+                    - name: namespace
+                      value: "argocd"
+          parameters:
+            - src:
+                dependencyName: slo-alert
+                dataKey: body.alerts.0.labels.application
+              dest: spec.arguments.parameters.0.value
+            - src:
+                dependencyName: slo-alert
+                dataKey: body.alerts.0.labels.namespace
+              dest: spec.arguments.parameters.1.value
+        conditions: "slo-alert && slo-alert.labels.slo == 'argocd-application-health'"
+    
+    # Trigger 2: ExternalSecret Sync Failure  
+    - template:
+        name: remediate-externalsecret
+        conditions: "slo-alert"
+        argoWorkflow:
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: remediate-externalsecret-
+                namespace: cicd
+              spec:
+                serviceAccountName: argo-workflow
+                workflowTemplateRef:
+                  name: remediate-externalsecret-failure
+                arguments:
+                  parameters:
+                    - name: externalsecret-name
+                      value: "unknown"
+                    - name: namespace
+                      value: "default"
+          parameters:
+            - src:
+                dependencyName: slo-alert
+                dataKey: body.alerts.0.labels.externalsecret
+              dest: spec.arguments.parameters.0.value
+            - src:
+                dependencyName: slo-alert
+                dataKey: body.alerts.0.labels.namespace
+              dest: spec.arguments.parameters.1.value
+        conditions: "slo-alert && slo-alert.labels.slo == 'externalsecrets-sync-success'"
