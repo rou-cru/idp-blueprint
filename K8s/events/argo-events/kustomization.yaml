@@ -3,7 +3,9 @@ kind: Kustomization
 resources:
   - eventbus.yaml
   - alertmanager-eventsource.yaml
+  - backstage-eventsource.yaml
   - slo-remediation-sensor.yaml
+  - app-provisioning-sensor.yaml
 helmCharts:
   - name: argo-events
     repo: https://argoproj.github.io/argo-helm

@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: backstage
+
+resources:
+  - dex-serviceaccount.yaml
+  - dex-config.yaml
+  - dex-deployment.yaml
+  - dex-service.yaml
+  - dex-ingress.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: idp
+  owner: platform-team
+  business-unit: infrastructure
+  environment: demo
+
+# Replace DNS_SUFFIX placeholder with actual value
+# This can be done via kustomize's replacements or ConfigMap generator
+# For now, assuming DNS_SUFFIX is replaced at deployment time
