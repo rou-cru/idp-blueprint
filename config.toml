@@ -47,6 +47,8 @@ github_org = "rou-cru"
 github_repo = "idp-blueprint"
 github_branch = "main"
 
+github_token = " "
+
 [cluster]
 # Name of the local k3d cluster
 name = "idp-demo"
