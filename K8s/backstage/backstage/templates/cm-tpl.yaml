@@ -74,21 +74,14 @@ data:
       serviceLocatorMethod:
         type: 'multiTenant'
       customResources:
+        # Only include resources that are actually deployed and provide value
+        # ArgoCD Applications - useful for showing deployment status
         - group: 'argoproj.io'
           apiVersion: 'v1alpha1'
           plural: 'applications'
-        - group: 'argoproj.io'
-          apiVersion: 'v1alpha1'
-          plural: 'rollouts'
-        - group: 'argoproj.io'
-          apiVersion: 'v1alpha1'
-          plural: 'workflows'
-        - group: 'kyverno.io'
-          apiVersion: 'v1'
-          plural: 'policies'
-        - group: 'kyverno.io'
-          apiVersion: 'v1'
-          plural: 'clusterpolicies'
+        # Note: Rollouts removed (not installed in cluster)
+        # Note: Workflows removed (no instances exist, causes 404 spam)
+        # Note: Kyverno policies removed (cluster-scoped, not namespace-scoped - Backstage tries to fetch per namespace causing 404s)
       clusterLocatorMethods:
         - type: 'config'
           clusters:
