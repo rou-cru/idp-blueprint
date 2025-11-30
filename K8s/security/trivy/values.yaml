@@ -41,13 +41,45 @@ operator:
 
   # @section -- Scan Job Concurrency & Performance
   # -- (int) Maximum number of concurrent scan jobs (default: 10)
-  scanJobsConcurrentLimit: 3
+  scanJobsConcurrentLimit: 1
   # -- (int) Maximum number of concurrent node collector jobs (default: 1)
   scanNodeCollectorLimit: 1
   # -- (string) Timeout for scan jobs
   scanJobTimeout: 5m
   # -- (string) Delay before retrying failed scan jobs
   scanJobsRetryDelay: 30s
+
+  # Fine-tune resources for scan jobs (init + trivy container) to avoid OOM on small nodes
+  scanJobTemplate:
+    spec:
+      template:
+        spec:
+          initContainers:
+            - name: init-fs
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
+            - name: init-sysctl
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
+          containers:
+            - name: trivy
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 1Gi
 
 # @section -- Compliance
 compliance:

@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Sensor
 metadata:
   name: slo-remediation
-  namespace: events
+  namespace: argo-events
   labels:
     app.kubernetes.io/part-of: idp
     app.kubernetes.io/component: eventing
@@ -24,7 +24,6 @@ spec:
     # Trigger 1: ArgoCD Application Unhealthy
     - template:
         name: remediate-argocd
-        conditions: "slo-alert"
         argoWorkflow:
           operation: submit
           source:
@@ -58,7 +57,6 @@ spec:
     # Trigger 2: ExternalSecret Sync Failure  
     - template:
         name: remediate-externalsecret
-        conditions: "slo-alert"
         argoWorkflow:
           operation: submit
           source:
