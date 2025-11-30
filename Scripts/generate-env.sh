@@ -61,6 +61,8 @@ if [ -z "$GITHUB_BRANCH" ] || [ "$GITHUB_BRANCH" = '""' ] || [ "$GITHUB_BRANCH" 
     GITHUB_BRANCH="main"
 fi
 
+GITHUB_TOKEN=$(get_conf git.github_token)
+
 # --- Versions ---
 CILIUM_VERSION=$(get_conf versions.cilium)
 CERT_MANAGER_VERSION=$(get_conf versions.cert_manager)
@@ -132,6 +134,7 @@ if [ "$OUTPUT_FORMAT" = "json" ]; then
       --arg NODEPORT_HTTPS "$NODEPORT_HTTPS" \
       --arg REPO_URL "$REPO_URL" \
       --arg TARGET_REVISION "$TARGET_REVISION" \
+      --arg GITHUB_TOKEN "$GITHUB_TOKEN" \
       --arg CILIUM_VERSION "$CILIUM_VERSION" \
       --arg CERT_MANAGER_VERSION "$CERT_MANAGER_VERSION" \
       --arg PROMETHEUS_CRDS_VERSION "$PROMETHEUS_CRDS_VERSION" \
@@ -180,6 +183,7 @@ else
     echo "GITHUB_ORG=$GITHUB_ORG"
     echo "GITHUB_REPO=$GITHUB_REPO"
     echo "GITHUB_BRANCH=$GITHUB_BRANCH"
+    echo "GITHUB_TOKEN=$GITHUB_TOKEN"
     echo "CILIUM_VERSION=$CILIUM_VERSION"
     echo "CERT_MANAGER_VERSION=$CERT_MANAGER_VERSION"
     echo "PROMETHEUS_CRDS_VERSION=$PROMETHEUS_CRDS_VERSION"
