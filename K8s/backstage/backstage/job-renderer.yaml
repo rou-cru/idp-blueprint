@@ -40,7 +40,7 @@ metadata:
   name: backstage-config-renderer
   namespace: backstage
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: "0"
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
@@ -70,9 +70,6 @@ spec:
               if [ -f /vars/GITHUB_BRANCH ]; then
                 export GITHUB_BRANCH=$(cat /vars/GITHUB_BRANCH)
               fi
-              if [ -f /vars/GITHUB_TOKEN ]; then
-                export GITHUB_TOKEN=$(cat /vars/GITHUB_TOKEN)
-              fi
 
               # Fallback for dev/manual testing
               if [ -f /vars/env ]; then
@@ -100,13 +97,9 @@ spec:
               echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX, CLUSTER_NAME=$CLUSTER_NAME, GITHUB_ORG=$GITHUB_ORG, GITHUB_REPO=$GITHUB_REPO, GITHUB_BRANCH=$GITHUB_BRANCH"
 
               # Render template safely with envsubst
-              export DNS_SUFFIX CLUSTER_NAME GITHUB_ORG GITHUB_REPO GITHUB_BRANCH GITHUB_TOKEN
-              envsubst '${DNS_SUFFIX} ${CLUSTER_NAME} ${GITHUB_ORG} ${GITHUB_REPO} ${GITHUB_BRANCH} ${GITHUB_TOKEN}' \
+              export DNS_SUFFIX CLUSTER_NAME GITHUB_ORG GITHUB_REPO GITHUB_BRANCH
+              envsubst '${DNS_SUFFIX} ${CLUSTER_NAME} ${GITHUB_ORG} ${GITHUB_REPO} ${GITHUB_BRANCH}' \
                 < /tpl/app-config.override.yaml > /tmp/config.yaml
-              if [ -z "$GITHUB_TOKEN" ]; then
-                # Remove empty token line to avoid config validation warnings
-                sed -i '/token:[ ]*$/d' /tmp/config.yaml
-              fi
 
               # Patch ConfigMap
               kubectl create configmap backstage-app-config-override \

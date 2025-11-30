@@ -1,11 +1,5 @@
 # Backstage Integration Tasks
 
-## Most Important
-
-Catalog Graph -> https://github.com/backstage/backstage/blob/master/plugins/catalog-graph/README.md
-Relations -> https://github.com/dweber019/backstage-plugins/tree/main/plugins/relations
-Kubernetes -> https://backstage.io/docs/features/kubernetes
-
 ## Mid-priority
 
 ArgoCD -> https://roadie.io/backstage/plugins/argo-cd/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=argo-cd

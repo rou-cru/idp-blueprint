@@ -4,7 +4,7 @@ metadata:
   name: cicd-quota
   namespace: cicd
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-1"
   labels:
     app.kubernetes.io/part-of: idp
     app.kubernetes.io/component: governance

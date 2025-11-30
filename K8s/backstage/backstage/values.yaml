@@ -133,4 +133,4 @@ postgresql:
         cpu: 500m
         memory: 1Gi
     podAnnotations:
-      argocd.argoproj.io/sync-wave: "1"
+      argocd.argoproj.io/sync-wave: "0"
