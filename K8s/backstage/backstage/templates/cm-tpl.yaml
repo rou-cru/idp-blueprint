@@ -15,6 +15,10 @@ data:
         credentials: true
       csp:
         connect-src: ["'self'", 'https://dex.${DNS_SUFFIX}', 'https://kubernetes.default.svc']
+      reading:
+        allow:
+          - github.com
+          - raw.githubusercontent.com
     app:
       title: Backstage
       baseUrl: https://backstage.${DNS_SUFFIX}
