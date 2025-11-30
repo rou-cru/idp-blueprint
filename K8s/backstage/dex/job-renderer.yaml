@@ -61,6 +61,12 @@ spec:
               if [ -f /vars/GITHUB_ORG ]; then
                 export GITHUB_ORG=$(cat /vars/GITHUB_ORG)
               fi
+              if [ -f /vars/GITHUB_REPO ]; then
+                export GITHUB_REPO=$(cat /vars/GITHUB_REPO)
+              fi
+              if [ -f /vars/GITHUB_BRANCH ]; then
+                export GITHUB_BRANCH=$(cat /vars/GITHUB_BRANCH)
+              fi
 
               if [ -f /vars/env ]; then
                 source /vars/env
@@ -74,6 +80,12 @@ spec:
               if [ -z "$GITHUB_ORG" ]; then
                 export GITHUB_ORG="rou-cru"
               fi
+              if [ -z "$GITHUB_REPO" ]; then
+                export GITHUB_REPO="idp-blueprint"
+              fi
+              if [ -z "$GITHUB_BRANCH" ]; then
+                export GITHUB_BRANCH="main"
+              fi
 
               echo "Rendering Dex configuration using DNS_SUFFIX=$DNS_SUFFIX, GITHUB_ORG=$GITHUB_ORG"
 
@@ -83,6 +95,8 @@ spec:
               # Replace variable
               sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
               sed -i "s/\${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
 
               # Patch Secret (using stringData logic via kubectl create --dry-run)
               # Note: We use 'create secret generic ... --dry-run' which produces 'data' (base64).

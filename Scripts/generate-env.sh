@@ -51,6 +51,16 @@ if [ -z "$GITHUB_ORG" ] || [ "$GITHUB_ORG" = '""' ] || [ "$GITHUB_ORG" = "''" ];
     GITHUB_ORG="rou-cru"
 fi
 
+GITHUB_REPO=$(get_conf git.github_repo)
+if [ -z "$GITHUB_REPO" ] || [ "$GITHUB_REPO" = '""' ] || [ "$GITHUB_REPO" = "''" ]; then
+    GITHUB_REPO="idp-blueprint"
+fi
+
+GITHUB_BRANCH=$(get_conf git.github_branch)
+if [ -z "$GITHUB_BRANCH" ] || [ "$GITHUB_BRANCH" = '""' ] || [ "$GITHUB_BRANCH" = "''" ]; then
+    GITHUB_BRANCH="main"
+fi
+
 # --- Versions ---
 CILIUM_VERSION=$(get_conf versions.cilium)
 CERT_MANAGER_VERSION=$(get_conf versions.cert_manager)
@@ -168,6 +178,8 @@ else
     echo "REPO_URL=$REPO_URL"
     echo "TARGET_REVISION=$TARGET_REVISION"
     echo "GITHUB_ORG=$GITHUB_ORG"
+    echo "GITHUB_REPO=$GITHUB_REPO"
+    echo "GITHUB_BRANCH=$GITHUB_BRANCH"
     echo "CILIUM_VERSION=$CILIUM_VERSION"
     echo "CERT_MANAGER_VERSION=$CERT_MANAGER_VERSION"
     echo "PROMETHEUS_CRDS_VERSION=$PROMETHEUS_CRDS_VERSION"

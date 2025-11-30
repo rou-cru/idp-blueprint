@@ -49,6 +49,12 @@ spec:
                   - op: replace
                     path: /data/GITHUB_ORG
                     value: "${GITHUB_ORG}"
+                  - op: replace
+                    path: /data/GITHUB_REPO
+                    value: "${GITHUB_REPO}"
+                  - op: replace
+                    path: /data/GITHUB_BRANCH
+                    value: "${GITHUB_BRANCH}"
       destination:
         server: https://kubernetes.default.svc
         namespace: backstage

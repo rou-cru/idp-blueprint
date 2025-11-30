@@ -44,6 +44,8 @@ registry_cache_path = "$HOME/.k3d-registry"
 repo_url = ""
 target_revision = ""
 github_org = "rou-cru"
+github_repo = "idp-blueprint"
+github_branch = "main"
 
 [cluster]
 # Name of the local k3d cluster

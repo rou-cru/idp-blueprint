@@ -33,6 +33,15 @@ data:
               resolvers:
                 - resolver: emailMatchingUserEntityProfileEmail
                 - resolver: emailLocalPartMatchingUserEntityName
+    catalog:
+      providers:
+        github:
+          production:
+            organization: "${GITHUB_ORG}"
+            catalogPath: "/catalog-info.yaml"
+            filters:
+              branch: "${GITHUB_BRANCH}"
+              repository: "${GITHUB_REPO}"
     techdocs:
       builder: 'local'
       generator:

@@ -69,6 +69,8 @@ tasks:
       BACKSTAGE_VERSION: "{{.BACKSTAGE_VERSION}}"
       DNS_SUFFIX: "{{.DNS_SUFFIX}}"
       GITHUB_ORG: "{{.GITHUB_ORG}}"
+      GITHUB_REPO: "{{.GITHUB_REPO}}"
+      GITHUB_BRANCH: "{{.GITHUB_BRANCH}}"
     status:
       - test "{{.FUSE_BACKSTAGE}}" = "false"
     cmds:
