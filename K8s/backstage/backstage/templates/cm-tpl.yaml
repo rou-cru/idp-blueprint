@@ -34,6 +34,11 @@ data:
                 - resolver: emailMatchingUserEntityProfileEmail
                 - resolver: emailLocalPartMatchingUserEntityName
     catalog:
+      # Ensure local user catalog is always registered (prevents auth resolver failures
+      # if base chart defaults change).
+      locations:
+        - type: file
+          target: /app/catalog-users/users.yaml
       providers:
         github:
           production:
