@@ -1,0 +1,15 @@
+image:
+  repository: ghcr.io/dexidp/dex
+  tag: v2.37.0
+service:
+  ports:
+    http:
+      port: 5556
+    grpc:
+      port: 5557
+ingress:
+  enabled: false
+existingSecret: dex
+envFrom:
+  - secretRef:
+      name: dex-secrets
