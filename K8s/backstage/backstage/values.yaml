@@ -71,6 +71,8 @@ appConfig:
     publisher:
       type: "local"
   catalog:
+    rules:
+      - allow: [Component, API, System, Domain, Resource, Template, Location, User, Group]
     locations:
       - type: file
         target: /app/catalog-users/users.yaml

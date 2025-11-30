@@ -34,6 +34,10 @@ data:
                 - resolver: emailMatchingUserEntityProfileEmail
                 - resolver: emailLocalPartMatchingUserEntityName
     catalog:
+      # Allow User/Group ingestion (default rules only allow Component/API/Location) so auth
+      # can resolve identities from the static catalog file.
+      rules:
+        - allow: [Component, API, System, Domain, Resource, Template, Location, User, Group]
       # Ensure local user catalog is always registered (prevents auth resolver failures
       # if base chart defaults change).
       locations:
