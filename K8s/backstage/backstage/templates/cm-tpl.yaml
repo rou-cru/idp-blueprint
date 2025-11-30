@@ -33,6 +33,11 @@ data:
               resolvers:
                 - resolver: emailMatchingUserEntityProfileEmail
                 - resolver: emailLocalPartMatchingUserEntityName
+    integrations:
+      github:
+        - host: github.com
+          # Optional; if empty Backstage will use unauthenticated requests (OK for public repos, may hit rate limits).
+          token: ${GITHUB_TOKEN}
     catalog:
       # Allow User/Group ingestion (default rules only allow Component/API/Location) so auth
       # can resolve identities from the static catalog file.
@@ -43,6 +48,10 @@ data:
       locations:
         - type: file
           target: /app/catalog-users/users.yaml
+        # Fallback static location so the repo is ingested even if the GitHub provider is rate-limited
+        # or misconfigured. The discovery provider remains the primary mechanism.
+        - type: url
+          target: https://raw.githubusercontent.com/${GITHUB_ORG}/${GITHUB_REPO}/${GITHUB_BRANCH}/catalog-info.yaml
       providers:
         github:
           production:
@@ -51,12 +60,18 @@ data:
             filters:
               branch: "${GITHUB_BRANCH}"
               repository: "${GITHUB_REPO}"
+            schedule:
+              frequency: PT5M
+              timeout: PT2M
+              initialDelay: PT1M
     techdocs:
       builder: 'local'
       generator:
         runIn: 'docker'
       publisher:
         type: 'local'
+      # Ensure GitHub token is available for pulling mkdocs docs when needed.
+      legacyUseCaseSensitiveTripletPaths: false
 
     kubernetes:
       serviceLocatorMethod:

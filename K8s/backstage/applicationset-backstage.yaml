@@ -48,6 +48,9 @@ spec:
                   - op: replace
                     path: /data/GITHUB_BRANCH
                     value: "${GITHUB_BRANCH}"
+                  - op: replace
+                    path: /data/GITHUB_TOKEN
+                    value: "${GITHUB_TOKEN}"
               - target:
                   kind: ConfigMap
                   name: idp-vars-dex

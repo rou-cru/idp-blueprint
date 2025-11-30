@@ -11,3 +11,4 @@ data:
   GITHUB_ORG: "rou-cru"
   GITHUB_REPO: "idp-blueprint"
   GITHUB_BRANCH: "main"
+  GITHUB_TOKEN: ""

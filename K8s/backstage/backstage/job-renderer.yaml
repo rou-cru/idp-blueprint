@@ -70,6 +70,9 @@ spec:
               if [ -f /vars/GITHUB_BRANCH ]; then
                 export GITHUB_BRANCH=$(cat /vars/GITHUB_BRANCH)
               fi
+              if [ -f /vars/GITHUB_TOKEN ]; then
+                export GITHUB_TOKEN=$(cat /vars/GITHUB_TOKEN)
+              fi
 
               # Fallback for dev/manual testing
               if [ -f /vars/env ]; then
@@ -100,11 +103,16 @@ spec:
               cp /tpl/app-config.override.yaml /tmp/config.yaml
 
               # Replace variables
-              sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
-              sed -i "s/\${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
-              sed -i "s/\${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
-              sed -i "s/\${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
-              sed -i "s/\${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
+              sed -i "s/\\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
+              sed -i "s/\\${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
+              sed -i "s/\\${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
+              sed -i "s/\\${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
+              sed -i "s/\\${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
+              sed -i "s/\\${GITHUB_TOKEN}/$GITHUB_TOKEN/g" /tmp/config.yaml
+              if [ -z "$GITHUB_TOKEN" ]; then
+                # Remove empty token line to avoid config validation warnings
+                sed -i '/token:[ ]*$/d' /tmp/config.yaml
+              fi
 
               # Patch ConfigMap
               kubectl create configmap backstage-app-config-override \

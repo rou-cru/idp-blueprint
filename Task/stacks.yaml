@@ -71,6 +71,7 @@ tasks:
       GITHUB_ORG: "{{.GITHUB_ORG}}"
       GITHUB_REPO: "{{.GITHUB_REPO}}"
       GITHUB_BRANCH: "{{.GITHUB_BRANCH}}"
+      GITHUB_TOKEN: "{{.GITHUB_TOKEN}}"
     status:
       - test "{{.FUSE_BACKSTAGE}}" = "false"
     cmds:
