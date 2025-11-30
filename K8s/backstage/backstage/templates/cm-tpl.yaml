@@ -52,11 +52,10 @@ data:
       locations:
         - type: file
           target: /app/catalog-users/users.yaml
-        # Fallback static location so the repo is ingested even if the GitHub provider is rate-limited
-        # or misconfigured. The discovery provider remains the primary mechanism.
-        - type: url
-          # Use the raw file path so Backstage reads the YAML instead of the GitHub HTML "blob" view
-          target: https://raw.githubusercontent.com/${GITHUB_ORG}/${GITHUB_REPO}/${GITHUB_BRANCH}/catalog-info.yaml
+        # Discover catalog descriptors inside the GitHub repo so Backstage can follow all the
+        # current paths instead of chasing relative files that do not exist inside the container.
+        - type: github-discovery
+          target: https://github.com/${GITHUB_ORG}/${GITHUB_REPO}
 
     techdocs:
       builder: 'local'
