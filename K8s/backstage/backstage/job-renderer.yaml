@@ -55,69 +55,94 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              # Install dependencies
+              set -e  # Exit on any error
+              set -x  # Print commands for debugging
+
+              echo "=== Step 1: Installing dependencies ==="
               apk add --no-cache curl gettext bash
 
-              # Install kubectl
+              echo "=== Step 2: Installing kubectl ==="
               curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
               chmod +x kubectl
               mv kubectl /usr/local/bin/
+              kubectl version --client
 
-            - |
-              # Load variables
+              echo "=== Step 3: Loading variables from ConfigMap ==="
+              # Load variables from individual files in /vars
               if [ -f /vars/DNS_SUFFIX ]; then
                 export DNS_SUFFIX=$(cat /vars/DNS_SUFFIX)
+                echo "Loaded DNS_SUFFIX: $DNS_SUFFIX"
               fi
               if [ -f /vars/CLUSTER_NAME ]; then
                 export CLUSTER_NAME=$(cat /vars/CLUSTER_NAME)
+                echo "Loaded CLUSTER_NAME: $CLUSTER_NAME"
               fi
               if [ -f /vars/GITHUB_ORG ]; then
                 export GITHUB_ORG=$(cat /vars/GITHUB_ORG)
+                echo "Loaded GITHUB_ORG: $GITHUB_ORG"
               fi
               if [ -f /vars/GITHUB_REPO ]; then
                 export GITHUB_REPO=$(cat /vars/GITHUB_REPO)
+                echo "Loaded GITHUB_REPO: $GITHUB_REPO"
               fi
               if [ -f /vars/GITHUB_BRANCH ]; then
                 export GITHUB_BRANCH=$(cat /vars/GITHUB_BRANCH)
+                echo "Loaded GITHUB_BRANCH: $GITHUB_BRANCH"
               fi
 
               # Fallback for dev/manual testing
               if [ -f /vars/env ]; then
+                echo "Loading from /vars/env file"
                 source /vars/env
               fi
 
+              echo "=== Step 4: Validating required variables ==="
               if [ -z "$DNS_SUFFIX" ]; then
-                echo "DNS_SUFFIX not found!"
+                echo "ERROR: DNS_SUFFIX not found!"
                 exit 1
               fi
 
               if [ -z "$CLUSTER_NAME" ]; then
-                echo "Warning: CLUSTER_NAME not found, using default"
+                echo "WARNING: CLUSTER_NAME not found, using default"
                 export CLUSTER_NAME="idp-demo"
               fi
 
               # Validate GitHub variables are set (no hardcoded defaults)
               if [ -z "$GITHUB_ORG" ] || [ -z "$GITHUB_REPO" ] || [ -z "$GITHUB_BRANCH" ]; then
-                echo "Error: GitHub variables not properly configured"
+                echo "ERROR: GitHub variables not properly configured"
                 echo "GITHUB_ORG=$GITHUB_ORG, GITHUB_REPO=$GITHUB_REPO, GITHUB_BRANCH=$GITHUB_BRANCH"
                 echo "These values should come from config.toml via ApplicationSet patches"
                 exit 1
               fi
 
-              echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX, CLUSTER_NAME=$CLUSTER_NAME, GITHUB_ORG=$GITHUB_ORG, GITHUB_REPO=$GITHUB_REPO, GITHUB_BRANCH=$GITHUB_BRANCH"
+              echo "=== Step 5: Rendering configuration template ==="
+              echo "Using variables:"
+              echo "  DNS_SUFFIX=$DNS_SUFFIX"
+              echo "  CLUSTER_NAME=$CLUSTER_NAME"
+              echo "  GITHUB_ORG=$GITHUB_ORG"
+              echo "  GITHUB_REPO=$GITHUB_REPO"
+              echo "  GITHUB_BRANCH=$GITHUB_BRANCH"
 
               # Render template safely with envsubst
               export DNS_SUFFIX CLUSTER_NAME GITHUB_ORG GITHUB_REPO GITHUB_BRANCH
               envsubst '${DNS_SUFFIX} ${CLUSTER_NAME} ${GITHUB_ORG} ${GITHUB_REPO} ${GITHUB_BRANCH}' \
                 < /tpl/app-config.override.yaml > /tmp/config.yaml
 
-              # Patch ConfigMap
+              echo "=== Rendered configuration preview (first 20 lines) ==="
+              head -n 20 /tmp/config.yaml
+
+              echo "=== Step 6: Patching ConfigMap ==="
               kubectl create configmap backstage-app-config-override \
                 --from-file=app-config.override.yaml=/tmp/config.yaml \
                 --dry-run=client -o yaml | \
                 kubectl apply -f -
                 
-              echo "ConfigMap patched successfully."
+              echo "=== SUCCESS: ConfigMap patched successfully ==="
+
+              # Verify the patch was applied
+              echo "=== Verification: Checking ConfigMap content ==="
+              kubectl get configmap backstage-app-config-override -n backstage -o jsonpath='{.data.app-config\.override\.yaml}' | head -n 10
+
           volumeMounts:
             - name: vars
               mountPath: /vars
