@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: idp-blueprint-monorepo
+  description: Entry point for IDP Blueprint Monorepo
+spec:
+  targets:
+    # Organization
+    - ./IT/platform-org.yaml
+
+    # IT Components
+    - ./IT/*/catalog-info.yaml
+
+    # K8s Components
+    - ./K8s/*/catalog-info.yaml
+
+    # Policies
+    - ./Policies/*/catalog-info.yaml
+
+    # UI
+    - ./UI/catalog-info.yaml
