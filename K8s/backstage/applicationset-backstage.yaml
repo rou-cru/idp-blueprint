@@ -39,6 +39,15 @@ spec:
                   - op: replace
                     path: /data/CLUSTER_NAME
                     value: "${CLUSTER_NAME}"
+                  - op: replace
+                    path: /data/GITHUB_ORG
+                    value: "${GITHUB_ORG}"
+                  - op: replace
+                    path: /data/GITHUB_REPO
+                    value: "${GITHUB_REPO}"
+                  - op: replace
+                    path: /data/GITHUB_BRANCH
+                    value: "${GITHUB_BRANCH}"
               - target:
                   kind: ConfigMap
                   name: idp-vars-dex

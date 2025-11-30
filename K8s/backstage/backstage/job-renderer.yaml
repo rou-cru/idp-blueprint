@@ -61,6 +61,15 @@ spec:
               if [ -f /vars/CLUSTER_NAME ]; then
                 export CLUSTER_NAME=$(cat /vars/CLUSTER_NAME)
               fi
+              if [ -f /vars/GITHUB_ORG ]; then
+                export GITHUB_ORG=$(cat /vars/GITHUB_ORG)
+              fi
+              if [ -f /vars/GITHUB_REPO ]; then
+                export GITHUB_REPO=$(cat /vars/GITHUB_REPO)
+              fi
+              if [ -f /vars/GITHUB_BRANCH ]; then
+                export GITHUB_BRANCH=$(cat /vars/GITHUB_BRANCH)
+              fi
 
               # Fallback for dev/manual testing
               if [ -f /vars/env ]; then
@@ -73,10 +82,19 @@ spec:
               fi
 
               if [ -z "$CLUSTER_NAME" ]; then
+                echo "Warning: CLUSTER_NAME not found, using default"
                 export CLUSTER_NAME="idp-demo"
               fi
 
-              echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX, CLUSTER_NAME=$CLUSTER_NAME"
+              # Validate GitHub variables are set (no hardcoded defaults)
+              if [ -z "$GITHUB_ORG" ] || [ -z "$GITHUB_REPO" ] || [ -z "$GITHUB_BRANCH" ]; then
+                echo "Error: GitHub variables not properly configured"
+                echo "GITHUB_ORG=$GITHUB_ORG, GITHUB_REPO=$GITHUB_REPO, GITHUB_BRANCH=$GITHUB_BRANCH"
+                echo "These values should come from config.toml via ApplicationSet patches"
+                exit 1
+              fi
+
+              echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX, CLUSTER_NAME=$CLUSTER_NAME, GITHUB_ORG=$GITHUB_ORG, GITHUB_REPO=$GITHUB_REPO, GITHUB_BRANCH=$GITHUB_BRANCH"
 
               # Read template
               cp /tpl/app-config.override.yaml /tmp/config.yaml
@@ -84,6 +102,9 @@ spec:
               # Replace variables
               sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
               sed -i "s/\${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
 
               # Patch ConfigMap
               kubectl create configmap backstage-app-config-override \
