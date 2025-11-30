@@ -99,16 +99,10 @@ spec:
 
               echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX, CLUSTER_NAME=$CLUSTER_NAME, GITHUB_ORG=$GITHUB_ORG, GITHUB_REPO=$GITHUB_REPO, GITHUB_BRANCH=$GITHUB_BRANCH"
 
-              # Read template
-              cp /tpl/app-config.override.yaml /tmp/config.yaml
-
-              # Replace variables
-              sed -i "s|\\${DNS_SUFFIX}|$DNS_SUFFIX|g" /tmp/config.yaml
-              sed -i "s|\\${CLUSTER_NAME}|$CLUSTER_NAME|g" /tmp/config.yaml
-              sed -i "s|\\${GITHUB_ORG}|$GITHUB_ORG|g" /tmp/config.yaml
-              sed -i "s|\\${GITHUB_REPO}|$GITHUB_REPO|g" /tmp/config.yaml
-              sed -i "s|\\${GITHUB_BRANCH}|$GITHUB_BRANCH|g" /tmp/config.yaml
-              sed -i "s|\\${GITHUB_TOKEN}|$GITHUB_TOKEN|g" /tmp/config.yaml
+              # Render template safely with envsubst
+              export DNS_SUFFIX CLUSTER_NAME GITHUB_ORG GITHUB_REPO GITHUB_BRANCH GITHUB_TOKEN
+              envsubst '${DNS_SUFFIX} ${CLUSTER_NAME} ${GITHUB_ORG} ${GITHUB_REPO} ${GITHUB_BRANCH} ${GITHUB_TOKEN}' \
+                < /tpl/app-config.override.yaml > /tmp/config.yaml
               if [ -z "$GITHUB_TOKEN" ]; then
                 # Remove empty token line to avoid config validation warnings
                 sed -i '/token:[ ]*$/d' /tmp/config.yaml
