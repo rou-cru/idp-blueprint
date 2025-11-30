@@ -52,10 +52,7 @@ data:
       locations:
         - type: file
           target: /app/catalog-users/users.yaml
-        # Discover catalog descriptors inside the GitHub repo so Backstage can follow all the
-        # current paths instead of chasing relative files that do not exist inside the container.
-        - type: github-discovery
-          target: https://github.com/${GITHUB_ORG}/${GITHUB_REPO}
+
       providers:
         github:
           idp-blueprint:
