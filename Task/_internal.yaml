@@ -1,0 +1,85 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+# Internal helper tasks shared across all taskfiles
+# These tasks provide common functionality like tool validation and secret generation
+
+tasks:
+  generate-env:
+    desc: "Generate .env from config.toml"
+    internal: true
+    silent: true
+    run: once
+    sources:
+      - config.toml
+      - Scripts/generate-env.sh
+      - Scripts/config-get.sh
+    generates:
+      - .env
+    cmds:
+      - ./Scripts/generate-env.sh > .env
+      - echo "✅ .env generated from config.toml"
+
+  validate-tools:
+    desc: "Validate required CLI tools are installed"
+    internal: true
+    run: once
+    deps:
+      - task: check-tool
+        vars:
+          {
+            TOOL: kubectl,
+            INSTALL: "add to devbox.json or install via package manager",
+          }
+      - task: check-tool
+        vars:
+          {
+            TOOL: helm,
+            INSTALL: "add to devbox.json or install via package manager",
+          }
+      - task: check-tool
+        vars:
+          {
+            TOOL: kustomize,
+            INSTALL: "add to devbox.json or install via package manager",
+          }
+      - task: check-tool
+        vars:
+          {
+            TOOL: envsubst,
+            INSTALL: "add gettext to devbox.json or install via package manager",
+          }
+      - task: check-tool
+        vars:
+          {
+            TOOL: jq,
+            INSTALL: "add to devbox.json or install via package manager",
+          }
+      - task: check-tool
+        vars:
+          {
+            TOOL: dasel,
+            INSTALL: "add to devbox.json or install via package manager",
+          }
+      - task: check-tool
+        vars:
+          {
+            TOOL: k3d,
+            INSTALL: "add to devbox.json or install via package manager",
+          }
+      - task: check-tool
+        vars: { TOOL: docker, INSTALL: "install via system package manager" }
+
+  check-tool:
+    desc: "Check if a specific tool is installed"
+    internal: true
+    silent: true
+    preconditions:
+      - sh: command -v {{.TOOL}}
+        msg: "❌ {{.TOOL}} is required but not installed. Run: {{.INSTALL}}"
+
+  vault-generate-one:
+    desc: "Generate a single Vault secret (internal helper)"
+    internal: true
+    cmds:
+      - ./Scripts/vault-generate.sh {{.PATH}} {{.KEY}} "{{.VALUE}}" {{.ENC}} {{.HASH}}

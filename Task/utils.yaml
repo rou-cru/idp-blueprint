@@ -1,5 +1,12 @@
 version: '3'
 
+vars:
+  CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
+  CLUSTER_NAME:
+    sh: |
+      value=$(./Scripts/config-get.sh cluster.name '{{.CONFIG_FILE}}' 2>/dev/null || true)
+      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
+
 tasks:
   docs:
     desc: 'Generate all automatic documentation (Helm values metadata)'
@@ -57,7 +64,7 @@ tasks:
     desc: 'Export CA certificate for browser import (optional)'
     cmds:
       - |
-        kubectl get secret idp-demo-ca-secret -n cert-manager \
-          -o jsonpath='{.data.tls\.crt}' | base64 -d > $HOME/idp-demo-ca.crt
-        echo "✅ CA exported to: $HOME/idp-demo-ca.crt"
+        kubectl get secret {{.CLUSTER_NAME}}-ca-secret -n cert-manager \
+          -o jsonpath='{.data.tls\.crt}' | base64 -d > $HOME/{{.CLUSTER_NAME}}-ca.crt
+        echo "✅ CA exported to: $HOME/{{.CLUSTER_NAME}}-ca.crt"
         echo "   Import in browser to remove security warnings"

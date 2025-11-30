@@ -1,131 +1,15 @@
-version: '3'
+version: "3"
+
+# Load all variables from .env (auto-generated from config.toml)
+dotenv: [".env"]
 
 vars:
+  # Default fallback values (overridden by .env if present)
   CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
 
-  DOCKER_IMAGE_NAME:
-    sh: ./Scripts/config-get.sh images.docker_image_name '{{.CONFIG_FILE}}'
-  DOCKER_IMAGE_TAG:
-    sh: ./Scripts/config-get.sh images.docker_image_tag '{{.CONFIG_FILE}}'
-  DOCKER_IMAGE_TAG_MINIMAL:
-    sh: ./Scripts/config-get.sh images.docker_image_tag_minimal '{{.CONFIG_FILE}}'
-
-  # Network Configuration
-  LAN_IP:
-    sh: |
-      value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
-      if [ -n "$value" ] && [ "$value" != '""' ]; then
-        echo "$value"
-      else
-        ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1"
-      fi
-  NODEPORT_HTTP:
-    sh: ./Scripts/config-get.sh network.nodeport_http '{{.CONFIG_FILE}}'
-  NODEPORT_HTTPS:
-    sh: ./Scripts/config-get.sh network.nodeport_https '{{.CONFIG_FILE}}'
-
-  REPO_URL:
-    sh: |
-      value=$(./Scripts/config-get.sh git.repo_url '{{.CONFIG_FILE}}' 2>/dev/null || true)
-      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
-        echo "$value"
-      else
-        git config --get remote.origin.url 2>/dev/null || echo "https://github.com/rou-cru/idp-blueprint.git"
-      fi
-  TARGET_REVISION:
-    sh: |
-      value=$(./Scripts/config-get.sh git.target_revision '{{.CONFIG_FILE}}' 2>/dev/null || true)
-      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
-        echo "$value"
-      else
-        git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD"
-      fi
-
-  # Helm Chart Versions
-  CILIUM_VERSION:
-    sh: ./Scripts/config-get.sh versions.cilium '{{.CONFIG_FILE}}'
-  CERT_MANAGER_VERSION:
-    sh: ./Scripts/config-get.sh versions.cert_manager '{{.CONFIG_FILE}}'
-  PROMETHEUS_CRDS_VERSION:
-    sh: ./Scripts/config-get.sh versions.prometheus_operator_crds '{{.CONFIG_FILE}}'
-  GATEWAY_API_VERSION:
-    sh: ./Scripts/config-get.sh versions.gateway_api '{{.CONFIG_FILE}}'
-  EXTERNAL_SECRETS_VERSION:
-    sh: ./Scripts/config-get.sh versions.external_secrets '{{.CONFIG_FILE}}'
-  VAULT_VERSION:
-    sh: ./Scripts/config-get.sh versions.vault '{{.CONFIG_FILE}}'
-  ARGOCD_VERSION:
-    sh: ./Scripts/config-get.sh versions.argocd '{{.CONFIG_FILE}}'
-
-  # Operational Settings
-  KUBECTL_TIMEOUT:
-    sh: ./Scripts/config-get.sh operational.kubectl_timeout '{{.CONFIG_FILE}}'
-  K3D_CONFIG:
-    sh: ./Scripts/config-get.sh operational.k3d_config '{{.CONFIG_FILE}}'
-  REGISTRY_CACHE_PATH:
-    sh: ./Scripts/config-get.sh operational.registry_cache_path '{{.CONFIG_FILE}}'
-
-  # Cluster
-  CLUSTER_NAME:
-    sh: |
-      value=$(./Scripts/config-get.sh cluster.name '{{.CONFIG_FILE}}' 2>/dev/null || true)
-      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
-
-  # ArgoCD Configuration
-  ARGOCD_SYNC_TIMEOUT:
-    sh: ./Scripts/config-get.sh argocd.sync_timeout '{{.CONFIG_FILE}}'
-  ARGOCD_BACKOFF_DURATION:
-    sh: ./Scripts/config-get.sh argocd.backoff_duration '{{.CONFIG_FILE}}'
-  ARGOCD_BACKOFF_FACTOR:
-    sh: ./Scripts/config-get.sh argocd.backoff_factor '{{.CONFIG_FILE}}'
-  ARGOCD_BACKOFF_MAX_DURATION:
-    sh: ./Scripts/config-get.sh argocd.backoff_max_duration '{{.CONFIG_FILE}}'
-  ARGOCD_RETRY_LIMIT:
-    sh: ./Scripts/config-get.sh argocd.retry_limit '{{.CONFIG_FILE}}'
-
-  # Gateway Timeouts
-  GATEWAY_WAIT_TIMEOUT:
-    sh: ./Scripts/config-get.sh gateway.wait_timeout '{{.CONFIG_FILE}}'
-
-  # Password Configuration
-  ARGOCD_ADMIN_PASSWORD:
-    sh: ./Scripts/config-get.sh passwords.argocd_admin '{{.CONFIG_FILE}}'
-  GRAFANA_ADMIN_PASSWORD:
-    sh: ./Scripts/config-get.sh passwords.grafana_admin '{{.CONFIG_FILE}}'
-  SONARQUBE_ADMIN_PASSWORD:
-    sh: ./Scripts/config-get.sh passwords.sonarqube_admin '{{.CONFIG_FILE}}'
-  SONARQUBE_MONITORING_PASSCODE:
-    sh: ./Scripts/config-get.sh passwords.sonarqube_monitoring '{{.CONFIG_FILE}}'
-
-  # Docker Registry Configuration
-  DOCKER_REGISTRY_URL:
-    sh: ./Scripts/config-get.sh registry.url '{{.CONFIG_FILE}}'
-  DOCKER_REGISTRY_USERNAME:
-    sh: ./Scripts/config-get.sh registry.username '{{.CONFIG_FILE}}'
-  DOCKER_REGISTRY_PASSWORD:
-    sh: ./Scripts/config-get.sh registry.password '{{.CONFIG_FILE}}'
-
-  # Fuses (feature toggles)
-  FUSE_POLICIES:
-    sh: |
-      v=$(./Scripts/config-get.sh fuses.policies '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
-  FUSE_SECURITY:
-    sh: |
-      v=$(./Scripts/config-get.sh fuses.security '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
-  FUSE_OBSERVABILITY:
-    sh: |
-      v=$(./Scripts/config-get.sh fuses.observability '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
-  FUSE_CICD:
-    sh: |
-      v=$(./Scripts/config-get.sh fuses.cicd '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
-  FUSE_BACKSTAGE:
-    sh: |
-      v=$(./Scripts/config-get.sh fuses.backstage '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=true; echo "$v"
-  FUSE_PROD:
-    sh: |
-      v=$(./Scripts/config-get.sh fuses.prod '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=false; echo "$v"
-
 includes:
+  internal:
+    taskfile: ./Task/_internal.yaml
   k3d:
     taskfile: ./Task/k3d.yaml
   bootstrap:
@@ -143,11 +27,14 @@ includes:
 
 tasks:
   deploy:
-    desc: 'Deploy the entire IDP platform'
+    desc: "Deploy the entire IDP platform"
+    interactive: true
+    deps:
+      - internal:validate-tools
+      - internal:generate-env
     preconditions:
       - sh: test -f {{.CONFIG_FILE}}
-        msg:
-          'config.toml not found. Please keep the configuration file at the repo root.'
+        msg: "config.toml not found. Please keep the configuration file at the repo root."
     cmds:
       - defer:
           echo '{{if .EXIT_CODE}}⚠️  Deployment failed! Run "task destroy" to clean up
@@ -168,15 +55,14 @@ tasks:
       - task: stacks:policies
       # 6. Deploy Application Stacks for everything else
       - task: stacks:deploy
-      - exit 0
 
   destroy:
-    desc: 'Remove all IDP related components and cluster'
+    desc: "Remove all IDP related components and cluster"
     cmds:
       - task: k3d:k3d:destroy
 
   redeploy:
-    desc: 'Destroy the current environment and deploy from scratch'
+    desc: "Destroy the current environment and deploy from scratch"
     cmds:
       - task: destroy
       - task: deploy

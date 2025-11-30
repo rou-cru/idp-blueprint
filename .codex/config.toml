@@ -16,6 +16,10 @@ args = ["@playwright/mcp@latest"]
 command = "uvx"
 args = ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "codex"]
 
+[mcp_servers.react-native-guide]
+command = "npx"
+args = ["@mrnitro360/react-native-mcp-guide@1.1.0"]
+
 [notice]
 hide_gpt5_1_migration_prompt = true
 "hide_gpt-5.1-codex-max_migration_prompt" = true
