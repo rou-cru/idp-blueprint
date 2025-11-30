@@ -21,14 +21,8 @@ backstage:
     - name: NODE_TLS_REJECT_UNAUTHORIZED
       value: "0"
   # Mount the catalog users ConfigMap
-  extraVolumes:
-    - name: catalog-users
-      configMap:
-        name: backstage-demo-users
-  extraVolumeMounts:
-    - name: catalog-users
-      mountPath: /app/catalog-users.yaml
-      subPath: users.yaml
+  extraVolumes: []
+  extraVolumeMounts: []
   # Backstage image configuration
   image:
     registry: docker.io
@@ -60,22 +54,17 @@ ingress:
 
 # REMOVED: Moved to backstage.extraVolumes below
 
-
 appConfig:
   app:
     title: Backstage
   techdocs:
-    builder: 'local'
+    builder: "local"
     generator:
-      runIn: 'docker'
+      runIn: "docker"
     publisher:
-      type: 'local'
+      type: "local"
   catalog:
-    locations:
-      - type: file
-        target: /app/catalog-users.yaml
-        rules:
-          - allow: [User, Group]
+    locations: []
   backend:
     listen:
       port: 7007
@@ -107,14 +96,14 @@ appConfig:
               - resolver: emailLocalPartMatchingUserEntityName
   kubernetes:
     serviceLocatorMethod:
-      type: 'multiTenant'
+      type: "multiTenant"
     customResources:
-      - group: 'argoproj.io'
-        apiVersion: 'v1alpha1'
-        plural: 'rollouts'
-      - group: 'argoproj.io'
-        apiVersion: 'v1alpha1'
-        plural: 'applications'
+      - group: "argoproj.io"
+        apiVersion: "v1alpha1"
+        plural: "rollouts"
+      - group: "argoproj.io"
+        apiVersion: "v1alpha1"
+        plural: "applications"
 
 # @section -- PostgreSQL
 postgresql:

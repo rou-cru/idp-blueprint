@@ -18,6 +18,8 @@ rules:
       - persistentvolumeclaims
       - nodes
       - namespaces
+      - limitranges
+      - resourcequotas
     verbs: ["get", "list", "watch"]
 
   # Apps resources
@@ -27,6 +29,12 @@ rules:
       - replicasets
       - statefulsets
       - daemonsets
+    verbs: ["get", "list", "watch"]
+
+  # Autoscaling
+  - apiGroups: ["autoscaling"]
+    resources:
+      - horizontalpodautoscalers
     verbs: ["get", "list", "watch"]
 
   # Batch resources

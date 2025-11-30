@@ -11,7 +11,7 @@ backend:
   baseUrl: http://localhost:7007
   # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
-  listen: ':7007'
+  listen: ":7007"
 
   # config options: https://node-postgres.com/apis/client
   database:
@@ -36,20 +36,12 @@ catalog:
   # Overrides the default list locations from app-config.yaml as these contain example data.
   # See https://backstage.io/docs/features/software-catalog/#adding-components-to-the-catalog for more details
   # on how to get entities into the catalog.
-  locations:
-    # Local example data, replace this with your production config, these are intended for demo use only.
-    # File locations are relative to the backend process, typically in a deployed context, such as in a Docker container, this will be the root
-    - type: file
-      target: ./examples/entities.yaml
-
-    # Local example template
-    - type: file
-      target: ./examples/template/template.yaml
-      rules:
-        - allow: [Template]
-
-    # Local example organizational data
-    - type: file
-      target: ./examples/org.yaml
-      rules:
-        - allow: [User, Group]
+  providers:
+    github:
+      # Scans the 'rou-cru/idp-blueprint' repository for catalog-info.yaml files
+      production:
+        organization: "rou-cru"
+        catalogPath: "/catalog-info.yaml"
+        filters:
+          branch: "main"
+          repository: "idp-blueprint"

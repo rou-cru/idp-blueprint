@@ -2745,6 +2745,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-catalog-backend-module-github-org@npm:^0.3.16":
+  version: 0.3.16
+  resolution: "@backstage/plugin-catalog-backend-module-github-org@npm:0.3.16"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.5.0"
+    "@backstage/config": "npm:^1.3.6"
+    "@backstage/plugin-catalog-backend-module-github": "npm:^0.11.2"
+    "@backstage/plugin-catalog-node": "npm:^1.20.0"
+    "@backstage/plugin-events-node": "npm:^0.4.17"
+  checksum: 10c0/d1b15065fc4df66afa9a1a2bfba18019ebbbaee191c6ee7c87f29c66ad0554a591a99897954664d75c43cd3f4aeec75aca6d77f7b5d1df214751b399bbab9cec
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-catalog-backend-module-github@npm:^0.11.2":
+  version: 0.11.2
+  resolution: "@backstage/plugin-catalog-backend-module-github@npm:0.11.2"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.5.0"
+    "@backstage/catalog-model": "npm:^1.7.6"
+    "@backstage/config": "npm:^1.3.6"
+    "@backstage/integration": "npm:^1.18.2"
+    "@backstage/plugin-catalog-common": "npm:^1.1.7"
+    "@backstage/plugin-catalog-node": "npm:^1.20.0"
+    "@backstage/plugin-events-node": "npm:^0.4.17"
+    "@octokit/core": "npm:^5.2.0"
+    "@octokit/graphql": "npm:^7.0.2"
+    "@octokit/plugin-throttling": "npm:^8.1.3"
+    "@octokit/rest": "npm:^19.0.3"
+    git-url-parse: "npm:^15.0.0"
+    lodash: "npm:^4.17.21"
+    minimatch: "npm:^9.0.0"
+    uuid: "npm:^11.0.0"
+  checksum: 10c0/0acc175c2d1dd05fcc28c019267ad6f43ba55e2b03e5a64ee638b6d4d676357aa19466d997fa59b6769d5fc4f5cc2ea401a29488f8371ffa44b4854fd40f9373
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-catalog-backend-module-logs@npm:^0.1.16":
   version: 0.1.16
   resolution: "@backstage/plugin-catalog-backend-module-logs@npm:0.1.16"
@@ -2992,6 +3028,23 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 10c0/499bdba01f2616b604184d1d73935b60c7bd46de890e5946e94424a531ef318633409ea4615afa8bc48d186b300e2b8eafc9e94d106acda9b98a0be6003d17e9
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-events-backend-module-github@npm:^0.4.6":
+  version: 0.4.6
+  resolution: "@backstage/plugin-events-backend-module-github@npm:0.4.6"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.5.0"
+    "@backstage/config": "npm:^1.3.6"
+    "@backstage/integration": "npm:^1.18.2"
+    "@backstage/plugin-events-node": "npm:^0.4.17"
+    "@backstage/types": "npm:^1.2.2"
+    "@octokit/auth-callback": "npm:^5.0.0"
+    "@octokit/webhooks-methods": "npm:^3.0.0"
+    lodash: "npm:^4.17.21"
+    octokit: "npm:^3.0.0"
+  checksum: 10c0/a0ddde1683a27733fce7ef0f2edeff2ddd126e71f88e1ac3b6e149490081ca68322687d8e66d14daba04cd1d6ffb01aac1366d2ca75835cb2861a1833c26ca3b
   languageName: node
   linkType: hard
 
@@ -7277,6 +7330,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/auth-callback@npm:^5.0.0":
+  version: 5.0.1
+  resolution: "@octokit/auth-callback@npm:5.0.1"
+  checksum: 10c0/851d0930aeecddc626655469ef57727654af30755264d5139d9fdf61ba9fc88c1a8685f5721f853c806c570b8529d25d262f4efe76da90c08c779d9cc1c37edf
+  languageName: node
+  linkType: hard
+
 "@octokit/auth-oauth-app@npm:^5.0.0":
   version: 5.0.6
   resolution: "@octokit/auth-oauth-app@npm:5.0.6"
@@ -7398,7 +7458,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/core@npm:^5.0.0":
+"@octokit/core@npm:^5.0.0, @octokit/core@npm:^5.2.0":
   version: 5.2.2
   resolution: "@octokit/core@npm:5.2.2"
   dependencies:
@@ -7445,7 +7505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/graphql@npm:^7.1.0":
+"@octokit/graphql@npm:^7.0.2, @octokit/graphql@npm:^7.1.0":
   version: 7.1.1
   resolution: "@octokit/graphql@npm:7.1.1"
   dependencies:
@@ -7627,7 +7687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-throttling@npm:^8.0.0":
+"@octokit/plugin-throttling@npm:^8.0.0, @octokit/plugin-throttling@npm:^8.1.3":
   version: 8.2.0
   resolution: "@octokit/plugin-throttling@npm:8.2.0"
   dependencies:
@@ -14791,8 +14851,11 @@ __metadata:
     "@backstage/plugin-auth-backend-module-oidc-provider": "npm:^0.4.9"
     "@backstage/plugin-auth-node": "npm:^0.6.9"
     "@backstage/plugin-catalog-backend": "npm:^3.2.0"
+    "@backstage/plugin-catalog-backend-module-github": "npm:^0.11.2"
+    "@backstage/plugin-catalog-backend-module-github-org": "npm:^0.3.16"
     "@backstage/plugin-catalog-backend-module-logs": "npm:^0.1.16"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "npm:^0.2.14"
+    "@backstage/plugin-events-backend-module-github": "npm:^0.4.6"
     "@backstage/plugin-kubernetes-backend": "npm:^0.20.4"
     "@backstage/plugin-notifications-backend": "npm:^0.6.0"
     "@backstage/plugin-permission-backend": "npm:^0.7.6"

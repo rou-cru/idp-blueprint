@@ -84,6 +84,10 @@ catalog:
   rules:
     - allow: [Component, System, API, Resource, Location]
   locations:
+    # Organization
+    - type: file
+      target: ../../IT/platform-org.yaml
+
     # IT Components
     - type: file
       target: ../../IT/argocd/catalog-info.yaml
