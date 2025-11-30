@@ -1,21 +1,29 @@
+# Root Catalog for IDP Blueprint
 apiVersion: backstage.io/v1alpha1
 kind: Location
 metadata:
-  name: idp-blueprint-monorepo
-  description: Entry point for IDP Blueprint Monorepo
+  name: idp-blueprint-root
+  description: Entry point for the IDP Blueprint catalog.
 spec:
+  type: file
   targets:
-    # Organization
-    - ./IT/platform-org.yaml
+    # Organization (Users & Groups)
+    - IT/platform-org.yaml
 
-    # IT Components
-    - ./IT/*/catalog-info.yaml
-
-    # K8s Components
-    - ./K8s/*/catalog-info.yaml
-
-    # Policies
-    - ./Policies/*/catalog-info.yaml
-
-    # UI
-    - ./UI/catalog-info.yaml
+    # High-level Domain and Systems
+    - IT/catalog-info.yaml
+    
+    # Core Components
+    - UI/catalog-info.yaml
+    - Docs/catalog-info.yaml
+    
+    # Infrastructure Components
+    - IT/argocd/catalog-info.yaml
+    - IT/vault/catalog-info.yaml
+    - IT/cert-manager/catalog-info.yaml
+    - IT/cilium/catalog-info.yaml
+    
+    # K8s-native Components (Observability, CICD, Security)
+    - K8s/observability/catalog-info.yaml
+    - K8s/security/catalog-info.yaml
+    - K8s/cicd/catalog-info.yaml

@@ -1,15 +1,148 @@
 apiVersion: backstage.io/v1alpha1
-kind: Resource
+kind: Component
 metadata:
-  name: observability
-  description: Observability Infrastructure Resources
+  name: kube-prometheus-stack
+  description: Kube-Prometheus Stack - Complete monitoring solution with Prometheus Operator - Helm Chart.
+  tags: [observability, prometheus, monitoring, helm]
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: kube-prometheus-stack
     backstage.io/kubernetes-namespace: observability
-    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kube-prometheus-stack"
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/part-of=kube-prometheus-stack'
 spec:
-  type: kubernetes
+  type: service
   lifecycle: production
   owner: platform-team
-  system: idp
+  system: idp-observability
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: grafana
+  description: Grafana - Analytics and monitoring solution with dashboards.
+  tags: [dashboard, observability, ui, visualization]
+  links:
+    - url: https://grafana.192-168-65-16.nip.io
+      title: Grafana Dashboards
+      icon: dashboard
+  annotations:
+    backstage.io/kubernetes-id: grafana
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=grafana'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack
+  providesApis: [grafana-api]
+  dependsOn:
+    - component:loki
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: grafana-api
+  description: Grafana HTTP API.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Grafana API
+      version: 1.0.0
+    paths: {}
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: node-exporter
+  description: Prometheus Node Exporter - Exposes hardware and OS metrics from nodes.
+  tags: [exporter, metrics, node, prometheus]
+  annotations:
+    backstage.io/kubernetes-id: node-exporter
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=prometheus-node-exporter'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kube-state-metrics
+  description: Kube State Metrics - Exposes Kubernetes object metrics.
+  tags: [exporter, metrics, kubernetes, prometheus]
+  annotations:
+    backstage.io/kubernetes-id: kube-state-metrics
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=kube-state-metrics'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: loki
+  description: Loki - Log aggregation system designed for Kubernetes.
+  tags: [logging, logs, observability]
+  annotations:
+    backstage.io/kubernetes-id: loki
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=loki'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fluent-bit
+  description: Fluent Bit - Fast and lightweight log processor and forwarder.
+  tags: [logging, logs, shipper]
+  annotations:
+    backstage.io/kubernetes-id: fluent-bit
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=fluent-bit'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  dependsOn:
+    - component:loki
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: pyrra
+  description: Pyrra - SLO (Service Level Objectives) tracking with Prometheus.
+  tags: [slo, metrics, go, observability]
+  annotations:
+    backstage.io/kubernetes-id: pyrra
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=pyrra'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability

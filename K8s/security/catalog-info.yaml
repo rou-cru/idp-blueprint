@@ -1,15 +1,13 @@
 apiVersion: backstage.io/v1alpha1
-kind: Resource
+kind: Component
 metadata:
-  name: security
-  description: Security Infrastructure Resources
+  name: trivy-operator
+  description: Kubernetes-native security scanner.
+  tags: [security, scanning, vulnerability]
   annotations:
-    backstage.io/techdocs-ref: dir:.
-    backstage.io/kubernetes-id: trivy-operator
-    backstage.io/kubernetes-namespace: security
-    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=trivy-operator"
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=trivy-operator'
 spec:
-  type: kubernetes
+  type: service
   lifecycle: production
   owner: platform-team
-  system: idp
+  system: idp-security

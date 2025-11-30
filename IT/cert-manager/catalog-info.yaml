@@ -2,11 +2,15 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: cert-manager
-  description: Cert Manager Service
+  description: X.509 certificate management for Kubernetes - Helm Chart.
+  tags: [security, certificates, tls, go]
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: cert-manager
+    backstage.io/kubernetes-namespace: cert-manager
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/instance=cert-manager'
 spec:
   type: service
   lifecycle: production
   owner: platform-team
-  system: idp
+  system: idp-networking
