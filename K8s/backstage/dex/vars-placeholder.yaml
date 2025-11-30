@@ -7,3 +7,4 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 data:
   DNS_SUFFIX: "placeholder"
+  GITHUB_ORG: "placeholder"

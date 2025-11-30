@@ -43,6 +43,7 @@ registry_cache_path = "$HOME/.k3d-registry"
 # Optional overrides; leave empty to use the current repo/branch.
 repo_url = ""
 target_revision = ""
+github_org = "rou-cru"
 
 [cluster]
 # Name of the local k3d cluster

@@ -46,6 +46,9 @@ spec:
                   - op: replace
                     path: /data/DNS_SUFFIX
                     value: "${DNS_SUFFIX}"
+                  - op: replace
+                    path: /data/GITHUB_ORG
+                    value: "${GITHUB_ORG}"
       destination:
         server: https://kubernetes.default.svc
         namespace: backstage

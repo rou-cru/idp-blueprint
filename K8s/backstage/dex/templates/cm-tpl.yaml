@@ -17,6 +17,16 @@ data:
     oauth2:
       passwordConnector: local
       skipApprovalScreen: true
+    connectors:
+      - type: github
+        id: github
+        name: GitHub
+        config:
+          clientID: $GITHUB_CLIENT_ID
+          clientSecret: $GITHUB_CLIENT_SECRET
+          redirectURI: https://dex.${DNS_SUFFIX}/callback
+          orgs:
+            - name: ${GITHUB_ORG}
     staticClients:
       - id: backstage
         redirectURIs:

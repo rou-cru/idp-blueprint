@@ -46,6 +46,11 @@ if [ -z "$TARGET_REVISION" ] || [ "$TARGET_REVISION" = '""' ] || [ "$TARGET_REVI
     TARGET_REVISION=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD")
 fi
 
+GITHUB_ORG=$(get_conf git.github_org)
+if [ -z "$GITHUB_ORG" ] || [ "$GITHUB_ORG" = '""' ] || [ "$GITHUB_ORG" = "''" ]; then
+    GITHUB_ORG="rou-cru"
+fi
+
 # --- Versions ---
 CILIUM_VERSION=$(get_conf versions.cilium)
 CERT_MANAGER_VERSION=$(get_conf versions.cert_manager)
@@ -162,6 +167,7 @@ else
     echo "NODEPORT_HTTPS=$NODEPORT_HTTPS"
     echo "REPO_URL=$REPO_URL"
     echo "TARGET_REVISION=$TARGET_REVISION"
+    echo "GITHUB_ORG=$GITHUB_ORG"
     echo "CILIUM_VERSION=$CILIUM_VERSION"
     echo "CERT_MANAGER_VERSION=$CERT_MANAGER_VERSION"
     echo "PROMETHEUS_CRDS_VERSION=$PROMETHEUS_CRDS_VERSION"
