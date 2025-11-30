@@ -17,9 +17,6 @@ data:
     oauth2:
       passwordConnector: local
       skipApprovalScreen: true
-    oauth2:
-      passwordConnector: local
-      skipApprovalScreen: true
     staticClients:
       - id: backstage
         redirectURIs:

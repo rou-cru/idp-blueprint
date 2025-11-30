@@ -92,17 +92,6 @@ appConfig:
     environment: production
     session:
       secret: ${BACKEND_SECRET}
-    providers:
-      oidc:
-        production:
-          metadataUrl: https://dex.${DNS_SUFFIX}/.well-known/openid-configuration
-          clientId: backstage
-          clientSecret: ${DEX_CLIENT_SECRET}
-          prompt: auto
-          signIn:
-            resolvers:
-              - resolver: emailMatchingUserEntityProfileEmail
-              - resolver: emailLocalPartMatchingUserEntityName
   kubernetes:
     serviceLocatorMethod:
       type: "multiTenant"
