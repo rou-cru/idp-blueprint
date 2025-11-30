@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Sensor
 metadata:
   name: app-provisioning
-  namespace: events
+  namespace: argo-events
   labels:
     app.kubernetes.io/name: app-provisioning-sensor
     app.kubernetes.io/instance: app-provisioning

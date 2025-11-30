@@ -7,6 +7,9 @@ metadata:
     app.kubernetes.io/part-of: idp
     app.kubernetes.io/component: remediation
     app.kubernetes.io/name: remediate-argocd
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
 annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:

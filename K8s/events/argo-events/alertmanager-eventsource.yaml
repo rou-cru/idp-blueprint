@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: EventSource
 metadata:
   name: alertmanager
-  namespace: events
+  namespace: argo-events
   labels:
     app.kubernetes.io/part-of: idp
     app.kubernetes.io/component: eventing

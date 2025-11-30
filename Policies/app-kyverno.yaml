@@ -60,6 +60,7 @@ spec:
         - /status
         - /spec/admission
         - /spec/emitWarning
+        - /metadata/annotations
       jqPathExpressions:
         - .spec.rules[] | select(.name|test("autogen-"))
     - group: wgpolicyk8s.io

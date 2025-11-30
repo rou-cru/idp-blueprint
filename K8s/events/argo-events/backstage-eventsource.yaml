@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: EventSource
 metadata:
   name: backstage
-  namespace: events
+  namespace: argo-events
   labels:
     app.kubernetes.io/name: backstage-eventsource
     app.kubernetes.io/instance: backstage

@@ -1,3 +1,0 @@
-apiVersion: v2
-name: kube-prometheus-stack
-version: 77.14.0
