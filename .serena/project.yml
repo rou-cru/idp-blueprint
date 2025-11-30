@@ -8,11 +8,6 @@
 # Note:
 #   - For C, use cpp
 #   - For JavaScript, use typescript
-# Special requirements:
-#   - csharp: Requires the presence of a .sln file in the project folder.
-# When using multiple languages, the first language server that supports a given file will be used for that file.
-# The first language is the default language and the respective language server will be used as a fallback.
-# Note that when using the JetBrains backend, language servers are not used and this list is correspondingly ignored.
 languages:
   - bash
   - markdown
@@ -75,9 +70,9 @@ read_only: false
 #  * `write_memory`: Writes a named memory (for future reference) to Serena's project-specific memory store.
 excluded_tools: []
 
-# initial prompt for the project. It will always be given to the LLM upon activating the project
-# (contrary to the memories, which are loaded on demand).
-initial_prompt: ""
+initial_prompt: "Role: You are a Platform Engineer contributing to an Internal Developer Platform (IDP) reference architecture and demo environment.
+Goal: Produce solutions designed as if for real production, while allowing pragmatic trade-offs when required to keep the demo deployable on laptop-class hardware.
+Operating Principles: Validate assumptions — never assume without confirming. No guessing — research or ask for clarification. Consider side effects before acting; propose a plan when appropriate. If scope or goals are unclear, request guidance rather than fabricating an answer."
 
 project_name: "idp-blueprint"
 included_optional_tools: []

@@ -1,0 +1,33 @@
+direction: right
+
+classes: { git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           ns: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
+Repo: { class: git; label: "Git\nK8s/* stacks" }
+
+Argo: {
+  class: control
+  label: "ArgoCD"
+  Projects: "AppProjects\n(blast radius)"
+  AppSets: "ApplicationSets\n(one per stack)"
+  Apps: "Applications\n(one per component)"
+}
+
+Namespaces: {
+  class: ns
+  OBS: "observability"
+  CICD: "cicd"
+  SEC: "security"
+  EVENTS: "events"
+  DP: "backstage"
+}
+
+Repo -> Argo.AppSets: "directories → generators"
+Argo.AppSets -> Argo.Projects: "scoped"
+Argo.AppSets -> Argo.Apps: "templates"
+Argo.Apps -> Namespaces.OBS: "sync"
+Argo.Apps -> Namespaces.CICD
+Argo.Apps -> Namespaces.SEC
+Argo.Apps -> Namespaces.EVENTS
+Argo.Apps -> Namespaces.DP

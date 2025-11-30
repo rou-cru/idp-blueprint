@@ -1,0 +1,61 @@
+direction: down
+
+classes: {
+  step: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  platform: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  actor: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa"; style.font-color: white }
+}
+
+User: {
+  class: actor
+  shape: person
+  label: "Platform Engineer"
+}
+
+Bootstrap: {
+  class: step
+  label: "Bootstrap Process"
+
+  Step1: {
+    label: "1. task deploy"
+    desc: "Creates k3d cluster\nInstalls Cilium CNI"
+  }
+
+  Step2: {
+    label: "2. Vault Init"
+    desc: "Deploys Vault\nInitializes & unseals\nCreates secrets"
+  }
+
+  Step3: {
+    label: "3. External Secrets"
+    desc: "Deploys ESO\nConfigures SecretStore\nSyncs first secrets"
+  }
+
+  Step4: {
+    label: "4. ArgoCD"
+    desc: "Deploys ArgoCD\nConfigures repo access\nCreates root Application"
+  }
+
+  Step5: {
+    label: "5. ApplicationSets"
+    desc: "Sync 5 ApplicationSets:\nobservability, events,\ncicd, security, backstage"
+  }
+}
+
+Platform: {
+  class: platform
+  label: "Operational Platform"
+
+  State: {
+    label: "Platform Ready"
+    Components: "All workloads running\nPolicies enforced\nMonitoring active"
+  }
+}
+
+User -> Bootstrap.Step1: "task deploy"
+Bootstrap.Step1 -> Bootstrap.Step2: "cluster ready"
+Bootstrap.Step2 -> Bootstrap.Step3: "Vault operational"
+Bootstrap.Step3 -> Bootstrap.Step4: "secrets available"
+Bootstrap.Step4 -> Bootstrap.Step5: "ArgoCD syncing"
+Bootstrap.Step5 -> Platform.State: "all apps healthy"

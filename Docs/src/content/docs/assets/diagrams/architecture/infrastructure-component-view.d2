@@ -1,0 +1,33 @@
+direction: right
+
+classes: { infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
+Cluster: {
+  class: infra
+  label: "Infrastructure core"
+  API: "Kubernetes API + etcd"
+  Cilium: "Cilium CNI"
+  Gateway: "Gateway API"
+  Cert: "cert-manager\n+ ca-issuer"
+}
+
+Control: {
+  class: control
+  Vault: "Vault (vault-system)"
+  ESO: "External Secrets Operator"
+  Argo: "ArgoCD\n(app-of-appsets)"
+}
+
+Data: {
+  class: data
+  PKI: "PKI assets\n(CA, wildcard certs)"
+  Secrets: "K8s Secrets\nsynced from Vault"
+}
+
+Control.Vault -> Control.ESO: "tokenreview + kv"
+Control.ESO -> Data.Secrets: "create/update"
+Control.Argo -> Cluster.API: "reconcile manifests"
+Cluster.Cert -> Cluster.Gateway: "TLS for routes"
+Cluster.Gateway -> Control.Argo: "expose UI"

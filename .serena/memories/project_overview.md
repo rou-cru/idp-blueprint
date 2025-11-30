@@ -1,61 +1,6 @@
-# IDP Blueprint - Project Overview
+# Project Overview
 
-## Purpose
-
-An **Internal Developer Platform (IDP) Blueprint** - a complete platform engineering stack
-(GitOps, Observability, Security & Policy Enforcement) that can be deployed with a single
-command on a local machine using K3d.
-
-## Target Audience
-
-- Platform Engineers: Prototype and validate infrastructure changes
-- DevOps/SRE Teams: Learning lab for cloud-native tools
-- Security Engineers: Validate compliance controls
-
-## Tech Stack
-
-### Core Infrastructure (IT/)
-
-- **Cilium** - eBPF-based CNI, network policies, LoadBalancer
-- **Cert-Manager** - TLS certificate automation
-- **Vault** - Secret storage backend
-- **External Secrets** - Vault-to-Kubernetes secret sync
-- **ArgoCD** - GitOps engine
-
-### Policy Layer (Policies/)
-
-- **Kyverno** - Policy enforcement engine
-- **Policy Reporter** - Compliance monitoring dashboard
-
-### Application Stacks (K8s/)
-
-- **Observability**: Prometheus, Grafana, Loki, Fluent-bit
-- **CI/CD**: Argo Workflows, SonarQube
-- **Security**: Trivy Operator
-
-## Development Tools
-
-- **Task** - Task runner (Taskfile.yaml)
-- **Devbox** - Development environment management
-- **VS Code Dev Containers** - Containerized dev environment
-- **MkDocs** - Documentation site
-
-## Programming Languages
-
-- Bash scripts (automation)
-- YAML/TOML (configuration)
-- Markdown (documentation)
-- Python 3.12 (MkDocs tooling)
-
-## Resource Requirements
-
-- Minimum: 4 CPU cores, 8GB RAM
-- Comfortable: 6 CPU cores, 12GB RAM
-- Disk: ~20GB available
-
-## Architecture
-
-- 3-node K3d cluster: Control Plane, Static Infrastructure, GitOps Workloads
-- GitOps-first approach with ArgoCD
-- Policy-as-Code with Kyverno
-- Vault as source of truth for secrets
+- Purpose: Open-source reference for a compact Internal Developer Platform deployable to a local/lab Kubernetes cluster (k3d by default). Provides GitOps (ArgoCD + ApplicationSets), policy (Kyverno/Policy Reporter), networking (Cilium + Gateway API with TLS), secrets (Vault + External Secrets Operator), observability (Prometheus Operator CRDs, Grafana, Loki, Fluent Bit, Pyrra), CI/CD (Argo Workflows, SonarQube), and Backstage developer portal.
+- Deployment: Single command `task deploy` reads `config.toml` for versions, ports, fuses (toggle stacks: policies, observability, cicd, security, backstage, prod HA), repo/branch overrides, passwords. Default NodePorts 30080/30443, hostnames via `<service>.<lan-ip>.nip.io`.
+- Layout: `IT/` bootstrap layer (cluster setup, CNI, cert-manager, Vault, ESO, ArgoCD, Gateway, namespaces, priority classes); `K8s/` application stacks managed by ArgoCD App-of-AppSets; `Policies/` Kyverno engine/policies; `Taskfile.yaml` + `Task/` orchestrate flows; `Scripts/` helper shells (config getter, vault init/seed, helm-docs, validation); `Docs/` Astro/Starlight site source.
+- Tooling/stack: Bash + Taskfile orchestration; Kubernetes manifests/kustomize/helm; Devbox-managed CLI toolchain (kubectl, helm, kustomize, k3d, helm-docs, yamllint, shellcheck, hadolint, markdownlint, checkov, trufflehog, kubeval, ArgoCD CLI, cilium CLI, etc.); Docs built with pnpm + Astro/Starlight (TypeScript). Recommended resources >=4 vCPU/8GiB RAM (better 6/12) ~20GiB disk.

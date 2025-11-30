@@ -1,0 +1,112 @@
+direction: right
+
+classes: {
+  actors: { style.fill: "#1e3a8a"; style.font-color: white; style.stroke: "#60a5fa" }
+  system: { style.fill: "#111827"; style.font-color: white; style.stroke: "#22d3ee" }
+  infra:  { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  gov:    { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  svc:    { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  ux:     { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+External: {
+  class: actors
+  Devs: {
+    shape: person
+    label: "Developers"
+  }
+  Platform: {
+    shape: person
+    label: "Platform Engineers"
+  }
+  Security: {
+    shape: person
+    label: "Security/Compliance"
+  }
+}
+
+IDP: {
+  class: system
+  label: "IDP Blueprint cluster"
+
+  Infra: {
+    class: infra
+    label: "Infrastructure Core"
+    K8s: "Kubernetes API"
+    Cilium
+    Gateway: {
+      label: "Gateway API"
+      shape: hexagon
+    }
+  }
+
+  Governance: {
+    class: gov
+    label: "Automation & Governance"
+    Argo: {
+      label: "ArgoCD"
+      link: https://argo-cd.readthedocs.io
+      tooltip: |md
+        GitOps continuous delivery tool.
+        Automatically syncs Git with cluster state.
+      |
+    }
+    Kyverno: {
+      link: https://kyverno.io
+      tooltip: |md
+        Kubernetes-native policy engine.
+        Validates, mutates, and generates resources.
+      |
+    }
+    Vault: {
+      shape: cylinder
+      link: https://www.vaultproject.io
+      tooltip: |md
+        Secrets management system.
+        Single source of truth for all secrets.
+      |
+    }
+    ESO: {
+      label: "External Secrets"
+      link: https://external-secrets.io
+    }
+  }
+
+  Services: {
+    class: svc
+    label: "Platform Services"
+    Prom: {
+      label: "Prometheus"
+      link: https://prometheus.io
+    }
+    Loki: {
+      shape: cylinder
+      link: https://grafana.com/oss/loki
+    }
+    Fluent: "Fluent-bit"
+  }
+
+  UX: {
+    class: ux
+    label: "Developer Experience"
+    Grafana: {
+      link: https://grafana.com
+    }
+    ArgoWorkflows: {
+      label: "Argo Workflows"
+      link: https://argoproj.github.io/workflows
+    }
+    SonarQube: {
+      link: https://www.sonarqube.org
+    }
+    Backstage: {
+      link: https://backstage.io
+    }
+  }
+}
+
+External.Devs -> IDP.Governance.Argo: "Git Push"
+IDP.Governance.Argo -> IDP.Services.Prom: "Sync"
+IDP.Governance.Argo -> IDP.UX.ArgoWorkflows
+IDP.Infra.Gateway -> IDP.UX.Grafana: "HTTPS"
+IDP.Infra.Gateway -> IDP.UX.Backstage
