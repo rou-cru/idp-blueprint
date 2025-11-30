@@ -70,5 +70,6 @@ data:
             - url: https://kubernetes.default.svc
               name: ${CLUSTER_NAME}
               authProvider: 'serviceAccount'
-              skipTLSVerify: true
+              skipTLSVerify: false
+              caFile: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
               skipMetricsLookup: false

@@ -12,9 +12,7 @@ helmCharts:
 resources:
   - vars-placeholder.yaml
   - cm-placeholder.yaml
-  - ca-cert-configmap.yaml
   - job-renderer.yaml
-  - sync-ca-cert-job.yaml
   - backstage-app-externalsecret.yaml
 
   - backstage-postgres-externalsecret.yaml
