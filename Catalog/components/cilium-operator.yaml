@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cilium-operator
+  description: Cilium Operator - Manages Cilium node lifecycle and configuration.
+  tags: [networking, operator, controller]
+  annotations:
+    backstage.io/kubernetes-id: cilium-operator
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=cilium-operator"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-networking
+  subComponentOf: cilium

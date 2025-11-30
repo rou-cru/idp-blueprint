@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-orchestration
+  description: GitOps and Workflow orchestration services.
+  tags: [argocd, gitops, workflows]
+spec:
+  owner: platform-team
+  domain: idp-platform
+  partOf: idp

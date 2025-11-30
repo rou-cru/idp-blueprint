@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-quality
+  description: Code Quality and Security Analysis.
+  tags: [sonarqube, quality, analysis]
+spec:
+  owner: platform-team
+  domain: idp-platform
+  partOf: idp

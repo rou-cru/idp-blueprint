@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argocd-repo-server
+  description: Internal service that maintains a local cache of the git repository.
+  tags: [backend, git]
+  annotations:
+    backstage.io/kubernetes-id: argocd-repo-server
+    backstage.io/kubernetes-namespace: argocd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argocd-repo-server"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration
+  subComponentOf: argocd

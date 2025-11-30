@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: node-exporter
+  description: Prometheus Node Exporter - Exposes hardware and OS metrics from nodes.
+  tags: [exporter, metrics, node, prometheus]
+  annotations:
+    backstage.io/kubernetes-id: node-exporter
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=prometheus-node-exporter"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack

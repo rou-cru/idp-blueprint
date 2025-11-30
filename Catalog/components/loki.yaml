@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: loki
+  description: Loki - Log aggregation system designed for Kubernetes.
+  tags: [logging, logs, observability]
+  annotations:
+    backstage.io/kubernetes-id: loki
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=loki"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability

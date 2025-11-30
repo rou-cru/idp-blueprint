@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: workflow-controller
+  description: Argo Workflow Controller - Manages workflow execution and orchestration.
+  tags: [controller, workflows, orchestration]
+  annotations:
+    backstage.io/kubernetes-id: workflow-controller
+    backstage.io/kubernetes-namespace: cicd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argo-workflows-workflow-controller"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration
+  subComponentOf: argo-workflows

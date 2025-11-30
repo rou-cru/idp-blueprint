@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kyverno
+  description: Kyverno Policy Engine - Kubernetes-native policy management - Helm Chart.
+  tags: [policy, governance, security, kubernetes]
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: kyverno
+    backstage.io/kubernetes-namespace: kyverno-system
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kyverno"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-security

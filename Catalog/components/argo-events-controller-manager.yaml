@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argo-events-controller-manager
+  description: Argo Events Controller Manager - Unified controller managing EventSources, Sensors, and EventBus.
+  tags: [controller, events, manager]
+  annotations:
+    backstage.io/kubernetes-id: argo-events-controller-manager
+    backstage.io/kubernetes-namespace: argo-events
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argo-events-controller-manager"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration
+  subComponentOf: argo-events

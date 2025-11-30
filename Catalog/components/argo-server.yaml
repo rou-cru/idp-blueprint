@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argo-server
+  description: Argo Server - API and UI server for Argo Workflows.
+  tags: [server, api, ui, workflows]
+  annotations:
+    backstage.io/kubernetes-id: argo-server
+    backstage.io/kubernetes-namespace: cicd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argo-workflows-server"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration
+  subComponentOf: argo-workflows

@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fluent-bit
+  description: Fluent Bit - Fast and lightweight log processor and forwarder.
+  tags: [logging, logs, shipper]
+  annotations:
+    backstage.io/kubernetes-id: fluent-bit
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=fluent-bit"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  dependsOn:
+    - component:loki

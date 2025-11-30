@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: dex
+  description: Dex - OpenID Connect (OIDC) identity provider for Backstage authentication.
+  tags: [auth, oidc, identity, sso]
+  links:
+    - url: https://dex.192-168-65-16.nip.io
+      title: Dex OIDC Provider
+      icon: security
+  annotations:
+    backstage.io/kubernetes-id: dex
+    backstage.io/kubernetes-namespace: backstage
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=dex"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-core

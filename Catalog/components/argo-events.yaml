@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argo-events
+  description: Argo Events - Event-driven workflow automation for Kubernetes - Helm Chart.
+  tags: [events, orchestration, automation, kubernetes]
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: argo-events
+    backstage.io/kubernetes-namespace: argo-events
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=argo-events"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration

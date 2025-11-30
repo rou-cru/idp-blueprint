@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-networking
+  description: Ingress, Service Mesh, and DNS.
+  tags: [cilium, gateway, networking]
+spec:
+  owner: platform-team
+  domain: idp-platform
+  partOf: idp

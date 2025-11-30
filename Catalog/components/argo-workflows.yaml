@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argo-workflows
+  description: Argo Workflows - Workflow engine for orchestrating parallel jobs on Kubernetes - Helm Chart.
+  tags: [cicd, workflows, orchestration, kubernetes]
+  links:
+    - url: https://argo.192-168-65-16.nip.io
+      title: Argo Workflows UI
+      icon: workflow
+  annotations:
+    backstage.io/kubernetes-id: argo-workflows
+    backstage.io/kubernetes-namespace: cicd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=argo-workflows"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration

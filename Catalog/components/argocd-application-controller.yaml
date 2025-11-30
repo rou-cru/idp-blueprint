@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argocd-application-controller
+  description: Kubernetes controller that continuously monitors running applications.
+  tags: [controller, k8s]
+  annotations:
+    backstage.io/kubernetes-id: argocd-application-controller
+    backstage.io/kubernetes-namespace: argocd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argocd-application-controller"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration
+  subComponentOf: argocd
+  dependsOn:
+    - resource:argocd-redis

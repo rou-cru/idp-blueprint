@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-core
+  description: Core services for the IDP (Portal, Auth).
+  tags: [core, backstage, dex]
+spec:
+  owner: platform-team
+  domain: idp-platform
+  partOf: idp

@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: pyrra
+  description: Pyrra - SLO (Service Level Objectives) tracking with Prometheus.
+  tags: [slo, metrics, go, observability]
+  annotations:
+    backstage.io/kubernetes-id: pyrra
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=pyrra"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability

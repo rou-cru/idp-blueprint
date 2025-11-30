@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-security
+  description: Security, Secrets, and Policy engines.
+  tags: [vault, kyverno, security]
+spec:
+  owner: platform-team
+  domain: idp-platform
+  partOf: idp

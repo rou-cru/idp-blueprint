@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kube-state-metrics
+  description: Kube State Metrics - Exposes Kubernetes object metrics.
+  tags: [exporter, metrics, kubernetes, prometheus]
+  annotations:
+    backstage.io/kubernetes-id: kube-state-metrics
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=kube-state-metrics"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack

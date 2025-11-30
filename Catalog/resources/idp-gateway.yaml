@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: idp-gateway
+  description: Gateway API - Main ingress gateway for the IDP platform.
+  tags: [gateway, ingress, gateway-api, networking]
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: idp-gateway
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "gateway.networking.k8s.io/gateway-name=idp-gateway"
+spec:
+  type: gateway
+  lifecycle: production
+  owner: platform-team
+  system: idp-networking
+  dependsOn:
+    - component:cilium
+    - component:cert-manager

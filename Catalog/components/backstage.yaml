@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: Backstage Developer Portal - Platform for building developer portals - Helm Chart.
+  tags: [portal, developer-experience, platform, nodejs]
+  links:
+    - url: https://backstage.192-168-65-16.nip.io
+      title: Backstage Portal
+      icon: dashboard
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: backstage
+    backstage.io/kubernetes-namespace: backstage
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=backstage"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-core
+  dependsOn:
+    - component:dex
+    - resource:backstage-postgresql

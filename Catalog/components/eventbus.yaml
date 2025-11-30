@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: eventbus
+  description: Argo Events EventBus - NATS Streaming-based event bus for event distribution.
+  tags: [eventbus, messaging, nats, statefulset]
+  annotations:
+    backstage.io/kubernetes-id: eventbus
+    backstage.io/kubernetes-namespace: argo-events
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=eventbus"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration
+  subComponentOf: argo-events

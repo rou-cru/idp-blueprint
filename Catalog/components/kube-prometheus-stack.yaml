@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kube-prometheus-stack
+  description: Kube-Prometheus Stack - Complete monitoring solution with Prometheus Operator - Helm Chart.
+  tags: [observability, prometheus, monitoring, helm]
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: kube-prometheus-stack
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kube-prometheus-stack"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability

@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cilium-agent
+  description: Cilium Agent - eBPF-based networking and security agent running on each node.
+  tags: [networking, agent, daemonset, ebpf]
+  annotations:
+    backstage.io/kubernetes-id: cilium
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "k8s-app=cilium"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-networking
+  subComponentOf: cilium
