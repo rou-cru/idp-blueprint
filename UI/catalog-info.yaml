@@ -6,7 +6,7 @@ metadata:
   tags: [portal, frontend, backend, nodejs]
   annotations:
     # Match Deployment with label app.kubernetes.io/name=backstage
-    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=backstage'
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=backstage"
     backstage.io/techdocs-ref: dir:.
 spec:
   type: service
@@ -18,7 +18,6 @@ spec:
   dependsOn:
     - resource:idp-postgres
     - component:idp-dex
-    - resource:kubernetes-local
 
 ---
 apiVersion: backstage.io/v1alpha1
@@ -46,7 +45,7 @@ metadata:
   description: PostgreSQL database for Backstage.
   tags: [database, postgres]
   annotations:
-    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=postgresql'
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=postgresql"
 spec:
   type: database
   owner: platform-team
@@ -60,11 +59,9 @@ metadata:
   description: OIDC Identity Provider (Dex).
   tags: [auth, oidc, go]
   annotations:
-    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=dex'
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=dex"
 spec:
   type: service
   lifecycle: production
   owner: platform-team
   system: idp-core
-  dependsOn:
-    - resource:kubernetes-local

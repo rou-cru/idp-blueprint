@@ -88,15 +88,3 @@ spec:
   owner: platform-team
   domain: idp-platform
   partOf: idp
-
----
-apiVersion: backstage.io/v1alpha1
-kind: Resource
-metadata:
-  name: kubernetes-local
-  description: The local K3d cluster hosting the IDP.
-  tags: [k8s, cluster, k3d]
-spec:
-  type: kubernetes-cluster
-  owner: platform-team
-  system: idp
