@@ -1,0 +1,24 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: dex
+  namespace: backstage
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/name: dex
+    app.kubernetes.io/instance: dex-demo
+    app.kubernetes.io/component: identity-provider
+  annotations:
+    description: 'HTTPRoute for Dex OIDC provider'
+    contact: platform-team
+    documentation: https://dexidp.io
+spec:
+  parentRefs:
+    - name: idp-gateway
+      namespace: kube-system
+  hostnames:
+    - "dex.${DNS_SUFFIX}"
+  rules:
+    - backendRefs:
+        - name: dex
+          port: 5556
