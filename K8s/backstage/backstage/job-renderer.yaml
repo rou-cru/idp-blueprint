@@ -51,9 +51,18 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: renderer
-          image: bitnami/kubectl:latest
-          command: ["/bin/bash", "-c"]
+          image: alpine:latest
+          command: ["/bin/sh", "-c"]
           args:
+            - |
+              # Install dependencies
+              apk add --no-cache curl gettext bash
+
+              # Install kubectl
+              curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+              chmod +x kubectl
+              mv kubectl /usr/local/bin/
+
             - |
               # Load variables
               if [ -f /vars/DNS_SUFFIX ]; then
