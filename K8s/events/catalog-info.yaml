@@ -5,6 +5,9 @@ metadata:
   description: Component for events in K8s
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: eventbus-default
+    backstage.io/kubernetes-namespace: events
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/part-of=argo-events'
 spec:
   type: service
   lifecycle: production

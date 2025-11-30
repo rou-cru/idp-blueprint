@@ -51,14 +51,24 @@ data:
       customResources:
         - group: 'argoproj.io'
           apiVersion: 'v1alpha1'
+          plural: 'applications'
+        - group: 'argoproj.io'
+          apiVersion: 'v1alpha1'
           plural: 'rollouts'
         - group: 'argoproj.io'
           apiVersion: 'v1alpha1'
-          plural: 'applications'
+          plural: 'workflows'
+        - group: 'kyverno.io'
+          apiVersion: 'v1'
+          plural: 'policies'
+        - group: 'kyverno.io'
+          apiVersion: 'v1'
+          plural: 'clusterpolicies'
       clusterLocatorMethods:
         - type: 'config'
           clusters:
             - url: https://kubernetes.default.svc
-              name: in-cluster
+              name: ${CLUSTER_NAME}
               authProvider: 'serviceAccount'
               skipTLSVerify: true
+              skipMetricsLookup: false

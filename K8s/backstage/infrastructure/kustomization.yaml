@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - eso-backstage.yaml
   - backstage-secretstore.yaml
+  - backstage-rbac.yaml
 
 labels:
   - includeSelectors: true

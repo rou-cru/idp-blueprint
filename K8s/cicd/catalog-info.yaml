@@ -5,6 +5,9 @@ metadata:
   description: Component for cicd in K8s
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: argo-workflows-server
+    backstage.io/kubernetes-namespace: cicd
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=argo-workflows-server'
 spec:
   type: service
   lifecycle: production

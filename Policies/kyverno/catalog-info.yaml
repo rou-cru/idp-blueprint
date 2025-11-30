@@ -5,6 +5,9 @@ metadata:
   description: Component for kyverno in Policies
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: kyverno
+    backstage.io/kubernetes-namespace: kyverno
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=kyverno'
 spec:
   type: service
   lifecycle: production

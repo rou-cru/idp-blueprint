@@ -1,0 +1,115 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: backstage-kubernetes-reader
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: developer-portal
+rules:
+  # Core resources
+  - apiGroups: [""]
+    resources:
+      - pods
+      - pods/log
+      - services
+      - configmaps
+      - persistentvolumes
+      - persistentvolumeclaims
+      - nodes
+      - namespaces
+    verbs: ["get", "list", "watch"]
+
+  # Apps resources
+  - apiGroups: ["apps"]
+    resources:
+      - deployments
+      - replicasets
+      - statefulsets
+      - daemonsets
+    verbs: ["get", "list", "watch"]
+
+  # Batch resources
+  - apiGroups: ["batch"]
+    resources:
+      - jobs
+      - cronjobs
+    verbs: ["get", "list", "watch"]
+
+  # Networking
+  - apiGroups: ["networking.k8s.io"]
+    resources:
+      - ingresses
+      - networkpolicies
+    verbs: ["get", "list", "watch"]
+
+  # Gateway API
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources:
+      - httproutes
+      - gateways
+      - gatewayclasses
+    verbs: ["get", "list", "watch"]
+
+  # ArgoCD resources
+  - apiGroups: ["argoproj.io"]
+    resources:
+      - applications
+      - applicationsets
+      - rollouts
+      - workflows
+    verbs: ["get", "list", "watch"]
+
+  # Kyverno resources
+  - apiGroups: ["kyverno.io"]
+    resources:
+      - policies
+      - clusterpolicies
+    verbs: ["get", "list", "watch"]
+
+  # Policy Reporter
+  - apiGroups: ["wgpolicyk8s.io"]
+    resources:
+      - policyreports
+      - clusterpolicyreports
+    verbs: ["get", "list", "watch"]
+
+  # Cert Manager
+  - apiGroups: ["cert-manager.io"]
+    resources:
+      - certificates
+      - issuers
+      - clusterissuers
+    verbs: ["get", "list", "watch"]
+
+  # External Secrets
+  - apiGroups: ["external-secrets.io"]
+    resources:
+      - externalsecrets
+      - secretstores
+      - clustersecretstores
+    verbs: ["get", "list", "watch"]
+
+  # Cilium
+  - apiGroups: ["cilium.io"]
+    resources:
+      - ciliumnetworkpolicies
+      - ciliumclusterwidenetworkpolicies
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: backstage-kubernetes-reader-binding
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: developer-portal
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: backstage-kubernetes-reader
+subjects:
+  - kind: ServiceAccount
+    name: backstage-kubernetes
+    namespace: backstage

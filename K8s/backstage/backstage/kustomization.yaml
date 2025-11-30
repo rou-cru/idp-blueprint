@@ -10,10 +10,13 @@ helmCharts:
     valuesFile: values.yaml
 
 resources:
+  - vars-placeholder.yaml
+  - cm-placeholder.yaml
+  - ca-cert-configmap.yaml
+  - job-renderer.yaml
+  - sync-ca-cert-job.yaml
   - backstage-app-externalsecret.yaml
+
   - backstage-postgres-externalsecret.yaml
   - backstage-demo-users.yaml
-  - cm-placeholder.yaml
   - templates/cm-tpl.yaml
-  - job-renderer.yaml
-  - vars-placeholder.yaml

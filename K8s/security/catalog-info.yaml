@@ -5,6 +5,9 @@ metadata:
   description: Component for security in K8s
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: trivy-operator
+    backstage.io/kubernetes-namespace: security
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=trivy-operator'
 spec:
   type: service
   lifecycle: production

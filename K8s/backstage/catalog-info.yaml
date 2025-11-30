@@ -5,6 +5,10 @@ metadata:
   description: Component for backstage in K8s
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: backstage
+    backstage.io/kubernetes-namespace: backstage
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=backstage"
+
 spec:
   type: service
   lifecycle: production

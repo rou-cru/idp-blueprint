@@ -5,6 +5,9 @@ metadata:
   description: Component for observability in K8s
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: kube-prometheus-stack
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kube-prometheus-stack"
 spec:
   type: service
   lifecycle: production

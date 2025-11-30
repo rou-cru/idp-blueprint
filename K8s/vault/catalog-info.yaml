@@ -5,6 +5,9 @@ metadata:
   description: Component for vault in K8s
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: vault
+    backstage.io/kubernetes-namespace: vault-system
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=vault'
 spec:
   type: service
   lifecycle: production

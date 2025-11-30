@@ -5,6 +5,9 @@ metadata:
   description: Component for argocd in IT
   annotations:
     backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: argocd
+    backstage.io/kubernetes-namespace: argocd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argocd-server"
 spec:
   type: service
   lifecycle: production

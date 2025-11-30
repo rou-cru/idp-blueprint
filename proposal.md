@@ -5,8 +5,6 @@
 Catalog Graph -> https://github.com/backstage/backstage/blob/master/plugins/catalog-graph/README.md
 Relations -> https://github.com/dweber019/backstage-plugins/tree/main/plugins/relations
 Kubernetes -> https://backstage.io/docs/features/kubernetes
-Kubernetes Provider -> https://github.com/AntoineDao/backstage-provider-kubernetes#readme
-Search -> https://backstage.io/docs/features/search
 
 ## Mid-priority
 

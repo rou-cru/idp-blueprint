@@ -57,21 +57,34 @@ spec:
               # Load variables
               if [ -f /vars/DNS_SUFFIX ]; then
                 export DNS_SUFFIX=$(cat /vars/DNS_SUFFIX)
-              elif [ -f /vars/env ]; then
+              fi
+              if [ -f /vars/CLUSTER_NAME ]; then
+                export CLUSTER_NAME=$(cat /vars/CLUSTER_NAME)
+              fi
+
+              # Fallback for dev/manual testing
+              if [ -f /vars/env ]; then
                 source /vars/env
-              else
-                echo "No variables found!"
+              fi
+
+              if [ -z "$DNS_SUFFIX" ]; then
+                echo "DNS_SUFFIX not found!"
                 exit 1
               fi
-              
-              echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX"
-              
+
+              if [ -z "$CLUSTER_NAME" ]; then
+                export CLUSTER_NAME="idp-demo"
+              fi
+
+              echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX, CLUSTER_NAME=$CLUSTER_NAME"
+
               # Read template
               cp /tpl/app-config.override.yaml /tmp/config.yaml
-              
-              # Replace variable (using sed for simple substitution)
+
+              # Replace variables
               sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
-              
+              sed -i "s/\${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
+
               # Patch ConfigMap
               kubectl create configmap backstage-app-config-override \
                 --from-file=app-config.override.yaml=/tmp/config.yaml \
