@@ -10,6 +10,9 @@ service:
 ingress:
   enabled: false
 existingSecret: dex
+configSecret:
+  create: false
+  name: dex
 envFrom:
   - secretRef:
       name: dex-secrets
