@@ -40,8 +40,9 @@ metadata:
   name: backstage-config-renderer
   namespace: backstage
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
-    argocd.argoproj.io/hook: Sync
+    # Run before Helm release to avoid race with Backstage pods reading config
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
   template:
