@@ -56,6 +56,15 @@ data:
         # current paths instead of chasing relative files that do not exist inside the container.
         - type: github-discovery
           target: https://github.com/${GITHUB_ORG}/${GITHUB_REPO}
+      providers:
+        github:
+          idp-blueprint:
+            organization: ${GITHUB_ORG}
+            filters:
+              repository: ${GITHUB_REPO}
+              branch: ${GITHUB_BRANCH}
+              allowForks: false
+              allowArchived: false
 
     techdocs:
       builder: 'local'
