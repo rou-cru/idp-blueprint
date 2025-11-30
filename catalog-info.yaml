@@ -6,24 +6,6 @@ metadata:
   description: Entry point for the IDP Blueprint catalog.
 spec:
   type: file
-  targets:
-    # Organization (Users & Groups)
-    - IT/platform-org.yaml
-
-    # High-level Domain and Systems
-    - IT/catalog-info.yaml
-    
-    # Core Components
-    - UI/catalog-info.yaml
-    - Docs/catalog-info.yaml
-    
-    # Infrastructure Components
-    - IT/argocd/catalog-info.yaml
-    - IT/vault/catalog-info.yaml
-    - IT/cert-manager/catalog-info.yaml
-    - IT/cilium/catalog-info.yaml
-    
-    # K8s-native Components (Observability, CICD, Security)
-    - K8s/observability/catalog-info.yaml
-    - K8s/security/catalog-info.yaml
-    - K8s/cicd/catalog-info.yaml
+  targets: []
+    # Auto-discovery is enabled via GithubEntityProvider.
+    # All catalog-info.yaml files in the repo will be automatically registered.
