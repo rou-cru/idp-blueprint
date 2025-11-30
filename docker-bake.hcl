@@ -48,3 +48,18 @@ target "release-minimal" {
   inherits = ["minimal"]
   output = ["type=image,push=true"]
 }
+
+// Dev Portal (Backstage) - Host Build
+target "dev-portal" {
+  dockerfile = "packages/backend/Dockerfile"
+  context    = "UI"
+  platforms  = ["linux/amd64"]
+  tags       = ["${IMAGE_NAME}-dev-portal:${IMAGE_TAG}"]
+  output     = ["type=image"]
+}
+
+// Dev Portal (Backstage) - Release with Push
+target "dev-portal-release" {
+  inherits = ["dev-portal"]
+  output   = ["type=image,push=true"]
+}
