@@ -55,7 +55,7 @@ data:
         # Fallback static location so the repo is ingested even if the GitHub provider is rate-limited
         # or misconfigured. The discovery provider remains the primary mechanism.
         - type: url
-          target: https://raw.githubusercontent.com/${GITHUB_ORG}/${GITHUB_REPO}/${GITHUB_BRANCH}/catalog-info.yaml
+          target: https://github.com/${GITHUB_ORG}/${GITHUB_REPO}/blob/${GITHUB_BRANCH}/catalog-info.yaml
 
     techdocs:
       builder: 'local'

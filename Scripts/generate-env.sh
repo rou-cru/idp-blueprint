@@ -61,6 +61,11 @@ if [ -z "$GITHUB_BRANCH" ] || [ "$GITHUB_BRANCH" = '""' ] || [ "$GITHUB_BRANCH" 
     GITHUB_BRANCH="main"
 fi
 
+GITHUB_TOKEN=$(get_conf git.github_token)
+if [ -z "$GITHUB_TOKEN" ] || [ "$GITHUB_TOKEN" = '""' ] || [ "$GITHUB_TOKEN" = "''" ]; then
+    GITHUB_TOKEN=""
+fi
+
 
 # --- Versions ---
 CILIUM_VERSION=$(get_conf versions.cilium)
