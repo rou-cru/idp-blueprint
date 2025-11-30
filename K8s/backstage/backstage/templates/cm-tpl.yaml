@@ -60,7 +60,7 @@ data:
             filters:
               repository: ${GITHUB_REPO}
               branch: ${GITHUB_BRANCH}
-            catalogPath: '/Catalog/**/*.yaml'
+            catalogPath: 'Catalog/**/*.yaml'
     techdocs:
       builder: 'local'
       generator:
