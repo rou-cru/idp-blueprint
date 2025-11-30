@@ -1,0 +1,69 @@
+direction: right
+
+classes: { actor: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa"; style.font-color: white }
+           ext: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           system: { style.fill: "#111827"; style.stroke: "#34d399"; style.font-color: white } }
+
+Actors: {
+  class: actor
+  Platform: {
+    shape: person
+    label: "Platform Engineer"
+  }
+  Dev: {
+    shape: person
+    label: "Application Developer"
+  }
+}
+
+External: {
+  class: ext
+  Git: {
+    label: "Git provider\n(bootstrap, stacks, policies)"
+    shape: cloud
+  }
+  Registry: {
+    label: "Container registry"
+    shape: cylinder
+  }
+}
+
+IDP: {
+  class: system
+  label: "IDP Blueprint cluster"
+  Gateway: {
+    label: "Gateway API + TLS"
+    shape: hexagon
+  }
+  Argo: {
+    label: "ArgoCD + AppSets"
+    link: https://argo-cd.readthedocs.io
+  }
+  Observability: {
+    Prom: "Prometheus"
+    Loki: {
+      shape: cylinder
+    }
+    Graf: "Grafana"
+  }
+  Security: {
+    Kyverno: {
+      link: https://kyverno.io
+    }
+    Reporter: "Policy Reporter"
+  }
+  CICD: {
+    Workflows: "Argo Workflows"
+    Sonar: "SonarQube"
+  }
+  Portal: "Backstage"
+}
+
+Actors.Platform -> External.Git
+Actors.Dev -> External.Git
+
+External.Git -> IDP.Argo: "manifests"
+External.Registry -> IDP.Argo: "images"
+IDP.Gateway -> Actors.Dev: "UIs/APIs (HTTPS)"
+Actors.Dev -> IDP.Portal: "use catalog/docs"
+Actors.Platform -> IDP.Argo: "operate platform"

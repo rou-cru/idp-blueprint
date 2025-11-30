@@ -1,63 +1,35 @@
 # Suggested Commands
 
-## Main Deployment Commands
+## Environment
+- Start dev environment with Devbox: `devbox shell` (tooling auto-installed).
+- VS Code Dev Container also supported; repo already configured.
 
-```bash
-task deploy                 # Deploy the entire IDP platform, sync all helm deploys and ArgoCD App files if is already deployed 
-task destroy                # Remove all components and cluster
-task redeploy               # Destroy and deploy from scratch
-```
+## Main workflows
+- Deploy full platform on k3d: `task deploy`
+- Destroy k3d cluster/registry: `task destroy`
+- Recreate from scratch: `task redeploy`
+- Deploy only GitOps stacks (after bootstrap already up): `task stacks:deploy`
+- Print effective config (repo, revision, cluster, ports, fuses): `task utils:config:print`
 
-## Quality Checks
+## Quality / validation
+- Run full gate (lint + validate + security): `task quality:check`
+- Linters only: `task quality:lint` (includes yaml, shell, Dockerfile, markdown, helm-docs check)
+- Kustomize + kubeval schema validation: `task quality:validate`
+- IaC misconfig scan: `task quality:security:iac`
+- Secret scan: `task quality:security:secrets`
+- Commit message lint: `task quality:lint:commit`
 
-```bash
-task check                  # Run ALL checks (lint, validation, security)
-```
-## Lint
+## Docs
+- Build docs site (Astro/Starlight): `task docs:astro:build`
+- Serve docs locally: `task docs:astro:dev`
+- Generate chart metadata and helm-docs: `task utils:docs`
+- Check docs links: `task utils:docs:linkcheck`
 
-```bash
-task lint                   # Run all linters
-task lint:yaml              # Lint YAML files only
-task lint:shell             # Lint shell scripts only
-task lint:dockerfile        # Lint Dockerfiles only
-task lint:markdown          # Lint Markdown files only
-task lint:helm              # Validate Helm values documentation
-task lint:commit            # Lint the last commit message
-```
+## Utilities
+- Export cluster CA for browser import: `task utils:ca:export`
+- Generate only helm-docs: `task utils:docs:helm`
+- Generate only Chart.yaml metadata: `task utils:docs:metadata`
 
-## Validation
-
-```bash
-task validate               # Run all validation tasks
-task validate:kustomize     # Validate all Kustomize overlays
-task validate:kubeval       # Validate K8s manifests + schemas
-```
-
-## Security Scanning
-
-```bash
-task security               # Run all security scanners
-task security:iac           # Scan IaC for misconfigurations (checkov)
-task security:secrets       # Scan for hardcoded secrets (trufflehog)
-```
-
-## Documentation
-
-```bash
-task utils:docs:all                # Generate markdown from helm-docs, build Docs and Lint
-```
-
-## Kubernetes Tools (from devbox)
-
-- `kubectl` - Kubernetes CLI
-- `k9s` - Terminal UI for K8s
-- `helm` - Package manager for K8s
-- `kustomize` - K8s configuration customization
-- `argocd` - ArgoCD CLI
-- `cilium` - Cilium CLI
-- `vault` - Vault CLI
-
-## System Utilities (Linux)
-
-- `git`, `ls`, `cd`, `grep`, `find`
-- `jq`, `yq`, `dasel`
+## Bootstrapping internals (usually invoked by deploy)
+- Create k3d cluster + registry: `task k3d:k3d:create`
+- Apply infrastructure baseline (namespaces, cert-manager, Vault, ESO, ArgoCD, gateway, policies): `task bootstrap:it:bootstrap` etc. Usually do not run directly unless debugging.

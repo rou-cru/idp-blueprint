@@ -1,0 +1,9 @@
+direction: right
+
+classes: { infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+           gitops: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white } }
+
+IT: { class: infra; label: "Bootstrap (IT/)\nOne-time install\nCilium, cert-manager, Vault, ESO, ArgoCD, Gateway" }
+GitOps: { class: gitops; label: "GitOps (K8s/)\nContinuous reconcile\nStacks via ApplicationSets" }
+
+IT -> GitOps: "seed control planes"

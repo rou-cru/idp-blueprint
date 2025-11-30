@@ -1,0 +1,59 @@
+direction: right
+
+classes: {
+  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  svc:   { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  gov:   { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  ux:    { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+Infra: {
+  class: infra
+  label: "Infrastructure core"
+  K8s: "Kubernetes API + etcd"
+  Cilium: "Cilium CNI"
+  Gateway: "Gateway API"
+  Cert: "cert-manager"
+}
+
+Services: {
+  class: svc
+  label: "Platform services"
+  Vault
+  ESO: "External Secrets Operator"
+  Prom: "Prometheus"
+  Loki
+  Fluent: "Fluent-bit"
+}
+
+Governance: {
+  class: gov
+  label: "Automation & governance"
+  Argo: "ArgoCD + ApplicationSets"
+  Kyverno
+  Reporter: "Policy Reporter"
+}
+
+UX: {
+  class: ux
+  label: "Developer-facing"
+  Grafana
+  Pyrra
+  Workflows: "Argo Workflows"
+  Sonar: "SonarQube"
+  Trivy: "Trivy Operator"
+  Backstage
+}
+
+Infra.Cert -> Services.Vault: "issue certs"
+Infra.Cert -> Services.Loki
+Services.ESO -> Services.Vault: "read secrets"
+Governance.Argo -> Services.Prom
+Governance.Argo -> Services.Loki
+Governance.Argo -> UX.Workflows
+Governance.Argo -> UX.Sonar
+Governance.Argo -> UX.Backstage
+Governance.Kyverno -> UX.Workflows: "policies"
+Infra.Gateway -> UX.Grafana: "HTTPS routes"
+Infra.Gateway -> UX.Backstage
+Infra.Gateway -> UX.Sonar

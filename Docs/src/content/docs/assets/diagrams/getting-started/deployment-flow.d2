@@ -1,0 +1,50 @@
+direction: right
+
+classes: {
+  phase: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#22d3ee" }
+  leaf:  { style.fill: "#0b1224"; style.font-color: "#cbd5f5"; style.stroke: "#38bdf8" }
+}
+
+"Cluster bootstrap": {
+  class: phase
+  K3d: "k3d cluster + registry"
+  Namespaces: "base namespaces + priority classes"
+}
+
+"Infra boot": {
+  class: phase
+  CRDs: "Gateway & Prom CRDs"
+  Cilium: "Cilium CNI"
+  CertMgr: "cert-manager + CA/issuers"
+  Vault: "Vault deploy + init/unseal"
+  ESO: "External Secrets Operator"
+}
+
+"GitOps & ingress": {
+  class: phase
+  ArgoCD: "ArgoCD + AppProjects"
+  ArgoSecret: "ExternalSecret (admin)"
+  Gateway: "Gateway API + wildcard TLS + NodePorts"
+}
+
+Policies: {
+  class: phase
+  Kyverno: "Kyverno engine"
+  Reporter: "Policy Reporter"
+}
+
+"AppSets fan-out": {
+  class: phase
+  Observability: { class: leaf; label: "Observability" }
+  CICD:          { class: leaf; label: "CI/CD" }
+  Security:      { class: leaf; label: "Security" }
+  Backstage:     { class: leaf; label: "Backstage" }
+  Events:        { class: leaf; label: "Events (always on)" }
+}
+
+"Cluster bootstrap" -> "Infra boot" -> "GitOps & ingress" -> Policies -> "AppSets fan-out"
+
+"AppSets fan-out".Observability -> "AppSets fan-out".CICD
+"AppSets fan-out".Observability -> "AppSets fan-out".Security
+"AppSets fan-out".Observability -> "AppSets fan-out".Backstage
+"AppSets fan-out".Observability -> "AppSets fan-out".Events

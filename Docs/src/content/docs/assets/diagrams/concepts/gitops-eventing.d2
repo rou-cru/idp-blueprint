@@ -1,0 +1,28 @@
+direction: right
+
+classes: { event: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           action: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+
+Sources: {
+  class: event
+  Alert: "Alertmanager"
+  GitHub: "GitHub webhooks"
+  K8s: "K8s resource events"
+}
+
+Sensors: { class: control; label: "Argo Events Sensors\n(filters + routing)" }
+
+Triggers: {
+  class: action
+  WF: "Argo Workflows"
+  ACD: "ArgoCD API"
+  HTTP: "HTTP/webhook"
+}
+
+Sources.Alert -> Sensors
+Sources.GitHub -> Sensors
+Sources.K8s -> Sensors
+Sensors -> Triggers.WF
+Sensors -> Triggers.ACD
+Sensors -> Triggers.HTTP

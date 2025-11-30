@@ -1,0 +1,116 @@
+direction: down
+
+classes: {
+  external: { style.fill: "#1e3a8a"; style.stroke: "#60a5fa"; style.font-color: white }
+  infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+  data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+  app: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+Client: {
+  class: external
+  shape: person
+  label: "External Client"
+}
+
+L3L4: {
+  class: infra
+  label: "L3/L4 - Node & CNI"
+  Node: {
+    label: "Kubernetes Node\neth0: LAN IP"
+  }
+  Cilium: {
+    label: "Cilium CNI\neBPF datapath"
+    link: https://cilium.io
+    tooltip: |md
+      eBPF-based CNI providing:
+      - Pod networking
+      - Service load balancing
+      - NetworkPolicy enforcement
+    |
+  }
+  NodePort: {
+    label: "NodePort Service\n30080 (HTTP)\n30443 (HTTPS)"
+  }
+}
+
+L7: {
+  class: control
+  label: "L7 - Gateway API"
+
+  GatewayClass: {
+    label: "GatewayClass\ncilium-nodeport"
+  }
+
+  Gateway: {
+    shape: hexagon
+    label: "Gateway: idp-gateway\nListener HTTPS *.nip.io"
+  }
+
+  HTTPRoutes: {
+    label: "HTTPRoutes (per service)"
+    Argo: "argocd.*.nip.io"
+    Grafana: "grafana.*.nip.io"
+    Vault: "vault.*.nip.io"
+  }
+}
+
+TLS: {
+  class: control
+  label: "TLS & Certificates"
+
+  CertManager: {
+    label: "cert-manager"
+    link: https://cert-manager.io
+  }
+
+  CA: {
+    label: "ClusterIssuer: ca-issuer\nCA: idp-demo-ca"
+    shape: cylinder
+  }
+
+  WildcardCert: {
+    label: "Certificate\n*.nip.io"
+  }
+}
+
+Services: {
+  class: data
+  label: "Kubernetes Services (ClusterIP)"
+
+  ArgoSvc: "argocd-server:80"
+  GrafanaSvc: "prometheus-grafana:80"
+  VaultSvc: "vault:8200"
+}
+
+Pods: {
+  class: app
+  label: "Backend Pods"
+
+  ArgoPod: "argocd-server-*"
+  GrafanaPod: "prometheus-grafana-*"
+  VaultPod: "vault-0"
+}
+
+Client -> L3L4.Node: "HTTPS :30443"
+L3L4.Node -> L3L4.NodePort: "forward"
+L3L4.NodePort -> L3L4.Cilium: "route to Gateway"
+L3L4.Cilium -> L7.Gateway: "service mesh"
+
+L7.GatewayClass -> L7.Gateway: "implements"
+L7.Gateway -> L7.HTTPRoutes.Argo: "TLS termination\nroute by hostname"
+L7.Gateway -> L7.HTTPRoutes.Grafana
+L7.Gateway -> L7.HTTPRoutes.Vault
+
+L7.HTTPRoutes.Argo -> Services.ArgoSvc: "backend ref"
+L7.HTTPRoutes.Grafana -> Services.GrafanaSvc
+L7.HTTPRoutes.Vault -> Services.VaultSvc
+
+Services.ArgoSvc -> Pods.ArgoPod: "endpoint"
+Services.GrafanaSvc -> Pods.GrafanaPod
+Services.VaultSvc -> Pods.VaultPod
+
+TLS.CertManager -> TLS.CA: "uses"
+TLS.CA -> TLS.WildcardCert: "issues"
+TLS.WildcardCert -> L7.Gateway: "mounts as Secret"

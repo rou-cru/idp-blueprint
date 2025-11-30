@@ -1,0 +1,13 @@
+direction: right
+
+classes: { desired: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+           observed: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
+           action: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white } }
+
+Desired: { class: desired; label: "Desired (Git)\nManifests, values, policies, SLOs" }
+Observed: { class: observed; label: "Observed\nPrometheus, Loki, Pyrra" }
+Action: { class: action; label: "Actionable\nArgoCD, Kyverno, Argo Events" }
+
+Desired -> Action: "reconcile / govern"
+Observed -> Action: "signals → triggers"
+Action -> Observed: "deploy → measure"
