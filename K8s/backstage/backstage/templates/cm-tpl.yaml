@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backstage-config-tpl
+  namespace: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+data:
+  app-config.override.yaml: |
+    backend:
+      baseUrl: https://backstage.${DNS_SUFFIX}
+      cors:
+        origin: https://backstage.${DNS_SUFFIX}
+        methods: [GET, POST, PUT, DELETE]
+        credentials: true
+      csp:
+        connect-src: ["'self'", 'https://dex.${DNS_SUFFIX}', 'https://kubernetes.default.svc']
+    app:
+      title: Backstage
+      baseUrl: https://backstage.${DNS_SUFFIX}
+    auth:
+      environment: production
+      session:
+        secret: ${BACKEND_SECRET}
+      providers:
+        oidc:
+          production:
+            metadataUrl: https://dex.${DNS_SUFFIX}/.well-known/openid-configuration
+            clientId: backstage
+            clientSecret: ${DEX_CLIENT_SECRET}
+            prompt: auto
+            signIn:
+              resolvers:
+                - resolver: emailMatchingUserEntityProfileEmail
+                - resolver: emailLocalPartMatchingUserEntityName
+    techdocs:
+      builder: 'local'
+      generator:
+        runIn: 'docker'
+      publisher:
+        type: 'local'
+    catalog:
+      locations:
+        - type: file
+          target: /app/catalog-users.yaml
+          rules:
+            - allow: [User, Group]
+    kubernetes:
+      serviceLocatorMethod:
+        type: 'multiTenant'
+      customResources:
+        - group: 'argoproj.io'
+          apiVersion: 'v1alpha1'
+          plural: 'rollouts'
+        - group: 'argoproj.io'
+          apiVersion: 'v1alpha1'
+          plural: 'applications'
+      clusterLocatorMethods:
+        - type: 'config'
+          clusters:
+            - url: https://kubernetes.default.svc
+              name: in-cluster
+              authProvider: 'serviceAccount'
+              skipTLSVerify: true

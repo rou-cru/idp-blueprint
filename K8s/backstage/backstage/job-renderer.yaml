@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: config-renderer
+  namespace: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: config-renderer
+  namespace: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps", "secrets"]
+    verbs: ["get", "list", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: config-renderer
+  namespace: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+subjects:
+  - kind: ServiceAccount
+    name: config-renderer
+    namespace: backstage
+roleRef:
+  kind: Role
+  name: config-renderer
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backstage-config-renderer
+  namespace: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      serviceAccountName: config-renderer
+      restartPolicy: OnFailure
+      containers:
+        - name: renderer
+          image: bitnami/kubectl:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              # Load variables
+              if [ -f /vars/DNS_SUFFIX ]; then
+                export DNS_SUFFIX=$(cat /vars/DNS_SUFFIX)
+              elif [ -f /vars/env ]; then
+                source /vars/env
+              else
+                echo "No variables found!"
+                exit 1
+              fi
+              
+              echo "Rendering configuration using DNS_SUFFIX=$DNS_SUFFIX"
+              
+              # Read template
+              cp /tpl/app-config.override.yaml /tmp/config.yaml
+              
+              # Replace variable (using sed for simple substitution)
+              sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
+              
+              # Patch ConfigMap
+              kubectl create configmap backstage-app-config-override \
+                --from-file=app-config.override.yaml=/tmp/config.yaml \
+                --dry-run=client -o yaml | \
+                kubectl apply -f -
+                
+              echo "ConfigMap patched successfully."
+          volumeMounts:
+            - name: vars
+              mountPath: /vars
+            - name: tpl
+              mountPath: /tpl
+      volumes:
+        - name: vars
+          configMap:
+            name: idp-vars-backstage
+            optional: true
+        - name: tpl
+          configMap:
+            name: backstage-config-tpl

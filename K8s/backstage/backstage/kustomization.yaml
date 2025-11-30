@@ -12,13 +12,8 @@ helmCharts:
 resources:
   - backstage-app-externalsecret.yaml
   - backstage-postgres-externalsecret.yaml
-  - backstage-kubernetes-rbac.yaml
-  - service-monitor.yaml
-
-labels:
-  - includeSelectors: true
-    pairs:
-      app.kubernetes.io/part-of: idp
-      owner: platform-team
-      business-unit: infrastructure
-      environment: demo
+  - backstage-demo-users.yaml
+  - cm-placeholder.yaml
+  - templates/cm-tpl.yaml
+  - job-renderer.yaml
+  - vars-placeholder.yaml

@@ -1,8 +1,40 @@
-# @section -- Backstage image
-image:
-  repository: backstage/backstage
-  tag: latest
-  pullPolicy: IfNotPresent
+# @section -- Global labels
+commonLabels:
+  app.kubernetes.io/version: "2.6.3"
+  app.kubernetes.io/part-of: idp
+  owner: platform-team
+  business-unit: infrastructure
+  environment: demo
+
+# @section -- Backstage configuration
+backstage:
+  # Extra app-config from ConfigMap with DNS_SUFFIX-substituted values
+  extraAppConfig:
+    - configMapRef: backstage-app-config-override
+      filename: app-config.override.yaml
+  # Extra secrets for backend auth cookie and Dex client secret
+  extraEnvVarsSecrets:
+    - backstage-app-secrets
+  extraEnvVars:
+    - name: KUBERNETES_CLUSTER_DOMAIN
+      value: "cluster.local"
+    - name: NODE_TLS_REJECT_UNAUTHORIZED
+      value: "0"
+  # Mount the catalog users ConfigMap
+  extraVolumes:
+    - name: catalog-users
+      configMap:
+        name: backstage-demo-users
+  extraVolumeMounts:
+    - name: catalog-users
+      mountPath: /app/catalog-users.yaml
+      subPath: users.yaml
+  # Backstage image configuration
+  image:
+    registry: docker.io
+    repository: roucru/idp-blueprint-dev-portal
+    tag: latest
+    pullPolicy: Always
 
 # @section -- Pod settings
 replicaCount: 1
@@ -16,7 +48,7 @@ resources:
     memory: 1Gi
 
 serviceAccount:
-  create: false
+  create: true
   name: backstage-kubernetes
 
 service:
@@ -26,51 +58,27 @@ service:
 ingress:
   enabled: false
 
-# Mount the catalog users ConfigMap
-extraVolumes:
-  - name: catalog-users
-    configMap:
-      name: backstage-demo-users
+# REMOVED: Moved to backstage.extraVolumes below
 
-extraVolumeMounts:
-  - name: catalog-users
-    mountPath: /opt/app-root/src/catalog-users.yaml
-    subPath: users.yaml
-
-# Extra secrets for backend auth cookie and DB password
-extraEnv:
-  - name: BACKEND_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: backstage-app-secrets
-        key: BACKEND_SECRET
-  - name: POSTGRES_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: backstage-app-secrets
-        key: POSTGRES_PASSWORD
-  - name: DEX_CLIENT_SECRET
-    valueFrom:
-      secretKeyRef:
-        name: backstage-app-secrets
-        key: DEX_CLIENT_SECRET
 
 appConfig:
   app:
     title: Backstage
-    baseUrl: https://backstage.${DNS_SUFFIX}
+  techdocs:
+    builder: 'local'
+    generator:
+      runIn: 'docker'
+    publisher:
+      type: 'local'
   catalog:
     locations:
       - type: file
-        target: /opt/app-root/src/catalog-users.yaml
+        target: /app/catalog-users.yaml
         rules:
           - allow: [User, Group]
   backend:
-    baseUrl: https://backstage.${DNS_SUFFIX}
     listen:
       port: 7007
-    cors:
-      origin: https://backstage.${DNS_SUFFIX}
     database:
       # Use the built-in Bitnami PostgreSQL subchart
       client: pg
@@ -100,16 +108,6 @@ appConfig:
   kubernetes:
     serviceLocatorMethod:
       type: 'multiTenant'
-    clusterLocatorMethods:
-      - type: 'config'
-        clusters:
-          - name: local-cluster
-            url: https://kubernetes.default.svc
-            authProvider: 'serviceAccount'
-            skipTLSVerify: false
-            skipMetricsLookup: false
-            dashboardUrl: https://kubernetes-dashboard.${DNS_SUFFIX}
-            dashboardApp: standard
     customResources:
       - group: 'argoproj.io'
         apiVersion: 'v1alpha1'
@@ -118,9 +116,15 @@ appConfig:
         apiVersion: 'v1alpha1'
         plural: 'applications'
 
-# @section -- PostgreSQL (Bitnami subchart)
+# @section -- PostgreSQL
 postgresql:
   enabled: true
+  commonLabels:
+    app.kubernetes.io/version: "15.4.0"
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
   auth:
     username: backstage
     database: backstage

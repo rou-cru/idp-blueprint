@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: idp-vars-backstage
+  namespace: backstage
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+data:
+  DNS_SUFFIX: "placeholder"
