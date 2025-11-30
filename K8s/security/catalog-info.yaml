@@ -1,14 +1,15 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: Resource
 metadata:
-  name: k8s-security
-  description: Component for security in K8s
+  name: security
+  description: Security Infrastructure Resources
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: trivy-operator
     backstage.io/kubernetes-namespace: security
-    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/name=trivy-operator'
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=trivy-operator"
 spec:
-  type: service
+  type: kubernetes
   lifecycle: production
-  owner: guests
+  owner: platform-team
+  system: idp

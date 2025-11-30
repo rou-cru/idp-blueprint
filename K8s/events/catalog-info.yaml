@@ -1,14 +1,15 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: Resource
 metadata:
-  name: k8s-events
-  description: Component for events in K8s
+  name: events
+  description: Events Infrastructure Resources
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: eventbus-default
     backstage.io/kubernetes-namespace: events
-    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/part-of=argo-events'
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=argo-events"
 spec:
-  type: service
+  type: kubernetes
   lifecycle: production
-  owner: guests
+  owner: platform-team
+  system: idp

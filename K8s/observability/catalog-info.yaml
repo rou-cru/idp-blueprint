@@ -1,14 +1,15 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: Resource
 metadata:
-  name: k8s-observability
-  description: Component for observability in K8s
+  name: observability
+  description: Observability Infrastructure Resources
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: kube-prometheus-stack
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kube-prometheus-stack"
 spec:
-  type: service
+  type: kubernetes
   lifecycle: production
-  owner: guests
+  owner: platform-team
+  system: idp

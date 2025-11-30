@@ -100,8 +100,6 @@ catalog:
 
     # K8s Components
     - type: file
-      target: ../../K8s/argocd/catalog-info.yaml
-    - type: file
       target: ../../K8s/backstage/catalog-info.yaml
     - type: file
       target: ../../K8s/cicd/catalog-info.yaml
@@ -111,8 +109,6 @@ catalog:
       target: ../../K8s/observability/catalog-info.yaml
     - type: file
       target: ../../K8s/security/catalog-info.yaml
-    - type: file
-      target: ../../K8s/vault/catalog-info.yaml
 
     # Policies Components
     - type: file

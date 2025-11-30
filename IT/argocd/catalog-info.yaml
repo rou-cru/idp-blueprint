@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: it-argocd
-  description: Component for argocd in IT
+  name: argocd
+  description: ArgoCD Service
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: argocd
@@ -11,4 +11,24 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: guests
+  owner: platform-team
+  system: idp
+  dependsOn:
+    - resource:argocd
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: argocd
+  description: ArgoCD Infrastructure Resources
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: argocd
+    backstage.io/kubernetes-namespace: argocd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=argocd"
+spec:
+  type: kubernetes
+  lifecycle: production
+  owner: platform-team
+  system: idp

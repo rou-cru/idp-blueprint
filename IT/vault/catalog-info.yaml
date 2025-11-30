@@ -1,11 +1,31 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: it-vault
-  description: Component for vault in IT
+  name: vault
+  description: Vault Service
   annotations:
     backstage.io/techdocs-ref: dir:.
 spec:
   type: service
   lifecycle: production
-  owner: guests
+  owner: platform-team
+  system: idp
+  dependsOn:
+    - resource:vault
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: vault
+  description: Vault Infrastructure Resources
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: vault
+    backstage.io/kubernetes-namespace: vault-system
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=vault"
+spec:
+  type: kubernetes
+  lifecycle: production
+  owner: platform-team
+  system: idp
