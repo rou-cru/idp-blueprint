@@ -39,45 +39,6 @@ data:
         runIn: 'docker'
       publisher:
         type: 'local'
-    catalog:
-      locations:
-        - type: file
-          target: /app/catalog-users.yaml
-          rules:
-            - allow: [User, Group]
-        # IT Components
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/IT/argocd/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/IT/cert-manager/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/IT/cilium/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/IT/external-secrets/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/IT/gateway/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/IT/vault/catalog-info.yaml
-        # K8s Components
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/K8s/argocd/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/K8s/backstage/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/K8s/cicd/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/K8s/events/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/K8s/observability/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/K8s/security/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/K8s/vault/catalog-info.yaml
-        # Policies Components
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/Policies/kyverno/catalog-info.yaml
-        - type: url
-          target: https://github.com/rou-cru/idp-blueprint/blob/main/Policies/policy-reporter/catalog-info.yaml
 
     kubernetes:
       serviceLocatorMethod:

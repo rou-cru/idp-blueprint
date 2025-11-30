@@ -16,6 +16,5 @@ resources:
   - backstage-app-externalsecret.yaml
 
   - backstage-postgres-externalsecret.yaml
-  - backstage-demo-users.yaml
   - templates/cm-tpl.yaml
   - ../../infrastructure/backstage-rbac.yaml
