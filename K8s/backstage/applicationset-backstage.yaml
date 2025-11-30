@@ -10,6 +10,7 @@ metadata:
     business-unit: infrastructure
     environment: demo
 spec:
+  goTemplate: true
   generators:
     - git:
         repoURL: ${REPO_URL}
@@ -18,27 +19,30 @@ spec:
           - path: K8s/backstage/*
   template:
     metadata:
-      name: 'backstage-{{path.basename}}'
+      name: 'backstage-{{.path.basename}}'
     spec:
       project: backstage
-      source:
-        repoURL: ${REPO_URL}
-        targetRevision: ${TARGET_REVISION}
-        path: '{{path}}'
-        kustomize:
-          images:
-            - name: backstage/backstage
-              newTag: '${BACKSTAGE_VERSION}'
-          patches:
-            - target:
-                kind: Deployment
-                name: dex
-              patch: |
-                - op: add
-                  path: /spec/template/spec/containers/0/env
-                  value:
-                    - name: DNS_SUFFIX
-                      value: "${DNS_SUFFIX}"
+      sources:
+        - repoURL: ${REPO_URL}
+          targetRevision: ${TARGET_REVISION}
+          path: '{{.path.path}}'
+          kustomize:
+            patches:
+              # DNS_SUFFIX patch only for backstage and dex (contains vars-placeholder.yaml)
+              - target:
+                  kind: ConfigMap
+                  name: idp-vars-backstage
+                patch: |
+                  - op: replace
+                    path: /data/DNS_SUFFIX
+                    value: "${DNS_SUFFIX}"
+              - target:
+                  kind: ConfigMap
+                  name: idp-vars-dex
+                patch: |
+                  - op: replace
+                    path: /data/DNS_SUFFIX
+                    value: "${DNS_SUFFIX}"
       destination:
         server: https://kubernetes.default.svc
         namespace: backstage
@@ -58,6 +62,10 @@ spec:
             factor: 2
             maxDuration: 10m
       ignoreDifferences:
+        - group: ""
+          kind: ConfigMap
+          jsonPointers:
+            - /data
         - group: admissionregistration.k8s.io
           kind: MutatingWebhookConfiguration
           jqPathExpressions:

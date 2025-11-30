@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: idp-ca-cert
+  namespace: backstage
+  labels:
+    app.kubernetes.io/name: idp-ca-cert
+    app.kubernetes.io/instance: idp-ca-cert-backstage
+    app.kubernetes.io/component: certificate-authority
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    description: 'Root CA certificate for trusting self-signed TLS certificates'
+    argocd.argoproj.io/sync-wave: "-3"
+# Data will be populated by sync-ca-cert Job
