@@ -1,130 +1,84 @@
-version: '3'
+version: "3"
 
 tasks:
   policies:
-    desc: 'Deploy the Kyverno Policy Engine and policies via ArgoCD'
+    desc: "Deploy the Kyverno Policy Engine and policies via ArgoCD"
     dir: Policies
-    preconditions:
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: true
     env:
-      REPO_URL: '{{.REPO_URL}}'
-      TARGET_REVISION: '{{.TARGET_REVISION}}'
+      REPO_URL: "{{.REPO_URL}}"
+      TARGET_REVISION: "{{.TARGET_REVISION}}"
+    status:
+      - test "{{.FUSE_POLICIES}}" = "false"
     cmds:
-      - envsubst < app-kyverno.yaml | kubectl apply -f -
+      - envsubst < app-kyverno.yaml | kubectl apply -f - --server-side
 
   observability:
-    desc: 'Deploy the Observability Stack via ArgoCD'
+    desc: "Deploy the Observability Stack via ArgoCD"
     dir: K8s/observability
-    preconditions:
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: true
     env:
-      REPO_URL: '{{.REPO_URL}}'
-      TARGET_REVISION: '{{.TARGET_REVISION}}'
+      REPO_URL: "{{.REPO_URL}}"
+      TARGET_REVISION: "{{.TARGET_REVISION}}"
+    status:
+      - test "{{.FUSE_OBSERVABILITY}}" = "false"
     cmds:
-      - envsubst < applicationset-observability.yaml | kubectl apply -f -
+      - envsubst < applicationset-observability.yaml | kubectl apply -f - --server-side
 
   cicd:
-    desc: 'Deploy the CICD Stack via ArgoCD'
+    desc: "Deploy the CICD Stack via ArgoCD"
     dir: K8s/cicd
-    preconditions:
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: true
     env:
-      REPO_URL: '{{.REPO_URL}}'
-      TARGET_REVISION: '{{.TARGET_REVISION}}'
+      REPO_URL: "{{.REPO_URL}}"
+      TARGET_REVISION: "{{.TARGET_REVISION}}"
+    status:
+      - test "{{.FUSE_CICD}}" = "false"
     cmds:
-      - envsubst < applicationset-cicd.yaml | kubectl apply -f -
+      - envsubst < applicationset-cicd.yaml | kubectl apply -f - --server-side
 
   security:
-    desc: 'Deploy the Security Stack via ArgoCD (Trivy Operator)'
+    desc: "Deploy the Security Stack via ArgoCD (Trivy Operator)"
     dir: K8s/security
-    preconditions:
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: true
     env:
-      REPO_URL: '{{.REPO_URL}}'
-      TARGET_REVISION: '{{.TARGET_REVISION}}'
+      REPO_URL: "{{.REPO_URL}}"
+      TARGET_REVISION: "{{.TARGET_REVISION}}"
+    status:
+      - test "{{.FUSE_SECURITY}}" = "false"
     cmds:
-      - envsubst < applicationset-security.yaml | kubectl apply -f -
+      - envsubst < applicationset-security.yaml | kubectl apply -f - --server-side
 
   events:
-    desc: 'Deploy the Events Stack via ArgoCD (Argo Events)'
+    desc: "Deploy the Events Stack via ArgoCD (Argo Events)"
     dir: K8s/events
-    preconditions:
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: true
     env:
-      REPO_URL: '{{.REPO_URL}}'
-      TARGET_REVISION: '{{.TARGET_REVISION}}'
+      REPO_URL: "{{.REPO_URL}}"
+      TARGET_REVISION: "{{.TARGET_REVISION}}"
     cmds:
-      - envsubst < applicationset-events.yaml | kubectl apply -f -
+      - envsubst < applicationset-events.yaml | kubectl apply -f - --server-side
 
   backstage:
-    desc: 'Deploy the Backstage developer portal via ArgoCD'
+    desc: "Deploy the Backstage developer portal via ArgoCD"
     dir: K8s/backstage
-    preconditions:
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install get text'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: true
     env:
-      REPO_URL: '{{.REPO_URL}}'
-      TARGET_REVISION: '{{.TARGET_REVISION}}'
-      BACKSTAGE_VERSION:
-        sh: ./Scripts/config-get.sh versions.backstage '{{.CONFIG_FILE}}'
-      DNS_SUFFIX:
-        sh: |
-          value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
-          if [ -z "$value" ] || [ "$value" = "''" ]; then
-            value=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1")
-          fi
-          echo "$(echo "$value" | tr '.' '-').nip.io"
+      REPO_URL: "{{.REPO_URL}}"
+      TARGET_REVISION: "{{.TARGET_REVISION}}"
+      BACKSTAGE_VERSION: "{{.BACKSTAGE_VERSION}}"
+      DNS_SUFFIX: "{{.DNS_SUFFIX}}"
+    status:
+      - test "{{.FUSE_BACKSTAGE}}" = "false"
     cmds:
-      - envsubst < applicationset-backstage.yaml | kubectl apply -f -
+      - envsubst < applicationset-backstage.yaml | kubectl apply -f - --server-side
 
   deploy:
-    desc: 'Deploy all application stacks via ArgoCD ApplicationSets (feature-gated)'
+    desc: "Deploy all application stacks via ArgoCD ApplicationSets (feature-gated)"
     cmds:
-      - |
-        if [ "{{.FUSE_POLICIES}}" != "false" ]; then
-          task stacks:policies || exit 1
-        else
-          echo "Skipping policies"
-        fi
-      - |
-        if [ "{{.FUSE_OBSERVABILITY}}" != "false" ]; then
-          task stacks:observability || exit 1
-        else
-          echo "Skipping observability"
-        fi
-      - |
-        if [ "{{.FUSE_CICD}}" != "false" ]; then
-          task stacks:cicd || exit 1
-        else
-          echo "Skipping cicd"
-        fi
-      - |
-        if [ "{{.FUSE_SECURITY}}" != "false" ]; then
-          task stacks:security || exit 1
-        else
-          echo "Skipping security"
-        fi
-      - |
-        if [ "{{.FUSE_BACKSTAGE}}" != "false" ]; then
-          task stacks:backstage || exit 1
-        else
-          echo "Skipping backstage"
-        fi
-      - task stacks:events
+      - task: policies
+      - task: observability
+      - task: cicd
+      - task: security
+      - task: backstage
+      - task: events

@@ -1,7 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
   "env": {
-    "NIXPKGS_ALLOW_UNFREE": "1"
+    "NIXPKGS_ALLOW_UNFREE":    "1",
+    "DEVBOX_COREPACK_ENABLED": "true"
   },
   "packages": [
     "go-task@3.44.1",
@@ -39,8 +40,9 @@
     "uv@0.8.23",
     "d2@0.7.1",
     "python312@latest",
-    "nodejs@24",
-    "pnpm@latest"
+    "nodejs@22",
+    "pnpm@latest",
+    "yarn-berry@4.4.1"
   ],
   "shell": {
     "init_hook": [

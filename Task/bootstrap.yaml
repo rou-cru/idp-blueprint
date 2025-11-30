@@ -1,104 +1,31 @@
-version: '3'
-
-vars:
-  CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
-  # Fuses
-  FUSE_PROD:
-    sh: |
-      v=$(./Scripts/config-get.sh fuses.prod '{{.CONFIG_FILE}}' 2>/dev/null || true); [ -z "$v" ] && v=false; echo "$v"
-  # Cluster name (for components that need it)
-  CLUSTER_NAME:
-    sh: |
-      value=$(./Scripts/config-get.sh cluster.name '{{.CONFIG_FILE}}' 2>/dev/null || true)
-      if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
-
-  # Network Configuration
-  LAN_IP:
-    sh: |
-      value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
-      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
-        echo "$value"
-      else
-        ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1"
-      fi
-  NODEPORT_HTTP:
-    sh: ./Scripts/config-get.sh network.nodeport_http '{{.CONFIG_FILE}}'
-  NODEPORT_HTTPS:
-    sh: ./Scripts/config-get.sh network.nodeport_https '{{.CONFIG_FILE}}'
-
-  # Helm Chart Versions
-  CILIUM_VERSION:
-    sh: ./Scripts/config-get.sh versions.cilium '{{.CONFIG_FILE}}'
-  CERT_MANAGER_VERSION:
-    sh: ./Scripts/config-get.sh versions.cert_manager '{{.CONFIG_FILE}}'
-  GATEWAY_API_VERSION:
-    sh: ./Scripts/config-get.sh versions.gateway_api '{{.CONFIG_FILE}}'
-  EXTERNAL_SECRETS_VERSION:
-    sh: ./Scripts/config-get.sh versions.external_secrets '{{.CONFIG_FILE}}'
-  VAULT_VERSION:
-    sh: ./Scripts/config-get.sh versions.vault '{{.CONFIG_FILE}}'
-  ARGOCD_VERSION:
-    sh: ./Scripts/config-get.sh versions.argocd '{{.CONFIG_FILE}}'
-
-  # Operational Settings
-  KUBECTL_TIMEOUT:
-    sh: ./Scripts/config-get.sh operational.kubectl_timeout '{{.CONFIG_FILE}}'
-  GATEWAY_WAIT_TIMEOUT:
-    sh: ./Scripts/config-get.sh gateway.wait_timeout '{{.CONFIG_FILE}}'
-
-  # Password Configuration
-  ARGOCD_ADMIN_PASSWORD:
-    sh: ./Scripts/config-get.sh passwords.argocd_admin '{{.CONFIG_FILE}}'
-  GRAFANA_ADMIN_PASSWORD:
-    sh: ./Scripts/config-get.sh passwords.grafana_admin '{{.CONFIG_FILE}}'
-  SONARQUBE_ADMIN_PASSWORD:
-    sh: ./Scripts/config-get.sh passwords.sonarqube_admin '{{.CONFIG_FILE}}'
-  SONARQUBE_MONITORING_PASSCODE:
-    sh: ./Scripts/config-get.sh passwords.sonarqube_monitoring '{{.CONFIG_FILE}}'
-   BACKSTAGE_DEX_CLIENT_SECRET:
-    sh: ./Scripts/config-get.sh passwords.backstage_dex_client '{{.CONFIG_FILE}}'
-
-
-  # Docker Registry Configuration
-  DOCKER_REGISTRY_URL:
-    sh: ./Scripts/config-get.sh registry.url '{{.CONFIG_FILE}}'
-  DOCKER_REGISTRY_USERNAME:
-    sh: ./Scripts/config-get.sh registry.username '{{.CONFIG_FILE}}'
-  DOCKER_REGISTRY_PASSWORD:
-    sh: ./Scripts/config-get.sh registry.password '{{.CONFIG_FILE}}'
-
-  # Git Configuration
-  REPO_URL:
-    sh: |
-      value=$(./Scripts/config-get.sh git.repo_url '{{.CONFIG_FILE}}' 2>/dev/null || true)
-      if [ -n "$value" ] && [ "$value" != '""' ] && [ "$value" != "''" ]; then
-        echo "$value"
-      else
-        git config --get remote.origin.url 2>/dev/null || echo "https://github.com/rou-cru/idp-blueprint.git"
-      fi
+version: "3"
 
 tasks:
   it:apply-namespaces:
-    desc: 'Apply all IT bootstrap namespaces via Kustomize'
+    desc: "Apply all IT bootstrap namespaces via Kustomize"
     internal: true
+    silent: true
     cmds:
-      - kustomize build IT/namespaces | kubectl apply -f -
+      - kustomize build IT/namespaces | kubectl apply -f - --server-side
 
   it:apply-serviceaccounts:
-    desc: 'Apply all IT bootstrap ServiceAccounts via Kustomize'
+    desc: "Apply all IT bootstrap ServiceAccounts via Kustomize"
     internal: true
+    silent: true
     cmds:
-      - kustomize build IT/serviceaccounts | kubectl apply -f -
+      - kustomize build IT/serviceaccounts | kubectl apply -f - --server-side
 
   it:apply-priorityclasses:
-    desc: 'Apply PriorityClasses for pod scheduling'
+    desc: "Apply PriorityClasses for pod scheduling"
     internal: true
+    silent: true
     cmds:
-      - kustomize build IT/priorityclasses | kubectl apply -f -
+      - kustomize build IT/priorityclasses | kubectl apply -f - --server-side
 
   it:apply-gateway-api-crds:
-    desc: 'Apply Gateway API CRDs'
+    desc: "Apply Gateway API CRDs"
     internal: true
+    silent: true
     cmds:
       - defer: rm -f /tmp/gateway-api-*.yaml
       - |
@@ -106,11 +33,12 @@ tasks:
         GATEWAY_API_URL="https://github.com/kubernetes-sigs/gateway-api/releases/download/${GATEWAY_API_VERSION_CLEAN}/standard-install.yaml"
         TEMP_FILE="/tmp/gateway-api-${GATEWAY_API_VERSION_CLEAN}.yaml"
         curl -fsSL "$GATEWAY_API_URL" -o "$TEMP_FILE"
-        kubectl apply -f "$TEMP_FILE"
+        kubectl apply -f "$TEMP_FILE" --server-side
 
   it:apply-prometheus-crds:
-    desc: 'Apply Prometheus CRDs from the dedicated Helm chart'
+    desc: "Apply Prometheus CRDs from the dedicated Helm chart"
     internal: true
+    silent: true
     cmds:
       - |
         helm upgrade --install prometheus-crds prometheus-community/prometheus-operator-crds \
@@ -119,28 +47,25 @@ tasks:
           --hide-notes
 
   it:apply-crds:
-    desc: 'Apply all CRDs required for the platform'
+    desc: "Apply all CRDs required for the platform"
     internal: true
     deps:
       - it:apply-gateway-api-crds
       - it:apply-prometheus-crds
 
   cilium:preload:
-    desc: 'Pre-load Cilium image to Docker host'
+    desc: "Pre-load Cilium image to Docker host"
     internal: true
+    silent: true
     vars:
-      CILIUM_IMAGE: 'quay.io/cilium/cilium:v{{.CILIUM_VERSION}}'
+      CILIUM_IMAGE: "quay.io/cilium/cilium:v{{.CILIUM_VERSION}}"
     cmds:
       - docker pull {{.CILIUM_IMAGE}}
 
   cilium:deploy:
-    desc: 'Install Cilium as CNI'
+    desc: "Install Cilium as CNI"
     dir: IT/cilium
-    preconditions:
-      - sh: command -v helm
-        msg: 'helm is required but not installed. Run: brew install helm'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: false
     cmds:
       - |
         helm upgrade --install cilium cilium/cilium \
@@ -153,7 +78,8 @@ tasks:
         --timeout={{.KUBECTL_TIMEOUT}}
 
   it:bootstrap:
-    desc: 'Bootstrap cluster prerequisites and preload images'
+    desc: "Bootstrap cluster prerequisites and preload images"
+    silent: true
     deps:
       - cilium:preload
       - it:apply-serviceaccounts
@@ -161,15 +87,9 @@ tasks:
       - it:apply-priorityclasses
 
   cert-manager:deploy:
-    desc: 'Deploy Cert-Manager to handle CA'
+    desc: "Deploy Cert-Manager to handle CA"
     dir: IT/cert-manager
-    preconditions:
-      - sh: command -v helm
-        msg: 'helm is required but not installed. Run: brew install helm'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
-      - sh: command -v kustomize
-        msg: 'kustomize is required but not installed. Run: brew install kustomize'
+    silent: true
     cmds:
       - |
         helm upgrade --install cert-manager jetstack/cert-manager \
@@ -179,16 +99,12 @@ tasks:
           --hide-notes
       - kubectl wait --for=condition=Available deployment/cert-manager-webhook -n
         cert-manager --timeout={{.KUBECTL_TIMEOUT}}
-      - kustomize build . | kubectl apply -f -
+      - kustomize build . | kubectl apply -f - --server-side
 
   external-secrets:deploy:
-    desc: 'Install External Secrets Operator'
+    desc: "Install External Secrets Operator"
     dir: IT/external-secrets
-    preconditions:
-      - sh: command -v helm
-        msg: 'helm is required but not installed. Run: brew install helm'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
+    silent: false
     cmds:
       - |
         helm upgrade --install external-secrets external-secrets/external-secrets \
@@ -202,14 +118,14 @@ tasks:
         deployment/external-secrets-webhook -n external-secrets-system
 
   it:eso:apply-resources:
-    desc: 'Apply ESO SecretStores and ExternalSecrets'
+    desc: "Apply ESO SecretStores and ExternalSecrets"
     dir: IT/external-secrets
     cmds:
-      - kustomize build . | kubectl apply -f -
+      - kustomize build . | kubectl apply -f - --server-side
       - kubectl wait --for=condition=Ready externalsecret/argocd-admin-password -n argocd --timeout={{.KUBECTL_TIMEOUT}}
 
   vault:clean:
-    desc: 'Clean Vault deployment'
+    desc: "Clean Vault deployment"
     silent: true
     cmds:
       - cmd: helm uninstall vault -n vault-system
@@ -218,82 +134,76 @@ tasks:
       - echo "✅ Vault cleaned"
 
   vault:init:
-    desc: 'Initialize Vault and configure for ESO'
+    desc: "Initialize Vault and configure for ESO"
     cmds:
       - ./Scripts/vault-init.sh
 
   vault:generate-secrets:
-    desc: 'Generate initial secrets for all services using Vault'
+    desc: "Generate initial secrets for all services using Vault"
     vars:
       SECRETS:
-        - path: 'secret/argocd/admin'
-          key: 'admin.password'
-          var: 'ARGOCD_ADMIN_PASSWORD'
-          enc: 'base64'
-          hash: 'bcrypt'
-        - path: 'secret/grafana/admin'
-          key: 'admin-password'
-          var: 'GRAFANA_ADMIN_PASSWORD'
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/sonarqube/admin'
-          key: 'password'
-          var: 'SONARQUBE_ADMIN_PASSWORD'
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/sonarqube/monitoring'
-          key: 'passcode'
-          var: 'SONARQUBE_MONITORING_PASSCODE'
-          enc: 'hex'
-          hash: 'none'
-        - path: 'secret/docker/registry'
-          key: 'registry'
-          var: 'DOCKER_REGISTRY_URL'
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/docker/registry'
-          key: 'username'
-          var: 'DOCKER_REGISTRY_USERNAME'
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/docker/registry'
-          key: 'password'
-          var: 'DOCKER_REGISTRY_PASSWORD'
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/backstage/app'
-          key: 'backendSecret'
-          var: ''
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/backstage/app'
-          key: 'dexClientSecret'
-          var: 'BACKSTAGE_DEX_CLIENT_SECRET'
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/backstage/postgres'
-
-          key: 'adminPassword'
-          var: ''
-          enc: 'base64'
-          hash: 'none'
-        - path: 'secret/backstage/postgres'
-          key: 'appPassword'
-          var: ''
-          enc: 'base64'
-          hash: 'none'
+        - path: "secret/argocd/admin"
+          key: "admin.password"
+          var: "ARGOCD_ADMIN_PASSWORD"
+          enc: "base64"
+          hash: "bcrypt"
+        - path: "secret/grafana/admin"
+          key: "admin-password"
+          var: "GRAFANA_ADMIN_PASSWORD"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/sonarqube/admin"
+          key: "password"
+          var: "SONARQUBE_ADMIN_PASSWORD"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/sonarqube/monitoring"
+          key: "passcode"
+          var: "SONARQUBE_MONITORING_PASSCODE"
+          enc: "hex"
+          hash: "none"
+        - path: "secret/docker/registry"
+          key: "registry"
+          var: "DOCKER_REGISTRY_URL"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/docker/registry"
+          key: "username"
+          var: "DOCKER_REGISTRY_USERNAME"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/docker/registry"
+          key: "password"
+          var: "DOCKER_REGISTRY_PASSWORD"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/backstage/app"
+          key: "backendSecret"
+          var: ""
+          enc: "base64"
+          hash: "none"
+        - path: "secret/backstage/app"
+          key: "dexClientSecret"
+          var: "BACKSTAGE_DEX_CLIENT_SECRET"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/backstage/postgres"
+          key: "adminPassword"
+          var: ""
+          enc: "base64"
+          hash: "none"
+        - path: "secret/backstage/postgres"
+          key: "appPassword"
+          var: ""
+          enc: "base64"
+          hash: "none"
     cmds:
       - for: { var: SECRETS, as: SECRET }
         cmd: ./Scripts/vault-generate.sh {{.SECRET.path}} {{.SECRET.key}} "{{index . .SECRET.var}}" {{.SECRET.enc}} {{.SECRET.hash}}
 
   vault:deploy:
-    desc: 'Deploy HashiCorp Vault'
+    desc: "Deploy HashiCorp Vault"
     dir: IT/vault
-    preconditions:
-      - sh: command -v helm
-        msg: 'helm is required but not installed. Run: brew install helm'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
     cmds:
       - |
         helm upgrade --install vault hashicorp/vault \
@@ -305,23 +215,18 @@ tasks:
       - task: vault:generate-secrets
 
   it:deploy-secret-and-certs:
-    desc: 'Deploy cert-manager and vault'
+    desc: "Deploy cert-manager and vault"
+    silent: true
     deps:
       - cert-manager:deploy
       - vault:deploy
 
   argocd:deploy:
-    desc: 'Deploy ArgoCD GitOps Engine'
+    desc: "Deploy ArgoCD GitOps Engine"
     dir: IT/argocd
-    preconditions:
-      - sh: command -v helm
-        msg: 'helm is required but not installed. Run: brew install helm'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
+    silent: true
     env:
-      REPO_URL: '{{.REPO_URL}}'
+      REPO_URL: "{{.REPO_URL}}"
     cmds:
       - |
         EXTRA_ARGS=""
@@ -338,30 +243,16 @@ tasks:
         --timeout={{.KUBECTL_TIMEOUT}}
       - task: it:eso:apply-resources
       - for: [platform, observability, cicd, security, events, backstage]
-        cmd: envsubst < appproject-{{.ITEM}}.yaml | kubectl apply -f -
+        cmd: envsubst < appproject-{{.ITEM}}.yaml | kubectl apply -f - --server-side
 
   gateway:deploy:
-    desc: 'Deploy Gateway API Gateway resource'
+    desc: "Deploy Gateway API Gateway resource"
     dir: IT/gateway
-    preconditions:
-      - sh: command -v kustomize
-        msg: 'kustomize is required but not installed. Run: brew install kustomize'
-      - sh: command -v kubectl
-        msg: 'kubectl is required but not installed. Run: brew install kubectl'
-      - sh: command -v envsubst
-        msg: 'envsubst is required but not installed. Run: brew install gettext'
-    env:
-      DNS_SUFFIX:
-        sh: |
-          value=$(./Scripts/config-get.sh network.lan_ip '{{.CONFIG_FILE}}' 2>/dev/null || true)
-          if [ -z "$value" ] || [ "$value" = "''" ]; then
-            value=$(ip route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}' || echo "127.0.0.1")
-          fi
-          echo "$(echo "$value" | tr '.' '-').nip.io"
+    silent: true
     cmds:
-      - kustomize build . | envsubst | kubectl apply -f -
+      - kustomize build . | envsubst | kubectl apply -f - --server-side
       - sleep 5
-      - kubectl apply -f patch/gateway-service-patch.yaml
+      - kubectl apply -f patch/gateway-service-patch.yaml --server-side
       - |
         HTTP_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-80")].nodePort}')
         HTTPS_PORT=$(kubectl get svc cilium-gateway-idp-gateway -n kube-system -o jsonpath='{.spec.ports[?(@.name=="port-443")].nodePort}')
@@ -374,10 +265,12 @@ tasks:
         --timeout={{.KUBECTL_TIMEOUT}}
       - |
         echo "✅ Gateway ready. Services available at:"
-        echo "   https://argocd.$DNS_SUFFIX"
-        echo "   https://backstage.$DNS_SUFFIX"
-        echo "   https://events.$DNS_SUFFIX"
-        echo "   https://grafana.$DNS_SUFFIX"
-        echo "   https://vault.$DNS_SUFFIX"
-        echo "   https://sonarqube.$DNS_SUFFIX"
-        echo "   https://workflows.$DNS_SUFFIX"
+        echo "-----------------------------------------"
+        echo "   https://argocd.{{.DNS_SUFFIX}}"
+        echo "   https://backstage.{{.DNS_SUFFIX}}"
+        echo "   https://events.{{.DNS_SUFFIX}}"
+        echo "   https://grafana.{{.DNS_SUFFIX}}"
+        echo "   https://vault.{{.DNS_SUFFIX}}"
+        echo "   https://sonarqube.{{.DNS_SUFFIX}}"
+        echo "   https://workflows.{{.DNS_SUFFIX}}"
+        echo "-----------------------------------------"

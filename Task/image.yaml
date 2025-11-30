@@ -77,3 +77,56 @@ tasks:
         else
           echo "⚠️  Registry not running (using config: {{.K3D_CONFIG}})"
         fi
+
+  # Dev Portal (Backstage) tasks
+  dev-portal:build:
+    desc: 'Build Backstage dev-portal Docker image (host build approach)'
+    dir: UI
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: 'latest'
+    cmds:
+      - echo "Installing dependencies..."
+      - yarn install --immutable
+      - echo "Auto-fixing code style..."
+      - yarn fix
+      - echo "Verifying code quality..."
+      - yarn lint:all
+      - echo "Generating type definitions..."
+      - yarn tsc
+      - echo "Building backend bundle..."
+      - yarn build:backend
+      - echo "Building Docker image..."
+      - cd .. && docker bake dev-portal --progress=tty
+
+  dev-portal:release:
+    desc: 'Build and push dev-portal image to registry'
+    dir: UI
+    requires:
+      vars:
+        - DOCKER_REGISTRY_URL
+        - DOCKER_REGISTRY_USERNAME
+        - DOCKER_REGISTRY_PASSWORD
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: 'latest'
+    cmds:
+      - echo "Installing dependencies..."
+      - yarn install --immutable
+      - echo "Generating type definitions..."
+      - yarn tsc
+      - echo "Building backend bundle..."
+      - yarn build:backend
+      - echo "Building and pushing Docker Image..."
+      - cd .. && docker bake dev-portal-release --progress=tty
+
+  dev-portal:clean:
+    desc: 'Clean dev-portal build artifacts'
+    dir: UI
+    cmds:
+      - echo "Cleaning build artifacts..."
+      - rm -rf dist-types
+      - rm -rf packages/*/dist
+      - rm -rf packages/backend/dist/skeleton.tar.gz
+      - rm -rf packages/backend/dist/bundle.tar.gz
+      - echo "✅ Build artifacts cleaned"

@@ -19,24 +19,36 @@ tasks:
   lint:yaml:
     desc: 'Lint all YAML files'
     internal: true
+    preconditions:
+      - sh: command -v yamllint
+        msg: 'yamllint is required but not installed. Run: brew install yamllint'
     cmds:
       - yamllint -c .config/lint/.yamllint .
 
   lint:shell:
     desc: 'Lint all shell scripts'
     internal: true
+    preconditions:
+      - sh: command -v shellcheck
+        msg: 'shellcheck is required but not installed. Run: brew install shellcheck'
     cmds:
       - find . -name '*.sh' -type f | grep -vE '/(\.devbox|node_modules|dist|\.venv|site)/' | xargs -r shellcheck
 
   lint:dockerfile:
     desc: 'Lint all Dockerfiles'
     internal: true
+    preconditions:
+      - sh: command -v hadolint
+        msg: 'hadolint is required but not installed. Run: brew install hadolint'
     cmds:
       - find . -name Dockerfile | grep -vE '/(node_modules|dist|\.venv|site)/' | xargs -r hadolint
 
   lint:markdown:
     desc: 'Lint all Markdown files'
     internal: true
+    preconditions:
+      - sh: command -v markdownlint-cli2
+        msg: 'markdownlint-cli2 is required but not installed. Run: npm install -g markdownlint-cli2'
     cmds:
       - markdownlint-cli2 --config .config/lint/.markdownlint-cli2.yaml --fix "Docs/**/*.md" "Docs/**/*.mdx" "*.md" "Policies/tag-policy.md" "Scripts/**/*.md" "Task/**/*.md"
 
@@ -83,12 +95,18 @@ tasks:
   security:iac:
     desc: 'Scan Infrastructure as Code for misconfigurations'
     internal: true
+    preconditions:
+      - sh: command -v checkov
+        msg: 'checkov is required but not installed. Run: pip install checkov'
     cmds:
       - checkov --directory . --skip-path node_modules --skip-path dist --skip-path .venv --skip-path site --skip-path .cache --quiet
 
   security:secrets:
     desc: 'Scan for hardcoded secrets'
     internal: true
+    preconditions:
+      - sh: command -v trufflehog
+        msg: 'trufflehog is required but not installed. Run: brew install trufflehog'
     cmds:
       - trufflehog filesystem . --exclude-paths .config/lint/.trufflehog-ignore --log-level=-1
 

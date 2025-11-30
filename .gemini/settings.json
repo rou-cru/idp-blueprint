@@ -52,13 +52,16 @@
       ]
     },
     "Astro docs": {
-      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote",
         "https://mcp.docs.astro.build/mcp"
       ]
+    },
+    "react": {
+      "command": "npx",
+      "args": ["@mrnitro360/react-native-mcp-guide@1.1.0"]
     }
   }
 }
