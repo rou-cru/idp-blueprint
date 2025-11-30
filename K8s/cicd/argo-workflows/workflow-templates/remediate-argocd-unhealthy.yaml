@@ -10,7 +10,7 @@ metadata:
     owner: platform-team
     business-unit: infrastructure
     environment: demo
-annotations:
+  annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
   entrypoint: force-sync
