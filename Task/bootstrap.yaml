@@ -1,5 +1,7 @@
 version: "3"
 
+dotenv: [".env"]
+
 tasks:
   it:apply-namespaces:
     desc: "Apply all IT bootstrap namespaces via Kustomize"

@@ -1,5 +1,7 @@
 version: '3'
 
+dotenv: [".env"]
+
 vars:
   CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
   CLUSTER_NAME:
