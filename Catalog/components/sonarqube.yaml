@@ -21,3 +21,4 @@ spec:
   system: idp-quality
   dependsOn:
     - resource:sonarqube-postgresql
+    - resource:sonarqube-storage

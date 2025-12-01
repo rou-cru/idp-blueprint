@@ -15,3 +15,6 @@ spec:
   lifecycle: production
   owner: platform-team
   system: idp-observability
+  dependsOn:
+    - component:kube-prometheus-stack
+    - component:alertmanager

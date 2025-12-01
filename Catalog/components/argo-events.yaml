@@ -16,3 +16,5 @@ spec:
   lifecycle: production
   owner: platform-team
   system: idp-orchestration
+  dependsOn:
+    - component:eventbus

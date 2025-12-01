@@ -25,3 +25,5 @@ spec:
   lifecycle: production
   owner: platform-team
   system: idp-security
+  dependsOn:
+    - resource:vault-storage

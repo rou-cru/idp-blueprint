@@ -1,0 +1,19 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: alertmanager
+  description: Alertmanager - Handles alerts sent by client applications such as the Prometheus server.
+  tags: [alerts, notifications, prometheus, observability, tier-critical, environment-demo, platform-observability]
+  annotations:
+    backstage.io/kubernetes-id: alertmanager
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=alertmanager"
+    deployment.method: "helm"
+    helm.chart: "prometheus-community/kube-prometheus-stack"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  dependsOn:
+    - component:kube-prometheus-stack

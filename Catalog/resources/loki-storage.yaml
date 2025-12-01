@@ -1,0 +1,15 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: sonarqube-storage
+  description: SonarQube Data - Persistent volume for extensions and logs.
+  tags: [storage, pvc, sonarqube, tier-high, environment-demo, platform-quality]
+  annotations:
+    backstage.io/kubernetes-id: sonarqube-sonarqube
+    backstage.io/kubernetes-namespace: cicd
+spec:
+  type: database
+  lifecycle: production
+  owner: platform-team
+  system: idp-quality

@@ -32,3 +32,4 @@ spec:
   providesApis: [grafana-api]
   dependsOn:
     - component:loki
+    - component:kube-prometheus-stack
