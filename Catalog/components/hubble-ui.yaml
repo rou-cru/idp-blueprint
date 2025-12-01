@@ -1,0 +1,22 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: hubble-ui
+  description: Hubble UI - Observability dashboard for Cilium.
+  tags: [networking, observability, hubble, dashboard, tier-medium, environment-demo, platform-networking]
+  links:
+    - url: https://hubble.192-168-65-16.nip.io
+      title: Hubble Dashboard
+      icon: dashboard
+  annotations:
+    backstage.io/kubernetes-id: hubble-ui
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "k8s-app=hubble-ui"
+spec:
+  type: website
+  lifecycle: production
+  owner: platform-team
+  system: idp-networking
+  subComponentOf: cilium
+  dependsOn:
+    - component:hubble-relay
