@@ -7,4 +7,3 @@ metadata:
 spec:
   owner: platform-team
   domain: idp-platform
-  partOf: idp

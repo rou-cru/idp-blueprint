@@ -1,9 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: System
-metadata:
-  name: idp
-  description: Internal Developer Platform - Complete integrated platform providing GitOps, Observability, Security, and Developer Portal capabilities.
-  tags: [idp, platform, infrastructure, environment-demo, tier-critical]
-spec:
-  owner: platform-team
-  domain: idp-platform
