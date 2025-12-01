@@ -107,7 +107,6 @@ spec:
                 --from-file=config.yaml=/tmp/config.yaml \
                 --dry-run=client -o yaml | \
                 kubectl apply -f -
-                
               echo "Dex Secret patched successfully."
           volumeMounts:
             - name: vars

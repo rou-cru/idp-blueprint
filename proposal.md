@@ -1,21 +1,12 @@
-# Backstage Integration Tasks
+# Backstage New Pluggins Added
 
-## Mid-priority
 
-ArgoCD -> https://roadie.io/backstage/plugins/argo-cd/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=argo-cd
-Vault -> https://github.com/backstage/community-plugins/tree/main/workspaces/vault/plugins/vault
-Kyverno -> https://github.com/kyverno/backstage-policy-reporter-plugin
-Grafana -> https://github.com/backstage/community-plugins/blob/main/workspaces/grafana/plugins/grafana/docs/index.md
-
-## Low-Priority
-
-RAG-AI -> https://roadie.io/backstage/plugins/ai-assistant-rag-ai
-Sonarqube -> https://github.com/backstage/community-plugins/blob/main/workspaces/sonarqube/plugins/sonarqube/README.md
-OpenDORA -> https://github.com/AntoineDao/backstage-provider-kubernetes#readme
-Prometheus -> https://roadie.io/backstage/plugins/prometheus/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=prometheus
-
-## Others
-
-Topology -> https://github.com/backstage/community-plugins/blob/main/workspaces/topology/plugins/topology/README.md
-TechRadar -> https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar
-TechDocs -> https://backstage.io/docs/features/techdocs
+- Simple-Icon -> https://github.com/dweber019/backstage-plugins/tree/main/plugins/simple-icons
+- Github-Actions -> https://github.com/backstage/community-plugins/blob/main/workspaces/github-actions/plugins/github-actions/README.md
+- ArgoCD -> https://roadie.io/backstage/plugins/argo-cd/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=argo-cd
+- Home -> https://github.com/backstage/backstage/blob/master/plugins/home/README.md
+- Topology -> https://github.com/backstage/community-plugins/tree/main/workspaces/topology/plugins/topology
+- Grafana -> https://github.com/backstage/community-plugins/blob/main/workspaces/grafana/plugins/grafana/docs/setup.md
+- Policy-Reporter -> https://github.com/kyverno/backstage-policy-reporter-plugin
+- Sonarqube -> https://github.com/backstage/community-plugins/blob/main/workspaces/sonarqube/plugins/sonarqube/README.md
+- Vault -> https://github.com/backstage/community-plugins/tree/main/workspaces/vault/plugins/vault

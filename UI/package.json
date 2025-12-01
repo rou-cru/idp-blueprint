@@ -52,6 +52,7 @@
   },
   "packageManager": "yarn@4.4.1",
   "dependencies": {
+    "@backstage-community/plugin-grafana": "^0.11.0",
     "isolated-vm": "^6.0.2"
   }
 }

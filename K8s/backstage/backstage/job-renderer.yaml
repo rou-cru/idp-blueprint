@@ -136,13 +136,12 @@ spec:
                 --from-file=app-config.override.yaml=/tmp/config.yaml \
                 --dry-run=client -o yaml | \
                 kubectl apply -f -
-                
+
               echo "=== SUCCESS: ConfigMap patched successfully ==="
 
               # Verify the patch was applied
               echo "=== Verification: Checking ConfigMap content ==="
               kubectl get configmap backstage-app-config-override -n backstage -o jsonpath='{.data.app-config\.override\.yaml}' | head -n 10
-
           volumeMounts:
             - name: vars
               mountPath: /vars
