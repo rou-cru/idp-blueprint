@@ -4,7 +4,6 @@ tasks:
   policies:
     desc: "Deploy the Kyverno Policy Engine and policies via ArgoCD"
     dir: Policies
-    silent: true
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
@@ -17,7 +16,6 @@ tasks:
   observability:
     desc: "Deploy the Observability Stack via ArgoCD"
     dir: K8s/observability
-    silent: true
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
@@ -30,7 +28,6 @@ tasks:
   cicd:
     desc: "Deploy the CICD Stack via ArgoCD"
     dir: K8s/cicd
-    silent: true
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
@@ -43,7 +40,6 @@ tasks:
   security:
     desc: "Deploy the Security Stack via ArgoCD (Trivy Operator)"
     dir: K8s/security
-    silent: true
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
@@ -66,7 +62,6 @@ tasks:
   backstage:
     desc: "Deploy the Backstage developer portal via ArgoCD"
     dir: K8s/backstage
-    silent: true
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"

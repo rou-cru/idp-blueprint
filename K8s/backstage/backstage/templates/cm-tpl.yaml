@@ -47,12 +47,6 @@ data:
       # can resolve identities from the static catalog file.
       rules:
         - allow: [Component, API, System, Domain, Resource, Template, Location, User, Group]
-      # Ensure local user catalog is always registered (prevents auth resolver failures
-      # if base chart defaults change).
-      locations:
-        - type: file
-          target: /app/catalog-users/users.yaml
-
       providers:
         github:
           idp-blueprint:
@@ -91,3 +85,14 @@ data:
               skipTLSVerify: false
               caFile: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
               skipMetricsLookup: false
+
+    # ArgoCD integration using backend plugin
+    argocd:
+      username: ${ARGOCD_USERNAME}
+      password: ${ARGOCD_PASSWORD}
+      waitCycles: 25
+      appLocatorMethods:
+        - type: 'config'
+          instances:
+            - name: ${CLUSTER_NAME}
+              url: https://argocd.${DNS_SUFFIX}

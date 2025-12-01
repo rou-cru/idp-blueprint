@@ -8,6 +8,7 @@ metadata:
     backstage.io/kubernetes-id: loki
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=loki"
+    argocd/app-name: observability-loki
     deployment.method: "helm"
     helm.chart: "grafana/loki"
 spec:

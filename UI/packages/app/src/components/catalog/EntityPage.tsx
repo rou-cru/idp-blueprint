@@ -58,6 +58,12 @@ import {
   isKubernetesAvailable,
 } from '@backstage/plugin-kubernetes';
 
+import {
+  EntityArgoCDOverviewCard,
+  EntityArgoCDHistoryCard,
+  isArgocdAvailable,
+} from '@roadiehq/backstage-plugin-argo-cd';
+
 const techdocsContent = (
   <EntityTechdocsContent>
     <TechDocsAddons>
@@ -161,6 +167,21 @@ const serviceEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
+    <EntityLayout.Route
+      path="/argocd"
+      title="ArgoCD"
+      if={isArgocdAvailable}
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityArgoCDOverviewCard />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityArgoCDHistoryCard />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/api" title="API">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
@@ -207,6 +228,21 @@ const websiteEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
+    <EntityLayout.Route
+      path="/argocd"
+      title="ArgoCD"
+      if={isArgocdAvailable}
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityArgoCDOverviewCard />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityArgoCDHistoryCard />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
@@ -247,6 +283,21 @@ const defaultEntityPage = (
       if={isKubernetesAvailable}
     >
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/argocd"
+      title="ArgoCD"
+      if={isArgocdAvailable}
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityArgoCDOverviewCard />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityArgoCDHistoryCard />
+        </Grid>
+      </Grid>
     </EntityLayout.Route>
   </EntityLayout>
 );
@@ -389,6 +440,21 @@ const systemPage = (
       if={isKubernetesAvailable}
     >
       <EntityKubernetesContent />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/argocd"
+      title="ArgoCD"
+      if={isArgocdAvailable}
+    >
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityArgoCDOverviewCard />
+        </Grid>
+        <Grid item xs={12}>
+          <EntityArgoCDHistoryCard />
+        </Grid>
+      </Grid>
     </EntityLayout.Route>
   </EntityLayout>
 );

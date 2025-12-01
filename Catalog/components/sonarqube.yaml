@@ -12,6 +12,7 @@ metadata:
     backstage.io/kubernetes-id: sonarqube
     backstage.io/kubernetes-namespace: cicd
     backstage.io/kubernetes-label-selector: "app=sonarqube"
+    argocd/app-name: cicd-sonarqube
     deployment.method: "helm"
     helm.chart: "sonarqube/sonarqube"
 spec:

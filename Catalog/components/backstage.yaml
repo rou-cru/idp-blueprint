@@ -13,6 +13,7 @@ metadata:
     backstage.io/kubernetes-id: backstage
     backstage.io/kubernetes-namespace: backstage
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=backstage"
+    argocd/app-name: backstage-backstage
     deployment.method: "helm"
     helm.chart: "backstage/backstage"
 spec:

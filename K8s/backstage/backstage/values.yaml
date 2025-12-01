@@ -20,16 +20,6 @@ backstage:
       value: "cluster.local"
     - name: NODE_TLS_REJECT_UNAUTHORIZED
       value: "0"
-  # Mount the catalog users ConfigMap
-  extraVolumes:
-    - name: catalog-users
-      configMap:
-        name: backstage-catalog-users
-        defaultMode: 420
-  extraVolumeMounts:
-    - name: catalog-users
-      mountPath: /app/catalog-users
-      readOnly: true
   # Backstage image configuration
   image:
     registry: docker.io
@@ -59,8 +49,6 @@ service:
 ingress:
   enabled: false
 
-# REMOVED: Moved to backstage.extraVolumes below
-
 appConfig:
   app:
     title: Backstage
@@ -73,16 +61,10 @@ appConfig:
   catalog:
     rules:
       - allow: [Component, API, System, Domain, Resource, Template, Location, User, Group]
-    locations:
-      - type: file
-        target: /app/catalog-users/admin.yaml
-      - type: file
-        target: /app/catalog-users/dev.yaml
   backend:
     listen:
       port: 7007
     database:
-      # Use the built-in Bitnami PostgreSQL subchart
       client: pg
       connection:
         host: backstage-postgresql-hl
