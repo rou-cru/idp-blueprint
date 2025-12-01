@@ -3,7 +3,14 @@ kind: Component
 metadata:
   name: argocd
   description: The ArgoCD System (Logical grouping).
-  tags: [gitops, orchestration]
+  tags:
+    [
+      gitops,
+      orchestration,
+      tier-critical,
+      environment-demo,
+      platform-infrastructure,
+    ]
   links:
     - url: https://argocd.192-168-65-16.nip.io
       title: ArgoCD Dashboard

@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: kyverno
   description: Kyverno Policy Engine - Kubernetes-native policy management - Helm Chart.
-  tags: [policy, governance, security, kubernetes]
+  tags: [policy, governance, security, kubernetes, tier-critical, environment-demo, platform-policy]
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: kyverno

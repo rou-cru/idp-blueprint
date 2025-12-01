@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: cilium-agent
   description: Cilium Agent - eBPF-based networking and security agent running on each node.
-  tags: [networking, agent, daemonset, ebpf]
+  tags: [networking, agent, daemonset, ebpf, tier-critical, environment-demo, platform-networking]
   annotations:
     backstage.io/kubernetes-id: cilium
     backstage.io/kubernetes-namespace: kube-system

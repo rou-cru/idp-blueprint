@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: argocd-application-controller
   description: Kubernetes controller that continuously monitors running applications.
-  tags: [controller, k8s]
+  tags: [controller, k8s, tier-critical, environment-demo, platform-infrastructure]
   annotations:
     backstage.io/kubernetes-id: argocd-application-controller
     backstage.io/kubernetes-namespace: argocd

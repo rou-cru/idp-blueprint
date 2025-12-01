@@ -3,7 +3,16 @@ kind: Component
 metadata:
   name: vault
   description: HashiCorp Vault - Secrets and encryption management platform.
-  tags: [security, secrets, vault, go]
+  tags:
+    [
+      security,
+      secrets,
+      vault,
+      go,
+      tier-critical,
+      environment-demo,
+      platform-infrastructure,
+    ]
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: vault

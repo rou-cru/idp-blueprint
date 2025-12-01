@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: workflow-controller
   description: Argo Workflow Controller - Manages workflow execution and orchestration.
-  tags: [controller, workflows, orchestration]
+  tags: [controller, workflows, orchestration, tier-high, environment-demo, platform-cicd]
   annotations:
     backstage.io/kubernetes-id: workflow-controller
     backstage.io/kubernetes-namespace: cicd

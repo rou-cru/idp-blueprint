@@ -3,7 +3,16 @@ kind: Component
 metadata:
   name: grafana
   description: Grafana - Analytics and monitoring solution with dashboards.
-  tags: [dashboard, observability, ui, visualization]
+  tags:
+    [
+      dashboard,
+      observability,
+      ui,
+      visualization,
+      tier-medium,
+      environment-demo,
+      platform-dashboards,
+    ]
   links:
     - url: https://grafana.192-168-65-16.nip.io
       title: Grafana Dashboards

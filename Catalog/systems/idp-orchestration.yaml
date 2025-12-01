@@ -3,7 +3,7 @@ kind: System
 metadata:
   name: idp-orchestration
   description: GitOps and Workflow orchestration services.
-  tags: [argocd, gitops, workflows]
+  tags: [argocd, gitops, workflows, environment-demo, tier-critical, platform-infrastructure]
 spec:
   owner: platform-team
   domain: idp-platform

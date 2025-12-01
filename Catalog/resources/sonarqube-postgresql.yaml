@@ -3,7 +3,7 @@ kind: Resource
 metadata:
   name: sonarqube-postgresql
   description: PostgreSQL - Database for SonarQube analysis data and configuration.
-  tags: [database, postgresql, statefulset, storage]
+  tags: [database, postgresql, statefulset, storage, tier-high, environment-demo, platform-cicd]
   annotations:
     backstage.io/kubernetes-id: sonarqube-postgresql
     backstage.io/kubernetes-namespace: cicd

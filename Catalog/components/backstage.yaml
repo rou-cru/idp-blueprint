@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: backstage
   description: Backstage Developer Portal - Platform for building developer portals - Helm Chart.
-  tags: [portal, developer-experience, platform, nodejs]
+  tags: [portal, developer-experience, platform, nodejs, tier-high, environment-demo, platform-portal]
   links:
     - url: https://backstage.192-168-65-16.nip.io
       title: Backstage Portal
@@ -18,6 +18,7 @@ spec:
   lifecycle: production
   owner: platform-team
   system: idp-core
+  providesApis: [backstage-api]
   dependsOn:
     - component:dex
     - resource:backstage-postgresql

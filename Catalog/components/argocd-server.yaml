@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: argocd-server
   description: The ArgoCD API Server and UI.
-  tags: [server, ui]
+  tags: [server, ui, tier-critical, environment-demo, platform-infrastructure]
   annotations:
     backstage.io/kubernetes-id: argocd-server
     backstage.io/kubernetes-namespace: argocd

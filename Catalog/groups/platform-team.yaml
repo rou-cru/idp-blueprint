@@ -3,6 +3,7 @@ kind: Group
 metadata:
   name: platform-team
   description: The Platform Engineering Team
+  tags: [team, platform, engineering]
 spec:
   type: team
   profile:

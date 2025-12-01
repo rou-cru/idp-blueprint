@@ -3,7 +3,7 @@ kind: System
 metadata:
   name: idp-quality
   description: Code Quality and Security Analysis.
-  tags: [sonarqube, quality, analysis]
+  tags: [sonarqube, quality, analysis, environment-demo, tier-high, platform-cicd]
 spec:
   owner: platform-team
   domain: idp-platform

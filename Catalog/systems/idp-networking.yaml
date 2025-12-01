@@ -3,7 +3,7 @@ kind: System
 metadata:
   name: idp-networking
   description: Ingress, Service Mesh, and DNS.
-  tags: [cilium, gateway, networking]
+  tags: [cilium, gateway, networking, environment-demo, tier-critical, platform-networking]
 spec:
   owner: platform-team
   domain: idp-platform

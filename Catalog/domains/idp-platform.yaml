@@ -3,5 +3,6 @@ kind: Domain
 metadata:
   name: idp-platform
   description: The Internal Developer Platform containing all core services and infrastructure.
+  tags: [platform, idp, infrastructure, environment-demo]
 spec:
   owner: platform-team

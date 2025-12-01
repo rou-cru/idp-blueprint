@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: argo-server
   description: Argo Server - API and UI server for Argo Workflows.
-  tags: [server, api, ui, workflows]
+  tags: [server, api, ui, workflows, tier-high, environment-demo, platform-cicd]
   annotations:
     backstage.io/kubernetes-id: argo-server
     backstage.io/kubernetes-namespace: cicd

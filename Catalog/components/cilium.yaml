@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: cilium
   description: eBPF-based Networking, Security, and Observability - Helm Chart.
-  tags: [networking, cni, ebpf, cilium]
+  tags: [networking, cni, ebpf, cilium, tier-critical, environment-demo, platform-networking]
   annotations:
     backstage.io/techdocs-ref: dir:.
 spec:

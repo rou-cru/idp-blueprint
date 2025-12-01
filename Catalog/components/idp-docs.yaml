@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: idp-docs
   description: The IDP Blueprint Documentation (Astro).
-  tags: [documentation, astro, website]
+  tags: [documentation, astro, website, tier-medium, environment-demo, platform-portal]
   annotations:
     backstage.io/techdocs-ref: dir:.
 spec:

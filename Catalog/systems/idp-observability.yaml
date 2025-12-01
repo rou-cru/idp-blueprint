@@ -3,7 +3,7 @@ kind: System
 metadata:
   name: idp-observability
   description: Monitoring and Logging stack.
-  tags: [prometheus, grafana, observability]
+  tags: [prometheus, grafana, observability, environment-demo, tier-high, platform-observability]
 spec:
   owner: platform-team
   domain: idp-platform

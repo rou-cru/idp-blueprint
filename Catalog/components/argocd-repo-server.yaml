@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: argocd-repo-server
   description: Internal service that maintains a local cache of the git repository.
-  tags: [backend, git]
+  tags: [backend, git, tier-critical, environment-demo, platform-infrastructure]
   annotations:
     backstage.io/kubernetes-id: argocd-repo-server
     backstage.io/kubernetes-namespace: argocd

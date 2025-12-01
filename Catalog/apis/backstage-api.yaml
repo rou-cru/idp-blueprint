@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: idp-backstage-api
+  name: backstage-api
   description: The Backstage Backend API.
 spec:
   type: openapi

@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: eventbus
   description: Argo Events EventBus - NATS Streaming-based event bus for event distribution.
-  tags: [eventbus, messaging, nats, statefulset]
+  tags: [eventbus, messaging, nats, statefulset, tier-critical, environment-demo, platform-events]
   annotations:
     backstage.io/kubernetes-id: eventbus
     backstage.io/kubernetes-namespace: argo-events

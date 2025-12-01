@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: policy-reporter
   description: Policy Reporter - Monitoring and reporting for Kyverno policy violations.
-  tags: [policy, reporting, monitoring, dashboard]
+  tags: [policy, reporting, monitoring, dashboard, tier-medium, environment-demo, platform-dashboards]
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: policy-reporter

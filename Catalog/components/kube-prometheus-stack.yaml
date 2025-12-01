@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: kube-prometheus-stack
   description: Kube-Prometheus Stack - Complete monitoring solution with Prometheus Operator - Helm Chart.
-  tags: [observability, prometheus, monitoring, helm]
+  tags: [observability, prometheus, monitoring, helm, tier-high, environment-demo, platform-observability]
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: kube-prometheus-stack

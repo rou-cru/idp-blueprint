@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: argo-events-controller-manager
   description: Argo Events Controller Manager - Unified controller managing EventSources, Sensors, and EventBus.
-  tags: [controller, events, manager]
+  tags: [controller, events, manager, tier-critical, environment-demo, platform-events]
   annotations:
     backstage.io/kubernetes-id: argo-events-controller-manager
     backstage.io/kubernetes-namespace: argo-events

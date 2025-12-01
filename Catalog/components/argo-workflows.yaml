@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: argo-workflows
   description: Argo Workflows - Workflow engine for orchestrating parallel jobs on Kubernetes - Helm Chart.
-  tags: [cicd, workflows, orchestration, kubernetes]
+  tags: [cicd, workflows, orchestration, kubernetes, tier-high, environment-demo, platform-cicd]
   links:
     - url: https://argo.192-168-65-16.nip.io
       title: Argo Workflows UI

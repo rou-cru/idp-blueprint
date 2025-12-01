@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: dex
   description: Dex - OpenID Connect (OIDC) identity provider for Backstage authentication.
-  tags: [auth, oidc, identity, sso]
+  tags: [auth, oidc, identity, sso, tier-high, environment-demo, platform-portal]
   links:
     - url: https://dex.192-168-65-16.nip.io
       title: Dex OIDC Provider

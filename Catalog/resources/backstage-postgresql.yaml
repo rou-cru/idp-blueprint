@@ -3,7 +3,7 @@ kind: Resource
 metadata:
   name: backstage-postgresql
   description: PostgreSQL - Primary database for Backstage catalog and user data.
-  tags: [database, postgresql, statefulset, storage]
+  tags: [database, postgresql, statefulset, storage, tier-high, environment-demo, platform-infrastructure]
   annotations:
     backstage.io/kubernetes-id: backstage-postgresql
     backstage.io/kubernetes-namespace: backstage

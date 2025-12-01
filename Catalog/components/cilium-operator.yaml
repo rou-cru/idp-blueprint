@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: cilium-operator
   description: Cilium Operator - Manages Cilium node lifecycle and configuration.
-  tags: [networking, operator, controller]
+  tags: [networking, operator, controller, tier-critical, environment-demo, platform-networking]
   annotations:
     backstage.io/kubernetes-id: cilium-operator
     backstage.io/kubernetes-namespace: kube-system

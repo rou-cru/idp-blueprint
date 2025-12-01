@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: trivy-operator
   description: Kubernetes-native security scanner.
-  tags: [security, scanning, vulnerability]
+  tags: [security, scanning, vulnerability, tier-high, environment-demo, platform-security]
   annotations:
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=trivy-operator"
 spec:

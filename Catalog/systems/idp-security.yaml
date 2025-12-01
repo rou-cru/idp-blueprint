@@ -3,7 +3,7 @@ kind: System
 metadata:
   name: idp-security
   description: Security, Secrets, and Policy engines.
-  tags: [vault, kyverno, security]
+  tags: [vault, kyverno, security, environment-demo, tier-critical, platform-security]
 spec:
   owner: platform-team
   domain: idp-platform

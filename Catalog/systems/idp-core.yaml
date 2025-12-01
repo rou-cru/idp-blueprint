@@ -3,7 +3,7 @@ kind: System
 metadata:
   name: idp-core
   description: Core services for the IDP (Portal, Auth).
-  tags: [core, backstage, dex]
+  tags: [core, backstage, dex, environment-demo, tier-high, platform-portal]
 spec:
   owner: platform-team
   domain: idp-platform

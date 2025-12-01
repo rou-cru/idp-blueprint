@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: sonarqube
   description: SonarQube - Code quality and security analysis platform.
-  tags: [quality, security, analysis, cicd]
+  tags: [quality, security, analysis, cicd, tier-high, environment-demo, platform-cicd]
   links:
     - url: https://sonarqube.192-168-65-16.nip.io
       title: SonarQube Dashboard

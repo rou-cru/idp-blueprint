@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: argo-events
   description: Argo Events - Event-driven workflow automation for Kubernetes - Helm Chart.
-  tags: [events, orchestration, automation, kubernetes]
+  tags: [events, orchestration, automation, kubernetes, tier-critical, environment-demo, platform-events]
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: argo-events

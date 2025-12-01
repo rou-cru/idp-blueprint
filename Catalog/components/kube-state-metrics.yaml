@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: kube-state-metrics
   description: Kube State Metrics - Exposes Kubernetes object metrics.
-  tags: [exporter, metrics, kubernetes, prometheus]
+  tags: [exporter, metrics, kubernetes, prometheus, tier-high, environment-demo, platform-observability]
   annotations:
     backstage.io/kubernetes-id: kube-state-metrics
     backstage.io/kubernetes-namespace: observability
