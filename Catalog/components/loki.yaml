@@ -3,13 +3,15 @@ kind: Component
 metadata:
   name: loki
   description: Loki - Log aggregation system designed for Kubernetes.
-  tags: [logging, logs, observability, tier-high, environment-demo, platform-observability]
+  tags: [logging, logs, observability, tier-high, environment-demo, platform-observability, data-pipeline-logs, storage]
   annotations:
     backstage.io/kubernetes-id: loki
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=loki"
+    deployment.method: "helm"
+    helm.chart: "grafana/loki"
 spec:
-  type: service
+  type: database
   lifecycle: production
   owner: platform-team
   system: idp-observability

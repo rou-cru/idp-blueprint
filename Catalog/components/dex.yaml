@@ -12,6 +12,8 @@ metadata:
     backstage.io/kubernetes-id: dex
     backstage.io/kubernetes-namespace: backstage
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=dex"
+    deployment.method: "helm"
+    helm.chart: "dex/dex"
 spec:
   type: service
   lifecycle: production

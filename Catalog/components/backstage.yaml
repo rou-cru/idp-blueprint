@@ -13,6 +13,8 @@ metadata:
     backstage.io/kubernetes-id: backstage
     backstage.io/kubernetes-namespace: backstage
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=backstage"
+    deployment.method: "helm"
+    helm.chart: "backstage/backstage"
 spec:
   type: service
   lifecycle: production

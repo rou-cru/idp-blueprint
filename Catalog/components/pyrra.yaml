@@ -8,6 +8,8 @@ metadata:
     backstage.io/kubernetes-id: pyrra
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=pyrra"
+    deployment.method: "helm"
+    helm.chart: "pyrra/pyrra"
 spec:
   type: service
   lifecycle: production

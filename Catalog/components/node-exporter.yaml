@@ -3,13 +3,13 @@ kind: Component
 metadata:
   name: node-exporter
   description: Prometheus Node Exporter - Exposes hardware and OS metrics from nodes.
-  tags: [exporter, metrics, node, prometheus, tier-high, environment-demo, platform-observability]
+  tags: [metrics, daemonset, prometheus, tier-high, environment-demo, platform-observability, data-pipeline-metrics, collector]
   annotations:
     backstage.io/kubernetes-id: node-exporter
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=prometheus-node-exporter"
 spec:
-  type: service
+  type: library
   lifecycle: production
   owner: platform-team
   system: idp-observability

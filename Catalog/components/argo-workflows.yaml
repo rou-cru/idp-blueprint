@@ -12,6 +12,8 @@ metadata:
     backstage.io/kubernetes-id: argo-workflows
     backstage.io/kubernetes-namespace: cicd
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=argo-workflows"
+    deployment.method: "helm"
+    helm.chart: "argo/argo-workflows"
 spec:
   type: service
   lifecycle: production

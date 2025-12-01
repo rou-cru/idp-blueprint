@@ -12,6 +12,8 @@ metadata:
       tier-medium,
       environment-demo,
       platform-dashboards,
+      data-pipeline-logs,
+      data-pipeline-metrics,
     ]
   links:
     - url: https://grafana.192-168-65-16.nip.io
@@ -22,7 +24,7 @@ metadata:
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=grafana"
 spec:
-  type: service
+  type: website
   lifecycle: production
   owner: platform-team
   system: idp-observability

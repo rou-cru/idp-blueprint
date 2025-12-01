@@ -3,14 +3,19 @@ kind: Component
 metadata:
   name: kube-prometheus-stack
   description: Kube-Prometheus Stack - Complete monitoring solution with Prometheus Operator - Helm Chart.
-  tags: [observability, prometheus, monitoring, helm, tier-high, environment-demo, platform-observability]
+  tags: [observability, prometheus, monitoring, helm, tier-high, environment-demo, platform-observability, data-pipeline-metrics, aggregation]
   annotations:
     backstage.io/techdocs-ref: dir:.
     backstage.io/kubernetes-id: kube-prometheus-stack
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kube-prometheus-stack"
+    deployment.method: "helm"
+    helm.chart: "prometheus-community/kube-prometheus-stack"
 spec:
   type: service
   lifecycle: production
   owner: platform-team
   system: idp-observability
+  dependsOn:
+    - component:node-exporter
+    - component:kube-state-metrics

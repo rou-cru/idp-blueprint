@@ -3,13 +3,15 @@ kind: Component
 metadata:
   name: fluent-bit
   description: Fluent Bit - Fast and lightweight log processor and forwarder.
-  tags: [logging, logs, shipper, tier-high, environment-demo, platform-observability]
+  tags: [logging, daemonset, fluent-bit, tier-high, environment-demo, platform-observability, data-pipeline-logs, collector]
   annotations:
     backstage.io/kubernetes-id: fluent-bit
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=fluent-bit"
+    deployment.method: "helm"
+    helm.chart: "fluent/fluent-bit"
 spec:
-  type: service
+  type: library
   lifecycle: production
   owner: platform-team
   system: idp-observability

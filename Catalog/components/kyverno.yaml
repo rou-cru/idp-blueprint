@@ -9,8 +9,12 @@ metadata:
     backstage.io/kubernetes-id: kyverno
     backstage.io/kubernetes-namespace: kyverno-system
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kyverno"
+    deployment.method: "helm"
+    helm.chart: "kyverno/kyverno"
 spec:
   type: service
   lifecycle: production
   owner: platform-team
   system: idp-security
+  dependsOn:
+    - component:cert-manager

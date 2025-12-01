@@ -9,6 +9,8 @@ metadata:
     backstage.io/kubernetes-id: policy-reporter
     backstage.io/kubernetes-namespace: kyverno-system
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=policy-reporter"
+    deployment.method: "helm"
+    helm.chart: "policy-reporter/policy-reporter"
 spec:
   type: service
   lifecycle: production

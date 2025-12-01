@@ -18,6 +18,8 @@ metadata:
     backstage.io/kubernetes-id: vault
     backstage.io/kubernetes-namespace: vault
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/instance=vault"
+    deployment.method: "helm"
+    helm.chart: "hashicorp/vault"
 spec:
   type: service
   lifecycle: production

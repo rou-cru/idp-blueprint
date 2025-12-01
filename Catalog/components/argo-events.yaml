@@ -9,6 +9,8 @@ metadata:
     backstage.io/kubernetes-id: argo-events
     backstage.io/kubernetes-namespace: argo-events
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=argo-events"
+    deployment.method: "helm"
+    helm.chart: "argo/argo-events"
 spec:
   type: service
   lifecycle: production
