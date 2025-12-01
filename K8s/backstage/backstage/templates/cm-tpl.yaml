@@ -42,6 +42,11 @@ data:
         - host: github.com
           # Optional; if empty Backstage will use unauthenticated requests (OK for public repos, may hit rate limits).
           token: ${GITHUB_TOKEN}
+    grafana:
+      # Required by @backstage-community/plugin-grafana config schema
+      domain: https://grafana.${DNS_SUFFIX}
+      proxyPath: /grafana/api
+      unifiedAlerting: true
     catalog:
       # Allow User/Group ingestion (default rules only allow Component/API/Location) so auth
       # can resolve identities from the static catalog file.
@@ -55,6 +60,9 @@ data:
               repository: ${GITHUB_REPO}
               branch: ${GITHUB_BRANCH}
             catalogPath: 'Catalog/**/*.yaml'
+    relationsProcessor:
+      # Satisfies @dweber019/backstage-plugin-relations schema; customize if relations are desired
+      relations: []
     techdocs:
       builder: 'local'
       generator:

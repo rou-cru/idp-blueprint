@@ -11,7 +11,7 @@ metadata:
     deployment.method: "helm"
     helm.chart: "fluent/fluent-bit"
 spec:
-  type: library
+  type: service
   lifecycle: production
   owner: platform-team
   system: idp-observability
