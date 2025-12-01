@@ -75,7 +75,9 @@ appConfig:
       - allow: [Component, API, System, Domain, Resource, Template, Location, User, Group]
     locations:
       - type: file
-        target: /app/catalog-users/users.yaml
+        target: /app/catalog-users/admin.yaml
+      - type: file
+        target: /app/catalog-users/dev.yaml
   backend:
     listen:
       port: 7007

@@ -6,6 +6,15 @@ resources:
   - backstage-secretstore.yaml
   - backstage-rbac.yaml
 
+# Generate ConfigMap from Catalog users directory
+configMapGenerator:
+  - name: backstage-catalog-users
+    files:
+      - admin.yaml=../../../Catalog/users/admin.yaml
+      - dev.yaml=../../../Catalog/users/dev.yaml
+    options:
+      disableNameSuffixHash: true
+
 labels:
   - includeSelectors: true
     pairs:
