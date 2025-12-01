@@ -15,5 +15,5 @@ resources:
   - job-renderer.yaml
   - backstage-app-externalsecret.yaml
   - backstage-postgres-externalsecret.yaml
-  - catalog-users.yaml
+
   - templates/cm-tpl.yaml
