@@ -1,7 +1,5 @@
 version: "3"
 
-dotenv: [".env"]
-
 tasks:
   it:apply-namespaces:
     desc: "Apply all IT bootstrap namespaces via Kustomize"
@@ -237,7 +235,7 @@ tasks:
     cmds:
       - |
         EXTRA_ARGS=""
-        if [ "{{.FUSE_PROD}}" = "true" ]; then
+        if [ "$FUSE_PROD" = "true" ]; then
           EXTRA_ARGS="--set ha.enabled=true"
         fi
         helm upgrade --install argocd argo/argo-cd \

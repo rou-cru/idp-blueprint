@@ -1,13 +1,12 @@
 version: '3'
 
-dotenv: [".env"]
-
 vars:
   CONFIG_FILE: '{{.CONFIG_FILE | default "config.toml"}}'
   CLUSTER_NAME:
     sh: |
       value=$(./Scripts/config-get.sh cluster.name '{{.CONFIG_FILE}}' 2>/dev/null || true)
       if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
+
 
 tasks:
   docs:

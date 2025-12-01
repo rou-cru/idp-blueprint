@@ -1,7 +1,5 @@
 version: '3'
 
-dotenv: [".env"]
-
 tasks:
   image:build:
     desc: 'Build the Dev Container image (full variant)'

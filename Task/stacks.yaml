@@ -1,7 +1,5 @@
 version: "3"
 
-dotenv: [".env"]
-
 tasks:
   policies:
     desc: "Deploy the Kyverno Policy Engine and policies via ArgoCD"
@@ -10,8 +8,9 @@ tasks:
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
+      FUSE_POLICIES: "{{.FUSE_POLICIES}}"
     status:
-      - test "{{.FUSE_POLICIES}}" = "false"
+      - test "$FUSE_POLICIES" = "false"
     cmds:
       - envsubst < app-kyverno.yaml | kubectl apply -f - --server-side
 
@@ -22,8 +21,9 @@ tasks:
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
+      FUSE_OBSERVABILITY: "{{.FUSE_OBSERVABILITY}}"
     status:
-      - test "{{.FUSE_OBSERVABILITY}}" = "false"
+      - test "$FUSE_OBSERVABILITY" = "false"
     cmds:
       - envsubst < applicationset-observability.yaml | kubectl apply -f - --server-side
 
@@ -34,8 +34,9 @@ tasks:
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
+      FUSE_CICD: "{{.FUSE_CICD}}"
     status:
-      - test "{{.FUSE_CICD}}" = "false"
+      - test "$FUSE_CICD" = "false"
     cmds:
       - envsubst < applicationset-cicd.yaml | kubectl apply -f - --server-side
 
@@ -46,8 +47,9 @@ tasks:
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
+      FUSE_SECURITY: "{{.FUSE_SECURITY}}"
     status:
-      - test "{{.FUSE_SECURITY}}" = "false"
+      - test "$FUSE_SECURITY" = "false"
     cmds:
       - envsubst < applicationset-security.yaml | kubectl apply -f - --server-side
 
@@ -74,8 +76,9 @@ tasks:
       GITHUB_REPO: "{{.GITHUB_REPO}}"
       GITHUB_BRANCH: "{{.GITHUB_BRANCH}}"
       GITHUB_TOKEN: "{{.GITHUB_TOKEN}}"
+      FUSE_BACKSTAGE: "{{.FUSE_BACKSTAGE}}"
     status:
-      - test "{{.FUSE_BACKSTAGE}}" = "false"
+      - test "$FUSE_BACKSTAGE" = "false"
     cmds:
       - envsubst < applicationset-backstage.yaml | kubectl apply -f - --server-side
 

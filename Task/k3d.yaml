@@ -1,8 +1,6 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-dotenv: [".env"]
-
 tasks:
   k3d:check-inotify:
     desc: "Check that inotify settings are suitable for k3d"
