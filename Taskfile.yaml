@@ -1,7 +1,6 @@
 version: "3"
 
 # Load all variables from .env (auto-generated from config.toml)
-dotenv: [".env"]
 
 vars:
   # Default fallback values (overridden by .env if present)
@@ -31,8 +30,8 @@ tasks:
     interactive: true
     cmds:
       - task: internal:generate-env
-      # Use 'cmd' to force a new process and reload .env
-      - cmd: task deploy-core
+      # Source .env to override inherited vars with new values, then run deploy-core
+      - cmd: set -a && . ./.env && set +a && task deploy-core
 
   deploy-core:
     desc: "Core deployment logic (do not run directly)"
