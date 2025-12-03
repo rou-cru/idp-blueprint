@@ -173,7 +173,11 @@ prometheus:
     # -- (bool) Create ConfigMap with official Cilium dashboard
     enabled: true
     # -- (string) Namespace for dashboard ConfigMap
-    namespace: default
+    namespace: observability
+    # -- (string) Label key for dashboard discovery
+    label: grafana_dashboard
+    # -- (string) Label value for dashboard discovery
+    labelValue: "1"
 
 # -- (string) Default enforcement mode for CiliumNetworkPolicy
 # @section -- Network Policy
