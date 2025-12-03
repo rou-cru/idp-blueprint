@@ -12,13 +12,6 @@
         "${workspaceFolder}"
       ]
     },
-    "memory": {
-      "command": "memory-mcp-server-go",
-      "args": [
-        "-memory",
-        "${workspaceFolder}/.memory/graph.db"
-      ]
-    },
     "repomix": {
       "command": "npx",
       "args": [
@@ -26,7 +19,7 @@
         "repomix-mcp@latest"
       ]
     },
-    "react-native-guide": {
+    "react-guide": {
       "command": "npx",
       "args": ["@mrnitro360/react-native-mcp-guide@1.1.0"]
     },
@@ -53,6 +46,15 @@
         "mcp-remote",
         "https://mcp.docs.astro.build/mcp"
       ]
+    },
+   "grafana": {
+      "command": "mcp-grafana",
+      "args": [],
+      "env": {
+        "GRAFANA_URL": "http://grafana.192-168-65-16.nip.io",
+        "GRAFANA_USERNAME": "admin",
+        "GRAFANA_PASSWORD": "graf"
+      }
     }
   }
 }

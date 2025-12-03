@@ -22,6 +22,7 @@ node_modules/
 IT/**/README.md
 K8s/**/README.md
 Policies/**/README.md
+Docs/src/partials/
 
 # AI assistant configs
 .claude/
