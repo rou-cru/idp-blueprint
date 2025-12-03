@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: container-structure-test-config
+  namespace: cicd
+  labels:
+    app.kubernetes.io/name: container-structure-test-config
+    app.kubernetes.io/component: test-configuration
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    description: "Default container structure test configuration for CI/CD pipelines"
+data:
+  container-structure-test.yaml: |
+    schemaVersion: '2.0.0'
+
+    # Metadata tests - validate image labels and configuration
+    metadataTest:
+      # Verify standard labels exist (following IDP conventions)
+      labels:
+        - key: 'app.kubernetes.io/name'
+          value: '.+'  # Regex: must have value
+        - key: 'app.kubernetes.io/part-of'
+          value: '.+'  # Regex: must have value
+
+      # Verify environment variables are set correctly
+      env:
+        - key: PATH
+          value: '.*'  # PATH must exist
+
+      # Note: exposedPorts, cmd, and workdir are optional
+      # Uncomment and customize based on application requirements
+      # exposedPorts: ["8080"]
+      # cmd: ["/app/start.sh"]
+      # workdir: "/app"
+
+    # File existence tests - verify required files/directories
+    fileExistenceTests:
+      # Example: Verify application binary or entry point exists
+      # Uncomment and customize based on application
+      # - name: "app-binary-exists"
+      #   path: "/app/main"
+      #   shouldExist: true
+      #   permissions: "-rwxr-xr-x"
+
+      # Example: Verify config directory exists
+      # - name: "config-dir-exists"
+      #   path: "/etc/app"
+      #   shouldExist: true
+      #   isDirectory: true
+
+    # File content tests - verify file contents match expectations
+    fileContentTests:
+      # Example: Verify version file contains valid version
+      # - name: "version-file-valid"
+      #   path: "/app/VERSION"
+      #   expectedContents: ['v[0-9]+\.[0-9]+\.[0-9]+']
+
+      # Example: Verify config file has required settings
+      # - name: "config-has-required-keys"
+      #   path: "/etc/app/config.yaml"
+      #   expectedContents:
+      #     - 'database:'
+      #     - 'logging:'
+
+    # Command tests - execute commands and verify outputs
+    commandTests:
+      # Test 1: Verify essential utilities are available
+      - name: "shell-available"
+        command: "sh"
+        args: ["-c", "echo 'Shell test passed'"]
+        expectedOutput: ["Shell test passed"]
+
+      # Example: Verify application responds to --version
+      # - name: "app-version"
+      #   command: "/app/main"
+      #   args: ["--version"]
+      #   expectedOutput: ["v[0-9]+\.[0-9]+\.[0-9]+"]
+
+      # Example: Verify application binary is executable
+      # - name: "app-executable"
+      #   command: "test"
+      #   args: ["-x", "/app/main"]
+
+      # Example: Verify health check endpoint works
+      # - name: "health-check"
+      #   setup: [["sh", "-c", "/app/main &"]]
+      #   command: "curl"
+      #   args: ["-f", "http://localhost:8080/health"]
+      #   expectedOutput: ["OK"]
+
+    # License tests - verify license files and compliance
+    # licenseTests:
+    #   - debian: false
+    #     files: ["/licenses/LICENSE", "/app/NOTICE"]
+
+    # Notes for customization:
+    # 1. Copy this ConfigMap to your application repository
+    # 2. Customize tests based on your application requirements
+    # 3. Reference it in WorkflowTemplate via:
+    #    volumes:
+    #      - name: test-config
+    #        configMap:
+    #          name: container-structure-test-config
+    # 4. Mount and use: --config /test-config/container-structure-test.yaml

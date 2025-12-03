@@ -24,17 +24,17 @@ spec:
         value: myorg/myimage
       - name: image-tag
         value: latest
-      - name: registry
+      - name: docker-registry
         value: docker.io
   volumes:
+    - name: workspace
+      emptyDir: {}
     - name: docker-config
       secret:
         secretName: docker-registry-credentials
         items:
           - key: .dockerconfigjson
             path: config.json
-    - name: workspace
-      emptyDir: {}
   templates:
     - name: build-and-push
       steps:
@@ -69,7 +69,9 @@ spec:
         args:
           - --context=/workspace/{{workflow.parameters.context-path}}
           - --dockerfile=/workspace/{{workflow.parameters.dockerfile-path}}
-          - --destination={{workflow.parameters.registry}}/{{workflow.parameters.image-name}}:{{workflow.parameters.image-tag}}
+          - --destination={{workflow.parameters.docker-registry}}/{{workflow.parameters.image-name}}:{{workflow.parameters.image-tag}}
+          - --cache=true
+          - --cache-ttl=24h
         volumeMounts:
           - name: workspace
             mountPath: /workspace
