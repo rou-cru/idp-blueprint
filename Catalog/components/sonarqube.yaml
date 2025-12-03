@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sonarqube
+  description: SonarQube - Code quality and security analysis platform.
+  tags: [quality, security, analysis, cicd, tier-high, environment-demo, platform-cicd]
+  links:
+    - url: https://sonarqube.192-168-65-16.nip.io
+      title: SonarQube Dashboard
+      icon: analytics
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/sonarqube.yaml
+    backstage.io/kubernetes-id: sonarqube
+    backstage.io/kubernetes-namespace: cicd
+    backstage.io/kubernetes-label-selector: "app=sonarqube"
+    argocd/app-name: cicd-sonarqube
+    deployment.method: "helm"
+    helm.chart: "sonarqube/sonarqube"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: cicd
+    kyverno.io/kind: StatefulSet
+    kyverno.io/resource-name: sonarqube-sonarqube
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-quality
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - resource:sonarqube-postgresql
+    - resource:sonarqube-storage

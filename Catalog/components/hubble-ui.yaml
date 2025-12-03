@@ -1,0 +1,24 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: hubble-ui
+  description: Hubble UI - Observability dashboard for Cilium.
+  tags: [networking, observability, hubble, dashboard, tier-medium, environment-demo, platform-networking]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/hubble-ui.yaml
+    backstage.io/kubernetes-id: hubble-ui
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "k8s-app=hubble-ui"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: kube-system
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: hubble-ui
+spec:
+  type: website
+  lifecycle: production
+  owner: platform-team
+  system: idp-networking
+  subComponentOf: cilium
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:hubble-relay

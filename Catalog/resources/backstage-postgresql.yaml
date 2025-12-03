@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: backstage-postgresql
+  description: PostgreSQL - Primary database for Backstage catalog and user data.
+  tags: [database, postgresql, statefulset, storage, tier-high, environment-demo, platform-infrastructure]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/resources/backstage-postgresql.yaml
+    backstage.io/kubernetes-id: backstage-postgresql
+    backstage.io/kubernetes-namespace: backstage
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=postgresql,app.kubernetes.io/instance=backstage"
+spec:
+  type: database
+  lifecycle: production
+  owner: platform-team
+  system: idp-core

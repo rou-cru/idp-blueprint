@@ -1,0 +1,25 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argocd-server
+  description: The ArgoCD API Server and UI.
+  tags: [server, ui, tier-critical, environment-demo, platform-infrastructure]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/argocd-server.yaml
+    backstage.io/kubernetes-id: argocd-server
+    backstage.io/kubernetes-namespace: argocd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argocd-server"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: argocd
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: argocd-server
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration
+  subComponentOf: argocd
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:argocd-repo-server
+    - resource:argocd-redis

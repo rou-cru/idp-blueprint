@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: pyrra
+  description: Pyrra - SLO (Service Level Objectives) tracking with Prometheus.
+  tags: [slo, metrics, go, observability, tier-medium, environment-demo, platform-dashboards]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/pyrra.yaml
+    backstage.io/kubernetes-id: pyrra
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=pyrra"
+    argocd/app-name: obs-pyrra
+    deployment.method: "helm"
+    helm.chart: "pyrra/pyrra"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: observability
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: pyrra
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:kube-prometheus-stack
+    - component:alertmanager

@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: local-k8s-cluster
+  description: The local Kubernetes cluster (k3d)
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/resources/local-cluster.yaml
+    # Endpoint for Policy Reporter REST API (used by Backstage plugin)
+    # Points to Policy Reporter core service in kyverno-system namespace
+    kyverno.io/endpoint: http://policy-reporter.kyverno-system.svc.cluster.local:8080
+spec:
+  type: kubernetes-cluster
+  owner: platform-team
+  system: idp-core

@@ -1,0 +1,29 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argo-workflows
+  description: Argo Workflows - Workflow engine for orchestrating parallel jobs on Kubernetes - Helm Chart.
+  tags: [cicd, workflows, orchestration, kubernetes, tier-high, environment-demo, platform-cicd]
+  links:
+    - url: https://workflows.192-168-65-16.nip.io
+      title: Argo Workflows UI
+      icon: workflow
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/argo-workflows.yaml
+    backstage.io/kubernetes-id: argo-workflows
+    backstage.io/kubernetes-namespace: cicd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=argo-workflows"
+    argocd/app-name: cicd-argo-workflows
+    deployment.method: "helm"
+    helm.chart: "argo/argo-workflows"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: cicd
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: argo-workflows-server
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-orchestration

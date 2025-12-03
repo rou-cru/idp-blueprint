@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cilium-agent
+  description: Cilium Agent - eBPF-based networking and security agent running on each node.
+  tags: [networking, agent, daemonset, ebpf, tier-critical, environment-demo, platform-networking]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/cilium-agent.yaml
+    backstage.io/kubernetes-id: cilium
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "k8s-app=cilium"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: kube-system
+    kyverno.io/kind: DaemonSet
+    kyverno.io/resource-name: cilium
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-networking
+  subComponentOf: cilium

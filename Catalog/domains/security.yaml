@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Domain
+metadata:
+  name: security
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/domains/security.yaml
+  description: Authentication, authorization, policy, and secrets management.
+  tags: [security, auth, policy]
+spec:
+  owner: platform-team

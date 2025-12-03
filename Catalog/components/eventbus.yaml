@@ -1,0 +1,24 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: eventbus
+  description: Argo Events EventBus - NATS Streaming-based event bus for event distribution.
+  tags: [eventbus, messaging, nats, statefulset, tier-critical, environment-demo, platform-events]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/eventbus.yaml
+    backstage.io/kubernetes-id: eventbus
+    backstage.io/kubernetes-namespace: argo-events
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=eventbus"
+    argocd/app-name: events-argo-events
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: argo-events
+    kyverno.io/kind: StatefulSet
+    kyverno.io/resource-name: eventbus-default-stan
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-orchestration
+  subComponentOf: argo-events

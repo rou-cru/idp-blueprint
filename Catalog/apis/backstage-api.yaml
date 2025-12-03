@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: backstage-api
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/apis/backstage-api.yaml
+  description: The Backstage Backend API.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: idp-core
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Backstage API
+      version: 1.0.0
+    paths: {}

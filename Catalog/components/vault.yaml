@@ -1,0 +1,35 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: vault
+  description: HashiCorp Vault - Secrets and encryption management platform.
+  tags:
+    [
+      security,
+      secrets,
+      vault,
+      go,
+      tier-critical,
+      environment-demo,
+      platform-infrastructure,
+    ]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/vault.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: vault
+    backstage.io/kubernetes-namespace: vault-system
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/instance=vault"
+    deployment.method: "helm"
+    helm.chart: "hashicorp/vault"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: vault-system
+    kyverno.io/kind: StatefulSet
+    kyverno.io/resource-name: vault
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-security
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - resource:vault-storage

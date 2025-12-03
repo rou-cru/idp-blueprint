@@ -1,0 +1,28 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kube-prometheus-stack
+  description: Kube-Prometheus Stack - Complete monitoring solution with Prometheus Operator - Helm Chart.
+  tags: [observability, prometheus, monitoring, helm, tier-high, environment-demo, platform-observability, data-pipeline-metrics, aggregation]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/kube-prometheus-stack.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: kube-prometheus-stack
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kube-prometheus-stack"
+    argocd/app-name: observability-kube-prometheus-stack
+    deployment.method: "helm"
+    helm.chart: "prometheus-community/kube-prometheus-stack"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: observability
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: prometheus-kube-prometheus-operator
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:node-exporter
+    - component:kube-state-metrics

@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-observability
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/systems/idp-observability.yaml
+  description: Observability System
+  tags: [prometheus, grafana, observability, environment-demo, tier-high, platform-observability]
+spec:
+  owner: platform-team
+  domain: observability

@@ -1,0 +1,24 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: hubble-relay
+  description: Hubble Relay - API server for Hubble observability.
+  tags: [networking, observability, hubble, api, tier-medium, environment-demo, platform-networking]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/hubble-relay.yaml
+    backstage.io/kubernetes-id: hubble-relay
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "k8s-app=hubble-relay"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: kube-system
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: hubble-relay
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-networking
+  subComponentOf: cilium

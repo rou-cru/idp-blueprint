@@ -20,16 +20,18 @@ To render all D2 files to SVG:
 Install D2:
 
 **macOS/Linux:**
+
 ```bash
 brew install d2
 ```
 
 **Windows:**
+
 ```powershell
 winget install Terrastruct.D2
 ```
 
-Or download from: https://d2lang.com/tour/install
+Or download from: <https://d2lang.com/tour/install>
 
 ### Render All Diagrams
 
