@@ -16,7 +16,7 @@ import {
   EntityHasSubcomponentsCard,
   EntityHasSystemsCard,
   EntityLayout,
-  EntityLinksCard,
+  // EntityLinksCard,
   EntitySwitch,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
@@ -58,6 +58,15 @@ import {
   isKubernetesAvailable,
 } from '@backstage/plugin-kubernetes';
 
+import {
+  EntityArgoCDOverviewCard,
+  EntityArgoCDHistoryCard,
+  isArgocdAvailable,
+} from '@roadiehq/backstage-plugin-argo-cd';
+import { TopologyPage } from '@backstage-community/plugin-topology';
+import { EntityKyvernoPoliciesContent } from '@kyverno/backstage-plugin-policy-reporter';
+
+
 const techdocsContent = (
   <EntityTechdocsContent>
     <TechDocsAddons>
@@ -77,6 +86,14 @@ const cicdContent = (
         <EntityGithubActionsContent />
       </EntitySwitch.Case>
      */}
+    <EntitySwitch.Case if={isArgocdAvailable}>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <EntityArgoCDHistoryCard />
+        </Grid>
+      </Grid>
+    </EntitySwitch.Case>
+
     <EntitySwitch.Case>
       <EmptyState
         title="No CI/CD available for this entity"
@@ -133,13 +150,17 @@ const overviewContent = (
     <Grid item md={6} xs={12}>
       <EntityCatalogGraphCard variant="gridItem" height={400} />
     </Grid>
-
-    <Grid item md={4} xs={12}>
-      <EntityLinksCard />
-    </Grid>
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isArgocdAvailable}>
+        <Grid item md={12} xs={12}>
+          <EntityArgoCDOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
   </Grid>
 );
 
@@ -161,6 +182,7 @@ const serviceEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
+
     <EntityLayout.Route path="/api" title="API">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
@@ -181,6 +203,14 @@ const serviceEntityPage = (
           <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/topology" title="Topology">
+      <TopologyPage />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/policies" title="Policies">
+      <EntityKyvernoPoliciesContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
@@ -207,6 +237,7 @@ const websiteEntityPage = (
       <EntityKubernetesContent />
     </EntityLayout.Route>
 
+
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
@@ -216,6 +247,14 @@ const websiteEntityPage = (
           <EntityDependsOnResourcesCard variant="gridItem" />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/topology" title="Topology">
+      <TopologyPage />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/policies" title="Policies">
+      <EntityKyvernoPoliciesContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">
@@ -237,9 +276,26 @@ const defaultEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/topology" title="Topology">
+      <TopologyPage />
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/policies" title="Policies">
+      <EntityKyvernoPoliciesContent />
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
     </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/kubernetes"
+      title="Kubernetes"
+      if={isKubernetesAvailable}
+    >
+      <EntityKubernetesContent />
+    </EntityLayout.Route>
+
   </EntityLayout>
 );
 
@@ -267,9 +323,6 @@ const apiPage = (
         </Grid>
         <Grid item md={6} xs={12}>
           <EntityCatalogGraphCard variant="gridItem" height={400} />
-        </Grid>
-        <Grid item md={4} xs={12}>
-          <EntityLinksCard />
         </Grid>
         <Grid container item md={12}>
           <Grid item md={6}>
@@ -322,9 +375,6 @@ const groupPage = (
         <Grid item xs={12} md={6}>
           <EntityMembersListCard />
         </Grid>
-        <Grid item xs={12} md={6}>
-          <EntityLinksCard />
-        </Grid>
       </Grid>
     </EntityLayout.Route>
   </EntityLayout>
@@ -340,9 +390,6 @@ const systemPage = (
         </Grid>
         <Grid item md={6} xs={12}>
           <EntityCatalogGraphCard variant="gridItem" height={400} />
-        </Grid>
-        <Grid item md={4} xs={12}>
-          <EntityLinksCard />
         </Grid>
         <Grid item md={8}>
           <EntityHasComponentsCard variant="gridItem" />
@@ -374,6 +421,15 @@ const systemPage = (
         unidirectional={false}
       />
     </EntityLayout.Route>
+
+    <EntityLayout.Route
+      path="/kubernetes"
+      title="Kubernetes"
+      if={isKubernetesAvailable}
+    >
+      <EntityKubernetesContent />
+    </EntityLayout.Route>
+
   </EntityLayout>
 );
 

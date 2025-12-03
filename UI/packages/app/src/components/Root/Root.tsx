@@ -25,6 +25,7 @@ import {
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
+import GavelIcon from '@material-ui/icons/Gavel';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
@@ -67,19 +68,20 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       <SidebarDivider />
       <SidebarGroup label="Menu" icon={<MenuIcon />}>
         {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-        <MyGroupsSidebarItem
-          singularTitle="My Group"
-          pluralTitle="My Groups"
-          icon={GroupIcon}
-        />
-        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+        <SidebarItem icon={HomeIcon} to="/" text="Home" />
+        <SidebarItem icon={ExtensionIcon} to="catalog" text="Catalog" />
         <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
-          {/* Items in this group will be scrollable if they run out of space */}
+          <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+          <SidebarItem icon={GavelIcon} to="policy-reporter" text="Policies" />
+          <MyGroupsSidebarItem
+            singularTitle="My Group"
+            pluralTitle="My Groups"
+            icon={GroupIcon}
+          />
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />

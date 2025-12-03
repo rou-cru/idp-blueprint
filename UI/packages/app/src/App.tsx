@@ -1,4 +1,4 @@
-import { Navigate, Route } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -37,6 +37,10 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { NotificationsPage } from '@backstage/plugin-notifications';
 import { SignalsDisplay } from '@backstage/plugin-signals';
+import { PolicyReportsPage } from '@kyverno/backstage-plugin-policy-reporter';
+import { patternflyTheme } from './theme/patternfly';
+import { HomePage } from './components/home/HomePage';
+import { UnifiedThemeProvider } from '@backstage/theme';
 
 const app = createApp({
   apis,
@@ -73,11 +77,19 @@ const app = createApp({
       />
     ),
   },
+  themes: [{
+    id: 'patternfly',
+    title: 'PatternFly',
+    variant: 'light',
+    Provider: ({ children }) => (
+      <UnifiedThemeProvider theme={patternflyTheme} children={children} />
+    ),
+  }],
 });
 
 const routes = (
   <FlatRoutes>
-    <Route path="/" element={<Navigate to="catalog" />} />
+    <Route path="/" element={<HomePage />} />
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
@@ -110,6 +122,7 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
     <Route path="/notifications" element={<NotificationsPage />} />
+    <Route path="/policy-reporter" element={<PolicyReportsPage />} />
   </FlatRoutes>
 );
 
