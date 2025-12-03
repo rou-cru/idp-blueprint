@@ -27,7 +27,7 @@ yarn start
 ```
 
 If you want to override any configuration locally, for example adding any secrets,
-you can do so in `app-config.local.yaml`.
+create a local overlay (e.g. env vars or a custom file) and pass it with `--config`.
 
 The backend starts up on port 7007 per default.
 
@@ -40,7 +40,7 @@ entity descriptor data to consume and serve. For more information, see
 
 To get started quickly, this template already includes some statically configured example locations
 in `app-config.yaml` under `catalog.locations`. You can remove and replace these locations as you
-like, and also override them for local development in `app-config.local.yaml`.
+like, and also add another `--config my-local.yaml` if you need local-only overrides.
 
 ## Authentication
 
