@@ -129,3 +129,12 @@ serviceMonitor:
   scrapeTimeout: 40s
   # -- (bool) Honor labels from service
   honorLabels: true
+
+# @section -- Dashboard
+grafana:
+  # -- (bool) Enable Grafana dashboard deployment
+  enabled: true
+  # -- (string) Label key for dashboard discovery
+  labelKey: grafana_dashboard
+  # -- (string) Label value for dashboard discovery
+  labelValue: "1"
