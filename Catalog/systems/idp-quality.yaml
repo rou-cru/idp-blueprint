@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-quality
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/systems/idp-quality.yaml
+  description: Quality Assurance System
+  tags: [sonarqube, quality, analysis, environment-demo, tier-high, platform-cicd]
+spec:
+  owner: platform-team
+  domain: infrastructure

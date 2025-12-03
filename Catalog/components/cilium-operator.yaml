@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cilium-operator
+  description: Cilium Operator - Manages Cilium node lifecycle and configuration.
+  tags: [networking, operator, controller, tier-critical, environment-demo, platform-networking]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/cilium-operator.yaml
+    backstage.io/kubernetes-id: cilium-operator
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "io.cilium/app=operator"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: kube-system
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: cilium-operator
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-networking
+  subComponentOf: cilium

@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: grafana-api
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/apis/grafana-api.yaml
+  description: Grafana HTTP API.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  definition: |
+    openapi: 3.0.0
+    info:
+      title: Grafana API
+      version: 1.0.0
+    paths: {}

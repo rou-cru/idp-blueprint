@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-core
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/systems/idp-core.yaml
+  description: The Core IDP System
+spec:
+  owner: platform-team
+  domain: infrastructure

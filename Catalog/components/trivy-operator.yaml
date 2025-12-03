@@ -1,0 +1,26 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: trivy-operator
+  description: Kubernetes-native security scanner.
+  tags: [security, scanning, vulnerability, tier-high, environment-demo, platform-security]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/trivy-operator.yaml
+    backstage.io/kubernetes-id: trivy-operator
+    backstage.io/kubernetes-namespace: security
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=trivy-operator"
+    argocd/app-name: sec-trivy
+    deployment.method: "helm"
+    helm.chart: "aqua/trivy-operator"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: security
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: trivy-operator
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-security
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - resource:trivy-storage

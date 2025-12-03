@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: loki-storage
+  description: Loki Storage - Persistent volume for log data.
+  tags: [storage, pvc, loki, tier-high, environment-demo, platform-observability]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/resources/loki-storage.yaml
+    backstage.io/kubernetes-id: storage-loki-0
+    backstage.io/kubernetes-namespace: observability
+spec:
+  type: database
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability

@@ -1,0 +1,25 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cert-manager
+  description: X.509 certificate management for Kubernetes - Helm Chart.
+  tags: [security, certificates, tls, go, tier-critical, environment-demo, platform-infrastructure]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/cert-manager.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/part-of=idp,app.kubernetes.io/instance=cert-manager'
+    backstage.io/kubernetes-id: cert-manager
+    backstage.io/kubernetes-namespace: cert-manager
+    deployment.method: "helm"
+    helm.chart: "jetstack/cert-manager"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: cert-manager
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: cert-manager
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-networking

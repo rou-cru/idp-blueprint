@@ -1,0 +1,17 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cilium
+  description: eBPF-based Networking, Security, and Observability - Helm Chart.
+  tags: [networking, cni, ebpf, cilium, tier-critical, environment-demo, platform-networking]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/cilium.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: cilium
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: 'app.kubernetes.io/part-of=idp,app.kubernetes.io/name=cilium'
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-networking

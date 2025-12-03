@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: user:default/dev
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/users/dev.yaml
+spec:
+  profile:
+    displayName: Developer User
+    email: dev@example.com
+    picture: https://avatars.githubusercontent.com/u/3?v=4
+  memberOf: [developers]

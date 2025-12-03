@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-orchestration
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/systems/idp-orchestration.yaml
+  description: Orchestration System
+  tags: [argocd, gitops, workflows, environment-demo, tier-critical, platform-infrastructure]
+spec:
+  owner: platform-team
+  domain: infrastructure

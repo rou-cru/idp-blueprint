@@ -16,7 +16,6 @@ Treat every component as code. Adding, changing, or removing should feel like a 
 5. The ApplicationSet detects the folder → ArgoCD creates the `Application`.
 6. Sync follows waves/policies and converges in the cluster.
 
-
 :::Tip
 Expose UI via Gateway with an `HTTPRoute` if relevant.
 :::

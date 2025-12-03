@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argo-events-controller-manager
+  description: Argo Events Controller Manager - Unified controller managing EventSources, Sensors, and EventBus.
+  tags: [controller, events, manager, tier-critical, environment-demo, platform-events]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/argo-events-controller-manager.yaml
+    backstage.io/kubernetes-id: argo-events-controller-manager
+    backstage.io/kubernetes-namespace: argo-events
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argo-events-controller-manager"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: argo-events
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: argo-events-controller-manager
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-orchestration
+  subComponentOf: argo-events

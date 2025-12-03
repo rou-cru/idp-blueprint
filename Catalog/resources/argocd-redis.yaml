@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: argocd-redis
+  description: Redis cache for ArgoCD.
+  tags: [redis, cache, database, tier-critical, environment-demo, platform-infrastructure]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/resources/argocd-redis.yaml
+    backstage.io/kubernetes-id: argocd-redis
+    backstage.io/kubernetes-namespace: argocd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argocd-redis"
+spec:
+  type: database
+  lifecycle: production
+  owner: platform-team
+  system: idp-orchestration

@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: idp-docs
+  description: The IDP Blueprint Documentation (Astro).
+  tags: [documentation, astro, website, tier-medium, environment-demo, platform-portal]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/idp-docs.yaml
+    backstage.io/view-url: https://docs.192-168-65-16.nip.io
+spec:
+  type: website
+  lifecycle: production
+  owner: platform-team
+  system: idp-documentation

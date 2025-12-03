@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: trivy-storage
+  description: Trivy Data - Persistent volume for vulnerability database.
+  tags: [storage, pvc, trivy, tier-high, environment-demo, platform-security]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/resources/trivy-storage.yaml
+    backstage.io/kubernetes-id: data-trivy-server-0
+    backstage.io/kubernetes-namespace: security
+spec:
+  type: database
+  lifecycle: production
+  owner: platform-team
+  system: idp-security

@@ -1,0 +1,25 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: idp-gateway
+  description: Gateway API - Main ingress gateway for the IDP platform.
+  tags: [gateway, ingress, networking, envoy, tier-critical, environment-demo, platform-networking]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/idp-gateway.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: idp-gateway
+    backstage.io/kubernetes-namespace: kube-system
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=idp-gateway"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: kube-system
+    kyverno.io/kind: Gateway
+    kyverno.io/resource-name: idp-gateway
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-networking
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:cilium
+    - component:cert-manager

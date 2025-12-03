@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argocd-repo-server
+  description: Internal service that maintains a local cache of the git repository.
+  tags: [backend, git, tier-critical, environment-demo, platform-infrastructure]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/argocd-repo-server.yaml
+    backstage.io/kubernetes-id: argocd-repo-server
+    backstage.io/kubernetes-namespace: argocd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argocd-repo-server"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: argocd
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: argocd-repo-server
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-orchestration
+  subComponentOf: argocd

@@ -1,0 +1,25 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: fluent-bit
+  description: Fluent Bit - Fast and lightweight log processor and forwarder.
+  tags: [logging, daemonset, fluent-bit, tier-high, environment-demo, platform-observability, data-pipeline-logs, collector]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/fluent-bit.yaml
+    backstage.io/kubernetes-id: fluent-bit
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=fluent-bit"
+    argocd/app-name: obs-fluent-bit
+    deployment.method: "helm"
+    helm.chart: "fluent/fluent-bit"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: observability
+    kyverno.io/kind: DaemonSet
+    kyverno.io/resource-name: fluent-bit
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-observability

@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: idp-networking
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/systems/idp-networking.yaml
+  description: Networking System
+  tags: [cilium, gateway, networking, environment-demo, tier-critical, platform-networking]
+spec:
+  owner: platform-team
+  domain: infrastructure

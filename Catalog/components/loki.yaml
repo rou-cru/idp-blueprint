@@ -1,0 +1,22 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: loki
+  description: Loki - Log aggregation system designed for Kubernetes.
+  tags: [logging, logs, observability, tier-high, environment-demo, platform-observability, data-pipeline-logs, storage]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/loki.yaml
+    backstage.io/kubernetes-id: loki
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=loki"
+    argocd/app-name: obs-loki
+    deployment.method: "helm"
+    helm.chart: "grafana/loki"
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  dependsOn:
+    - component:fluent-bit
+    - resource:loki-storage

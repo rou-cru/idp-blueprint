@@ -1,0 +1,29 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: dex
+  description: Dex - OpenID Connect (OIDC) identity provider for Backstage authentication.
+  tags: [auth, oidc, identity, sso, tier-high, environment-demo, platform-portal]
+  links:
+    - url: https://dex.192-168-65-16.nip.io
+      title: Dex OIDC Provider
+      icon: security
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/dex.yaml
+    backstage.io/kubernetes-id: dex
+    backstage.io/kubernetes-namespace: backstage
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=dex"
+    argocd/app-name: portal-dex
+    deployment.method: "helm"
+    helm.chart: "dex/dex"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: backstage
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: dex
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-core
+  dependsOn:
+    - resource:default/local-k8s-cluster

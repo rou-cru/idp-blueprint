@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: platform-team
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/groups/platform-team.yaml
+  description: The Platform Engineering Team
+  tags: [team, platform, engineering]
+spec:
+  type: team
+  profile:
+    displayName: Platform Team
+    email: platform@example.com
+    picture: https://avatars.githubusercontent.com/u/1?v=4
+  children: []

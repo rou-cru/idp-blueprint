@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: vault-storage
+  description: Vault Data - Persistent volume for secrets.
+  tags: [storage, pvc, vault, tier-critical, environment-demo, platform-security]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/resources/vault-storage.yaml
+    backstage.io/kubernetes-id: data-vault-0
+    backstage.io/kubernetes-namespace: vault-system
+spec:
+  type: database
+  lifecycle: production
+  owner: platform-team
+  system: idp-security

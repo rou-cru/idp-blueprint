@@ -1,0 +1,42 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: grafana
+  description: Grafana - Analytics and monitoring solution with dashboards.
+  tags:
+    [
+      dashboard,
+      observability,
+      ui,
+      visualization,
+      tier-medium,
+      environment-demo,
+      platform-dashboards,
+      data-pipeline-logs,
+      data-pipeline-metrics,
+    ]
+  links:
+    - url: https://grafana.192-168-65-16.nip.io
+      title: Grafana Dashboards
+      icon: dashboard
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/grafana.yaml
+    backstage.io/kubernetes-id: grafana
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=grafana"
+    argocd/app-name: obs-kube-prometheus-stack
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: observability
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: prometheus-grafana
+spec:
+  type: website
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack
+  providesApis: [grafana-api]
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:loki
+    - component:kube-prometheus-stack

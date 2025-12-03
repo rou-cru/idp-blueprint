@@ -1,0 +1,24 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: node-exporter
+  description: Prometheus Node Exporter - Exposes hardware and OS metrics from nodes.
+  tags: [metrics, daemonset, prometheus, tier-high, environment-demo, platform-observability, data-pipeline-metrics, collector]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/node-exporter.yaml
+    backstage.io/kubernetes-id: node-exporter
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=prometheus-node-exporter"
+    argocd/app-name: observability-kube-prometheus-stack
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: observability
+    kyverno.io/kind: DaemonSet
+    kyverno.io/resource-name: prometheus-prometheus-node-exporter
+spec:
+  type: daemon
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack

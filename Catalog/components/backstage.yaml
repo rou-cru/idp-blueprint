@@ -1,0 +1,33 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: Backstage Developer Portal - Platform for building developer portals - Helm Chart.
+  tags: [portal, developer-experience, platform, nodejs, tier-high, environment-demo, platform-portal]
+  links:
+    - url: https://backstage.192-168-65-16.nip.io
+      title: Backstage Portal
+      icon: dashboard
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/backstage.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: backstage
+    backstage.io/kubernetes-namespace: backstage
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/instance=backstage"
+    argocd/app-name: portal-backstage
+    deployment.method: "helm"
+    helm.chart: "backstage/backstage"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: backstage
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: backstage
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-core
+  providesApis: [backstage-api]
+  dependsOn:
+    - component:dex
+    - resource:backstage-postgresql
+    - resource:default/local-k8s-cluster

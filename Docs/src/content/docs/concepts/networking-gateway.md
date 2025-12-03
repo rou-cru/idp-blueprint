@@ -16,6 +16,7 @@ Make the networking model easy to reason about: a single Gateway receives HTTPS 
 This diagram shows the complete network path from external clients through Cilium CNI to backend pods.
 
 ![Detailed Networking Architecture](networking-gateway-2.svg)
+
 ### Network Flow Explanation
 
 External clients connect to NodePort (30443) on any cluster node where Cilium CNI handles pod networking using eBPF datapath and the NodePort Service forwards traffic to the Gateway implementation. The GatewayClass defines how Gateways are implemented (cilium-nodeport), the Gateway resource creates an HTTPS listener on *.nip.io with TLS termination, and HTTPRoute resources define hostname-based routing to backend Services. cert-manager automates the certificate lifecycle where ClusterIssuer uses internal CA (idp-demo-ca) and a wildcard certificate (*.nip.io) is issued and mounted into the Gateway. Services provide stable ClusterIP endpoints while pods implement the actual application logic.

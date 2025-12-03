@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: kyverno
+  description: Kyverno Policy Engine - Kubernetes-native policy management - Helm Chart.
+  tags: [policy, governance, security, kubernetes, tier-critical, environment-demo, platform-policy]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/kyverno.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: kyverno
+    backstage.io/kubernetes-namespace: kyverno-system
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kyverno"
+    argocd/app-name: platform-policies
+    deployment.method: "helm"
+    helm.chart: "kyverno/kyverno"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: kyverno-system
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: kyverno-admission-controller
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-security
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:cert-manager

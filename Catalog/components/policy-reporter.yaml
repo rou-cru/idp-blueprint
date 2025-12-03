@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: policy-reporter
+  description: Policy Reporter - Monitoring and reporting for Kyverno policy violations.
+  tags: [policy, reporting, monitoring, dashboard, tier-medium, environment-demo, platform-dashboards]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/policy-reporter.yaml
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/kubernetes-id: policy-reporter
+    backstage.io/kubernetes-namespace: kyverno-system
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=policy-reporter"
+    argocd/app-name: platform-policies
+    deployment.method: "helm"
+    helm.chart: "policy-reporter/policy-reporter"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: kyverno-system
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: policy-reporter
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-security
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:kyverno

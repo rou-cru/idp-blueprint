@@ -1,0 +1,23 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: argo-server
+  description: Argo Server - API and UI server for Argo Workflows.
+  tags: [server, api, ui, workflows, tier-high, environment-demo, platform-cicd]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/argo-server.yaml
+    backstage.io/kubernetes-id: argo-server
+    backstage.io/kubernetes-namespace: cicd
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argo-workflows-server"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: cicd
+    kyverno.io/kind: Deployment
+    kyverno.io/resource-name: argo-workflows-server
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  dependsOn:
+    - resource:default/local-k8s-cluster
+  system: idp-orchestration
+  subComponentOf: argo-workflows
