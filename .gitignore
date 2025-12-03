@@ -11,8 +11,8 @@ devbox.lock
 GEMINI.md
 CLAUDE.md
 .claude/*
-.codex/*
-!.codex/config.toml
+.codex/
+.gemini/
 
 # Knowledge graph is versioned - see .memory/README.md
 # (no ignore needed - we want to version .memory/)
