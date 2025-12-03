@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - grafana-admin-externalsecret.yaml
   - dashboards/pyrra-slos-dashboard.yaml
+  - dashboards/base
 
 helmCharts:
   - name: kube-prometheus-stack

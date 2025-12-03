@@ -172,7 +172,7 @@ grafana:
     - grafana-polystat-panel
     - marcusolsson-json-datasource
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
-  defaultDashboardsEnabled: true
+  defaultDashboardsEnabled: false
   sidecar:
     dashboards:
       enabled: true

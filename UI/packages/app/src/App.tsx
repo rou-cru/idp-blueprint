@@ -1,4 +1,4 @@
-import { Route } from 'react-router-dom';
+import { Navigate, Route } from 'react-router-dom';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
@@ -39,7 +39,6 @@ import { NotificationsPage } from '@backstage/plugin-notifications';
 import { SignalsDisplay } from '@backstage/plugin-signals';
 import { PolicyReportsPage } from '@kyverno/backstage-plugin-policy-reporter';
 import { patternflyTheme } from './theme/patternfly';
-import { HomePage } from './components/home/HomePage';
 import { UnifiedThemeProvider } from '@backstage/theme';
 
 const app = createApp({
@@ -89,7 +88,7 @@ const app = createApp({
 
 const routes = (
   <FlatRoutes>
-    <Route path="/" element={<HomePage />} />
+    <Route path="/" element={<Navigate to="catalog" />} />
     <Route path="/catalog" element={<CatalogIndexPage />} />
     <Route
       path="/catalog/:namespace/:kind/:name"
