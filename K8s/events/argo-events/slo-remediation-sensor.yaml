@@ -19,7 +19,7 @@ spec:
             comparator: "!="
             value:
               - ""
-  
+
   triggers:
     # Trigger 1: ArgoCD Application Unhealthy
     - template:
@@ -53,8 +53,8 @@ spec:
                 dataKey: body.alerts.0.labels.namespace
               dest: spec.arguments.parameters.1.value
         conditions: "slo-alert && slo-alert.labels.slo == 'argocd-application-health'"
-    
-    # Trigger 2: ExternalSecret Sync Failure  
+
+    # Trigger 2: ExternalSecret Sync Failure
     - template:
         name: remediate-externalsecret
         argoWorkflow:

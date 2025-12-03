@@ -20,21 +20,38 @@ backstage:
       value: "cluster.local"
     - name: NODE_TLS_REJECT_UNAUTHORIZED
       value: "0"
-  # Mount the catalog users ConfigMap
-  extraVolumes:
-    - name: catalog-users
-      configMap:
-        name: backstage-demo-users
-  extraVolumeMounts:
-    - name: catalog-users
-      mountPath: /app/catalog-users.yaml
-      subPath: users.yaml
   # Backstage image configuration
   image:
     registry: docker.io
     repository: roucru/idp-blueprint-dev-portal
     tag: latest
     pullPolicy: Always
+
+  # ArgoCD sync wave - deploy after Dex is ready
+  podAnnotations:
+    argocd.argoproj.io/sync-wave: "1"
+
+  # Wait for Dex to be ready before starting Backstage
+  initContainers:
+    - name: wait-for-dex
+      image: curlimages/curl:latest
+      command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for Dex service to be ready..."
+          max_attempts=60
+          attempt=0
+          until curl -f -s http://dex.backstage.svc.cluster.local:5556/.well-known/openid-configuration > /dev/null 2>&1; do
+            attempt=$((attempt + 1))
+            if [ $attempt -gt $max_attempts ]; then
+              echo "ERROR: Dex did not become ready after $max_attempts attempts (5 minutes)"
+              exit 1
+            fi
+            echo "Attempt $attempt/$max_attempts: Dex not ready, waiting 5 seconds..."
+            sleep 5
+          done
+          echo "SUCCESS: Dex is ready!"
 
 # @section -- Pod settings
 replicaCount: 1
@@ -58,29 +75,22 @@ service:
 ingress:
   enabled: false
 
-# REMOVED: Moved to backstage.extraVolumes below
-
-
 appConfig:
   app:
     title: Backstage
   techdocs:
-    builder: 'local'
+    builder: "local"
     generator:
-      runIn: 'docker'
+      runIn: "docker"
     publisher:
-      type: 'local'
+      type: "local"
   catalog:
-    locations:
-      - type: file
-        target: /app/catalog-users.yaml
-        rules:
-          - allow: [User, Group]
+    rules:
+      - allow: [Component, API, System, Domain, Resource, Template, Location, User, Group]
   backend:
     listen:
       port: 7007
     database:
-      # Use the built-in Bitnami PostgreSQL subchart
       client: pg
       connection:
         host: backstage-postgresql-hl
@@ -94,27 +104,16 @@ appConfig:
     environment: production
     session:
       secret: ${BACKEND_SECRET}
-    providers:
-      oidc:
-        production:
-          metadataUrl: https://dex.${DNS_SUFFIX}/.well-known/openid-configuration
-          clientId: backstage
-          clientSecret: ${DEX_CLIENT_SECRET}
-          prompt: auto
-          signIn:
-            resolvers:
-              - resolver: emailMatchingUserEntityProfileEmail
-              - resolver: emailLocalPartMatchingUserEntityName
   kubernetes:
     serviceLocatorMethod:
-      type: 'multiTenant'
+      type: "multiTenant"
     customResources:
-      - group: 'argoproj.io'
-        apiVersion: 'v1alpha1'
-        plural: 'rollouts'
-      - group: 'argoproj.io'
-        apiVersion: 'v1alpha1'
-        plural: 'applications'
+      - group: "argoproj.io"
+        apiVersion: "v1alpha1"
+        plural: "rollouts"
+      - group: "argoproj.io"
+        apiVersion: "v1alpha1"
+        plural: "applications"
 
 # @section -- PostgreSQL
 postgresql:
@@ -139,9 +138,9 @@ postgresql:
     resources:
       requests:
         cpu: 200m
-        memory: 512Mi
+        memory: 256Mi
       limits:
         cpu: 500m
         memory: 1Gi
     podAnnotations:
-      argocd.argoproj.io/sync-wave: "1"
+      argocd.argoproj.io/sync-wave: "0"

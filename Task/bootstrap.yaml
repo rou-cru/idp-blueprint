@@ -141,12 +141,23 @@ tasks:
   vault:generate-secrets:
     desc: "Generate initial secrets for all services using Vault"
     vars:
+      ARGOCD_USERNAME: "admin"
       SECRETS:
         - path: "secret/argocd/admin"
           key: "admin.password"
           var: "ARGOCD_ADMIN_PASSWORD"
           enc: "base64"
           hash: "bcrypt"
+        - path: "secret/argocd/admin"
+          key: "username"
+          var: "ARGOCD_USERNAME"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/argocd/admin"
+          key: "plainPassword"
+          var: "ARGOCD_ADMIN_PASSWORD"
+          enc: "base64"
+          hash: "none"
         - path: "secret/grafana/admin"
           key: "admin-password"
           var: "GRAFANA_ADMIN_PASSWORD"
@@ -185,6 +196,11 @@ tasks:
         - path: "secret/backstage/app"
           key: "dexClientSecret"
           var: "BACKSTAGE_DEX_CLIENT_SECRET"
+          enc: "base64"
+          hash: "none"
+        - path: "secret/backstage/app"
+          key: "githubToken"
+          var: "GITHUB_TOKEN"
           enc: "base64"
           hash: "none"
         - path: "secret/backstage/postgres"
@@ -227,16 +243,18 @@ tasks:
     silent: true
     env:
       REPO_URL: "{{.REPO_URL}}"
+      DNS_SUFFIX: "{{.DNS_SUFFIX}}"
     cmds:
       - |
         EXTRA_ARGS=""
-        if [ "{{.FUSE_PROD}}" = "true" ]; then
+        if [ "$FUSE_PROD" = "true" ]; then
           EXTRA_ARGS="--set ha.enabled=true"
         fi
         helm upgrade --install argocd argo/argo-cd \
           --version {{.ARGOCD_VERSION}} \
           --namespace argocd \
           --values values.yaml \
+          --set configs.cm.url="https://argocd.${DNS_SUFFIX}" \
           $EXTRA_ARGS \
           --hide-notes
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd

@@ -13,7 +13,7 @@ metadata:
     environment: demo
   annotations:
     argocd.argoproj.io/sync-wave: "1"
-    description: 'Sensor to trigger app provisioning workflows from Backstage'
+    description: "Sensor to trigger app provisioning workflows from Backstage"
     contact: platform-team
 spec:
   dependencies:
@@ -27,7 +27,7 @@ spec:
             comparator: "="
             value:
               - "provision-app"
-  
+
   triggers:
     - template:
         name: provision-application

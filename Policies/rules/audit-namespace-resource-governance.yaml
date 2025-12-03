@@ -19,7 +19,9 @@ metadata:
       governance and preventing resource starvation within the cluster.
 spec:
   validationFailureAction: audit
+  admission: true
   background: true
+  emitWarning: false
   rules:
     - name: check-for-limitrange
       match:
@@ -34,7 +36,7 @@ spec:
                 - kube-system
                 - kube-public
                 - kube-node-lease
-                - kyverno
+                - kyverno-system
                 - argocd
                 - cert-manager
                 - external-secrets-system

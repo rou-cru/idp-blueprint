@@ -18,7 +18,7 @@ spec:
           - path: K8s/security/*
   template:
     metadata:
-      name: 'security-{{path.basename}}'
+      name: 'sec-{{path.basename}}'
     spec:
       project: security
       source:

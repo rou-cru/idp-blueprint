@@ -15,4 +15,3 @@ resources:
   - secret-placeholder.yaml
   - job-renderer.yaml
   - vars-placeholder.yaml
-

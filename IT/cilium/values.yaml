@@ -232,3 +232,5 @@ commonLabels:
   business-unit: infrastructure
   # -- (string) Environment
   environment: demo
+  # -- (string) Application Name
+  app.kubernetes.io/name: cilium

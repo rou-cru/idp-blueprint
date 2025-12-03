@@ -21,7 +21,9 @@ metadata:
       environment.
 spec:
   validationFailureAction: enforce
+  admission: true
   background: true
+  emitWarning: false
   rules:
     - name: check-for-standard-namespace-labels
       match:

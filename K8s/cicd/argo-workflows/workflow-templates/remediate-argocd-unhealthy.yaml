@@ -10,7 +10,7 @@ metadata:
     owner: platform-team
     business-unit: infrastructure
     environment: demo
-annotations:
+  annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
   entrypoint: force-sync
@@ -21,7 +21,7 @@ spec:
         value: "unknown"
       - name: namespace
         value: "argocd"
-  
+
   templates:
     - name: force-sync
       inputs:
@@ -38,7 +38,7 @@ spec:
             echo "Namespace: {{inputs.parameters.namespace}}"
             echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             echo ""
-            
+
             # Force sync the application
             argocd app sync {{inputs.parameters.app-name}} \
               --force \
@@ -50,7 +50,7 @@ spec:
                 echo "ERROR: Failed to sync application"
                 exit 1
               }
-            
+
             echo ""
             echo "✓ Application sync completed successfully"
         env:

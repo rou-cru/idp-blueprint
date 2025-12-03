@@ -7,6 +7,7 @@ vars:
       value=$(./Scripts/config-get.sh cluster.name '{{.CONFIG_FILE}}' 2>/dev/null || true)
       if [ -n "$value" ] && [ "$value" != '""' ]; then echo "$value"; else echo "idp-demo"; fi
 
+
 tasks:
   docs:
     desc: 'Generate all automatic documentation (Helm values metadata)'

@@ -21,7 +21,9 @@ metadata:
       mode to avoid blocking deployments.
 spec:
   validationFailureAction: audit
+  admission: true
   background: true
+  emitWarning: false
   rules:
     - name: audit-business-labels-on-resources
       match:
@@ -43,7 +45,7 @@ spec:
                 - kube-system
                 - kube-public
                 - kube-node-lease
-                - kyverno
+                - kyverno-system
       validate:
         message:
           'Resource must include the standard business labels: owner, business-unit,

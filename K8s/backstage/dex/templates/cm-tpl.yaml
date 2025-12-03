@@ -9,7 +9,9 @@ data:
   config.yaml: |
     issuer: https://dex.${DNS_SUFFIX}
     storage:
-      type: memory
+      type: kubernetes
+      config:
+        inCluster: true
     web:
       http: 0.0.0.0:5556
     telemetry:
