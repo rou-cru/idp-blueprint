@@ -3,6 +3,14 @@ crds:
   # -- (bool) Install Kyverno CRDs
   install: true
 
+# @section -- Features
+features:
+  logging:
+    # -- Logging format (text or json)
+    format: json
+    # -- Logging verbosity (0-6)
+    verbosity: 2
+
 # @section -- Priority Class
 # -- Priority class for Kyverno admission controller
 priorityClassName: platform-policy
@@ -18,6 +26,14 @@ admissionController:
       maxUnavailable: 0
       # -- (int) Maximum surge pods during update
       maxSurge: 1
+  # -- Metrics configuration
+  metricsConfig:
+    enabled: true
+  # -- ServiceMonitor configuration
+  serviceMonitor:
+    enabled: true
+    labels:
+      prometheus: kube-prometheus
 
 # @section -- Resource Management
 # -- Resources for the main admission controller.

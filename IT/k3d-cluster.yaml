@@ -57,6 +57,17 @@ options:
       - arg: --node-taint=node-role.kubernetes.io/control-plane:NoSchedule
         nodeFilters:
           - server:*
+      # --- START Added arguments for Prometheus monitoring ---
+      - arg: --kube-scheduler-arg=bind-address=0.0.0.0
+        nodeFilters:
+          - server:*
+      - arg: --kube-controller-manager-arg=bind-address=0.0.0.0
+        nodeFilters:
+          - server:*
+      - arg: --kube-proxy-arg=metrics-bind-address=0.0.0.0
+        nodeFilters:
+          - server:*
+      # --- END Added arguments for Prometheus monitoring ---
     nodeLabels:
       - label: role=infra
         nodeFilters:

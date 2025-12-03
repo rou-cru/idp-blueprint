@@ -32,7 +32,7 @@ tasks:
       - sh: command -v shellcheck
         msg: 'shellcheck is required but not installed. Run: brew install shellcheck'
     cmds:
-      - find . -name '*.sh' -type f | grep -vE '/(\.devbox|node_modules|dist|\.venv|site)/' | xargs -r shellcheck
+      - find . -name '*.sh' -type f | grep -vE '/(\.devbox|node_modules|dist|\.venv|site|Docs/src/partials)/' | xargs -r shellcheck
 
   lint:dockerfile:
     desc: 'Lint all Dockerfiles'
@@ -41,7 +41,7 @@ tasks:
       - sh: command -v hadolint
         msg: 'hadolint is required but not installed. Run: brew install hadolint'
     cmds:
-      - find . -name Dockerfile | grep -vE '/(node_modules|dist|\.venv|site)/' | xargs -r hadolint
+      - find . -name Dockerfile | grep -vE '/(node_modules|dist|\.venv|site|Docs/src/partials)/' | xargs -r hadolint
 
   lint:markdown:
     desc: 'Lint all Markdown files'

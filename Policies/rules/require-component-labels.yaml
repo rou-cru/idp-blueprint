@@ -21,7 +21,9 @@ metadata:
       app.kubernetes.io/component.
 spec:
   validationFailureAction: audit
+  admission: true
   background: true
+  emitWarning: false
   rules:
     - name: check-for-standard-component-labels
       match:

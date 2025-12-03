@@ -7,3 +7,8 @@ metadata:
     argocd.argoproj.io/sync-wave: "-2"
 data:
   DNS_SUFFIX: "placeholder"
+  CLUSTER_NAME: "idp-demo"
+  GITHUB_ORG: "rou-cru"
+  GITHUB_REPO: "idp-blueprint"
+  GITHUB_BRANCH: "main"
+  GITHUB_TOKEN: ""

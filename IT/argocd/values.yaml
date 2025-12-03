@@ -283,6 +283,9 @@ configs:
     # @default -- Vault-generated bcrypt hash
     argocdServerAdminPassword: '$2a$10$tYFiS1qMKY8rUMgc/a31TO19Rhg7auvSye9Vx8opYY/8rnUwfTaSO'
   cm:
+    # -- (string) ArgoCD server URL for redirects and notifications
+    # Dynamically injected via --set in bootstrap task using DNS_SUFFIX variable
+    url: https://argocd.${DNS_SUFFIX}
     # -- (string) Enable Helm support in Kustomize builds
     kustomize.buildOptions: "--enable-helm"
     # -- (string) Resource tracking method for performance

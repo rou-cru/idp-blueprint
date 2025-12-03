@@ -6,6 +6,8 @@ crds:
 
 global:
   priorityClassName: platform-infrastructure
+  commonLabels:
+    app.kubernetes.io/part-of: idp
 
 # -- Rolling update strategy for zero-downtime updates
 # @section -- Deployment Strategy

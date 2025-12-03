@@ -10,6 +10,13 @@ service:
 ingress:
   enabled: false
 existingSecret: dex
+configSecret:
+  create: false
+  name: dex
 envFrom:
   - secretRef:
       name: dex-secrets
+
+# ArgoCD sync wave - deploy Dex before Backstage
+podAnnotations:
+  argocd.argoproj.io/sync-wave: "0"

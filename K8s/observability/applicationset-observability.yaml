@@ -18,7 +18,7 @@ spec:
           - path: K8s/observability/*
   template:
     metadata:
-      name: 'observability-{{path.basename}}'
+      name: 'obs-{{path.basename}}'
     spec:
       project: observability
       source:

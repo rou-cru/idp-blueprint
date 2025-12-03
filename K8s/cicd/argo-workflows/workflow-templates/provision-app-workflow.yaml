@@ -12,12 +12,12 @@ metadata:
     environment: demo
   annotations:
     argocd.argoproj.io/sync-wave: "0"
-    description: 'Workflow template for provisioning containerized apps from Backstage'
+    description: "Workflow template for provisioning containerized apps from Backstage"
     contact: platform-team
 spec:
   serviceAccountName: argo-workflow
   entrypoint: provision-app
-  
+
   arguments:
     parameters:
       - name: app-name
@@ -40,19 +40,19 @@ spec:
         value: "roucru/demo-app"
       - name: docker-image-tag
         value: "latest"
-  
+
   templates:
     - name: provision-app
       steps:
         - - name: create-namespace
             template: create-namespace-template
-        
+
         - - name: build-and-push-image
             template: build-and-push-image-template
-        
+
         - - name: create-argocd-app
             template: create-argocd-app-template
-        
+
         - - name: wait-for-deployment
             template: wait-for-deployment-template
 
@@ -64,9 +64,9 @@ spec:
         source: |
           #!/bin/bash
           set -e
-          
+
           echo "Creating namespace {{workflow.parameters.app-name}}..."
-          
+
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
           kind: Namespace
@@ -84,11 +84,11 @@ spec:
               environment: {{workflow.parameters.environment}}
               managed-by: idp
           EOF
-          
+
           echo "✅ Namespace created successfully"
-          
+
           echo "Creating ResourceQuota..."
-          
+
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
           kind: ResourceQuota
@@ -104,11 +104,11 @@ spec:
               pods: "10"
               services: "5"
           EOF
-          
+
           echo "✅ ResourceQuota created"
-          
+
           echo "Creating LimitRange..."
-          
+
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
           kind: LimitRange
@@ -131,7 +131,7 @@ spec:
                   memory: 256Mi
                 type: Container
           EOF
-          
+
           echo "✅ LimitRange created"
           echo "🎉 Namespace {{workflow.parameters.app-name}} fully provisioned!"
 
@@ -175,9 +175,9 @@ spec:
         source: |
           #!/bin/bash
           set -e
-          
+
           echo "Creating ArgoCD Application for {{workflow.parameters.app-name}}..."
-          
+
           cat <<EOF | kubectl apply -f -
           apiVersion: argoproj.io/v1alpha1
           kind: Application
@@ -218,7 +218,7 @@ spec:
                   factor: 2
                   maxDuration: 3m
           EOF
-          
+
           echo "✅ ArgoCD Application created"
           echo "🚀 Application will sync automatically!"
 
@@ -230,9 +230,9 @@ spec:
         source: |
           #!/bin/bash
           set -e
-          
+
           echo "Waiting for deployment in namespace {{workflow.parameters.app-name}}..."
-          
+
           # Wait up to 5 minutes for deployment to exist
           timeout=300
           elapsed=0
@@ -245,17 +245,17 @@ spec:
             sleep 10
             elapsed=$((elapsed + 10))
           done
-          
+
           if [ $elapsed -ge $timeout ]; then
             echo "⚠️  Timeout waiting for deployment"
             exit 1
           fi
-          
+
           # Wait for deployment to be ready
           echo "Waiting for deployment to be ready..."
           kubectl wait --for=condition=available --timeout=5m \
             deployment -n {{workflow.parameters.app-name}} --all
-          
+
           echo "✅ Deployment is ready!"
           echo ""
           echo "======================================"

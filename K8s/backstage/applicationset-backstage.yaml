@@ -19,13 +19,13 @@ spec:
           - path: K8s/backstage/*
   template:
     metadata:
-      name: 'backstage-{{.path.basename}}'
+      name: "portal-{{.path.basename}}"
     spec:
       project: backstage
       sources:
         - repoURL: ${REPO_URL}
           targetRevision: ${TARGET_REVISION}
-          path: '{{.path.path}}'
+          path: "{{.path.path}}"
           kustomize:
             patches:
               # DNS_SUFFIX patch only for backstage and dex (contains vars-placeholder.yaml)
@@ -36,6 +36,21 @@ spec:
                   - op: replace
                     path: /data/DNS_SUFFIX
                     value: "${DNS_SUFFIX}"
+                  - op: replace
+                    path: /data/CLUSTER_NAME
+                    value: "${CLUSTER_NAME}"
+                  - op: replace
+                    path: /data/GITHUB_ORG
+                    value: "${GITHUB_ORG}"
+                  - op: replace
+                    path: /data/GITHUB_REPO
+                    value: "${GITHUB_REPO}"
+                  - op: replace
+                    path: /data/GITHUB_BRANCH
+                    value: "${GITHUB_BRANCH}"
+                  - op: replace
+                    path: /data/GITHUB_TOKEN
+                    value: "${GITHUB_TOKEN}"
               - target:
                   kind: ConfigMap
                   name: idp-vars-dex
@@ -43,6 +58,15 @@ spec:
                   - op: replace
                     path: /data/DNS_SUFFIX
                     value: "${DNS_SUFFIX}"
+                  - op: replace
+                    path: /data/GITHUB_ORG
+                    value: "${GITHUB_ORG}"
+                  - op: replace
+                    path: /data/GITHUB_REPO
+                    value: "${GITHUB_REPO}"
+                  - op: replace
+                    path: /data/GITHUB_BRANCH
+                    value: "${GITHUB_BRANCH}"
       destination:
         server: https://kubernetes.default.svc
         namespace: backstage
@@ -69,11 +93,11 @@ spec:
         - group: admissionregistration.k8s.io
           kind: MutatingWebhookConfiguration
           jqPathExpressions:
-            - '.webhooks[]?.clientConfig.caBundle'
+            - ".webhooks[]?.clientConfig.caBundle"
         - group: admissionregistration.k8s.io
           kind: ValidatingWebhookConfiguration
           jqPathExpressions:
-            - '.webhooks[]?.clientConfig.caBundle'
+            - ".webhooks[]?.clientConfig.caBundle"
         - group: ""
           kind: Secret
           jsonPointers:

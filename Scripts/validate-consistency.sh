@@ -96,10 +96,8 @@ fi
 
 # 3. Verificar kustomizations con labels pero sin resources
 while IFS= read -r kust; do
-  # Skip label-only overlays (K8s/argocd, K8s/vault)
-  if [[ "$kust" == *"K8s/argocd/kustomization.yaml" ]] || [[ "$kust" == *"K8s/vault/kustomization.yaml" ]]; then
-    continue
-  fi
+  # Skip label-only overlays (none currently)
+
 
   has_labels=$(yq '.labels // null' "$kust")
   has_resources=$(yq '.resources // null' "$kust")

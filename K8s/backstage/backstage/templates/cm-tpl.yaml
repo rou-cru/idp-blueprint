@@ -14,7 +14,18 @@ data:
         methods: [GET, POST, PUT, DELETE]
         credentials: true
       csp:
-        connect-src: ["'self'", 'https://dex.${DNS_SUFFIX}', 'https://kubernetes.default.svc']
+        connect-src: ["'self'", 'https://dex.${DNS_SUFFIX}', 'https://kubernetes.default.svc', 'https://official-joke-api.appspot.com']
+      cache:
+        store: memory
+        memory:
+          ttl: 600000  # 10 minutes in milliseconds
+    proxy:
+      '/policy-reporter':
+        target: 'http://policy-reporter.kyverno-system.svc.cluster.local:8080'
+        changeOrigin: true
+        secure: false
+    policyReporter:
+      baseUrl: http://policy-reporter.kyverno-system.svc.cluster.local:8080
     app:
       title: Backstage
       baseUrl: https://backstage.${DNS_SUFFIX}
@@ -28,37 +39,87 @@ data:
             metadataUrl: https://dex.${DNS_SUFFIX}/.well-known/openid-configuration
             clientId: backstage
             clientSecret: ${DEX_CLIENT_SECRET}
+            additionalScopes: ['offline_access']
             prompt: auto
             signIn:
               resolvers:
                 - resolver: emailMatchingUserEntityProfileEmail
                 - resolver: emailLocalPartMatchingUserEntityName
+    integrations:
+      github:
+        - host: github.com
+          # Optional; if empty Backstage will use unauthenticated requests (OK for public repos, may hit rate limits).
+          token: ${GITHUB_TOKEN}
+    grafana:
+      # Required by @backstage-community/plugin-grafana config schema
+      domain: https://grafana.${DNS_SUFFIX}
+      proxyPath: /grafana/api
+      unifiedAlerting: true
+    catalog:
+      # Allow User/Group ingestion (default rules only allow Component/API/Location) so auth
+      # can resolve identities from the static catalog file.
+      rules:
+        - allow: [Component, API, System, Domain, Resource, Template, Location, User, Group]
+      providers:
+        github:
+          idp-blueprint:
+            organization: ${GITHUB_ORG}
+            filters:
+              repository: ${GITHUB_REPO}
+              branch: ${GITHUB_BRANCH}
+            catalogPath: 'Catalog/**/*.yaml'
+    relationsProcessor:
+      # Satisfies @dweber019/backstage-plugin-relations schema; customize if relations are desired
+      relations: []
     techdocs:
       builder: 'local'
       generator:
         runIn: 'docker'
       publisher:
         type: 'local'
-    catalog:
-      locations:
-        - type: file
-          target: /app/catalog-users.yaml
-          rules:
-            - allow: [User, Group]
+      # Ensure GitHub token is available for pulling mkdocs docs when needed.
+      legacyUseCaseSensitiveTripletPaths: false
+
+    search:
+      pg:
+        highlightOptions:
+          useHighlight: true
+          maxWord: 35
+          minWord: 15
+          shortWord: 3
+          highlightAll: false
+          maxFragments: 0
+          fragmentDelimiter: ' ... '
+
     kubernetes:
       serviceLocatorMethod:
         type: 'multiTenant'
       customResources:
-        - group: 'argoproj.io'
-          apiVersion: 'v1alpha1'
-          plural: 'rollouts'
+        # Only include resources that are actually deployed and provide value
+        # ArgoCD Applications - useful for showing deployment status
         - group: 'argoproj.io'
           apiVersion: 'v1alpha1'
           plural: 'applications'
+        # Note: Rollouts removed (not installed in cluster)
+        # Note: Workflows removed (no instances exist, causes 404 spam)
+        # Note: Kyverno policies removed (cluster-scoped, not namespace-scoped - Backstage tries to fetch per namespace causing 404s)
       clusterLocatorMethods:
         - type: 'config'
           clusters:
             - url: https://kubernetes.default.svc
-              name: in-cluster
+              name: ${CLUSTER_NAME}
               authProvider: 'serviceAccount'
-              skipTLSVerify: true
+              skipTLSVerify: false
+              caFile: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+              skipMetricsLookup: false
+
+    # ArgoCD integration using backend plugin
+    argocd:
+      username: ${ARGOCD_USERNAME}
+      password: ${ARGOCD_PASSWORD}
+      waitCycles: 25
+      appLocatorMethods:
+        - type: 'config'
+          instances:
+            - name: ${CLUSTER_NAME}
+              url: http://argocd-server.argocd.svc.cluster.local
