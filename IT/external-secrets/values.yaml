@@ -131,10 +131,10 @@ serviceMonitor:
   honorLabels: true
 
 # @section -- Dashboard
-grafana:
+grafanaDashboard:
   # -- (bool) Enable Grafana dashboard deployment
   enabled: true
   # -- (string) Label key for dashboard discovery
-  labelKey: grafana_dashboard
+  sidecarLabel: grafana_dashboard
   # -- (string) Label value for dashboard discovery
-  labelValue: "1"
+  sidecarLabelValue: "1"
