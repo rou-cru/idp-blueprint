@@ -5,9 +5,6 @@ sandbox_mode = "danger-full-access"
 [features]
 web_search_request = true
 
-[mcp_servers.memory]
-command = "./Scripts/run-memory-mcp.sh"
-
 [mcp_servers.playwright]
 command = "npx"
 args = ["@playwright/mcp@latest"]

@@ -1,14 +1,5 @@
 {
   "mcpServers": {
-"grafana": {
-      "command": "mcp-grafana",
-      "args": [],
-      "env": {
-        "GRAFANA_URL": "http://grafana.192-168-65-16.nip.io",
-        "GRAFANA_USERNAME": "admin",
-        "GRAFANA_PASSWORD": "graf"
-      }
-    },
     "serena": {
       "command": "uvx",
       "args": [
@@ -21,19 +12,16 @@
         "${workspaceFolder}"
       ]
     },
-    "memory": {
-      "command": "memory-mcp-server-go",
-      "args": [
-        "-memory",
-        "${workspaceFolder}/.memory/graph.db"
-      ]
-    },
     "repomix": {
       "command": "npx",
       "args": [
         "-y",
         "repomix-mcp@latest"
       ]
+    },
+    "react-guide": {
+      "command": "npx",
+      "args": ["@mrnitro360/react-native-mcp-guide@1.1.0"]
     },
     "sequential-thinking": {
       "command": "npx",
@@ -59,9 +47,14 @@
         "https://mcp.docs.astro.build/mcp"
       ]
     },
-    "react": {
-      "command": "npx",
-      "args": ["@mrnitro360/react-native-mcp-guide@1.1.0"]
+   "grafana": {
+      "command": "mcp-grafana",
+      "args": [],
+      "env": {
+        "GRAFANA_URL": "http://grafana.192-168-65-16.nip.io",
+        "GRAFANA_USERNAME": "admin",
+        "GRAFANA_PASSWORD": "graf"
+      }
     }
   }
 }

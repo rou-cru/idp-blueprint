@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
 
-# Load vars from Env file if exist
-if [ -f ".env" ]; then
-    set -a
-    # shellcheck disable=SC1091
-    source .env
-    set +a
-fi
 
 # -- CNI
 helm repo add cilium https://helm.cilium.io/
