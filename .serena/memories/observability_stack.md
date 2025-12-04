@@ -11,5 +11,5 @@
   - **SLOs** (`slo/*.yaml`): Pyrra SLOs for externalsecrets sync, gateway availability, loki ingest, vault API.
 - Ingress/HTTPRoutes: Grafana exposed via Gateway HTTPRoute `IT/gateway/httproutes/grafana-httproute.yaml` (hostname `grafana.${DNS_SUFFIX}`); Pyrra via `pyrra-httproute.yaml`; Loki not exposed (service ClusterIP).
 - Credentials: Grafana admin user `admin`, password from Vault secret path `secret/grafana/admin` property `admin-password` (populated by `task vault:generate-secrets`).
-- Storage: All components use in-cluster PVCs (Grafana 1Gi, Loki 2Gi). Prometheus uses chart defaults (adjust if needed).lts (adjust if needed).
+- Storage: All components use in-cluster PVCs (Grafana 1Gi, Loki 2Gi). Prometheus uses chart defaults (adjust if needed).
 - k3d/k3s nuance: `IT/k3d-cluster.yaml` adds kube-scheduler/controller-manager/kube-proxy metrics bind-address=0.0.0.0 so Prometheus Operator can scrape control-plane endpoints; keep these args or you will miss control-plane metrics on k3s/k3d. Without them, metrics ports bind to localhost only (upstream k8s defaults differ).
