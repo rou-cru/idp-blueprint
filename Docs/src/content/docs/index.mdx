@@ -1,41 +1,51 @@
 ---
 title: IDP Blueprint
 description: Production-Ready Internal Developer Platform Reference
-template: splash
-hero:
-  tagline: An enterprise-grade Internal Developer Platform reference architecture. Built with Kubernetes, ArgoCD, and GitOps principles to deliver a complete developer experience in minutes.
-  actions:
-    - text: Start Building
-      link: /getting-started/overview/
-      icon: rocket
-      variant: primary
-    - text: View Architecture
-      link: /architecture/overview/
-      icon: right-arrow
-      variant: minimal
 ---
 
-import { Card, CardGrid, LinkButton, Icon } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkButton } from '../../components/content/index.ts';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+
+export const headings = [];
+
+<DocsLayout title={frontmatter.title} description={frontmatter.description} headings={headings}>
+
+<div class="hero-section">
+  <h1 class="hero-title text-gradient-purple">IDP Blueprint</h1>
+  <p class="hero-tagline">
+    An enterprise-grade Internal Developer Platform reference architecture. Built with Kubernetes, ArgoCD, and GitOps principles to deliver a complete developer experience in minutes.
+  </p>
+  <div class="hero-actions">
+    <LinkButton href="/getting-started/overview/" variant="primary" icon="arrow-right">
+      Start Building
+    </LinkButton>
+    <LinkButton href="/architecture/overview/" variant="secondary" icon="arrow-right">
+      View Architecture
+    </LinkButton>
+  </div>
+</div>
+
+<div class="prose">
 
 ## Platform Capabilities
 
-<CardGrid stagger>
-  <Card title="GitOps Native" icon="github">
+<CardGrid columns={2}>
+  <Card title="GitOps Native" icon="lucide:github">
     Everything is code. Infrastructure, applications, and policies are reconciled automatically from Git using **ArgoCD** and **ApplicationSets**.
   </Card>
-  <Card title="Policy as Code" icon="approve-check-circle">
+  <Card title="Policy as Code" icon="lucide:shield-check">
     Guardrails are built-in. **Kyverno** enforces labels, limits, and security contracts at the cluster level before deployment.
   </Card>
-  <Card title="Full Observability" icon="magnifier">
+  <Card title="Full Observability" icon="lucide:search">
     Day-2 ready. Pre-configured **Prometheus**, **Grafana**, **Loki**, and **Fluent-bit** stacks with dashboards and SLOs managed as code.
   </Card>
-  <Card title="Secure by Design" icon="lock">
+  <Card title="Secure by Design" icon="lucide:lock">
     No secrets in Git. **Vault** integrates with **External Secrets Operator** to inject credentials securely into Kubernetes Secrets.
   </Card>
-  <Card title="Automated Networking" icon="laptop">
+  <Card title="Automated Networking" icon="lucide:network">
     One Gateway to rule them all. **Gateway API** + **Cilium** handle traffic with automated TLS certificates via **cert-manager** and `nip.io`.
   </Card>
-  <Card title="Local to Prod" icon="laptop">
+  <Card title="Local to Prod" icon="lucide:laptop">
     Bootstraps a full enterprise-like environment on your laptop (via k3d) in **< 10 minutes**, mirroring production constraints perfectly.
   </Card>
 </CardGrid>
@@ -167,17 +177,17 @@ IDP.Infra.Gateway -> IDP.UX.Backstage
 
 The best-in-class open source components powering the platform.
 
-<CardGrid>
-  <Card title="Orchestration" icon="seti:kubernetes">
+<CardGrid columns={2}>
+  <Card title="Orchestration" icon="lucide:box">
     **Kubernetes** (k3d/k3s) + **Cilium** CNI for eBPF networking.
   </Card>
-  <Card title="Delivery" icon="rocket">
+  <Card title="Delivery" icon="lucide:rocket">
     **ArgoCD** for continuous delivery and **Argo Workflows** for pipelines.
   </Card>
-  <Card title="Security" icon="seti:lock">
+  <Card title="Security" icon="lucide:shield">
     **HashiCorp Vault** for secrets, **Trivy** for scanning, and **cert-manager** for PKI.
   </Card>
-  <Card title="Monitoring" icon="seti:chart">
+  <Card title="Monitoring" icon="lucide:bar-chart-3">
     **Prometheus** & **Grafana** for metrics, **Loki** for logs.
   </Card>
 </CardGrid>
@@ -186,24 +196,64 @@ The best-in-class open source components powering the platform.
 
 ## Who is this for?
 
-<CardGrid>
-  <Card title="Platform Engineers" icon="setting">
+<CardGrid columns={2}>
+  <Card title="Platform Engineers" icon="lucide:settings">
     Bootstrap a reference implementation to compare against your internal stack or start fresh with best practices.
-    <br/>
+
     [Explore Operational Guides](/operate/)
   </Card>
-  <Card title="Application Teams" icon="puzzle">
+  <Card title="Application Teams" icon="lucide:puzzle">
     Understand how your workloads interact with the platform, policies, and pipelines.
-    <br/>
+
     [See CI/CD Components](/components/cicd/)
   </Card>
 </CardGrid>
 
 ---
 
-<div style="text-align: center;">
-  <p>Want to learn more?</p>
-  <LinkButton href="/getting-started/overview/" variant="primary" icon="open-book" style="font-size: 1.2rem;">
+<div style="text-align: center; margin: 3rem 0;">
+  <p style="font-size: 1.125rem; margin-bottom: 1.5rem;">Want to learn more?</p>
+  <LinkButton href="/getting-started/overview/" variant="primary" icon="arrow-right">
     Explore the Documentation
   </LinkButton>
 </div>
+
+</div>
+
+</DocsLayout>
+
+<style>
+  .hero-section {
+    text-align: center;
+    padding: 4rem 1rem;
+    max-width: 56rem;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+  }
+
+  .hero-tagline {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: rgb(163 163 163);
+    margin-bottom: 2rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+</style>
