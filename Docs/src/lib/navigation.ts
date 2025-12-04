@@ -38,7 +38,12 @@ export const sidebarConfig: NavSection[] = [
     label: 'Concepts',
     collapsed: true,
     items: [
-      // Will be populated when we scan the directory
+      { label: "Overview", href: "/concepts" },
+      { label: "Design Philosophy", href: "/concepts/design-philosophy" },
+      { label: "GitOps Model", href: "/concepts/gitops-model" },
+      { label: "Networking & Gateway", href: "/concepts/networking-gateway" },
+      { label: "Scheduling & Node Pools", href: "/concepts/scheduling-nodepools" },
+      { label: "Security & Policy Model", href: "/concepts/security-policy-model" },
     ],
   },
   {
