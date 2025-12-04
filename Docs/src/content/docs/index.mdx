@@ -21,22 +21,28 @@ import { Card, CardGrid, LinkButton, Icon } from '@astrojs/starlight/components'
 
 <CardGrid stagger>
   <Card title="GitOps Native" icon="github">
-    Everything is code. Infrastructure, applications, and policies are reconciled automatically from Git using **ArgoCD** and **ApplicationSets**.
+    Everything is code. Infrastructure, applications, and policies are reconciled
+    automatically from Git using **ArgoCD** and **ApplicationSets**.
   </Card>
   <Card title="Policy as Code" icon="approve-check-circle">
-    Guardrails are built-in. **Kyverno** enforces labels, limits, and security contracts at the cluster level before deployment.
+    Guardrails are built-in. **Kyverno** enforces labels, limits, and security contracts
+    at the cluster level before deployment.
   </Card>
   <Card title="Full Observability" icon="magnifier">
-    Day-2 ready. Pre-configured **Prometheus**, **Grafana**, **Loki**, and **Fluent-bit** stacks with dashboards and SLOs managed as code.
+    Day-2 ready. Pre-configured **Prometheus**, **Grafana**, **Loki**, and **Fluent-bit**
+    stacks with dashboards and SLOs managed as code.
   </Card>
   <Card title="Secure by Design" icon="lock">
-    No secrets in Git. **Vault** integrates with **External Secrets Operator** to inject credentials securely into Kubernetes Secrets.
+    No secrets in Git. **Vault** integrates with **External Secrets Operator** to inject
+    credentials securely into Kubernetes Secrets.
   </Card>
   <Card title="Automated Networking" icon="laptop">
-    One Gateway to rule them all. **Gateway API** + **Cilium** handle traffic with automated TLS certificates via **cert-manager** and `nip.io`.
+    One Gateway to rule them all. **Gateway API** + **Cilium** handle traffic with
+    automated TLS certificates via **cert-manager** and `nip.io`.
   </Card>
   <Card title="Local to Prod" icon="laptop">
-    Bootstraps a full enterprise-like environment on your laptop (via k3d) in **< 10 minutes**, mirroring production constraints perfectly.
+    Bootstraps a full enterprise-like environment on your laptop (via k3d) in
+    **< 10 minutes**, mirroring production constraints perfectly.
   </Card>
 </CardGrid>
 
@@ -188,7 +194,8 @@ The best-in-class open source components powering the platform.
 
 <CardGrid>
   <Card title="Platform Engineers" icon="setting">
-    Bootstrap a reference implementation to compare against your internal stack or start fresh with best practices.
+    Bootstrap a reference implementation to compare against your internal stack or start
+    fresh with best practices.
     <br/>
     [Explore Operational Guides](/operate/)
   </Card>
@@ -203,7 +210,8 @@ The best-in-class open source components powering the platform.
 
 <div style="text-align: center;">
   <p>Want to learn more?</p>
-  <LinkButton href="/getting-started/overview/" variant="primary" icon="open-book" style="font-size: 1.2rem;">
+  <LinkButton href="/getting-started/overview/" variant="primary"
+              icon="open-book" style="font-size: 1.2rem;">
     Explore the Documentation
   </LinkButton>
 </div>

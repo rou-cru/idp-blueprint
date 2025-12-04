@@ -70,14 +70,6 @@ calendar-based triggers.
 
 Coordinate complex workflows across multiple platform components with event-driven coordination.
 
-## Deployment Structure
-
-| Path | Purpose |
-|------|---------|
-| `K8s/events/governance/` | Namespace, quotas, and resource limits for the eventing stack |
-| `K8s/events/argo-events/` | Argo Events controller, webhook, and EventBus configuration |
-| `K8s/events/applicationset-events.yaml` | ApplicationSet for GitOps-based event infrastructure |
-
 ## Integration Points
 
 The eventing stack integrates with:
@@ -90,5 +82,5 @@ The eventing stack integrates with:
 
 ## Getting Started
 
-See the [Argo Events documentation](argo-events.mdx) for detailed configuration, event source
-patterns, sensor recipes, and operational guidance.
+See the [Argo Events documentation](argo-events.mdx) for detailed configuration, event
+source patterns, sensor recipes, and operational guidance.
