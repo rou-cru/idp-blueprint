@@ -20,7 +20,7 @@
     // Set up Intersection Observer to track active heading
     const observerOptions = {
       rootMargin: '-80px 0px -80% 0px',
-      threshold: 1.0,
+      threshold: 0,
     };
 
     observer = new IntersectionObserver((entries) => {
@@ -50,7 +50,7 @@
     if (element) {
       const offset = 80; // Header height
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      const offsetPosition = elementPosition + window.scrollY - offset;
 
       window.scrollTo({
         top: offsetPosition,
@@ -83,7 +83,7 @@
       <h2 class="toc-title">On this page</h2>
       <ul class="toc-list">
         {#each headings as heading}
-          <li class={getIndentClass(heading.depth)}>
+          <li class="toc-item {getIndentClass(heading.depth)}">
             <a
               href={`#${heading.slug}`}
               class="toc-link"
@@ -168,19 +168,19 @@
   }
 
   /* Indentation classes */
-  :global(.pl-0) {
+  .toc-item.pl-0 {
     padding-left: 0;
   }
 
-  :global(.pl-3) {
+  .toc-item.pl-3 {
     padding-left: 0.75rem;
   }
 
-  :global(.pl-6) {
+  .toc-item.pl-6 {
     padding-left: 1.5rem;
   }
 
-  :global(.pl-9) {
+  .toc-item.pl-9 {
     padding-left: 2.25rem;
   }
 

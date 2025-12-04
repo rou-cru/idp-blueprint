@@ -7,7 +7,7 @@
     icon?: 'arrow-left' | 'arrow-right' | string;
   }
 
-  let { href, variant = 'primary', icon, children }: Props = $props();
+  let { href, variant = 'primary', icon }: Props = $props();
 
   const iconMap = {
     'arrow-left': 'lucide:arrow-left',

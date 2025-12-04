@@ -7,7 +7,7 @@
     icon?: string;
   }
 
-  let { title, href, icon, children }: Props = $props();
+  let { title, href, icon }: Props = $props();
 
   const isLink = !!href;
   const Component = isLink ? 'a' : 'div';
