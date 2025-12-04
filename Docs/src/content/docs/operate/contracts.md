@@ -17,6 +17,8 @@ How configuration sources flow through the platform to enforce contracts:
 
 ## Platform Contracts Reference
 
+<!-- markdownlint-disable MD013 -->
+
 | Contract | Type | Lives In | Enforcement | Failure Mode |
 |---|---|---|---|---|
 | **GitOps Source** | API/config | `config.toml [git]`, `Taskfile.yaml`, ApplicationSets | Observed via ArgoCD UI | Wrong repo/branch → no sync |
@@ -33,6 +35,8 @@ How configuration sources flow through the platform to enforce contracts:
 | **Admin Credentials** | Security contract | `config.toml [passwords]`, `vault-generate.sh`, ExternalSecret | ESO + Vault | Weak defaults; race avoided by Merge |
 | **Observability Rules** | Behavior contract | `K8s/observability/slo/*.yaml` (Pyrra) | Pyrra → PrometheusRule → Alertmanager | Wrong metrics/labels → SLOs don't compute |
 | **Eventing** | Event schema + routing | `K8s/events/*` (sources, sensors, triggers) | Argo Events controllers | Webhooks misrouted; triggers not firing |
+
+<!-- markdownlint-enable MD013 -->
 
 ## Contract meta checklist
 

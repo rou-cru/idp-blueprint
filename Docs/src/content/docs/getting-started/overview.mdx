@@ -35,8 +35,9 @@ All of this is deployed from this repository using `task deploy`.
 
 ## Feature Toggles (Fuses)
 
-The platform includes feature toggles called "fuses" that allow you to control which components are
-deployed. In the `config.toml` file, you'll find a `[fuses]` section where you can enable or
+The platform includes feature toggles called "fuses" that allow you to control
+which components are deployed.
+In the `config.toml` file, you'll find a `[fuses]` section where you can enable or
 disable different stacks:
 
 - `policies`: Controls deployment of Kyverno policy engine
@@ -46,8 +47,8 @@ disable different stacks:
 - `backstage`: Controls deployment of Backstage developer portal
 - `prod`: Enables production-hardened configurations
 
-By default, all stacks except `prod` are enabled. The events stack (Argo Events) is always deployed
-regardless of fuse settings.
+By default, all stacks except `prod` are enabled. The events stack (Argo Events) is
+always deployed regardless of fuse settings.
 
 ## One command: what `task deploy` actually does
 

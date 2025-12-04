@@ -5,7 +5,10 @@ sidebar:
   order: 1
 ---
 
-Quick reference for frequently performed platform operations. Each task includes a one-liner command for rapid execution.
+<!-- markdownlint-disable MD013 -->
+
+Quick reference for frequently performed platform operations. Each task includes a
+one-liner command for rapid execution.
 
 ## Cluster Operations
 
@@ -463,3 +466,5 @@ tar -czf support-bundle-$(date +%Y%m%d-%H%M%S).tar.gz support-bundle/
 
 - [URLs & Credentials](../reference/urls-credentials.md) - Service access information
 - [Disaster Recovery](../operate/disaster-recovery.md) - Recovery procedures
+
+<!-- markdownlint-enable MD013 -->
