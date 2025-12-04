@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-import { LinkButton } from '@astrojs/starlight/components';
+import { LinkButton } from '../../../components/content/index.ts';
 
 Let’s confirm things came up as expected and set realistic expectations for the first minutes after deploy.
 
@@ -155,7 +155,7 @@ Certificates are issued automatically by cert-manager using a wildcard certifica
 | Trivy Operator running | `kubectl -n security get pods | rg trivy` | `trivy-operator` and `trivy-server` pods Ready |
 | External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
 
-<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
+<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
   <LinkButton href="/getting-started/deployment/" variant="secondary" icon="arrow-left">
     Back: Deployment
   </LinkButton>

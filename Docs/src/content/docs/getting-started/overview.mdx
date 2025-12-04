@@ -4,7 +4,7 @@ sidebar:
   label: Overview
   order: 1
 ---
-import { LinkButton } from '@astrojs/starlight/components';
+import { LinkButton } from '../../../components/content/index.ts';
 
 Welcome. In this section you will deploy the platform locally, check that it is healthy, and understand at a high level what you just created.
 
@@ -91,7 +91,7 @@ Deployment complete
 Tip for debugging timing: re-run with `task --summary deploy` or `task --verbose deploy`
 to see every underlying command as it executes.
 
-<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
+<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
   <LinkButton href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">
     Next: Prerequisites
   </LinkButton>
