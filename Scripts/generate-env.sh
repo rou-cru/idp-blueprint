@@ -27,8 +27,8 @@ DOCKER_IMAGE_NAME=$(get_conf images.docker_image_name)
 DOCKER_IMAGE_TAG=$(get_conf images.docker_image_tag)
 DOCKER_IMAGE_TAG_MINIMAL=$(get_conf images.docker_image_tag_minimal)
 DOCKER_IMAGE_TAG_OPS=$(get_conf images.docker_image_tag_ops)
-IMAGE_TAG_MINIMAL=$DOCKER_IMAGE_TAG_MINIMAL
-IMAGE_TAG_OPS=$DOCKER_IMAGE_TAG_OPS
+export IMAGE_TAG_MINIMAL=$DOCKER_IMAGE_TAG_MINIMAL
+export IMAGE_TAG_OPS=$DOCKER_IMAGE_TAG_OPS
 
 # --- Network ---
 LAN_IP=$(get_conf network.lan_ip)

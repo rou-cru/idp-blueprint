@@ -34,8 +34,20 @@ backstage:
   # Wait for Dex to be ready before starting Backstage
   initContainers:
     - name: wait-for-dex
-      image: curlimages/curl:latest
+      image: roucru/idp-blueprint:ops
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: HOME
+          value: /tmp
+        - name: XDG_CACHE_HOME
+          value: /tmp/.cache
+      volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
       command:
+        - devbox
+        - run
+        - --
         - sh
         - -c
         - |
@@ -52,6 +64,12 @@ backstage:
             sleep 5
           done
           echo "SUCCESS: Dex is ready!"
+  extraVolumeMounts:
+    - name: tmp-volume
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp-volume
+      emptyDir: {}
 
 # @section -- Pod settings
 replicaCount: 1
