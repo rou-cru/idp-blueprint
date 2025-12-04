@@ -1,0 +1,164 @@
+---
+import '../styles/clerk-theme.css';
+import '../styles/typography.css';
+import Header from '../components/navigation/Header.svelte';
+import Sidebar from '../components/navigation/Sidebar.svelte';
+import TableOfContents from '../components/navigation/TableOfContents.svelte';
+import { siteConfig } from '../lib/navigation';
+
+interface Props {
+  title: string;
+  description?: string;
+  headings?: Array<{ depth: number; text: string; slug: string }>;
+}
+
+const { title, description, headings = [] } = Astro.props;
+
+const pageTitle = title ? `${title} | ${siteConfig.title}` : siteConfig.title;
+const pageDescription = description || siteConfig.description;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content={Astro.generator}>
+
+  <!-- Primary Meta Tags -->
+  <title>{pageTitle}</title>
+  <meta name="title" content={pageTitle}>
+  <meta name="description" content={pageDescription}>
+  <link rel="canonical" href={canonicalURL}>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={canonicalURL}>
+  <meta property="og:title" content={pageTitle}>
+  <meta property="og:description" content={pageDescription}>
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content={canonicalURL}>
+  <meta property="twitter:title" content={pageTitle}>
+  <meta property="twitter:description" content={pageDescription}>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="docs-layout">
+    <!-- Header -->
+    <Header client:load />
+
+    <!-- Sidebar -->
+    <Sidebar client:load currentPath={Astro.url.pathname} />
+
+    <!-- Main Content -->
+    <main class="docs-main">
+      <div class="docs-content">
+        <slot />
+      </div>
+    </main>
+
+    <!-- Table of Contents -->
+    {headings.length > 0 && (
+      <TableOfContents client:visible headings={headings} />
+    )}
+  </div>
+
+  <!-- Mobile menu state management -->
+  <script>
+    // Handle mobile menu toggle
+    let isMobileMenuOpen = false;
+
+    function handleMenuToggle() {
+      isMobileMenuOpen = !isMobileMenuOpen;
+      document.querySelector('.sidebar')?.classList.toggle('mobile-open', isMobileMenuOpen);
+
+      // Prevent body scroll when mobile menu is open
+      if (isMobileMenuOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+
+    function handleMobileClose() {
+      isMobileMenuOpen = false;
+      document.querySelector('.sidebar')?.classList.remove('mobile-open');
+      document.body.style.overflow = '';
+    }
+
+    // Attach event listeners
+    document.querySelector('.mobile-menu-button')?.addEventListener('click', handleMenuToggle);
+    document.querySelector('.sidebar-overlay')?.addEventListener('click', handleMobileClose);
+
+    // Close mobile menu on navigation
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+      link.addEventListener('click', handleMobileClose);
+    });
+
+    // Close mobile menu on ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        handleMobileClose();
+      }
+    });
+  </script>
+</body>
+</html>
+
+<style>
+  .docs-layout {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  .docs-main {
+    margin-top: 4rem; /* Header height */
+    margin-left: 0;
+    min-height: calc(100vh - 4rem);
+  }
+
+  @media (min-width: 1024px) {
+    .docs-main {
+      margin-left: 16rem; /* Sidebar width */
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .docs-main {
+      margin-right: 14rem; /* TOC width */
+    }
+  }
+
+  .docs-content {
+    max-width: 56rem; /* 896px */
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .docs-content {
+      padding: 3rem 2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .docs-content {
+      padding: 4rem 3rem;
+    }
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Prevent layout shift */
+  html, body {
+    overflow-x: hidden;
+  }
+</style>
