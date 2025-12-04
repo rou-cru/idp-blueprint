@@ -1,8 +1,8 @@
 ---
 title: Secrets Management
 sidebar:
-label: Secrets
-order: 4
+  label: Secrets
+  order: 4
 ---
 
 ## Overview

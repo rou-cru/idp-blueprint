@@ -9,7 +9,7 @@
     defaultTab?: string;
   }
 
-  let { tabs, defaultTab, children }: Props = $props();
+let { tabs, defaultTab }: Props = $props();
 
   let activeTab = $state(defaultTab || tabs[0]?.value || '');
 

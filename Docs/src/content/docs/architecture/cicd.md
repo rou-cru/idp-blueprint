@@ -42,31 +42,12 @@ classes: { actor: { style.fill: "#0f172a";
            data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
            ux: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white } }
 
-Dev: { class: actor; label: "Developer" }
-Git: { class: actor; label: "Git repo\nWorkflow specs" }
-
-Argo: {
-  class: control
-  Server: "Argo Workflows server\n(UI/API)"
-  Controller: "Workflow controller"
-}
-
-Exec: {
-  class: data
-  Pods: "Workflow pods\n(priority: cicd-execution)"
-  Secrets: "Secrets from Vault via ESO"
-}
-
-Sonar: { class: ux; label: "SonarQube\nquality gate" }
-
-![SonarQube UI Placeholder](../../../assets/images/sonarqube-ui.png)
-
 Dev -> Git: "author templates"
 Git -> Argo.Server: "submit / reference artifact"
 Argo.Server -> Argo.Controller: "create Workflow CR"
 Argo.Controller -> Exec.Pods: "launch steps"
 Exec.Pods -> Sonar: "scan & gate"
-Exec.Pods -> Argo.Server: "status / metrics"
+Exec.Pods -> Argo.Server
 ```
 
 ## Secrets & Credentials

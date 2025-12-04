@@ -1,8 +1,8 @@
 ---
 title: Design Philosophy
 sidebar:
-label: Design Philosophy
-order: 1
+  label: Design Philosophy
+  order: 1
 ---
 
 This document describes the core design philosophies that guide the architecture

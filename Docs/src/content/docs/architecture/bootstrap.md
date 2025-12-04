@@ -110,8 +110,17 @@ Flow: {
   Stacks: "Sync stacks (obs/sec/cicd/backstage)"
 }
 
-Flow.Task -> Flow.K3d -> Flow.NS -> Flow.Cilium -> Flow.CRDs -> Flow.Cert ->
-Flow.Vault -> Flow.ESO -> Flow.Argo -> Flow.Gateway -> Flow.Kyverno -> Flow.Stacks
+Flow.Task -> Flow.K3d
+Flow.K3d -> Flow.NS
+Flow.NS -> Flow.Cilium
+Flow.Cilium -> Flow.CRDs
+Flow.CRDs -> Flow.Cert
+Flow.Cert -> Flow.Vault
+Flow.Vault -> Flow.ESO
+Flow.ESO -> Flow.Argo
+Flow.Argo -> Flow.Gateway
+Flow.Gateway -> Flow.Kyverno
+Flow.Kyverno -> Flow.Stacks
 ```
 
 ### Expanded Steps
