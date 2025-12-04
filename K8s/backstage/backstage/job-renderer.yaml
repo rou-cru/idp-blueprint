@@ -68,9 +68,14 @@ spec:
         fsGroup: 1001
       containers:
         - name: renderer
-          image: bitnami/kubectl:1.29.0-debian-12-r1
-          imagePullPolicy: Always
-          command: ["/bin/bash", "-c"]
+          image: roucru/idp-blueprint:ops
+          imagePullPolicy: IfNotPresent
+          command: ["devbox", "run", "--", "bash", "-c"]
+          env:
+            - name: HOME
+              value: /tmp
+            - name: XDG_CACHE_HOME
+              value: /tmp/.cache
           args:
             - |
               set -e  # Exit on any error
@@ -136,11 +141,11 @@ spec:
               cp /tpl/app-config.override.yaml /tmp/config.yaml
 
               # Render template using sed
-              sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
-              sed -i "s/\${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
-              sed -i "s/\${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
-              sed -i "s/\${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
-              sed -i "s/\${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
+              sed -i "s/${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
+              sed -i "s/${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
+              sed -i "s/${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
+              sed -i "s/${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
+              sed -i "s/${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
 
               echo "=== Rendered configuration preview (first 20 lines) ==="
               head -n 20 /tmp/config.yaml
@@ -149,7 +154,7 @@ spec:
               kubectl create configmap backstage-app-config-override \
                 --from-file=app-config.override.yaml=/tmp/config.yaml \
                 --dry-run=client -o yaml | \
-                kubectl apply -f -
+                kubectl apply -f - 
 
               echo "=== SUCCESS: ConfigMap patched successfully ==="
           volumeMounts:
@@ -157,6 +162,8 @@ spec:
               mountPath: /vars
             - name: tpl
               mountPath: /tpl
+            - name: tmp-volume
+              mountPath: /tmp
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -182,3 +189,5 @@ spec:
         - name: tpl
           configMap:
             name: backstage-config-tpl
+        - name: tmp-volume
+          emptyDir: {}

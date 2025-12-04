@@ -35,6 +35,9 @@ spec:
         items:
           - key: .dockerconfigjson
             path: config.json
+    - name: tmp-volume
+      emptyDir: {}
+
   templates:
     - name: build-and-push
       steps:
@@ -45,18 +48,26 @@ spec:
 
     - name: git-clone
       container:
-        image: alpine/git:2.43.0
-        command: [sh, -c]
+        image: roucru/idp-blueprint:ops
+        imagePullPolicy: IfNotPresent
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
+        env:
+          - name: HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp/.cache
+        command: ["devbox", "run", "--", "sh", "-c"]
         args:
           - |
             git clone --branch {{workflow.parameters.branch}} --single-branch {{workflow.parameters.repo-url}} /workspace
         volumeMounts:
           - name: workspace
             mountPath: /workspace
+          - name: tmp-volume
+            mountPath: /tmp
 
     - name: kaniko-build
       container:

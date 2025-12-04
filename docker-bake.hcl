@@ -10,6 +10,17 @@ variable "IMAGE_TAG" {
   default = "latest"
 }
 
+// Variant tags
+variable "IMAGE_TAG_MINIMAL" {
+  type    = string
+  default = "minimal"
+}
+
+variable "IMAGE_TAG_OPS" {
+  type    = string
+  default = "ops"
+}
+
 // Common configuration
 target "default" {
   dockerfile = ".devcontainer/Dockerfile"
@@ -78,14 +89,4 @@ target "dev-portal" {
 target "dev-portal-release" {
   inherits = ["dev-portal"]
   output   = ["type=image,push=true"]
-}
-// Overwrite from Task Env vars (per variant tags)
-variable "IMAGE_TAG_MINIMAL" {
-  type    = string
-  default = "minimal"
-}
-
-variable "IMAGE_TAG_OPS" {
-  type    = string
-  default = "ops"
 }
