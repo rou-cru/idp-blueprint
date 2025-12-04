@@ -4,7 +4,7 @@
     activeTab?: string;
   }
 
-  let { value, activeTab, children }: Props = $props();
+  let { value, activeTab }: Props = $props();
 
   const isActive = $derived(activeTab === value);
 </script>

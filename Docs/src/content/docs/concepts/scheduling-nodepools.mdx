@@ -54,7 +54,6 @@ This ensures observability and GitOps remain functional even if only the control
 `IT/priorityclasses/priorityclasses.yaml` is the authoritative source applied by ArgoCD. We use four intent buckets—control plane, platform services, shared UIs, and execution/user workloads—where the relative ordering matters more than exact integer values. Higher buckets are protected from preemption, while execution and user tiers are evicted first under pressure. Critical pods tolerate control-plane taints to use the control plane as a "lifeboat" if infrastructure nodes fail.
 
 When adjusting priorities, change the manifests first; update this page only to describe the rationale and the relative ordering.
-| unclassified-workload | 0 | Missing priority | Evicted First |
 
 Key points:
 

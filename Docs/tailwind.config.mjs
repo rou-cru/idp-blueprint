@@ -38,7 +38,7 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['Geist Mono', 'ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
+        mono: ['Monaco', 'ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
       },
       borderRadius: {
         '2xl': '1rem',

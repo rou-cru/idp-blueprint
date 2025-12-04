@@ -82,7 +82,14 @@
 
 <!-- Mobile overlay -->
 {#if isMobileOpen}
-  <div class="sidebar-overlay" onclick={onMobileClose}></div>
+  <div
+    class="sidebar-overlay"
+    onclick={onMobileClose}
+    onkeydown={(e) => e.key === 'Escape' && onMobileClose?.()}
+    role="button"
+    tabindex="0"
+    aria-label="Close sidebar"
+  ></div>
 {/if}
 
 <style>

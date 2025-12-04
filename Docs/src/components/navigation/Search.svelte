@@ -77,13 +77,13 @@
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       handleClose();
-    } else if (e.key === 'ArrowDown') {
+    } else if (e.key === 'ArrowDown' && results.length > 0) {
       e.preventDefault();
       selectedIndex = Math.min(selectedIndex + 1, results.length - 1);
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === 'ArrowUp' && results.length > 0) {
       e.preventDefault();
       selectedIndex = Math.max(selectedIndex - 1, 0);
-    } else if (e.key === 'Enter' && results[selectedIndex]) {
+    } else if (e.key === 'Enter' && results.length > 0 && results[selectedIndex]) {
       e.preventDefault();
       window.location.href = results[selectedIndex].url;
     }
@@ -99,10 +99,7 @@
   <div
     class="search-overlay"
     onclick={handleClose}
-    onkeydown={(e) => e.key === 'Escape' && handleClose()}
-    role="button"
-    tabindex="-1"
-    aria-label="Close search"
+    aria-hidden="true"
   ></div>
 
   <!-- Search Modal -->

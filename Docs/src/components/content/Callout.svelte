@@ -6,7 +6,7 @@
     title?: string;
   }
 
-  let { type = 'note', title, children }: Props = $props();
+  let { type = 'note', title }: Props = $props();
 
   const config = {
     tip: {
