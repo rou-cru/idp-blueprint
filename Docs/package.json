@@ -14,12 +14,7 @@
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
     "@astrojs/sitemap": "^3.6.0",
-    "@astrojs/starlight": "^0.36.3",
     "@astrojs/ts-plugin": "^1.10.5",
-    "@carbon/layout": "^11.43.0",
-    "@carbon/styles": "^1.95.0",
-    "@carbon/type": "^11.49.0",
-    "@lorenzo_lewis/starlight-utils": "^0.3.2",
     "@yeskunall/astro-umami": "^0.0.7",
     "astro": "^5.6.1",
     "astro-d2": "^0.8.1",
@@ -32,11 +27,18 @@
     "astro-seo": "^0.8.4",
     "marked": "^17.0.1",
     "mermaid": "^11.12.1",
-    "sharp": "^0.34.2",
-    "starlight-site-graph": "^0.5.0"
+    "sharp": "^0.34.2"
   },
   "devDependencies": {
+    "@astrojs/svelte": "^7.2.2",
+    "@astrojs/tailwind": "^6.0.2",
+    "@iconify/svelte": "^5.1.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
     "prettier": "3.6.2",
-    "prettier-plugin-astro": "0.14.1"
+    "prettier-plugin-astro": "0.14.1",
+    "svelte": "^5.45.5",
+    "tailwindcss": "^3.4.18"
   }
 }
