@@ -1,9 +1,8 @@
 <script lang="ts">
-  interface Props {
-    columns?: 1 | 2 | 3 | 4;
-  }
+  const props = $props<{ columns?: 1 | 2 | 3 | 4; children?: { default?: (args: Record<string, never>) => unknown } }>();
 
-  let { columns = 2, children }: Props = $props();
+  const columns = $derived(props.columns ?? 2);
+  const children = $derived(props.children);
 
   const gridClass = {
     1: 'grid-cols-1',
@@ -14,7 +13,7 @@
 </script>
 
 <div class="card-grid {gridClass}">
-  <slot />
+  {@render children?.default?.({})}
 </div>
 
 <style>

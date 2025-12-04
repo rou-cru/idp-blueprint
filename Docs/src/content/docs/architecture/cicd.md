@@ -30,25 +30,9 @@ Secrets using defaults from `config.toml` (`passwords.sonarqube_*`) or generated
 
 ## Workflow Execution Flow
 
-```d2
-direction: right
+![CI/CD Workflow Execution](../assets/diagrams/architecture/cicd-workflow-execution.svg)
 
-classes: { actor: { style.fill: "#0f172a";
-                   style.stroke: "#38bdf8";
-                   style.font-color: white }
-           control: { style.fill: "#111827";
-                      style.stroke: "#6366f1";
-                      style.font-color: white }
-           data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
-           ux: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white } }
-
-Dev -> Git: "author templates"
-Git -> Argo.Server: "submit / reference artifact"
-Argo.Server -> Argo.Controller: "create Workflow CR"
-Argo.Controller -> Exec.Pods: "launch steps"
-Exec.Pods -> Sonar: "scan & gate"
-Exec.Pods -> Argo.Server
-```
+> **Source:** [cicd-workflow-execution.d2](../assets/diagrams/architecture/cicd-workflow-execution.d2)
 
 ## Secrets & Credentials
 

@@ -1,16 +1,19 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
 
-  interface Props {
+  const props = $props<{
     title: string;
     href?: string;
     icon?: string;
-  }
+    children?: { default?: (args: Record<string, never>) => unknown };
+  }>();
 
-  let { title, href, icon }: Props = $props();
-
-  const isLink = !!href;
-  const Component = isLink ? 'a' : 'div';
+  const title = $derived(props.title);
+  const href = $derived(props.href);
+  const icon = $derived(props.icon);
+  const isLink = $derived(Boolean(href));
+  const Component = $derived(isLink ? 'a' : 'div');
+  const children = $derived(props.children);
 </script>
 
 <svelte:element
@@ -34,11 +37,9 @@
         {/if}
       </h3>
 
-      {#if children}
-        <div class="card-description">
-          <slot />
-        </div>
-      {/if}
+      <div class="card-description">
+        {@render children?.default?.({})}
+      </div>
     </div>
   </div>
 </svelte:element>

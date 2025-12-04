@@ -245,9 +245,9 @@ Prometheus discovers this ServiceMonitor automatically and starts scraping.
 
 The five philosophies aren't independent—they form an interconnected system:
 
-![Design Philosophy Flow](../../../assets/diagrams/concepts/design-philosophy-flow.svg)
+![Design Philosophy Flow](../assets/diagrams/concepts/design-philosophy-flow.svg)
 
-> **Source:** [design-philosophy-flow.d2](../../../assets/diagrams/concepts/design-
+> **Source:** [design-philosophy-flow.d2](../assets/diagrams/concepts/design-
 > philosophy-flow.d2)
 
 **Example Flow:**

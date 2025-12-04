@@ -1,12 +1,14 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
 
-  interface Props {
+  const props = $props<{
     type?: 'tip' | 'caution' | 'danger' | 'note' | 'warning' | 'info';
     title?: string;
-  }
+    children?: { default?: (args: Record<string, never>) => unknown };
+  }>();
 
-  let { type = 'note', title }: Props = $props();
+  const type = $derived(props.type ?? 'note');
+  const title = $derived(props.title);
 
   const config = {
     tip: {
@@ -53,7 +55,7 @@
     },
   };
 
-  const currentConfig = config[type];
+  const currentConfig = $derived(config[type]);
 
   const defaultTitles = {
     tip: 'Tip',
@@ -64,7 +66,8 @@
     info: 'Info',
   };
 
-  const displayTitle = title || defaultTitles[type];
+  const displayTitle = $derived(title || defaultTitles[type]);
+  const children = $derived(props.children);
 </script>
 
 <div class="callout {currentConfig.bgClass} {currentConfig.borderClass} animate-fade-in">
@@ -77,7 +80,7 @@
     {/if}
   </div>
   <div class="callout-content">
-    <slot />
+    {@render children?.default?.({})}
   </div>
 </div>
 

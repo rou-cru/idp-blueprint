@@ -1,21 +1,27 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
 
-  interface Props {
+  const props = $props<{
     href: string;
     variant?: 'primary' | 'secondary' | 'ghost';
     icon?: 'arrow-left' | 'arrow-right' | string;
-  }
+    children?: { default?: (args: Record<string, never>) => unknown };
+  }>();
 
-  let { href, variant = 'primary', icon }: Props = $props();
+  const href = $derived(props.href);
+  const variant = $derived(props.variant ?? 'primary');
+  const icon = $derived(props.icon);
+  const children = $derived(props.children);
 
   const iconMap = {
     'arrow-left': 'lucide:arrow-left',
     'arrow-right': 'lucide:arrow-right',
   };
 
-  const iconName = icon && iconMap[icon as keyof typeof iconMap] ? iconMap[icon as keyof typeof iconMap] : icon;
-  const iconPosition = icon === 'arrow-left' ? 'left' : 'right';
+  const iconName = $derived(
+    icon && iconMap[icon as keyof typeof iconMap] ? iconMap[icon as keyof typeof iconMap] : icon
+  );
+  const iconPosition = $derived(icon === 'arrow-left' ? 'left' : 'right');
 </script>
 
 <a href={href} class="link-button link-button-{variant} button-press">
@@ -24,7 +30,7 @@
   {/if}
 
   <span class="link-button-text">
-    <slot />
+    {@render children?.default?.({})}
   </span>
 
   {#if iconName && iconPosition === 'right'}

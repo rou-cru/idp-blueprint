@@ -15,18 +15,31 @@
   let selectedIndex = $state(0);
   let pagefind: any = $state(null);
 
-  onMount(async () => {
-    // Load Pagefind library dynamically (only in browser)
-    if (typeof window !== 'undefined') {
-      try {
-        // @ts-ignore - Pagefind is loaded after build
-        const pagefindModule = await import(/* @vite-ignore */ '/pagefind/pagefind.js');
-        pagefind = pagefindModule;
-        await pagefind.init();
-      } catch (err) {
-        console.warn('Pagefind not available. Run a production build to enable search.');
-      }
+  async function loadPagefind() {
+    if (!import.meta.env.PROD || typeof window === 'undefined') return null;
+    if (pagefind) return pagefind;
+
+    await new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = '/pagefind/pagefind.js';
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load pagefind.js'));
+      document.head.appendChild(script);
+    });
+
+    // @ts-expect-error pagefind attaches to window in prod build
+    pagefind = window.pagefind || null;
+    if (pagefind?.init) {
+      await pagefind.init();
     }
+    return pagefind;
+  }
+
+  onMount(() => {
+    loadPagefind().catch(() =>
+      console.warn('Pagefind not available. Run a production build to enable search.')
+    );
   });
 
   // Watch for open state changes to focus input
@@ -39,7 +52,7 @@
 
   // Watch for query changes to perform search
   $effect(() => {
-    if (query.trim().length > 0 && pagefind) {
+    if (query.trim().length > 0) {
       performSearch(query);
     } else {
       results = [];
@@ -47,6 +60,9 @@
   });
 
   async function performSearch(searchQuery: string) {
+    if (!pagefind) {
+      await loadPagefind();
+    }
     if (!pagefind) return;
 
     isSearching = true;

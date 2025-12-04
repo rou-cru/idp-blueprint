@@ -21,9 +21,8 @@ Policy Reporter).
 
 ## Deployment Path
 
-![Policies Deployment Path](../../../assets/diagrams/architecture/policies-deployment.svg)
+![Policies Deployment Path](../assets/diagrams/architecture/policies-deployment.svg)
 
-Source: policies-deployment.d2
 
 - `Policies/app-kyverno.yaml` – ArgoCD Application applied during bootstrap.
 - `Policies/kustomization.yaml` – Installs Kyverno Helm and all policy manifests.
@@ -52,9 +51,7 @@ Kyverno policies plug into the same sync‑wave model described in
 
 ## Policy lifecycle
 
-![Policy Lifecycle](../../../assets/diagrams/architecture/policies-lifecycle.svg)
-
-Source: policies-lifecycle.d2
+![Policy Lifecycle](../assets/diagrams/architecture/policies-lifecycle.svg)
 
 ### Verify
 

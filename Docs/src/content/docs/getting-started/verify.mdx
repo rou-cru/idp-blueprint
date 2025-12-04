@@ -40,35 +40,9 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 
 ### First look at the platform
 
-```d2
-direction: right
+![Platform Entry Points](../assets/diagrams/getting-started/verify-first-look.svg)
 
-classes: {
-  actor: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#38bdf8" }
-  gateway: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-  ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
-}
-
-User: { class: actor; label: "You\n(Laptop)" }
-Browser: { class: actor; label: "Browser" }
-
-Gateway: { class: gateway; label: "Gateway API\nTLS *.nip.io" }
-
-UIs: {
-  class: ui
-  Argo: "ArgoCD"
-  Grafana
-  Vault
-  Backstage
-}
-
-User -> Browser: "open https://<app>.<ip>.nip.io"
-Browser -> Gateway: HTTPS
-Gateway -> UIs.Argo
-Gateway -> UIs.Grafana
-Gateway -> UIs.Vault
-Gateway -> UIs.Backstage
-```
+> **Source:** [verify-first-look.d2](../assets/diagrams/getting-started/verify-first-look.d2)
 
 ### What you'll see in the ArgoCD UI
 

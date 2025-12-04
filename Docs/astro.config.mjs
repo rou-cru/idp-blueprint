@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import d2 from 'astro-d2';
+// import d2 from 'astro-d2'; // DISABLED: Causes MDX parsing errors - use pre-rendered SVGs instead
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import expressiveCode from 'astro-expressive-code';
@@ -39,13 +39,13 @@ export default defineConfig({
       applyBaseStyles: false, // We'll handle base styles ourselves
     }),
 
-    // D2 diagrams
-    d2({
-      theme: {
-        dark: '200',
-      },
-      sketch: true,
-    }),
+    // D2 diagrams - DISABLED: Use pre-rendered SVGs via Scripts/d2-render.sh instead
+    // d2({
+    //   theme: {
+    //     dark: '200',
+    //   },
+    //   sketch: true,
+    // }),
 
     // Other integrations
     mermaid(),

@@ -4,12 +4,15 @@
     value: string;
   }
 
-  interface Props {
+  const props = $props<{
     tabs: Tab[];
     defaultTab?: string;
-  }
+    children?: { default?: (args: { activeTab: string }) => unknown };
+  }>();
 
-let { tabs, defaultTab }: Props = $props();
+  const tabs = $derived(props.tabs);
+  const defaultTab = $derived(props.defaultTab);
+  const children = $derived(props.children);
 
   let activeTab = $state(defaultTab || tabs[0]?.value || '');
 
@@ -34,7 +37,7 @@ let { tabs, defaultTab }: Props = $props();
   </div>
 
   <div class="tabs-content">
-    <slot {activeTab} />
+    {@render children?.default?.({ activeTab })}
   </div>
 </div>
 

@@ -1,17 +1,20 @@
 <script lang="ts">
-  interface Props {
+  const props = $props<{
     value: string;
     activeTab?: string;
-  }
+    children?: { default?: (args: Record<string, never>) => unknown };
+  }>();
 
-  let { value, activeTab }: Props = $props();
+  const value = $derived(props.value);
+  const activeTab = $derived(props.activeTab);
+  const children = $derived(props.children);
 
   const isActive = $derived(activeTab === value);
 </script>
 
 {#if isActive}
   <div class="tab-panel" role="tabpanel">
-    <slot />
+    {@render children?.default?.({})}
   </div>
 {/if}
 

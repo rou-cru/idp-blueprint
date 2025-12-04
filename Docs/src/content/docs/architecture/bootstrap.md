@@ -87,41 +87,9 @@ IT/
 
 ### Bootstrap timeline
 
-```d2
-direction: right
+![Bootstrap Timeline](../assets/diagrams/architecture/bootstrap-timeline.svg)
 
-classes: { step: { style.fill: "#0f172a";
-                   style.stroke: "#22d3ee";
-                   style.font-color: white } }
-
-Flow: {
-  class: step
-  Task: "task deploy"
-  K3d: "Create k3d cluster"
-  NS: "Bootstrap namespaces"
-  Cilium: "Install Cilium"
-  CRDs: "Prometheus CRDs"
-  Cert: "cert-manager + issuers"
-  Vault: "Vault (init/unseal)"
-  ESO: "External Secrets Operator"
-  Argo: "ArgoCD + AppProjects"
-  Gateway: "Gateway API + wildcard cert"
-  Kyverno: "Kyverno + Policy Reporter"
-  Stacks: "Sync stacks (obs/sec/cicd/backstage)"
-}
-
-Flow.Task -> Flow.K3d
-Flow.K3d -> Flow.NS
-Flow.NS -> Flow.Cilium
-Flow.Cilium -> Flow.CRDs
-Flow.CRDs -> Flow.Cert
-Flow.Cert -> Flow.Vault
-Flow.Vault -> Flow.ESO
-Flow.ESO -> Flow.Argo
-Flow.Argo -> Flow.Gateway
-Flow.Gateway -> Flow.Kyverno
-Flow.Kyverno -> Flow.Stacks
-```
+> **Source:** [bootstrap-timeline.d2](../assets/diagrams/architecture/bootstrap-timeline.d2)
 
 ### Expanded Steps
 

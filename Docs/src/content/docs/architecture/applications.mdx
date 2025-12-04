@@ -26,44 +26,9 @@ Each primary directory under `K8s/` defines a stack (e.g., `observability/`, `ci
 
 ### GitOps Workflow Diagram
 
-```d2
-direction: right
+![GitOps App of AppSets](../assets/diagrams/architecture/applications-gitops-workflow.svg)
 
-classes: { git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-           ns: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
-
-Git: { class: git; label: "Git repo\nK8s/" }
-
-Argo: {
-  class: control
-  label: "ArgoCD (app-of-appsets)"
-  AppSets: {
-    CICD: "ApplicationSet: cicd"
-    OBS: "ApplicationSet: observability"
-    SEC: "ApplicationSet: security"
-    EVENTS: "ApplicationSet: events"
-    DP: "ApplicationSet: backstage"
-  }
-}
-
-Cluster: {
-  class: ns
-  label: "Namespaces"
-  CICD: "cicd"
-  OBS: "observability"
-  SEC: "security"
-  EVENTS: "events"
-  DP: "backstage"
-}
-
-Git -> Argo: "Root app\n(manages AppSets)"
-Argo.AppSets.CICD -> Cluster.CICD: "generate apps\nargo-workflows/, sonarqube/"
-Argo.AppSets.OBS -> Cluster.OBS: "generate apps\nloki/, kube-prometheus-stack/"
-Argo.AppSets.SEC -> Cluster.SEC: "generate apps\ntrivy-operator/"
-Argo.AppSets.EVENTS -> Cluster.EVENTS: "generate apps\nargo-events/"
-Argo.AppSets.DP -> Cluster.DP: "generate apps\nbackstage/"
-```
+> **Source:** [applications-gitops-workflow.d2](../assets/diagrams/architecture/applications-gitops-workflow.d2)
 
 ## Bootstrap and Standalone Applications
 
