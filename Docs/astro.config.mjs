@@ -11,6 +11,8 @@ import yeskunallumami from '@yeskunall/astro-umami';
 import mermaid from 'astro-mermaid';
 import svelte from '@astrojs/svelte';
 import tailwind from '@astrojs/tailwind';
+import remarkDirective from 'remark-directive';
+import { remarkCallouts } from './src/utils/remark-callouts.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,8 +26,10 @@ export default defineConfig({
       },
     }),
 
-    // MDX support
-    mdx(),
+    // MDX support with remark plugins
+    mdx({
+      remarkPlugins: [remarkDirective, remarkCallouts],
+    }),
 
     // Svelte components
     svelte(),
