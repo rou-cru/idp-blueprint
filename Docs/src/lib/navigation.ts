@@ -45,7 +45,16 @@ export const sidebarConfig: NavSection[] = [
     label: 'Architecture',
     collapsed: true,
     items: [
-      // Will be populated when we scan the directory
+      { label: 'Overview', href: '/architecture/overview' },
+      { label: 'Bootstrap', href: '/architecture/bootstrap' },
+      { label: 'Infrastructure', href: '/architecture/infrastructure' },
+      { label: 'Applications', href: '/architecture/applications' },
+      { label: 'Secrets Management', href: '/architecture/secrets' },
+      { label: 'Policies', href: '/architecture/policies' },
+      { label: 'Observability', href: '/architecture/observability' },
+      { label: 'CI/CD', href: '/architecture/cicd' },
+      { label: 'Visual Overview', href: '/architecture/visual' },
+      { label: 'Diagrams', href: '/architecture/diagrams.d2' },
     ],
   },
   {
