@@ -5,6 +5,7 @@ extends: default
 ignore: |
   .config/lint/.markdownlint-cli2.yaml
   **/node_modules/**
+  Docs/src/partials/helm-docs/**
 
 rules:
   # Disable line length checks, as Prettier will handle it.
