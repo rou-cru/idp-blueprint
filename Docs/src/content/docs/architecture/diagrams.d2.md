@@ -1,3 +1,5 @@
+# D2 Diagrams for Architecture
+
 ```d2
 direction: right
 

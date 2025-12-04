@@ -5,7 +5,8 @@ sidebar:
   order: 5
 ---
 
-Treat every component as code. Adding, changing, or removing should feel like a small, reviewable PR.
+Treat every component as code. Adding, changing, or removing should feel like a small,
+reviewable PR.
 
 ## The recipe
 
@@ -22,9 +23,13 @@ Expose UI via Gateway with an `HTTPRoute` if relevant.
 
 ## Governance overlay pattern
 
-Every stack ships with a `governance/` folder that is synced ahead of the workloads. It contains the namespace definition plus the mandatory `LimitRange` and `ResourceQuota` for that stack (`argocd.argoproj.io/sync-wave` keeps the order deterministic). Copy the pattern from any existing stack such as `K8s/events/governance/*` or `K8s/cicd/governance/*`:
+Every stack ships with a `governance/` folder that is synced ahead of the workloads. It contains
+the namespace definition plus the mandatory `LimitRange` and `ResourceQuota` for that stack
+(`argocd.argoproj.io/sync-wave` keeps the order deterministic). Copy the pattern from any existing
+stack such as `K8s/events/governance/*` or `K8s/cicd/governance/*`:
 
-1. `namespace.yaml` — canonical labels (`app.kubernetes.io/part-of`, `owner`, `business-unit`, `environment`) and sync wave annotation:
+1. `namespace.yaml` — canonical labels (`app.kubernetes.io/part-of`, `owner`, `business-unit`,
+   `environment`) and sync wave annotation:
 
    ```yaml
    metadata:
@@ -35,7 +40,8 @@ Every stack ships with a `governance/` folder that is synced ahead of the worklo
 2. `limitrange.yaml` — guardrails for default requests/limits sized for the stack.
 3. `resourcequota.yaml` — hard ceilings to keep noisy neighbors in check.
 
-This overlay is part of the platform contract ("Namespace governance" in [Contracts & Guardrails](contracts.md)); omitting it will fail reviews and breaks capacity planning.
+This overlay is part of the platform contract ("Namespace governance" in [Contracts &
+Guardrails](contracts.md)); omitting it will fail reviews and breaks capacity planning.
 
 ## Complete example: Adding Kubecost
 
@@ -172,7 +178,10 @@ echo "https://kubecost.$(dasel -f config.toml -r toml '.network.lan_ip').nip.io"
 
 ### Result
 
-The observability ApplicationSet automatically detects the new `K8s/observability/kubecost/` folder and creates the `observability-kubecost` Application. ArgoCD syncs it according to the sync wave (after core infrastructure but before SLOs), and the component integrates with the existing Prometheus instance for cost metrics.
+The observability ApplicationSet automatically detects the new `K8s/observability/kubecost/`
+folder and creates the `observability-kubecost` Application. ArgoCD syncs it according to
+the sync wave (after core infrastructure but before SLOs), and the component integrates
+with the existing Prometheus instance for cost metrics.
 
 ## Visual flow
 
