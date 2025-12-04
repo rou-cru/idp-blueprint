@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '@iconify/svelte';
+  import Icon from '@iconify/svelte';
   import { sidebarConfig } from '../../lib/navigation';
   import type { NavSection } from '../../lib/navigation';
 

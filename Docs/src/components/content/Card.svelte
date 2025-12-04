@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '@iconify/svelte';
+  import Icon from '@iconify/svelte';
 
   interface Props {
     title: string;
@@ -16,7 +16,7 @@
 <svelte:element
   this={Component}
   href={isLink ? href : undefined}
-  class="card"
+  class="card card-hover"
   class:card-link={isLink}
 >
   <div class="card-inner">

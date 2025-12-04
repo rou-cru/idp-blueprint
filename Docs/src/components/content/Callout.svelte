@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '@iconify/svelte';
+  import Icon from '@iconify/svelte';
 
   interface Props {
     type?: 'tip' | 'caution' | 'danger' | 'note' | 'warning' | 'info';
@@ -67,7 +67,7 @@
   const displayTitle = title || defaultTitles[type];
 </script>
 
-<div class="callout {currentConfig.bgClass} {currentConfig.borderClass}">
+<div class="callout {currentConfig.bgClass} {currentConfig.borderClass} animate-fade-in">
   <div class="callout-header">
     <div class="callout-icon {currentConfig.iconClass}">
       <Icon icon={currentConfig.icon} width="20" height="20" />

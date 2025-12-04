@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pnpm run postbuild",
+    "postbuild": "pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "d2:render": "../../Scripts/d2-render.sh"
@@ -36,6 +37,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdast": "^4.0.4",
     "autoprefixer": "^10.4.22",
+    "pagefind": "^1.4.0",
     "postcss": "^8.5.6",
     "prettier": "3.6.2",
     "prettier-plugin-astro": "0.14.1",

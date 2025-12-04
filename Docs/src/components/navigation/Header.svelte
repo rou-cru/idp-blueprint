@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { Icon } from '@iconify/svelte';
+  import Icon from '@iconify/svelte';
+  import Search from './Search.svelte';
+  import { onMount } from 'svelte';
 
   interface Props {
     onMenuToggle?: () => void;
@@ -18,8 +20,27 @@
 
   function handleSearch() {
     searchOpen = !searchOpen;
-    // TODO: Implement actual search functionality
   }
+
+  function handleSearchClose() {
+    searchOpen = false;
+  }
+
+  // Keyboard shortcut for search (Cmd+K or Ctrl+K)
+  onMount(() => {
+    function handleKeydown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchOpen = !searchOpen;
+      }
+    }
+
+    document.addEventListener('keydown', handleKeydown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeydown);
+    };
+  });
 </script>
 
 <header class="header">
@@ -65,27 +86,10 @@
     </div>
   </div>
 
-  <!-- Search overlay (placeholder) -->
-  {#if searchOpen}
-    <div class="search-overlay" onclick={() => searchOpen = false}>
-      <div class="search-modal" onclick={(e) => e.stopPropagation()}>
-        <div class="search-input-wrapper">
-          <Icon icon="lucide:search" width="20" height="20" class="search-icon" />
-          <input
-            type="text"
-            placeholder="Search documentation..."
-            class="search-input"
-            autofocus
-          />
-          <kbd class="search-kbd">ESC</kbd>
-        </div>
-        <div class="search-results">
-          <p class="text-dark-400 text-sm p-4">Search coming soon...</p>
-        </div>
-      </div>
-    </div>
-  {/if}
 </header>
+
+<!-- Search Component -->
+<Search bind:open={searchOpen} onClose={handleSearchClose} />
 
 <style>
   .header {
@@ -175,69 +179,5 @@
   .action-button:hover {
     color: rgb(250 250 250);
     background: rgb(23 23 23);
-  }
-
-  /* Search overlay */
-  .search-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding-top: 8rem;
-  }
-
-  .search-modal {
-    width: 100%;
-    max-width: 42rem;
-    background: rgb(23 23 23);
-    border: 1px solid rgb(38 38 38);
-    border-radius: 1rem;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
-  }
-
-  .search-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid rgb(38 38 38);
-  }
-
-  .search-icon {
-    color: rgb(163 163 163);
-    flex-shrink: 0;
-  }
-
-  .search-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: rgb(250 250 250);
-    font-size: 1rem;
-  }
-
-  .search-input::placeholder {
-    color: rgb(115 115 115);
-  }
-
-  .search-kbd {
-    padding: 0.25rem 0.5rem;
-    background: rgb(38 38 38);
-    border: 1px solid rgb(64 64 64);
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-family: ui-monospace, monospace;
-    color: rgb(163 163 163);
-  }
-
-  .search-results {
-    max-height: 24rem;
-    overflow-y: auto;
   }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '@iconify/svelte';
+  import Icon from '@iconify/svelte';
 
   interface Props {
     href: string;
@@ -18,7 +18,7 @@
   const iconPosition = icon === 'arrow-left' ? 'left' : 'right';
 </script>
 
-<a href={href} class="link-button link-button-{variant}">
+<a href={href} class="link-button link-button-{variant} button-press">
   {#if iconName && iconPosition === 'left'}
     <Icon icon={iconName} width="18" height="18" />
   {/if}

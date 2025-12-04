@@ -1,9 +1,12 @@
 ---
 import '../styles/clerk-theme.css';
 import '../styles/typography.css';
+import '../styles/animations.css';
 import Header from '../components/navigation/Header.svelte';
 import Sidebar from '../components/navigation/Sidebar.svelte';
 import TableOfContents from '../components/navigation/TableOfContents.svelte';
+import Breadcrumbs from '../components/navigation/Breadcrumbs.svelte';
+import CodeBlockEnhancer from '../components/ui/CodeBlockEnhancer.astro';
 import { siteConfig } from '../lib/navigation';
 
 interface Props {
@@ -57,7 +60,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <!-- Main Content -->
     <main class="docs-main">
-      <div class="docs-content">
+      <div class="docs-content page-transition-enter">
+        <Breadcrumbs currentPath={Astro.url.pathname} />
         <slot />
       </div>
     </main>
@@ -107,6 +111,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       }
     });
   </script>
+
+  <!-- Code block copy button enhancer -->
+  <CodeBlockEnhancer />
 </body>
 </html>
 

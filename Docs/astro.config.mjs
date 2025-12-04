@@ -39,13 +39,13 @@ export default defineConfig({
       applyBaseStyles: false, // We'll handle base styles ourselves
     }),
 
-    // D2 diagrams
-    d2({
-      theme: {
-        dark: '200',
-      },
-      sketch: true,
-    }),
+    // D2 diagrams - temporarily disabled
+    // d2({
+    //   theme: {
+    //     dark: '200',
+    //   },
+    //   sketch: true,
+    // }),
 
     // Other integrations
     mermaid(),
@@ -59,6 +59,14 @@ export default defineConfig({
   markdown: {
     shikiConfig: {
       theme: 'github-dark-dimmed',
+    },
+  },
+
+  vite: {
+    build: {
+      rollupOptions: {
+        external: ['/pagefind/pagefind.js'],
+      },
     },
   },
 });
