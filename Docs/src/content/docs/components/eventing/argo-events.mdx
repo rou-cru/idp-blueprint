@@ -5,7 +5,9 @@ title: argo-events
 import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
 import argoEventsValuesRaw from '../../../../partials/helm-docs/argo-events_values.generated.md?raw';
 
-![Version: 2.4.12](https://img.shields.io/badge/Version-2.4.12-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://argoproj.github.io/events)
+![Version: 2.4.12](https://img.shields.io/badge/Version-2.4.12-informational?style=flat-square)
+![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+[![Homepage](https://img.shields.io/badge/Homepage-blue)](https://argoproj.github.io/events)
 
 Event-driven workflow automation for Kubernetes
 
@@ -16,19 +18,28 @@ Event-driven workflow automation for Kubernetes
 | **Chart Version** | `2.4.12` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [argo-events](https://argoproj.github.io/events) |
-| **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
+| **Maintainers** | Platform Engineering Team ([repo](https://github.com/rou-cru/idp-blueprint)) |
 
 ## Why Argo Events?
 
-Argo Events is the shared nervous system of the IDP Blueprint. It listens to Kubernetes, Git, and external systems, then fans out triggers to Argo Workflows, ArgoCD, or any HTTP target. The stack is deployed from `K8s/events/*` and synchronized through `task stacks:events`, so every environment boots the same event bus, governance objects, and controller configuration.
+Argo Events is the shared nervous system of the IDP Blueprint. It listens to Kubernetes, Git,
+and external systems, then fans out triggers to Argo Workflows, ArgoCD, or any HTTP target.
+The stack is deployed from `K8s/events/*` and synchronized through `task stacks:events`, so
+every environment boots the same event bus, governance objects, and controller configuration.
 
-The event-driven model decouples producers from consumers. Event sources emit events to a bus, sensors listen to the bus and trigger actions. This pattern enables reactive automation: Git pushes trigger CI/CD workflows, certificate renewals trigger application restarts, and SLO breaches trigger remediation workflows.
+The event-driven model decouples producers from consumers. Event sources emit events to a bus,
+sensors listen to the bus and trigger actions. This pattern enables reactive automation: Git
+pushes trigger CI/CD workflows, certificate renewals trigger application restarts, and SLO
+breaches trigger remediation workflows.
 
-Argo Events integrates with the Argo ecosystem (Workflows and ArgoCD), making it a natural fit for GitOps-based platforms. Event sources and sensors are Kubernetes resources, so they're versioned in Git and deployed declaratively.
+Argo Events integrates with the Argo ecosystem (Workflows and ArgoCD), making it a natural
+fit for GitOps-based platforms. Event sources and sensors are Kubernetes resources, so they're
+versioned in Git and deployed declaratively.
 
 ## Architecture Role
 
-Argo Events operates at **Layer 2** of the platform, the Automation & Governance layer. It provides event-driven orchestration across all platform components.
+Argo Events operates at **Layer 2** of the platform, the Automation & Governance layer. It
+provides event-driven orchestration across all platform components.
 
 Key integration points:
 
@@ -38,36 +49,38 @@ Key integration points:
 - **Prometheus/Alertmanager**: Alert events trigger remediation workflows
 - **NATS EventBus**: Internal message bus for event distribution
 
-The configuration uses a three-node NATS cluster as the default EventBus. All event sources publish to this bus, and all sensors subscribe to it. This provides reliable event delivery with at-least-once semantics.
+The configuration uses a three-node NATS cluster as the default EventBus. All event sources
+publish to this bus, and all sensors subscribe to it. This provides reliable event delivery
+with at-least-once semantics.
 
-See [CI/CD Model](../../architecture/cicd.md) for how Argo Events integrates into the platform automation.
-
-## Deployment Layout
-
-| Path | Purpose |
-|------|---------|
-| `K8s/events/governance/` | Namespace, `LimitRange`, and `ResourceQuota` applied in early sync waves so the mesh has reserved capacity. |
-| `K8s/events/argo-events/values.yaml` | Helm values for the controller + webhook (priority class, tolerations, metrics, resources). |
-| `K8s/events/argo-events/eventbus.yaml` | Defines the `EventBus` using native NATS with three replicas. |
-| `K8s/events/applicationset-events.yaml` | ApplicationSet that points ArgoCD to every Eventing folder. |
+See [CI/CD Model](../../architecture/cicd.md) for how Argo Events integrates into the
+platform automation.
 
 ## Scheduling & Reliability
 
-- Both controller and webhook use the `platform-events` PriorityClass and pin to control-plane nodes through node affinity and tolerations so automation continues even if worker nodes are under pressure (`values.yaml`).
-- Rolling updates use `maxUnavailable: 0` / `maxSurge: 1` to enforce zero-downtime restarts for the controller.
-- The EventBus (`eventbus.yaml`) provisions a three-node NATS cluster with token auth; it is the single default bus referenced by all Sensors.
+- Both controller and webhook use the `platform-events` PriorityClass and pin to
+  control-plane nodes through node affinity and tolerations so automation continues even
+  if worker nodes are under pressure (`values.yaml`).
+- Rolling updates use `maxUnavailable: 0` / `maxSurge: 1` to enforce zero-downtime
+  restarts for the controller.
+- The EventBus (`eventbus.yaml`) provisions a three-node NATS cluster with token auth; it
+  is the single default bus referenced by all Sensors.
 
 ## Building Sensors and Event Sources
 
 1. Create a folder under `K8s/events/<source>-<purpose>/`.
 2. Add `EventSource` and `Sensor` manifests that point to the `default` EventBus.
-3. Label everything with the canonical metadata (`app.kubernetes.io/part-of: idp`, `owner: platform-team`, etc.) and include governance files if the folder introduces its own namespace.
+3. Label everything with the canonical metadata (`app.kubernetes.io/part-of: idp`,
+   `owner: platform-team`, etc.) and include governance files if the folder introduces its
+   own namespace.
 4. Commit and let the ApplicationSet reconcile it—no manual registration is required.
 
 Common recipes:
 
-- **Git webhooks** → trigger Argo Workflows templates or invoke the ArgoCD API for intelligent syncs.
-- **Alertmanager or Prometheus burn-rate alerts** → Sensor that dispatches remediation workflows.
+- **Git webhooks** → trigger Argo Workflows templates or invoke the ArgoCD API for
+  intelligent syncs.
+- **Alertmanager or Prometheus burn-rate alerts** → Sensor that dispatches remediation
+  workflows.
 - **Cron-style schedules** → `Calendar` trigger to fan out maintenance jobs.
 
 ## Event Source Types
@@ -76,13 +89,13 @@ Argo Events supports multiple event source types:
 
 | Type | Use Case | Example |
 |------|----------|---------|
-| **Webhook** | HTTP endpoints for external systems | GitHub push events, GitLab merge requests |
-| **Calendar** | Cron-like scheduled events | Periodic backups, nightly jobs |
-| **Resource** | Kubernetes resource changes | Pod failures, ConfigMap updates |
+| **Webhook** | HTTP endpoints for external systems | GitHub push events |
+| **Calendar** | Cron-like scheduled events | Periodic backups |
+| **Resource** | Kubernetes resource changes | ConfigMap updates |
 | **AMQP** | Message queue events | RabbitMQ, Azure Service Bus |
 | **Kafka** | Stream processing | High-throughput event streams |
 | **NATS** | Pub/sub messaging | Inter-service communication |
-| **Redis** | Cache and pub/sub | Session events, cache invalidation |
+| **Redis** | Cache and pub/sub | Session events |
 | **AWS SNS/SQS** | Cloud events | AWS service notifications |
 | **GCP Pub/Sub** | Cloud events | GCP service notifications |
 
@@ -129,7 +142,7 @@ triggers:
         method: POST
         headers:
           Authorization: Bearer <token>
-```
+```text
 
 ### Fan-Out Pattern
 
@@ -148,36 +161,47 @@ triggers:
 
 ## Observability & Operations
 
-- **Metrics**: the controller exposes `/metrics` on port `7777`; a `ServiceMonitor` with selector `prometheus: kube-prometheus` is created automatically so Prometheus scrapes it.
-- **Health**: `kubectl -n argo-events get pods` verifies controller/webhook readiness; `kubectl -n argo-events get eventbus` shows NATS replicas.
+- **Metrics**: the controller exposes `/metrics` on port `7777`; a `ServiceMonitor` with
+  selector `prometheus: kube-prometheus` is created automatically so Prometheus scrapes it.
+- **Health**: `kubectl -n argo-events get pods` verifies controller/webhook readiness;
+  `kubectl -n argo-events get eventbus` shows NATS replicas.
 - **Event Sources**: `kubectl -n argo-events get eventsource` lists configured event sources
 - **Sensors**: `kubectl -n argo-events get sensor` lists active sensors
-- **EventBus Status**: `kubectl -n argo-events get eventbus default -o yaml` shows NATS cluster health
-- **Redeploy**: `task stacks:events` reapplies the ApplicationSet and Helm release; use it after changing values or adding new sources.
-- **Cleanup/testing**: `task deploy` already includes the Events stack; `task destroy` removes it with the rest of the platform.
+- **EventBus Status**: `kubectl -n argo-events get eventbus default -o yaml` shows NATS
+  cluster health
+- **Redeploy**: `task stacks:events` reapplies the ApplicationSet and Helm release; use it
+  after changing values or adding new sources.
+- **Cleanup/testing**: `task deploy` already includes the Events stack; `task destroy` removes
+  it with the rest of the platform.
 
 ## Extending to Other Stacks
 
 Treat Events as a cross-cutting concern:
 
 - **CI/CD**: Workflows triggered by Sensor payloads instead of manual submissions.
-- **Security**: Stream Trivy or Kyverno reports into Sensors for auto-ticketing or rollback automation.
+- **Security**: Stream Trivy or Kyverno reports into Sensors for auto-ticketing or rollback
+  automation.
 - **SRE automation**: Watch Gateway/Certificate events and run recovery flows.
 
-Design Sensors so they emit structured CloudEvents (or JSON payloads) that downstream tasks can parse consistently.
+Design Sensors so they emit structured CloudEvents (or JSON payloads) that downstream tasks
+can parse consistently.
 
 ## Security Considerations
 
-- **EventBus Authentication**: The NATS EventBus uses token-based authentication to prevent unauthorized event publishing
-- **RBAC**: Event sources and sensors require specific ServiceAccounts with minimal RBAC permissions
-- **Network Policies**: Cilium network policies restrict event source webhook endpoints to authorized sources
-- **Secret Management**: Webhook tokens and API keys are stored in Vault and synced via External Secrets Operator
+- **EventBus Authentication**: The NATS EventBus uses token-based authentication to prevent
+  unauthorized event publishing
+- **RBAC**: Event sources and sensors require specific ServiceAccounts with minimal RBAC
+  permissions
+- **Network Policies**: Cilium network policies restrict event source webhook endpoints to
+  authorized sources
+- **Secret Management**: Webhook tokens and API keys are stored in Vault and synced via
+  External Secrets Operator
 
 ## Common Use Cases
 
 ### Continuous Deployment Pipeline
 
-```
+```text
 GitHub Push Event → EventSource (webhook)
                   → Sensor (filters by branch)
                   → Argo Workflow (build + test + push image)
@@ -186,7 +210,7 @@ GitHub Push Event → EventSource (webhook)
 
 ### Automated Incident Response
 
-```
+```text
 Prometheus Alert → Alertmanager webhook → EventSource
                                         → Sensor (filters by severity)
                                         → Argo Workflow (remediation script)
@@ -195,7 +219,7 @@ Prometheus Alert → Alertmanager webhook → EventSource
 
 ### Scheduled Maintenance
 
-```
+```text
 Calendar EventSource (cron: 0 2 * * *)
   → Sensor
   → Argo Workflow (database backup)

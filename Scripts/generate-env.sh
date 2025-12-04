@@ -26,6 +26,9 @@ get_conf() {
 DOCKER_IMAGE_NAME=$(get_conf images.docker_image_name)
 DOCKER_IMAGE_TAG=$(get_conf images.docker_image_tag)
 DOCKER_IMAGE_TAG_MINIMAL=$(get_conf images.docker_image_tag_minimal)
+DOCKER_IMAGE_TAG_OPS=$(get_conf images.docker_image_tag_ops)
+export IMAGE_TAG_MINIMAL=$DOCKER_IMAGE_TAG_MINIMAL
+export IMAGE_TAG_OPS=$DOCKER_IMAGE_TAG_OPS
 
 # --- Network ---
 LAN_IP=$(get_conf network.lan_ip)
@@ -133,6 +136,7 @@ if [ "$OUTPUT_FORMAT" = "json" ]; then
       --arg DOCKER_IMAGE_NAME "$DOCKER_IMAGE_NAME" \
       --arg DOCKER_IMAGE_TAG "$DOCKER_IMAGE_TAG" \
       --arg DOCKER_IMAGE_TAG_MINIMAL "$DOCKER_IMAGE_TAG_MINIMAL" \
+      --arg DOCKER_IMAGE_TAG_OPS "$DOCKER_IMAGE_TAG_OPS" \
       --arg LAN_IP "$LAN_IP" \
       --arg NODEPORT_HTTP "$NODEPORT_HTTP" \
       --arg NODEPORT_HTTPS "$NODEPORT_HTTPS" \
@@ -179,6 +183,7 @@ else
     echo "DOCKER_IMAGE_NAME=$DOCKER_IMAGE_NAME"
     echo "DOCKER_IMAGE_TAG=$DOCKER_IMAGE_TAG"
     echo "DOCKER_IMAGE_TAG_MINIMAL=$DOCKER_IMAGE_TAG_MINIMAL"
+    echo "DOCKER_IMAGE_TAG_OPS=$DOCKER_IMAGE_TAG_OPS"
     echo "LAN_IP=$LAN_IP"
     echo "NODEPORT_HTTP=$NODEPORT_HTTP"
     echo "NODEPORT_HTTPS=$NODEPORT_HTTPS"

@@ -3,9 +3,11 @@ title: Operate — run the platform in practice
 ---
 ---
 
-This section focuses on day‑2 operation: backups, upgrades, scaling, and recovery. It assumes you have deployed the platform and understand the basics of its architecture.
+This section focuses on day‑2 operation: backups, upgrades, scaling, and recovery. It
+assumes you have deployed the platform and understand the basics of its architecture.
 
-There is no new mental model here; we reuse the same Desired/Observed/Actionable loops from [Concepts](../concepts/index.md). The emphasis is on concrete runbooks.
+There is no new mental model here; we reuse the same Desired/Observed/Actionable loops
+from [Concepts](../concepts/index.md). The emphasis is on concrete runbooks.
 
 ## What “good operations” means for this IDP
 

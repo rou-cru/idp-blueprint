@@ -1,9 +1,8 @@
-# Style and Conventions
+# Style and Conventions (validated 2025-12-04)
 
-- **Atomic commits**: one logical change per commit to keep `git bisect` effective.
-- **Resource limits/requests mandatory** on all workloads; use explicit units (CPU in millicores like `500m`, memory `Mi/Gi`). Exception: cilium-agent intentionally without limits.
-- **Label standards**: follow `Docs/src/content/docs/reference/labels-standard.md`; namespaces must include `app.kubernetes.io/part-of`, `owner`, `business-unit`, `environment`. Canonical values: owner=platform-team, business-unit=infrastructure, environment=demo, app.kubernetes.io/part-of=idp.
-- **Helm values documentation**: use `helm-docs` annotations; comments directly above params start with `# --`, sections with `## @section`, optional defaults with `# @default -- value`.
-- **Architecture layout**: Infrastructure bootstrap in `IT/` (Cilium, cert-manager, Vault, ESO, ArgoCD, Gateway); application stacks in `K8s/` with ArgoCD App-of-AppSets; policies in `Policies/` (Kyverno engine + rules).
-- **Tooling expectations**: Develop inside Devbox or Dev Container so required CLIs (kubectl, helm, kustomize, yamllint, shellcheck, hadolint, markdownlint, checkov, trufflehog, helm-docs, k3d, ArgoCD CLI, etc.) are preinstalled.
-- **Documentation**: Docs site uses Astro/Starlight under `Docs/` (pnpm workspace). Use `task utils:docs` to regenerate metadata/helm-docs when values change.
+- **Label estándar**: ver `Docs/src/content/docs/reference/labels-standard.md`; namespaces deben llevar `app.kubernetes.io/part-of`, `owner`, `business-unit`, `environment` con valores demo por defecto (`idp`, `platform-team`, `infrastructure`, `demo`).
+- **Prioridades**: PriorityClasses definidas en `IT/priorityclasses/priorityclasses.yaml` (platform-* para control planes/dashboards/cicd/etc., user-workloads, cicd-execution, unclassified-workload). Usarlas coherentemente con el servicio.
+- **Documentar Helm values**: comentarios `# --` y `## @section` compatibles con helm-docs (ejemplo en labels-standard.md). Usa `task docs` (`Task/utils.yaml`) para regenerar metadata y helm-docs; `task docs:astro:*` para sitio Astro/Starlight en `Docs/`.
+- **Tooling**: trabajar en Devbox o Dev Container; `devbox.json` incluye kubectl, helm, kustomize, k3d, cilium CLI, argocd CLI, yamllint, shellcheck, hadolint, markdownlint, checkov, trufflehog, helm-docs, etc. pnpm/node para Docs.
+- **Estructura repo**: `IT/` bootstrap infra (Cilium, cert-manager, Vault, ESO, ArgoCD, Gateway), `K8s/` stacks GitOps (ApplicationSets), `Policies/` Kyverno+Policy Reporter, `Docs/` sitio.
+- **TLS/formatos**: Recursos deben especificar unidades explícitas (m, Mi/Gi) y labels consistentes; cilium-agent puede no tener limits según chart defaults (no enforced aquí).

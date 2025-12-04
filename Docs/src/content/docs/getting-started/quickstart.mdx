@@ -9,7 +9,8 @@ import { LinkButton } from '../../../components/content/index.ts';
 
 ---
 
-Spin up the full IDP locally with one command, then validate access and credentials. Expect eventual consistency for a few minutes while images download.
+Spin up the full IDP locally with one command, then validate access and credentials.
+Expect eventual consistency for a few minutes while images download.
 
 ## Clone the repository
 
@@ -28,35 +29,46 @@ task deploy
 
 - Creates k3d cluster `idp-demo`
 - Bootstraps core: Cilium, cert-manager, Vault, External Secrets, ArgoCD, Gateway
-- Deploys Kyverno/Policy Reporter, then ApplicationSets for observability, CI/CD, security, events, and backstage (gated by [fuses](../architecture/overview.md#feature-toggles-fuses) except events)
+- Deploys Kyverno/Policy Reporter, then ApplicationSets for observability, CI/CD,
+  security, events, and backstage (gated by
+  [fuses](../architecture/overview.md#feature-toggles-fuses) except events)
 
 Time: ~5–10 minutes depending on network and hardware.
 
 :::tip[Deploy behavior]
 
-- ArgoCD will keep syncing after the task completes. It’s normal for Applications to become Healthy/Synced gradually as images download and pods become Ready.
-- The task prints the service URLs when Gateway is ready (for example `https://argocd.<ip>.nip.io`). Copy them from the output.
+- ArgoCD will keep syncing after the task completes. It’s normal for Applications to
+  become Healthy/Synced gradually as images download and pods become Ready.
+- The task prints the service URLs when Gateway is ready (for example
+  `https://argocd.<ip>.nip.io`). Copy them from the output.
 
 :::
 
 ## First access
 
-When the Gateway is ready, open the printed URLs for exposed services. They use a nip.io wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`) and are exposed to LAN network..
+When the Gateway is ready, open the printed URLs for exposed services. They use a nip.io
+wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`) and
+are exposed to LAN network..
 
 :::caution
-Gateway NodePorts come from `config.toml`. Make sure those ports are free and allowed in your OS firewall so LAN browsers can reach the services.
+Gateway NodePorts come from `config.toml`. Make sure those ports are free and allowed in
+your OS firewall so LAN browsers can reach the services.
 :::
 
 Also you could use `k9s` to inspect the cluster state visually in CLI.
 
 ### Credentials
 
-Vault is initialized, unsealed and creates secret values automatically during deploy. Then External Secrets propagate them to workloads than need it.
+Vault is initialized, unsealed and creates secret values automatically during deploy.
+Then External Secrets propagate them to workloads than need it.
 
-Default values to the secrets created are from `config.toml` and the root token is hold in a secret.
+Default values to the secrets created are from `config.toml` and the root token is hold in
+a secret.
 
 :::danger
-Local-only root/unseal material is managed by helper scripts. However thats just a workaround to demo purpouse, dont do this on production and instead replace the file for secure methods
+Local-only root/unseal material is managed by helper scripts. However thats just a
+workaround to demo purpouse, dont do this on production and instead replace the file for
+secure methods
 :::
 
 See [Verify Installation](verify.md) for details about expected results.

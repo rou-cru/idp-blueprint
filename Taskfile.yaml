@@ -29,9 +29,15 @@ tasks:
   deploy:
     desc: "Deploy the entire IDP platform"
     interactive: true
+    cmds:
+      - task: internal:generate-env
+      # Source .env to override inherited vars with new values, then run deploy-core
+      - cmd: set -a && . ./.env && set +a && task deploy-core
+
+  deploy-core:
+    desc: "Core deployment logic (do not run directly)"
     deps:
       - internal:validate-tools
-      - internal:generate-env
     preconditions:
       - sh: test -f {{.CONFIG_FILE}}
         msg: "config.toml not found. Please keep the configuration file at the repo root."

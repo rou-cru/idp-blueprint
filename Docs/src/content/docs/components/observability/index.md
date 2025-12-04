@@ -2,7 +2,8 @@
 title: Observability Components
 ---
 
-The observability stack provides monitoring, logging, alerting, and SLO tracking capabilities for the platform.
+The observability stack provides monitoring, logging, alerting, and SLO tracking
+capabilities for the platform.
 
 ## Core Components
 

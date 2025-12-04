@@ -6,7 +6,8 @@ sidebar:
 ---
 ---
 
-This page lists every platform contract: what it is, its type, where it lives in Git, how it's enforced, and what breaks if you violate it.
+This page lists every platform contract: what it is, its type, where it lives in Git, how it's
+enforced, and what breaks if you violate it.
 
 ## Contract flow overview
 
@@ -15,6 +16,8 @@ How configuration sources flow through the platform to enforce contracts:
 ![Platform Contracts Flow](../assets/diagrams/operate/contracts-flow.svg)
 
 ## Platform Contracts Reference
+
+<!-- markdownlint-disable MD013 -->
 
 | Contract | Type | Lives In | Enforcement | Failure Mode |
 |---|---|---|---|---|
@@ -33,10 +36,13 @@ How configuration sources flow through the platform to enforce contracts:
 | **Observability Rules** | Behavior contract | `K8s/observability/slo/*.yaml` (Pyrra) | Pyrra → PrometheusRule → Alertmanager | Wrong metrics/labels → SLOs don't compute |
 | **Eventing** | Event schema + routing | `K8s/events/*` (sources, sensors, triggers) | Argo Events controllers | Webhooks misrouted; triggers not firing |
 
+<!-- markdownlint-enable MD013 -->
+
 ## Contract meta checklist
 
 - Validations: `Scripts/validate-consistency.sh` (labels, priority coverage, deprecated APIs)
 - Profiles/Fuses: `config.toml [fuses]` toggle stacks and prod hardening
 - Cluster name: `config.toml [cluster] name` used by k3d and Cilium
 
-Keep this page updated when introducing new stacks or toggles. Every new capability needs an explicit, documented contract.
+Keep this page updated when introducing new stacks or toggles. Every new capability needs an
+explicit, documented contract.

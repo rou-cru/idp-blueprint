@@ -21,6 +21,9 @@ spec:
         value: "unknown"
       - name: namespace
         value: "argocd"
+  volumes:
+    - name: tmp-volume
+      emptyDir: {}
 
   templates:
     - name: force-sync
@@ -28,9 +31,33 @@ spec:
         parameters:
           - name: app-name
           - name: namespace
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
       container:
-        image: argoproj/argocd:v2.13.0
-        command: ["/bin/sh", "-c"]
+        image: roucru/idp-blueprint:ops
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        env:
+          - name: HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp/.cache
+          - name: ARGOCD_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: argo-workflow-argocd-token
+                key: token
+                optional: true
+        volumeMounts:
+          - name: tmp-volume
+            mountPath: /tmp
+        command: ["devbox", "run", "--", "sh", "-c"]
         args:
           - |
             echo "=== ArgoCD Application Remediation ==="
@@ -53,10 +80,3 @@ spec:
 
             echo ""
             echo "✓ Application sync completed successfully"
-        env:
-          - name: ARGOCD_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: argo-workflow-argocd-token
-                key: token
-                optional: true

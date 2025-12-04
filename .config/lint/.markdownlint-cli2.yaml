@@ -30,6 +30,7 @@ ignores:
 - "K8s/**/README.md"
 - "Policies/**/README.md"
 - "AUDIT_REPORT_MKDOCS.md"
+- "Docs/src/partials/helm-docs/**"
 
 # Linting rules configuration
 
@@ -43,7 +44,7 @@ config:
 # Allow longer lines to match Prettier's configuration
 
   MD013:
-    line_length: 88
+    line_length: 92
 
 # Allow the use of inline HTML like <details> and <summary>
 
@@ -66,4 +67,9 @@ config:
         'tr',
         'td',
         'sup',
+        'MarkdownPartial',
+        'LinkButton',
+        'Card',
+        'CardGrid',
+        'div',
       ]

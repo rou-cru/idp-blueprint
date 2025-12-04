@@ -6,9 +6,11 @@ sidebar:
 ---
 import { LinkButton } from '../../../components/content/index.ts';
 
-Welcome. In this section you will deploy the platform locally, check that it is healthy, and understand at a high level what you just created.
+Welcome. In this section you will deploy the platform locally, check that it is healthy, and
+understand at a high level what you just created.
 
-If you want the full architectural view, see [Architecture overview](../architecture/overview.md). Here we focus on what you need to know to run the commands with confidence.
+If you want the full architectural view, see [Architecture overview](../architecture/overview.md).
+Here we focus on what you need to know to run the commands with confidence.
 
 ## What you will build
 
@@ -33,7 +35,10 @@ All of this is deployed from this repository using `task deploy`.
 
 ## Feature Toggles (Fuses)
 
-The platform includes feature toggles called "fuses" that allow you to control which components are deployed. In the `config.toml` file, you'll find a `[fuses]` section where you can enable or disable different stacks:
+The platform includes feature toggles called "fuses" that allow you to control
+which components are deployed.
+In the `config.toml` file, you'll find a `[fuses]` section where you can enable or
+disable different stacks:
 
 - `policies`: Controls deployment of Kyverno policy engine
 - `security`: Controls deployment of security stack (Trivy Operator)
@@ -42,7 +47,8 @@ The platform includes feature toggles called "fuses" that allow you to control w
 - `backstage`: Controls deployment of Backstage developer portal
 - `prod`: Enables production-hardened configurations
 
-By default, all stacks except `prod` are enabled. The events stack (Argo Events) is always deployed regardless of fuse settings.
+By default, all stacks except `prod` are enabled. The events stack (Argo Events) is
+always deployed regardless of fuse settings.
 
 ## One command: what `task deploy` actually does
 
@@ -70,11 +76,12 @@ flags or extra environment variables are needed; the Taskfile orchestrates every
    - Applies ApplicationSets for observability, cicd, security, backstage, and events
      (fuses gate all except events, which is always on).
 6) **Complete**
-   - Exits with "Deployment complete"; ArgoCD continues reconciling until everything is Healthy/Synced.
+   - Exits with "Deployment complete"; ArgoCD continues reconciling until everything is
+     Healthy/Synced.
 
 Real log fragments (high-level summary):
 
-```
+```text
 task: [k3d:k3d:create] ... k3d cluster create idp-demo ...
 task: [bootstrap:cilium:deploy] helm upgrade --install cilium ...
 task: [bootstrap:vault:init] Vault initialized successfully
