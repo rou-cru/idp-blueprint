@@ -2,13 +2,17 @@
 
 ## Overview
 
-The IDP Blueprint is a reference implementation for Internal Developer Platforms. Security is a critical concern as it includes components for secrets management (Vault), policy enforcement (Kyverno), and infrastructure-as-code.
+The IDP Blueprint is a reference implementation for Internal Developer Platforms.
+Security is a critical concern as it includes components for secrets management (Vault),
+policy enforcement (Kyverno), and infrastructure-as-code.
 
-We take security seriously and appreciate your efforts to responsibly disclose any security vulnerabilities.
+We take security seriously and appreciate your efforts to responsibly disclose any
+security vulnerabilities.
 
 ## Supported Versions
 
-The following versions of the IDP Blueprint are currently supported with security updates:
+The following versions of the IDP Blueprint are currently supported with security
+updates:
 
 | Version | Supported          | Notes |
 | ------- | ------------------ | ----- |
@@ -16,7 +20,8 @@ The following versions of the IDP Blueprint are currently supported with securit
 | Latest release | :white_check_mark: | Current stable release |
 | Older releases | :x: | Please upgrade to latest |
 
-**Note:** This is a **reference implementation** intended for learning and development environments. For production deployments, please:
+**Note:** This is a **reference implementation** intended for learning and development
+environments. For production deployments, please:
 
 - Review all configurations
 - Harden secrets management
@@ -25,17 +30,20 @@ The following versions of the IDP Blueprint are currently supported with securit
 
 ## Reporting a Vulnerability
 
-We use GitHub's private vulnerability reporting feature. This allows you to report security issues privately.
+We use GitHub's private vulnerability reporting feature. This allows you to report
+security issues privately.
 
 ### How to Report
 
 1. **Preferred Method - GitHub Security Advisories:**
-   - Go to the [Security tab](https://github.com/rou-cru/idp-blueprint/security/advisories)
+   - Go to the [Security tab](<https://github.com/rou-cru/idp->
+     blueprint/security/advisories)
    - Click "Report a vulnerability"
    - Fill in the details using the template provided
 
 2. **Alternative Method - Direct Contact:**
-   - If you prefer not to use GitHub's reporting system, email: [REPLACE WITH YOUR EMAIL]
+   - If you prefer not to use GitHub's reporting system, email: [REPLACE WITH YOUR
+     EMAIL]
    - Include "[SECURITY]" in the subject line
    - Provide detailed information about the vulnerability
 
@@ -204,13 +212,14 @@ We appreciate security researchers who help us keep the IDP Blueprint secure:
 
 <!-- Add names of security researchers who have reported valid vulnerabilities -->
 
-*No vulnerabilities reported yet*
+No vulnerabilities reported yet.
 
 ## Contact
 
 For security concerns:
 
-- **GitHub Security Advisories:** [Report a vulnerability](https://github.com/rou-cru/idp-blueprint/security/advisories/new)
+- **GitHub Security Advisories:** [Report a vulnerability](<https://github.com/rou->
+  cru/idp-blueprint/security/advisories/new)
 - **Email:** [REPLACE WITH YOUR EMAIL]
 - **PGP Key:** [Optional: Add PGP key fingerprint]
 
@@ -221,12 +230,14 @@ For general questions:
 
 ## References
 
-- [OWASP Kubernetes Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Kubernetes_Security_Cheat_Sheet.html)
+- [OWASP Kubernetes Security Cheat Sheet](<https://cheatsheetseries.owasp.org/cheatsheets>
+  /Kubernetes_Security_Cheat_Sheet.html)
 - [CIS Kubernetes Benchmark](https://www.cisecurity.org/benchmark/kubernetes)
-- [NSA Kubernetes Hardening Guide](https://www.nsa.gov/Press-Room/News-Highlights/Article/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/)
+- [NSA Kubernetes Hardening Guide](<https://www.nsa.gov/Press-Room/News->
+  Highlights/Article/Article/2716980/nsa-cisa-release-kubernetes-hardening-guidance/)
 - [Vault Security Model](https://www.vaultproject.io/docs/internals/security)
 - [Kyverno Best Practices](https://kyverno.io/policies/)
 
 ---
 
-*Last updated: 2025-11-23*
+Last updated: 2025-11-23

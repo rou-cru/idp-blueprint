@@ -1,11 +1,12 @@
 ---
 title: Scheduling & NodePools
 sidebar:
-  label: Scheduling & NodePools
-  order: 5
+label: Scheduling & NodePools
+order: 5
 ---
 
-The platform treats capacity as a product feature. PriorityClasses and pools ensure critical planes remain responsive even under pressure.
+The platform treats capacity as a product feature. PriorityClasses and pools ensure critical
+planes remain responsive even under pressure.
 
 ## Mental model
 
@@ -13,7 +14,8 @@ The platform treats capacity as a product feature. PriorityClasses and pools ens
 
 ## Detailed Scheduling Architecture
 
-This diagram shows how Kubernetes scheduler makes placement decisions based on PriorityClasses, node labels, taints/tolerations, and resource availability.
+This diagram shows how Kubernetes scheduler makes placement decisions based on
+PriorityClasses, node labels, taints/tolerations, and resource availability.
 
 ![Detailed Scheduling Architecture](scheduling-nodepools-2.svg)
 
@@ -36,7 +38,9 @@ This diagram shows how Kubernetes scheduler makes placement decisions based on P
 
 ### Lifeboat Strategy
 
-Critical infrastructure pods (Vault, ArgoCD, Prometheus) have **tolerations for control-plane taint**. This allows them to schedule on the control plane node as a "lifeboat" if all infrastructure nodes fail.
+Critical infrastructure pods (Vault, ArgoCD, Prometheus) have **tolerations for control-
+plane taint**. This allows them to schedule on the control plane node as a "lifeboat" if all
+infrastructure nodes fail.
 
 **Toleration example**:
 
@@ -47,18 +51,30 @@ tolerations:
   effect: NoSchedule
 ```
 
-This ensures observability and GitOps remain functional even if only the control plane survives.
+This ensures observability and GitOps remain functional even if only the control plane
+survives.
 
 ### How PriorityClasses are defined here
 
-`IT/priorityclasses/priorityclasses.yaml` is the authoritative source applied by ArgoCD. We use four intent buckets—control plane, platform services, shared UIs, and execution/user workloads—where the relative ordering matters more than exact integer values. Higher buckets are protected from preemption, while execution and user tiers are evicted first under pressure. Critical pods tolerate control-plane taints to use the control plane as a "lifeboat" if infrastructure nodes fail.
+`IT/priorityclasses/priorityclasses.yaml` is the authoritative source applied by ArgoCD. We
+use four intent buckets—control plane, platform services, shared UIs, and execution/user
+workloads—where the relative ordering matters more than exact integer values. Higher buckets
+are protected from preemption, while execution and user tiers are evicted first under
+pressure. Critical pods tolerate control-plane taints to use the control plane as a
+"lifeboat" if infrastructure nodes fail.
 
-When adjusting priorities, change the manifests first; update this page only to describe the rationale and the relative ordering.
+When adjusting priorities, change the manifests first; update this page only to describe the
+rationale and the relative ordering.
 | unclassified-workload | 0 | Missing priority | Evicted First |
 
 Key points:
 
-PriorityClasses are declared in `IT/priorityclasses/priorityclasses.yaml` and include tiers for infrastructure, events, policy, security, observability, CI/CD, dashboards, and user workloads. Every chart must set a `priorityClassName` to fail fast if missing. Pool separation reduces noisy neighbors, while DaemonSets like Cilium and Fluent-bit run everywhere. High availability is a dial that can be enabled for control planes as the platform grows.
+PriorityClasses are declared in `IT/priorityclasses/priorityclasses.yaml` and include tiers
+for infrastructure, events, policy, security, observability, CI/CD, dashboards, and user
+workloads. Every chart must set a `priorityClassName` to fail fast if missing. Pool
+separation reduces noisy neighbors, while DaemonSets like Cilium and Fluent-bit run
+everywhere. High availability is a dial that can be enabled for control planes as the
+platform grows.
 
 ## Zero-Downtime Rolling Updates
 

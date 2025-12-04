@@ -23,19 +23,19 @@ annotation:
 
 ## Specification Table
 
-| #   | Tag                           | Type       | Classification       | Meaning                                        | Example Values                   | Propagated? |
-| --- | ----------------------------- | ---------- | -------------------- | ---------------------------------------------- | -------------------------------- | ----------- |
-| 1   | `app.kubernetes.io/name`      | Label      | ✅ Official K8s      | Canonical name of the application              | `vault`, `cilium`                | Yes         |
-| 2   | `app.kubernetes.io/instance`  | Label      | ✅ Official K8s      | Unique identifier for the deployment instance  | `vault-demo`, `cilium-idp`       | Yes         |
-| 3   | `app.kubernetes.io/version`   | Label      | ✅ Official K8s      | Semantic version of the code/chart             | `"1.15.0"`                       | No          |
-| 4   | `app.kubernetes.io/component` | Label      | ✅ Official K8s      | The component's role in the architecture       | `cni`, `secret-manager`          | Yes         |
-| 5   | `app.kubernetes.io/part-of`   | Label      | ✅ Official K8s      | The higher-level application this is part of   | `idp`                            | Yes         |
-| 6   | `owner`                       | Label      | ⚠️ De Facto Standard | The team responsible for the workload          | `platform-engineer`              | Yes         |
-| 7   | `business-unit`               | Label      | ⚠️ De Facto Standard | Business unit for FinOps chargeback            | `engineering`, `infrastructure`  | Yes         |
-| 8   | `environment`                 | Label      | ⚠️ De Facto Standard | Execution environment (permanent or ephemeral) | `prod`, `staging`, `dev`, `demo` | Yes         |
-| 9   | `description`                 | Annotation | 📝 Project Specific  | A brief explanation of the resource's purpose  | `Primary ClusterIssuer...`       | No          |
-| 10  | `contact`                     | Annotation | 📝 Project Specific  | Channel for incident response                  | `#platform-alerts`               | Yes         |
-| 11  | `documentation`               | Annotation | 📝 Project Specific  | Link to runbook or technical docs              | `https://wiki.example.com/vault` | Yes         |
+|#|Tag|Type|Class|Meaning|Example|Prop?|
+|-|---|----|-----|-------|-------|-----|
+|1|app.kubernetes.io/name|Label|OffK8s|App name|vault|Yes|
+|2|app.kubernetes.io/instance|Label|OffK8s|Deployment id|vault-demo|Yes|
+|3|app.kubernetes.io/version|Label|OffK8s|Semantic version|1.15.0|No|
+|4|app.kubernetes.io/component|Label|OffK8s|Role in stack|cni|Yes|
+|5|app.kubernetes.io/part-of|Label|OffK8s|Parent app|idp|Yes|
+|6|owner|Label|DeFacto|Accountable team|platform|Yes|
+|7|business-unit|Label|DeFacto|Chargeback unit|engineering|Yes|
+|8|environment|Label|DeFacto|Execution env|prod|Yes|
+|9|description|Annotation|Project|Human summary|Primary issuer|No|
+|10|contact|Annotation|Project|Incident channel|#platform-alerts|Yes|
+|11|documentation|Annotation|Project|Runbook link|<https://wiki>|Yes|
 
 ---
 
@@ -50,23 +50,23 @@ propagate these to all resources within that namespace.
 ### Label Details
 
 1. **`app.kubernetes.io/name`**: The application's name (e.g., `vault`).
-2. **`app.kubernetes.io/instance`**: A unique name for the instance, often combining
-    name and environment (e.g., `vault-demo`).
+2. **`app.kubernetes.io/instance`**: Unique instance name, often combining name and
+   environment (e.g., `vault-demo`).
 3. **`app.kubernetes.io/version`**: The deployed version. **Must not** be used in
-    `spec.selector.matchLabels`.
+   `spec.selector.matchLabels`.
 4. **`app.kubernetes.io/component`**: The role this application plays (e.g., `cni`,
-    `secret-manager`).
+   `secret-manager`).
 5. **`app.kubernetes.io/part-of`**: The parent application. For this project, the value
-    is `idp`.
+   is `idp`.
 6. **`owner`**: The team responsible. Must be a team name, not an individual.
 7. **`business-unit`**: The organizational department for FinOps.
 8. **`environment`**: The environment type. This project uses `demo` to signify its
-    ephemeral and testing nature, distinct from permanent environments like `dev` or
-    `prod`.
+   ephemeral and testing nature, distinct from permanent environments like `dev` or
+   `prod`.
 
 ### Annotation Details
 
-9. **`description`**: A human-readable explanation of the resource. This will be used
-    by `yq` to auto-generate documentation.
-10. **`contact`**: A stable contact point for alerts, preferably a team channel.
-11. **`documentation`**: A direct URL to relevant technical documentation.
+1. **`description`**: A human-readable explanation of the resource. This will be used
+   by `yq` to auto-generate documentation.
+2. **`contact`**: A stable contact point for alerts, preferably a team channel.
+3. **`documentation`**: A direct URL to relevant technical documentation.

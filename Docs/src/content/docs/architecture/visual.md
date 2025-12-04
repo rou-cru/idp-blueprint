@@ -5,17 +5,21 @@ sidebar:
   order: 9
 ---
 
-This page collects a small set of diagrams that show how the main control loops and data paths work inside the platform. Use it as a visual reference after you have read:
+This page collects a small set of diagrams that show how the main control loops and
+data paths work inside the platform. Use it as a visual reference after you have read:
 
 - [Architecture overview](overview.md)
 - [GitOps model](../concepts/gitops-model.md)
 - [Security & policy model](../concepts/security-policy-model.md)
 
-Each diagram focuses on a single question and links back to the relevant documentation. We keep just two cross-cutting visuals here; the rest live with their detailed pages (observability, secrets, GitOps, etc.).
+Each diagram focuses on a single question and links back to the relevant documentation.
+We keep just two cross-cutting visuals here; the rest live with their detailed pages
+(observability, secrets, GitOps, etc.).
 
 ## D2 Diagram Standards
 
-We use [D2](https://d2lang.com/) for all diagrams. To maintain consistency, please use the following standard classes:
+We use [D2](https://d2lang.com/) for all diagrams. To maintain consistency, please use
+the following standard classes:
 
 | Class | Description | Style |
 | :--- | :--- | :--- |
@@ -38,7 +42,8 @@ Argo: { class: control }
 
 ![Control Backbone](../assets/diagrams/architecture/control-backbone.svg)
 
-See: [GitOps model](../concepts/gitops-model.md), [Secrets](secrets.md), [Policies](policies.md).
+See: [GitOps model](../concepts/gitops-model.md), [Secrets](secrets.md),
+[Policies](policies.md).
 
 ## 2. Gateway API service exposure
 
@@ -52,7 +57,8 @@ These diagrams show critical platform workflows step-by-step.
 
 ### Bootstrap Complete Flow
 
-Shows the complete platform initialization sequence from cluster creation to fully operational state.
+Shows the complete platform initialization sequence from cluster creation to fully
+operational state.
 
 ![Bootstrap Flow](../assets/diagrams/architecture/bootstrap-flow.svg)
 
@@ -72,4 +78,5 @@ Shows the complete flow from Git commit to running workload with policy enforcem
 
 ![GitOps Sync Flow](../assets/diagrams/architecture/gitops-sync-flow.svg)
 
-See: [GitOps model](../concepts/gitops-model.md) and [Policy model](../concepts/security-policy-model.md).
+See: [GitOps model](../concepts/gitops-model.md) and
+[Policy model](../concepts/security-policy-model.md).

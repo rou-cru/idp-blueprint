@@ -13,7 +13,8 @@ This page shows the component view of the infrastructure core layer described in
   Architecture overview.
 
 :::note[Related Documentation]
-This page focuses on the **structural organization** of bootstrap components. For the **deployment sequence and lifecycle** of these components, see [Bootstrap Layer](bootstrap.md).
+This page focuses on the **structural organization** of bootstrap components. For the
+**deployment sequence and lifecycle**, see [Bootstrap Layer](bootstrap.md).
 :::
 
 ## Guiding Principles
@@ -77,25 +78,31 @@ IT/
 
 ## Quick Reference
 
-| File / Directory             | Purpose                                                                  | Type                |
-| ---------------------------- | ------------------------------------------------------------------------ | ------------------- |
-| `k3d-cluster.yaml`           | Defines the k3d cluster (includes local registry cache).                 | k3d Config          |
-| `kustomization.yaml`         | Root Kustomize orchestrator (currently minimal).                         | Kustomize           |
-| `*-values.yaml`              | Configures a core component's Helm chart.                                | Helm Values         |
-| `namespaces/`                | Bootstrap namespace definitions for core components.                     | Kustomize Bootstrap |
-| `vault/`                     | Contains the manual Vault initialization script (`vault-manual-init.sh`).| Shell Script        |
-| `cert-manager/`              | Raw manifests for cert-manager (ClusterIssuers, CA certificates).        | Raw Manifests       |
-| `external-secrets/`          | Raw manifests for External Secrets Operator (SecretStore, ExternalSecret).| Raw Manifests       |
-| `argocd/`                    | Kustomization to support the ArgoCD Helm chart deployment.               | Kustomize           |
+| File / Directory   | Purpose                                             | Type          |
+| ------------------ | --------------------------------------------------- | ------------- |
+| `k3d-cluster.yaml` | k3d cluster + local registry cache.                 | k3d Config    |
+| `kustomization.yaml` | Root Kustomize orchestrator (minimal).            | Kustomize     |
+| `*-values.yaml`    | Configures a core component's Helm chart.           | Helm Values   |
+| `namespaces/`      | Bootstrap namespace definitions for core components.| Kustomize     |
+| `vault/`           | Manual Vault init script (`vault-manual-init.sh`).  | Shell Script  |
+| `cert-manager/`    | ClusterIssuers and CA certificates.                 | Raw Manifests |
+| `external-secrets/`| SecretStore + ExternalSecret for ESO.               | Raw Manifests |
+| `argocd/`          | Kustomize overlays supporting the Helm chart.       | Kustomize     |
 
 ## Component view — infrastructure core
 
 ```d2
 direction: right
 
-classes: { infra: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
-           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-           data: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
+classes: { infra: { style.fill: "#0f172a";
+                   style.stroke: "#38bdf8";
+                   style.font-color: white }
+           control: { style.fill: "#111827";
+                      style.stroke: "#6366f1";
+                      style.font-color: white }
+           data: { style.fill: "#0f766e";
+                   style.stroke: "#34d399";
+                   style.font-color: white } }
 
 Cluster: {
   class: infra
@@ -131,13 +138,14 @@ Cluster.Gateway -> Control.Argo: "expose UI"
 The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 
 1. **Create k3d cluster** (`k3d-cluster.yaml` includes the local registry cache).
-2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
+2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl
+   apply -f -`.
 3. **Deploy Cilium CNI** via Helm (`IT/cilium/values.yaml`).
 4. **Deploy Prometheus CRDs** via a dedicated Helm chart install.
    This is done using the `kube-prometheus-stack` chart with the `crdsOnly=true` flag.
 5. **Deploy Cert-Manager** via Helm (`IT/cert-manager/values.yaml`).
    - Wait for webhook readiness.
-   - Then apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
+   - Apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
 6. **Deploy Vault Stack**:
    - Deploy Vault via Helm (`IT/vault/values.yaml`).
    - Execute the initialization script (`vault-init.sh`) to initialize and unseal Vault.
@@ -147,8 +155,8 @@ The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
 8. **Deploy ArgoCD** via Helm (`IT/argocd/values.yaml`).
 9. **Deploy Gateway API** via Kustomize: `kustomize build gateway/ | kubectl apply -f -`.
    - Creates the Gateway resource with wildcard TLS certificate.
-10. **Deploy Policies** via ArgoCD Application: `kubectl apply -f Policies/app-kyverno.yaml`.
-11. **Deploy Application Stacks** via ApplicationSets: ArgoCD auto-discovers and deploys all apps.
+10. **Deploy Policies** via ArgoCD: `kubectl apply -f Policies/app-kyverno.yaml`.
+11. **Deploy Application Stacks** via ApplicationSets: ArgoCD discovers and deploys apps.
 
-**Key Insight:** The bootstrap process is a carefully orchestrated sequence of Helm deployments
- and Kustomize applications, managed entirely by `Taskfile.yaml`.
+**Key Insight:** Bootstrap is an orchestrated sequence of Helm deployments and Kustomize
+applications, managed by `Taskfile.yaml`.

@@ -8,16 +8,16 @@ El deploy actual de Backstage es innecesariamente lento debido a una secuenciaci
 
 ### Distribución de Sync Waves en Backstage
 
-```
+```text
 Wave -2: 13 recursos (namespace, RBAC, templates, placeholders)
 Wave -1:  7 recursos (SecretStore, ExternalSecrets, Jobs, catalog)
 Wave  1:  3 recursos (LimitRange, ResourceQuota, PostgreSQL pods)
 Wave  0:  ~ (Backstage app, Dex app - default wave)
-```
+```text
 
 ### Flujo de Deploy Actual
 
-```
+```text
 Wave -2 (espera hasta completar)
   ├─ namespace
   ├─ dex: RBAC (SA, Role, RoleBinding) + templates + placeholders
@@ -43,7 +43,7 @@ Wave 1 (espera hasta completar)
 Wave 0 (default)
   ├─ Backstage Helm release
   └─ Dex Helm release
-```
+```text
 
 ## Problemas Identificados
 
@@ -98,7 +98,7 @@ Wave 0 (default)
 
 ## Dependencias Reales (Análisis)
 
-```
+```text
 namespace (wave -2)
   └─ Requerido por: TODO
 
@@ -124,13 +124,13 @@ Backstage app (necesita: PostgreSQL, ConfigMap del job-renderer)
 
 LimitRange/ResourceQuota (necesita: namespace)
   └─ Deberían aplicarse ANTES de workloads
-```
+```text
 
 ## Propuesta de Optimización
 
 ### Nuevo Flujo de Sync Waves
 
-```
+```text
 Wave -2: Solo pre-requisitos absolutos
   └─ namespace
 
@@ -158,7 +158,7 @@ Wave 0: Recursos paralelos (NO dependen entre sí)
 Wave 1: Aplicaciones finales (esperan PostgreSQL + ConfigMaps)
   ├─ Backstage app (necesita: PostgreSQL + ConfigMap del job)
   └─ Dex app (necesita: ConfigMap del job)
-```
+```text
 
 ### Cambios Específicos por Archivo
 
@@ -169,28 +169,28 @@ Wave 1: Aplicaciones finales (esperan PostgreSQL + ConfigMaps)
    ```yaml
    # Cambiar de wave -1 a wave -1 (OK como está)
    # O puede ir a wave 0 si ExternalSecrets también van a wave 0
-   ```
+```text
 
 2. **`K8s/backstage/governance/limitrange.yaml`**
 
    ```yaml
    annotations:
      argocd.argoproj.io/sync-wave: "-1"  # Cambiar de "1" a "-1"
-   ```
+```text
 
 3. **`K8s/backstage/governance/resourcequota.yaml`**
 
    ```yaml
    annotations:
      argocd.argoproj.io/sync-wave: "-1"  # Cambiar de "1" a "-1"
-   ```
+```text
 
 4. **`K8s/backstage/backstage/values.yaml`** (línea ~136)
 
    ```yaml
    podAnnotations:
      argocd.argoproj.io/sync-wave: "0"  # Cambiar de "1" a "0"
-   ```
+```text
 
 5. **`K8s/backstage/backstage/job-renderer.yaml`**
 
@@ -201,7 +201,7 @@ Wave 1: Aplicaciones finales (esperan PostgreSQL + ConfigMaps)
    # El Job cambiar de wave -1 a wave 0:
    annotations:
      argocd.argoproj.io/sync-wave: "0"  # Cambiar de "-1" a "0"
-   ```
+```text
 
 6. **`K8s/backstage/dex/job-renderer.yaml`** (mismo cambio)
 
@@ -209,14 +209,14 @@ Wave 1: Aplicaciones finales (esperan PostgreSQL + ConfigMaps)
    # El Job cambiar de wave -1 a wave 0:
    annotations:
      argocd.argoproj.io/sync-wave: "0"  # Cambiar de "-1" a "0"
-   ```
+```text
 
 7. **`K8s/backstage/backstage/catalog-users.yaml`**
 
    ```yaml
    annotations:
      argocd.argoproj.io/sync-wave: "0"  # Cambiar de "-1" a "0"
-   ```
+```text
 
 8. **IMPORTANTE: Agregar sync-wave a las apps de Backstage y Dex**
 
@@ -270,7 +270,7 @@ kubectl get application -n argocd -l app.kubernetes.io/part-of=idp
 
 # Verificar que PostgreSQL se despliega antes que Backstage
 kubectl get pods -n backstage -w
-```
+```text
 
 ## Riesgos y Mitigaciones
 
@@ -323,7 +323,7 @@ kubectl get pods -n backstage -w
 
    # Redeploy con nuevos sync waves
    kubectl apply -f K8s/backstage/applicationset-backstage.yaml
-   ```
+```text
 
 3. Medir tiempos:
    - Tiempo total de deploy
@@ -350,23 +350,23 @@ Aplicar el mismo patrón a:
 
 Antes de la optimización (baseline):
 
-```
+```text
 Total deploy time: ~8-12 minutos
 Wave -2: ~30-60s
 Wave -1: ~2-4 min (jobs + ExternalSecrets)
 Wave 1: ~3-5 min (PostgreSQL)
 Wave 0: ~3-5 min (Backstage app)
-```
+```text
 
 Después de la optimización (esperado):
 
-```
+```text
 Total deploy time: ~5-7 minutos (-40-50%)
 Wave -2: ~30-60s (sin cambio)
 Wave -1: ~30-60s (sin jobs)
 Wave 0: ~2-3 min (PostgreSQL + jobs en paralelo)
 Wave 1: ~2-3 min (Backstage app)
-```
+```text
 
 ## Referencias
 

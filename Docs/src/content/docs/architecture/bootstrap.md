@@ -5,11 +5,13 @@ sidebar:
   order: 2
 ---
 
-This directory contains the **static / bootstrap layer** of the platform. Everything here
-  must exist _before_ ArgoCD can reconcile Git.
+This directory contains the **static / bootstrap layer** of the platform.
+Everything here must exist _before_ ArgoCD can reconcile Git.
 
 :::note[Related Documentation]
-The components are the same as in the infrastructure core. This page focuses on their **lifecycle over time** (bootstrap sequence). For the **structural view** of the same components, see [Infrastructure Core](infrastructure.md).
+The components are the same as in the infrastructure core. This page focuses
+on their **lifecycle over time** (bootstrap sequence). For the **structural
+view** of the same components, see [Infrastructure Core](infrastructure.md).
 :::
 
 ## Guiding Principles
@@ -72,13 +74,13 @@ IT/
 
 | Path | Purpose | Type |
 | --- | --- | --- |
-| `k3d-cluster.yaml` | Defines the k3d topology (1 server + 2 agents) including the local registry cache. | k3d Config |
-| `kustomization.yaml` | Root orchestrator (currently minimal but future-proof). | Kustomize |
+| `k3d-cluster.yaml` | k3d topology (1s/2a) + local registry cache. | k3d Config |
+| `kustomization.yaml` | Root orchestrator (minimal, future-proof). | Kustomize |
 | `*-values.yaml` | Helm chart configuration for each bootstrap dependency. | Helm Values |
-| `namespaces/` | Namespaces + labels required before workloads land. | Kustomize Bootstrap |
+| `namespaces/` | Namespaces + labels required before workloads land. | Kustomize |
 | `vault/` | Manual init / unseal helpers (e.g., `vault-manual-init.sh`). | Shell Script |
-| `cert-manager/` | ClusterIssuers, CA certificates, Gateway-friendly resources. | Raw Manifests |
-| `external-secrets/` | `ClusterSecretStore` + initial `ExternalSecret` objects. | Raw Manifests |
+| `cert-manager/` | ClusterIssuers, CA certs, Gateway-friendly resources. | Raw Manifests |
+| `external-secrets/` | `ClusterSecretStore` + `ExternalSecret` objects. | Manifests |
 | `argocd/` | Kustomize glue (RBAC, AppProjects) that supplements Helm. | Kustomize |
 
 ## Deployment Workflow
@@ -88,7 +90,9 @@ IT/
 ```d2
 direction: right
 
-classes: { step: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white } }
+classes: { step: { style.fill: "#0f172a";
+                   style.stroke: "#22d3ee";
+                   style.font-color: white } }
 
 Flow: {
   class: step
@@ -106,21 +110,28 @@ Flow: {
   Stacks: "Sync stacks (obs/sec/cicd/backstage)"
 }
 
-Flow.Task -> Flow.K3d -> Flow.NS -> Flow.Cilium -> Flow.CRDs -> Flow.Cert -> Flow.Vault -> Flow.ESO -> Flow.Argo -> Flow.Gateway -> Flow.Kyverno -> Flow.Stacks
+Flow.Task -> Flow.K3d -> Flow.NS -> Flow.Cilium -> Flow.CRDs -> Flow.Cert ->
+Flow.Vault -> Flow.ESO -> Flow.Argo -> Flow.Gateway -> Flow.Kyverno -> Flow.Stacks
 ```
 
 ### Expanded Steps
 
-1. **Create the cluster** via `k3d-cluster.yaml` (includes a local registry cache to speed re-deployments).
+1. **Create the cluster** via `k3d-cluster.yaml` (includes a local registry cache to
+   speed redeploys).
 2. **Apply namespaces** so priority classes, quotas, and Kyverno label policies have a home.
 3. **Install Cilium** to replace the default CNI and enable the Gateway API dataplane.
-4. **Lay down Prometheus CRDs** using `prometheus-operator-crds` so later Helm releases skip CRD churn.
+4. **Lay down Prometheus CRDs** using `prometheus-operator-crds` so later Helm releases
+   skip CRD churn.
 5. **Install cert-manager** and immediately apply issuers/certificates from `cert-manager/`.
-6. **Deploy Vault** and run `Scripts/vault-init.sh` to unseal, store tokens, and enable Kubernetes auth.
-7. **Deploy External Secrets Operator** and apply `external-secrets/` to wire Vault → Kubernetes → ArgoCD.
+6. **Deploy Vault** and run `Scripts/vault-init.sh` to unseal, store tokens, and enable
+   Kubernetes auth.
+7. **Deploy External Secrets Operator** and apply `external-secrets/` to wire Vault →
+   Kubernetes → ArgoCD.
 8. **Deploy ArgoCD** (Helm) plus AppProjects from `IT/argocd/`.
 9. **Apply the Gateway** (Kustomize) to expose HTTPS endpoints backed by cert-manager.
 10. **Apply Policies** (Kyverno + Policy Reporter) so governance exists before workloads.
-11. **Let ApplicationSets run**—ArgoCD handles stacks in `K8s/` automatically once the controller is online.
+11. **Let ApplicationSets run**—ArgoCD handles stacks in `K8s/` once the controller is
+    online.
 
-**Key insight:** Everything above runs from `task deploy`, proving that a laptop-friendly IDP still benefits from strict boot order and clearly separated ownership.
+**Key insight:** Everything above runs from `task deploy`, proving that a laptop-friendly
+IDP still benefits from strict boot order and clear ownership.

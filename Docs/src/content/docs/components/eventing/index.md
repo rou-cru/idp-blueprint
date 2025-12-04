@@ -2,11 +2,14 @@
 title: Eventing Components
 ---
 
-The eventing stack provides event-driven automation and orchestration capabilities for the platform, enabling reactive workflows and intelligent system responses.
+The eventing stack provides event-driven automation and orchestration capabilities for the
+platform, enabling reactive workflows and intelligent system responses.
 
 ## Overview
 
-Event-driven architecture decouples producers from consumers, allowing the platform to react dynamically to changes in Kubernetes, Git repositories, external systems, and monitoring alerts. This enables automation patterns like:
+Event-driven architecture decouples producers from consumers, allowing the platform to react
+dynamically to changes in Kubernetes, Git repositories, external systems, and monitoring
+alerts. This enables automation patterns like:
 
 - Triggering CI/CD workflows on Git push events
 - Executing remediation workflows when SLO burn rates exceed thresholds
@@ -14,7 +17,8 @@ Event-driven architecture decouples producers from consumers, allowing the platf
 - Scheduling periodic maintenance tasks
 - Auto-scaling based on custom business metrics
 
-The eventing stack is deployed from `K8s/events/*` and synchronized through `task stacks:events`, ensuring consistent event infrastructure across all environments.
+The eventing stack is deployed from `K8s/events/*` and synchronized through `task stacks:events`,
+ensuring consistent event infrastructure across all environments.
 
 ## Core Components
 
@@ -22,7 +26,7 @@ The eventing stack is deployed from `K8s/events/*` and synchronized through `tas
 
 ## Event Flow Architecture
 
-```
+```text
 External Event Sources          Event Mesh           Event Consumers
 ┌────────────────────┐         ┌──────────┐         ┌──────────────────┐
 │ Git Webhooks       │────────▶│          │────────▶│ Argo Workflows   │
@@ -33,13 +37,14 @@ External Event Sources          Event Mesh           Event Consumers
         ▲                            │                       │
         │                            │                       │
     EventSources                 Routing                 Sensors
-```
+```text
 
 ## Key Capabilities
 
 The eventing stack provides:
 
-- **Event Ingestion**: Multiple event source types (webhooks, Kubernetes resources, message queues, cloud events)
+- **Event Ingestion**: Multiple event source types (webhooks, Kubernetes resources, message
+  queues, cloud events)
 - **Event Routing**: Reliable message bus with at-least-once delivery semantics
 - **Event Processing**: Filter, transform, and aggregate events before triggering actions
 - **Workflow Orchestration**: Trigger Argo Workflows based on event patterns
@@ -58,7 +63,8 @@ Trigger remediation workflows when monitoring alerts fire, reducing mean time to
 
 ### Scheduled Automation
 
-Execute periodic tasks like backups, cleanup jobs, and compliance scans using calendar-based triggers.
+Execute periodic tasks like backups, cleanup jobs, and compliance scans using
+calendar-based triggers.
 
 ### Cross-Service Orchestration
 
@@ -70,7 +76,7 @@ Coordinate complex workflows across multiple platform components with event-driv
 |------|---------|
 | `K8s/events/governance/` | Namespace, quotas, and resource limits for the eventing stack |
 | `K8s/events/argo-events/` | Argo Events controller, webhook, and EventBus configuration |
-| `K8s/events/applicationset-events.yaml` | ApplicationSet for GitOps-based event infrastructure deployment |
+| `K8s/events/applicationset-events.yaml` | ApplicationSet for GitOps-based event infrastructure |
 
 ## Integration Points
 
@@ -84,4 +90,5 @@ The eventing stack integrates with:
 
 ## Getting Started
 
-See the [Argo Events documentation](argo-events.mdx) for detailed configuration, event source patterns, sensor recipes, and operational guidance.
+See the [Argo Events documentation](argo-events.mdx) for detailed configuration, event source
+patterns, sensor recipes, and operational guidance.

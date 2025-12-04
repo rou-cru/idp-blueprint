@@ -7,16 +7,19 @@ sidebar:
 
 import { LinkButton } from '@astrojs/starlight/components';
 
-This is your guided tour of what “task deploy” does. It’s automated by design and converges to a working platform in minutes.
+This is your guided tour of what "task deploy" does. It's automated by design and converges to
+a working platform in minutes.
 
 ## What Happens During Deploy
 
 - Create cluster and namespaces
 - Install core infrastructure (Cilium, CRDs, cert-manager, Vault, ESO)
 - Install GitOps (ArgoCD) and expose endpoints via Gateway + TLS
-- Apply policies and let ApplicationSets sync the stacks – ApplicationSets
-  generate the ArgoCD Applications for each stack based on folders under
-  `K8s/` using sync waves to control deployment order (see [GitOps Model](../concepts/gitops-model.md#sync-waves--ordering-without-scripts) for wave definitions). Stack deployment is controlled by [fuses](../architecture/overview.md#feature-toggles-fuses) defined in `config.toml`.
+- Apply policies and let ApplicationSets sync the stacks – ApplicationSets generate the ArgoCD
+  Applications for each stack based on folders under `K8s/` using sync waves to control
+  deployment order (see [GitOps Model](../concepts/gitops-model.md#sync-waves--ordering-without-scripts)
+  for wave definitions). Stack deployment is controlled by [fuses](../architecture/overview.md#feature-toggles-fuses)
+  defined in `config.toml`.
 
 ### Platform Components
 

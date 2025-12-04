@@ -1,13 +1,13 @@
 ---
 title: Design Philosophy
 sidebar:
-  label: Design Philosophy
-  order: 1
+label: Design Philosophy
+order: 1
 ---
 
-This document describes the core design philosophies that guide the architecture and
-  implementation of the IDP Blueprint platform. These aren't just abstract principles—they
-  manifest in concrete technical decisions throughout the stack.
+This document describes the core design philosophies that guide the architecture
+and implementation of the IDP Blueprint platform. These aren't just abstract
+principles—they manifest in concrete technical decisions throughout the stack.
 
 ## The Five Philosophies
 
@@ -17,15 +17,19 @@ The platform is built on five interconnected philosophies:
 2. **Infrastructure as Code:** Infrastructure is defined in version-controlled code
 3. **GitOps:** Git is the single source of truth for system state
 4. **Security as Code:** Security policies are code, not manual checklists
-5. **Observability as Code:** Monitoring and alerting configurations are declarative and versioned
+5. **Observability as Code:** Monitoring and alerting configurations are declarative and
+   versioned
 
-These philosophies reinforce each other. GitOps builds on Infrastructure as Code. Security as Code leverages declarative configuration. Observability as Code makes the entire system's behavior visible.
+These philosophies reinforce each other. GitOps builds on Infrastructure as Code. Security
+as Code leverages declarative configuration. Observability as Code makes the entire system's
+behavior visible.
 
 ## 1. Declarative Configuration
 
-### What It Means
+### What It Means (Declarative)
 
-Instead of writing scripts that execute a sequence of steps (imperative), you declare what the desired end state should look like. The system figures out how to achieve that state.
+Instead of writing scripts that execute a sequence of steps (imperative), you declare what
+the desired end state should look like. The system figures out how to achieve that state.
 
 **Imperative:**
 
@@ -57,7 +61,7 @@ kind: Deployment
 # ...
 ```
 
-### How It Manifests in This Platform
+### How It Manifests (Declarative)
 
 - **Kubernetes Manifests:** All resources are defined declaratively as YAML
 - **Helm Charts:** Applications are templated declaratively, not scripted
@@ -68,20 +72,24 @@ kind: Deployment
 **Benefits:**
 
 - **Idempotent:** Applying the same manifest multiple times produces the same result
-- **Self-Healing:** If the current state drifts from desired state, the system automatically corrects it
+- **Self-Healing:** If the current state drifts from desired state, the system automatically
+  corrects it
 - **Predictable:** You can reason about what the system will do by reading the manifests
 
 ## 2. Infrastructure as Code
 
-### What It Means
+### What It Means (IaC)
 
-Infrastructure (networks, compute, storage, services) is defined in code files rather than configured through UIs or manual processes.
+Infrastructure (networks, compute, storage, services) is defined in code files rather than
+configured through UIs or manual processes.
 
-### How It Manifests in This Platform
+### How It Manifests (IaC)
 
 - **Helm Values:** Every component's configuration is in `values.yaml` files
-- **Kubernetes Resources:** Namespaces, RBAC, PriorityClasses, NetworkPolicies (when implemented) are all defined as code
-- **Terraform/Devbox (External):** The cluster itself can be provisioned via code (k3d, Terraform modules, etc.)
+- **Kubernetes Resources:** Namespaces, RBAC, PriorityClasses, NetworkPolicies (when
+  implemented) are all defined as code
+- **Terraform/Devbox (External):** The cluster itself can be provisioned via code (k3d,
+  Terraform modules, etc.)
 
 **This repository contains:**
 
@@ -95,26 +103,28 @@ Every environment configuration exists as code, not tribal knowledge or manual s
 
 - **Reproducibility:** Destroy and recreate the entire platform with one command
 - **Version Control:** Every change is tracked in Git with full history
-- **Code Review:** Infrastructure changes go through the same review process as application code
+- **Code Review:** Infrastructure changes go through the same review process as application
+  code
 - **Documentation:** The code itself documents how the infrastructure is configured
 
 ## 3. GitOps
 
-### What It Means
+### What It Means (GitOps)
 
-Git is the single source of truth for the desired state of the system. A GitOps operator (ArgoCD) continuously monitors Git and ensures the cluster matches what's defined there.
+Git is the single source of truth for the desired state of the system. A GitOps operator
+(ArgoCD) continuously monitors Git and ensures the cluster matches what's defined there.
 
-### How It Manifests in This Platform
+### How It Manifests (GitOps)
 
 - **ArgoCD:** Watches this repository and deploys resources automatically
 - **Self-Heal:** If someone manually changes a resource, ArgoCD reverts it to match Git
 - **Sync Waves:** Dependencies are handled declaratively via
-  `argocd.argoproj.io/sync-wave` annotations (see
-  [`GitOps, Policy, and Eventing`](gitops-model.md) for the wave model used
-  here)
+`argocd.argoproj.io/sync-wave` annotations (see
+[`GitOps, Policy, and Eventing`](gitops-model.md) for the wave model used
+here)
 - **ApplicationSets:** Dynamic application generation from templates (see
-  [`GitOps, Policy, and Eventing`](gitops-model.md) for the App‑of‑AppSets
-  pattern)
+[`GitOps, Policy, and Eventing`](gitops-model.md) for the App‑of‑AppSets
+pattern)
 
 **The GitOps Flow:**
 
@@ -130,20 +140,26 @@ This creates a feedback loop:
 
 - **Audit Trail:** Every change is a Git commit with author, timestamp, and rationale
 - **Rollback:** `git revert` to undo changes
-Disaster recovery becomes a matter of re-deploying from Git if the cluster is lost. This model fosters collaboration by allowing multiple engineers to propose changes via pull requests, ensuring consistency by eliminating environment-specific manual steps.
+Disaster recovery becomes a matter of re-deploying from Git if the cluster is
+lost. This model fosters collaboration by allowing multiple engineers to propose
+changes via pull requests, ensuring consistency by eliminating environment-specific
+manual steps.
 
 **Next Steps:**
 
-- See [GitOps Model](gitops-model.md) for ApplicationSets, sync waves, and the App-of-AppSets pattern
-- See [Application Architecture](../architecture/applications.md) for technical implementation details
+- See [GitOps Model](gitops-model.md) for ApplicationSets, sync waves, and the App-of-
+  AppSets pattern
+- See [Application Architecture](../architecture/applications.md) for technical
+  implementation details
 
 ## 4. Security as Code
 
-### What It Means
+### What It Means (Security)
 
-Security policies, access controls, and compliance requirements are defined as code and automatically enforced, not manually checked.
+Security policies, access controls, and compliance requirements are defined as code and
+automatically enforced, not manually checked.
 
-### How It Manifests in This Platform
+### How It Manifests (Security)
 
 - **Kyverno Policies:** Security and governance rules are ClusterPolicy CRDs:
   - Require resource limits
@@ -161,11 +177,15 @@ Security policies, access controls, and compliance requirements are defined as c
 
 **The philosophy in action:**
 
-Instead of a security checklist that engineers manually follow ("Did you add resource limits?"), Kyverno enforces it automatically. Violations are caught at admission time or reported via PolicyReports.
+Instead of a security checklist that engineers manually follow ("Did you add resource
+limits?"), Kyverno enforces it automatically. Violations are caught at admission time or
+reported via PolicyReports.
 
 **Current Mode:**
 
-Most policies run in `audit` mode, reporting violations without blocking. This is intentional—it guides developers without creating friction. As the platform matures, policies can migrate to `enforce` mode.
+Most policies run in `audit` mode, reporting violations without blocking. This is
+intentional—it guides developers without creating friction. As the platform matures,
+policies can migrate to `enforce` mode.
 
 **Benefits:**
 
@@ -176,13 +196,15 @@ Most policies run in `audit` mode, reporting violations without blocking. This i
 
 ## 5. Observability as Code
 
-### What It Means
+### What It Means (Observability)
 
-Monitoring, logging, and alerting configurations are declarative and version-controlled, not configured through UIs.
+Monitoring, logging, and alerting configurations are declarative and version-controlled, not
+configured through UIs.
 
-### How It Manifests in This Platform
+### How It Manifests (Observability)
 
-- **ServiceMonitors:** Prometheus scrape targets are defined as CRDs. Deploy a service with a ServiceMonitor, Prometheus discovers it automatically.
+- **ServiceMonitors:** Prometheus scrape targets are defined as CRDs. Deploy a service with
+  a ServiceMonitor, Prometheus discovers it automatically.
 
 - **PrometheusRules:** Alerting rules are defined as CRDs.
 
@@ -225,7 +247,8 @@ The five philosophies aren't independent—they form an interconnected system:
 
 ![Design Philosophy Flow](../../../assets/diagrams/concepts/design-philosophy-flow.svg)
 
-> **Source:** [design-philosophy-flow.d2](../../../assets/diagrams/concepts/design-philosophy-flow.d2)
+> **Source:** [design-philosophy-flow.d2](../../../assets/diagrams/concepts/design-
+> philosophy-flow.d2)
 
 **Example Flow:**
 
@@ -250,7 +273,8 @@ If you're working with this platform:
 - **Do:** Define a ServiceMonitor CRD in your application manifest
 
 - **Don't:** Manually create secrets and inject them into pods
-- **Do:** Store secrets in Vault, define ExternalSecrets, reference the synced Kubernetes Secret
+- **Do:** Store secrets in Vault, define ExternalSecrets, reference the synced Kubernetes
+  Secret
 
 - **Don't:** Document security policies in a wiki
 - **Do:** Define Kyverno ClusterPolicies that automatically enforce them
@@ -259,11 +283,13 @@ If you're working with this platform:
 
 These philosophies create constraints:
 
-- **Learning Curve:** Understanding declarative patterns and GitOps requires initial investment
+- **Learning Curve:** Understanding declarative patterns and GitOps requires initial
+  investment
 - **Indirection:** Debugging can be harder when automation is doing things behind the scenes
 - **Boilerplate:** Declarative manifests can be verbose compared to imperative scripts
 
-The platform accepts these trade-offs in exchange for reproducibility, auditability, and automation.
+The platform accepts these trade-offs in exchange for reproducibility, auditability, and
+automation.
 
 ## References
 
