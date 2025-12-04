@@ -60,7 +60,7 @@ kubectl describe resourcequota -n observability
 
 You'll see current usage vs. hard limits. For example:
 
-```
+```text
 requests.cpu: 1050m/1500m
 limits.memory: 3600Mi/4Gi
 ```

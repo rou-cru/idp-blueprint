@@ -67,7 +67,7 @@ options:
       - arg: --kube-proxy-arg=metrics-bind-address=0.0.0.0
         nodeFilters:
           - server:*
-      # --- END Added arguments for Prometheus monitoring ---
+    # --- END Added arguments for Prometheus monitoring ---
     nodeLabels:
       - label: role=infra
         nodeFilters:

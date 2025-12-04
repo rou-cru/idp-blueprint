@@ -5,24 +5,28 @@ sidebar:
   order: 8
 ---
 
-> **Context:** This page details the technical implementation of the [GitOps model](../concepts/gitops-model.md)
-  based
-  on the [GitOps philosophy](../concepts/design-philosophy.md#3-gitops).
+> **Context:** This page details the technical implementation of the [GitOps
+model](../concepts/gitops-model.md) based on the [GitOps
+philosophy](../concepts/design-philosophy.md#3-gitops).
 
-This document outlines the GitOps strategy for managing all applications and services
-  (workloads) deployed on the cluster. This directory (`K8s/`) is the source of truth,
-  managed exclusively by ArgoCD.
+This document outlines the GitOps strategy for managing all applications and
+services (workloads) deployed on the cluster. This directory (`K8s/`) is the
+source of truth, managed exclusively by ArgoCD.
 
-This page provides a component view of the GitOps application layer (automation/governance
-  and developer‑facing stacks).
+This page provides a component view of the GitOps application layer
+(automation/governance and developer‑facing stacks).
 
 ## Core Pattern: App of AppSets
 
-We employ a modular, scalable pattern where multiple `ApplicationSet` resources are used
-instead of a single monolithic one. This provides flexibility, clear ownership, and
-reduces the blast radius of any configuration errors.
+We employ a modular, scalable pattern where multiple `ApplicationSet` resources
+are used instead of a single monolithic one. This provides flexibility, clear
+ownership, and reduces the blast radius of any configuration errors.
 
-Each primary directory under `K8s/` defines a stack (e.g., `observability/`, `cicd/`). For every stack there is an `applicationset-<stack>.yaml` file that discovers and manages the applications within that stack. A root ArgoCD `Application`, defined outside the `K8s/` directory, deploys the `ApplicationSet` resources.
+Each primary directory under `K8s/` defines a stack (e.g., `observability/`,
+`cicd/`). For every stack there is an `applicationset-<stack>.yaml` file that
+discovers and manages the applications within that stack. A root ArgoCD
+`Application`, defined outside the `K8s/` directory, deploys the `ApplicationSet`
+resources.
 
 ### GitOps Workflow Diagram
 
@@ -30,7 +34,9 @@ Each primary directory under `K8s/` defines a stack (e.g., `observability/`, `ci
 direction: right
 
 classes: { git: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-           control: { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
+           control: { style.fill: "#111827";
+                      style.stroke: "#6366f1";
+                      style.font-color: white }
            ns: { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white } }
 
 Git: { class: git; label: "Git repo\nK8s/" }
@@ -71,7 +77,10 @@ Certain foundational, cross-cutting components like the policy engine are deploy
 first, before the main application stacks. This ensures the cluster's "rules of the
 road" are active before other workloads are deployed.
 
-The policy engine (Kyverno) and its policies are deployed as a standalone ArgoCD `Application` defined in `Policies/app-kyverno.yaml`. This application is installed during the bootstrap phase via `Taskfile.yaml` and points to the `Policies/` directory, where Kustomize orchestrates the full stack.
+The policy engine (Kyverno) and its policies are deployed as a standalone ArgoCD
+`Application` defined in `Policies/app-kyverno.yaml`. This application is installed during
+the bootstrap phase via `Taskfile.yaml` and points to the `Policies/` directory, where
+Kustomize orchestrates the full stack.
 
 This approach provides a secure bootstrap process at the cost of being a slight
 exception to the general "App of AppSets" pattern.
@@ -101,7 +110,10 @@ K8s/
     └── namespace.yaml
 ```
 
-The stack directory contains `namespace.yaml` to define the namespace and common labels, an `applicationset-<stack>.yaml` to discover stack applications, and each component’s `<app-name>/kustomization.yaml` serves as the Kustomize entry point targeted by ArgoCD.
+The stack directory contains `namespace.yaml` to define the namespace and common
+labels, an `applicationset-<stack>.yaml` to discover stack applications, and each
+component's `<app-name>/kustomization.yaml` serves as the Kustomize entry point
+targeted by ArgoCD.
 
 ## Application Manifests & Kustomize
 
@@ -113,10 +125,13 @@ Two primary patterns for Kustomize are established in this project.
 
 ### Pattern 1: local resource aggregation
 
-This is the standard approach for **in-house applications** or for grouping a set of
-related Kubernetes manifests.
+This is the standard approach for **in-house applications** or for grouping a
+set of related Kubernetes manifests.
 
-Pattern 1 aggregates local resources for in‑house applications or governance policies. A dedicated directory holds the component’s YAML files (e.g., `limitrange.yaml`, `resourcequota.yaml`) and a `kustomization.yaml` lists them under `resources`.
+Pattern 1 aggregates local resources for in‑house applications or governance
+policies. A dedicated directory holds the component's YAML files (e.g.,
+`limitrange.yaml`, `resourcequota.yaml`) and a `kustomization.yaml` lists
+them under `resources`.
 
 - **Example (`K8s/cicd/governance/kustomization.yaml`):**
 
@@ -134,7 +149,9 @@ This is the **preferred, standard method** for deploying **third-party applicati
 or any software available as a Helm chart. It allows us to version and manage the
 configuration of these tools declaratively.
 
-Pattern 2 uses Helm chart orchestration for third‑party applications. The component directory includes a `kustomization.yaml` that declares the Helm chart in `helmCharts`, and a `values.yaml` provides custom configuration.
+Pattern 2 uses Helm chart orchestration for third‑party applications. The
+component directory includes a `kustomization.yaml` that declares the Helm
+chart in `helmCharts`, and a `values.yaml` provides custom configuration.
 
 - **Example (`K8s/cicd/argo-workflows/kustomization.yaml`):**
 
@@ -172,15 +189,16 @@ depending on how each component is deployed:
 1. **Core Infrastructure Components (Managed by `Taskfile.yaml`)**
     - **Components**: Cilium, cert-manager, Vault, ArgoCD.
     - **Method**: Deployed imperatively via `helm upgrade` tasks in the bootstrap Taskfile.
-    - **Version Source**: `config.toml [versions]` (e.g., `cilium`, `cert_manager`, `vault`, `argocd`).
-      Tasks read these values through `Scripts/config-get.sh`, so changing the TOML is the single point to pin or bump chart versions.
+    - **Version Source**: `config.toml [versions]` (e.g., `cilium`, `cert_manager`,
+      `vault`, `argocd`). Tasks read these values through `Scripts/config-get.sh`, so
+      changing the TOML is the single point to pin or bump chart versions.
 
 2. **Application Stack Components (Managed by GitOps)**
     - **Components**: Argo Workflows, SonarQube, Loki, Prometheus, Trivy, etc.
     - **Method**: These components are deployed declaratively by ArgoCD via
       `ApplicationSet` resources.
     - **Version Source**: The Helm chart version is specified directly in each
-      application's respective `kustomization.yaml` file.
-      This approach keeps an application's entire configuration,
-      including its version, co-located in a single place,
+      application's respective `kustomization.yaml` file. This approach keeps
+      an application's entire configuration, including its version, co-located
+      in a single place,
       adhering to GitOps principles.

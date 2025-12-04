@@ -4,7 +4,7 @@ This directory contains all D2 diagram source files for the IDP Blueprint docume
 
 ## Directory Structure
 
-```
+```text
 diagrams/
 ├── architecture/     # Architecture diagrams (observability, secrets, policies, etc.)
 ├── concepts/         # Conceptual diagrams (design philosophy, etc.)
@@ -102,6 +102,7 @@ Argo: { class: control; label: "ArgoCD" }
 
 ## CI/CD Integration
 
-The diagram rendering is integrated into the docs build process. When you commit a `.d2` file, the CI pipeline automatically renders it to SVG.
+The diagram rendering is integrated into the docs build process. When you commit a `.d2`
+file, the CI pipeline automatically renders it to SVG.
 
 See `.github/workflows/docs.yaml` for implementation details.

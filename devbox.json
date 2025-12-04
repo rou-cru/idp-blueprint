@@ -47,7 +47,6 @@
       "export CODEX_HOME=$workspaceFolder/.codex",
       "echo 'Preparing Env...'",
       ". .devcontainer/init.sh",
-      "uv sync",
       "clear"
     ]
   }

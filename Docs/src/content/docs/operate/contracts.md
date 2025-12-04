@@ -6,7 +6,8 @@ sidebar:
 ---
 ---
 
-This page lists every platform contract: what it is, its type, where it lives in Git, how it's enforced, and what breaks if you violate it.
+This page lists every platform contract: what it is, its type, where it lives in Git, how it's
+enforced, and what breaks if you violate it.
 
 ## Contract flow overview
 
@@ -39,4 +40,5 @@ How configuration sources flow through the platform to enforce contracts:
 - Profiles/Fuses: `config.toml [fuses]` toggle stacks and prod hardening
 - Cluster name: `config.toml [cluster] name` used by k3d and Cilium
 
-Keep this page updated when introducing new stacks or toggles. Every new capability needs an explicit, documented contract.
+Keep this page updated when introducing new stacks or toggles. Every new capability needs an
+explicit, documented contract.

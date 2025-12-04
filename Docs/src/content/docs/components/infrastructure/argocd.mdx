@@ -5,7 +5,9 @@ title: argocd
 import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
 import argocdValuesRaw from '../../../../partials/helm-docs/argocd_values.generated.md?raw';
 
-![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)  ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)  [![Homepage](https://img.shields.io/badge/Homepage-blue)](https://argo-cd.readthedocs.io)
+![Version: latest](https://img.shields.io/badge/Version-latest-informational?style=flat-square)
+![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+[![Homepage](https://img.shields.io/badge/Homepage-blue)](https://argo-cd.readthedocs.io)
 
 Declarative GitOps continuous delivery for Kubernetes
 
@@ -16,45 +18,61 @@ Declarative GitOps continuous delivery for Kubernetes
 | **Chart Version** | `latest` |
 | **Chart Type** | `application` |
 | **Upstream Project** | [argocd](https://argo-cd.readthedocs.io) |
-| **Maintainers** | Platform Engineering Team ([link](https://github.com/rou-cru/idp-blueprint)) |
+| **Maintainers** | Platform Engineering Team ([repo](https://github.com/rou-cru/idp-blueprint)) |
 
 ## Why ArgoCD?
 
-ArgoCD continuously reconciles what's defined in Git with what's running in the cluster. The platform uses it for several specific features:
+ArgoCD continuously reconciles what's defined in Git with what's running in the cluster. The
+platform uses it for several specific features:
 
-- **ApplicationSets**: Generate Applications dynamically from templates, enabling patterns like "deploy to all namespaces matching this label" (see
+- **ApplicationSets**: Generate Applications dynamically from templates, enabling patterns like
+  "deploy to all namespaces matching this label" (see
   [`GitOps, Policy, and Eventing`](../../concepts/gitops-model.md) for the App‑of‑AppSets model)
-- **Sync Waves**: Orchestrate deployment order (namespaces before CRDs, CRDs before applications); see the Sync Waves section in
+- **Sync Waves**: Orchestrate deployment order (namespaces before CRDs, CRDs before applications);
+  see the Sync Waves section in
   [`GitOps, Policy, and Eventing`](../../concepts/gitops-model.md)
-- **Prometheus Metrics**: Observability into sync status, reconciliation loops, and resource health
+- **Prometheus Metrics**: Observability into sync status, reconciliation loops, and resource
+  health
 - **Multicluster Support**: Can manage multiple clusters from a single control plane
 - **UI**: Visual representation of application deployment status
 
-ArgoCD handles single-cluster and multicluster setups with the same architecture. It exposes Prometheus metrics for integration with the observability stack, and works alongside other Argo ecosystem tools (Workflows, Events).
+ArgoCD handles single-cluster and multicluster setups with the same architecture. It exposes
+Prometheus metrics for integration with the observability stack, and works alongside other Argo
+ecosystem tools (Workflows, Events).
 
-Alternatives like Flux exist and are viable. ArgoCD was chosen here primarily for its UI and ApplicationSet capabilities, which align well with the platform's requirements.
+Alternatives like Flux exist and are viable. ArgoCD was chosen here primarily for its UI and
+ApplicationSet capabilities, which align well with the platform's requirements.
 
 ## Architecture Role
 
-ArgoCD operates at **Layer 2** of the platform, the Automation & Governance layer. It's the brain that translates declarative manifests in Git into cluster state.
+ArgoCD operates at **Layer 2** of the platform, the Automation & Governance layer. It's the brain
+that translates declarative manifests in Git into cluster state.
 
 Key integration points:
 
 - **Git Provider**: Pulls manifests and monitors for changes
 - **Kubernetes API**: Applies resources and continuously reconciles desired state
 - **Kyverno**: Works in tandem during admission control (Kyverno validates what ArgoCD deploys)
-- **External Secrets**: ArgoCD deploys ExternalSecret resources, which trigger secret synchronization from Vault
-- **Prometheus**: Exposes metrics on sync status, application health, and reconciliation performance
+- **External Secrets**: ArgoCD deploys ExternalSecret resources, which trigger secret
+  synchronization from Vault
+- **Prometheus**: Exposes metrics on sync status, application health, and reconciliation
+  performance
 
-The configuration here uses `resourceTrackingMethod: annotation` for better performance (avoids label length limits) and excludes high-frequency resources like CiliumEndpoint and PolicyReport from reconciliation to reduce API server load.
+The configuration here uses `resourceTrackingMethod: annotation` for better performance (avoids
+label length limits) and excludes high-frequency resources like CiliumEndpoint and PolicyReport
+from reconciliation to reduce API server load.
 
-ArgoCD has `selfHeal: true` enabled in ApplicationSets, meaning any manual changes to resources are automatically reverted to match Git. This enforces GitOps discipline and ensures the cluster state is always reproducible.
+ArgoCD has `selfHeal: true` enabled in ApplicationSets, meaning any manual changes to resources
+are automatically reverted to match Git. This enforces GitOps discipline and ensures the cluster
+state is always reproducible.
 
 See [GitOps Model](../../concepts/gitops-model.md) for how ArgoCD orchestrates the entire platform.
 
 ## Redis Cache
 
-ArgoCD uses Redis as an internal cache to improve reconciliation performance. The application controller caches cluster state in Redis to reduce load on the Kubernetes API server during large-scale reconciliation loops.
+ArgoCD uses Redis as an internal cache to improve reconciliation performance. The application
+controller caches cluster state in Redis to reduce load on the Kubernetes API server during
+large-scale reconciliation loops.
 
 **Current Configuration:**
 
@@ -63,7 +81,8 @@ ArgoCD uses Redis as an internal cache to improve reconciliation performance. Th
 
 **How It Works:**
 
-When ArgoCD reconciles applications, it queries the Kubernetes API server for resource states. Redis caches these queries to:
+When ArgoCD reconciles applications, it queries the Kubernetes API server for resource states.
+Redis caches these queries to:
 
 - Reduce API server load during sync operations
 - Speed up application health assessments
@@ -75,7 +94,7 @@ When ArgoCD reconciles applications, it queries the Kubernetes API server for re
 - Consider Redis Sentinel or Redis Cluster for multi-replica deployments
 - Monitor cache hit rates via ArgoCD controller metrics
 
-See the [Configuration Values](#values) section below for Redis resource tuning.
+See the [Configuration Values](#configuration-values) section below for Redis resource tuning.
 
 ---
 

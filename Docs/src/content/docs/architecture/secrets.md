@@ -1,8 +1,8 @@
 ---
 title: Secrets Management
 sidebar:
-  label: Secrets
-  order: 4
+label: Secrets
+order: 4
 ---
 
 ## Overview
@@ -12,23 +12,31 @@ HashiCorp Vault serves as the **single source of truth** for all sensitive data.
 The architecture uses **External Secrets Operator (ESO)** as the unified tool
 to synchronize secrets both within the Kubernetes cluster and to external cloud providers.
 
-This page gives a cross-cutting component view of Vault + ESO and how they interact with both in-cluster and external workloads.
+This page gives a cross-cutting component view of Vault + ESO and how they interact with
+both in-cluster and external workloads.
 
 ![Vault UI Placeholder](../../../assets/images/vault-ui.png)
 
 ## Architecture Diagram
 
-![Secrets Management Architecture](../../../assets/diagrams/architecture/secrets-architecture.svg)
+![Secrets Management Architecture](../../../assets/diagrams/architecture/secrets-
+architecture.svg)
 
-> **Source:** [secrets-architecture.d2](../../../assets/diagrams/architecture/secrets-architecture.d2)
+> **Source:** [secrets-architecture.d2](../../../assets/diagrams/architecture/secrets-
+> architecture.d2)
 
 ## Flow Explanation
 
 ### Inside Cluster
 
-**Vault → ESO → Kubernetes Secrets → Pods**
+#### Vault → ESO → Kubernetes Secrets → Pods
 
-Vault stores secrets in its KV v2 engine at paths like `secret/data/*`. ESO watches for `ExternalSecret` custom resources in application namespaces and authenticates to Vault using a configured `ClusterSecretStore` that leverages Kubernetes service account authentication. ESO fetches the specified secrets from Vault and creates or updates native Kubernetes Secrets. Application Pods mount these Kubernetes Secrets as volumes or environment variables, completely unaware of Vault.
+Vault stores secrets in its KV v2 engine at paths like `secret/data/*`. ESO watches for
+`ExternalSecret` custom resources in application namespaces and authenticates to Vault using
+a configured `ClusterSecretStore` that leverages Kubernetes service account authentication.
+ESO fetches the specified secrets from Vault and creates or updates native Kubernetes
+Secrets. Application Pods mount these Kubernetes Secrets as volumes or environment
+variables, completely unaware of Vault.
 
 **Example:**
 
@@ -50,9 +58,12 @@ spec:
 
 ### Outside Cluster
 
-**Vault → ESO → Cloud Secret Managers → External Workloads**
+#### Vault → ESO → Cloud Secret Managers → External Workloads
 
-Vault stores secrets as the same source of truth. ESO uses a `PushSecret` custom resource to read secrets from Vault and propagates these secrets to external providers like AWS Secrets Manager, GCP Secret Manager, or Azure Key Vault. External workloads (e.g., AWS Lambda, GCP Cloud Run) consume secrets from their native cloud secret manager.
+Vault stores secrets as the same source of truth. ESO uses a `PushSecret` custom resource to
+read secrets from Vault and propagates these secrets to external providers like AWS Secrets
+Manager, GCP Secret Manager, or Azure Key Vault. External workloads (e.g., AWS Lambda, GCP
+Cloud Run) consume secrets from their native cloud secret manager.
 
 **Example - Push to AWS:**
 
@@ -81,7 +92,11 @@ spec:
 
 ### 1. Single Source of Truth
 
-Vault is authoritative for all secrets. No secrets are created directly in Kubernetes Secrets (ESO creates them from Vault) or AWS/GCP/Azure Secret Managers (ESO pushes them from Vault). This centralization provides a centralized audit trail where all secret access is logged in Vault, consistent rotation where secrets updated in Vault propagate everywhere via ESO, and no vendor lock-in since the core secret store remains vendor-neutral.
+Vault is authoritative for all secrets. No secrets are created directly in Kubernetes
+Secrets (ESO creates them from Vault) or AWS/GCP/Azure Secret Managers (ESO pushes them from
+Vault). This centralization provides a centralized audit trail where all secret access is
+logged in Vault, consistent rotation where secrets updated in Vault propagate everywhere via
+ESO, and no vendor lock-in since the core secret store remains vendor-neutral.
 
 ### 2. Unified Operator
 
@@ -96,7 +111,12 @@ and pushing them to external systems.
 
 ### 3. Zero-Touch Secret Consumption
 
-Developers never handle raw secrets. The process is declarative: a developer defines an `ExternalSecret` or `PushSecret` manifest in their application's Git repository, the GitOps controller (ArgoCD) applies the manifest, and ESO automatically fetches the secret from Vault making it available to the application. Rotation is transparent—when the secret is updated in Vault, ESO updates the corresponding Kubernetes Secret or pushes the change to the cloud provider.
+Developers never handle raw secrets. The process is declarative: a developer defines an
+`ExternalSecret` or `PushSecret` manifest in their application's Git repository, the GitOps
+controller (ArgoCD) applies the manifest, and ESO automatically fetches the secret from
+Vault making it available to the application. Rotation is transparent—when the secret is
+updated in Vault, ESO updates the corresponding Kubernetes Secret or pushes the change to
+the cloud provider.
 
 ## Use Cases
 
@@ -106,7 +126,7 @@ Developers never handle raw secrets. The process is declarative: a developer def
 
 - Your workload runs inside the Kubernetes cluster.
 - You need secrets available as standard Kubernetes `Secret` objects (for volume mounts
-  or environment variables).
+or environment variables).
 
 **Examples:**
 
@@ -121,7 +141,7 @@ Developers never handle raw secrets. The process is declarative: a developer def
 - Your workload runs **outside** Kubernetes (e.g., serverless, VMs).
 - The workload cannot call the Vault API directly (common in legacy applications).
 - A cloud provider's service (like AWS RDS) requires credentials to be present
-  in its native secret manager.
+in its native secret manager.
 
 **Examples:**
 
@@ -135,11 +155,19 @@ Developers never handle raw secrets. The process is declarative: a developer def
 
 ⚠️ **NOT for production:**
 
-The demo environment uses self-signed TLS certificates with Vault clients setting `skipTLSVerify: true` during development. Vault is initialized with a single unseal key, the root token is logged during the init script, and both unseal keys and root token are stored in a Kubernetes Secret.
+The demo environment uses self-signed TLS certificates with Vault clients setting
+`skipTLSVerify: true` during development. Vault is initialized with a single unseal key, the
+root token is logged during the init script, and both unseal keys and root token are stored
+in a Kubernetes Secret.
 
 ### Production Hardening
 
-Production deployments must enforce encrypted traffic between all components via TLS everywhere, use cloud provider KMS to automatically unseal Vault, require a quorum of operators to manually unseal Vault if auto-unseal fails through multi-share unseal keys, implement least-privilege access control within Vault via RBAC policies, and restrict network access to the Vault service ideally allowing only ESO to connect through Network Policies.
+Production deployments must enforce encrypted traffic between all components via TLS
+everywhere, use cloud provider KMS to automatically unseal Vault, require a quorum of
+operators to manually unseal Vault if auto-unseal fails through multi-share unseal keys,
+implement least-privilege access control within Vault via RBAC policies, and restrict
+network access to the Vault service ideally allowing only ESO to connect through Network
+Policies.
 
 ## Deployment Workflow
 
@@ -192,7 +220,8 @@ spec:
       key: secret/data/prod/app-credentials
 ```
 
-**Real-world example: ArgoCD admin password management** (see `IT/external-secrets/argocd-admin-externalsecret.yaml`):
+**Real-world example: ArgoCD admin password management** (see `IT/external-secrets/argocd-
+admin-externalsecret.yaml`):
 
 This `ExternalSecret` targets an existing secret managed by Helm (`argocd-secret`) and
 merges the password into it.
@@ -290,11 +319,15 @@ migrating to an operator like Bank-Vaults is the recommended next step.
 
 **When to migrate:**
 
-Migration to a Vault operator becomes necessary when deploying a High-Availability Vault cluster (e.g., 3+ replicas with Raft), requiring fully automatic unsealing using a cloud KMS, or when zero manual intervention in Vault's lifecycle is a hard requirement.
+Migration to a Vault operator becomes necessary when deploying a High-Availability Vault
+cluster (e.g., 3+ replicas with Raft), requiring fully automatic unsealing using a cloud
+KMS, or when zero manual intervention in Vault's lifecycle is a hard requirement.
 
 ## References
 
 - [External Secrets Operator Docs](https://external-secrets.io/latest/)
 - [ESO `PushSecret`](https://external-secrets.io/latest/api/pushsecret/)
-- [Vault Production Hardening](https://developer.hashicorp.com/vault/tutorials/operations/production-hardening)
+- [Vault Production
+  Hardening](<https://developer.hashicorp.com/vault/tutorials/operations/production->
+  hardening)
 - [Bank-Vaults Operator](https://bank-vaults.dev/docs/operator/)

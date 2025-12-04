@@ -7,7 +7,8 @@ sidebar:
 
 ## Default Label Values
 
-These defaults come from the demo profile (`config.toml`) and can be overridden per environment. Keep the keys; adjust the values as needed for your org.
+These defaults come from the demo profile (`config.toml`) and can be overridden per
+environment. Keep the keys; adjust the values as needed for your org.
 
 ### Business Labels
 
@@ -113,8 +114,8 @@ Guidelines:
 | Interval | Use Case | Examples | Rationale |
 |----------|----------|----------|-----------|
 | 1h | Rarely-changed secrets | ArgoCD admin password | Minimize API calls to Vault |
-| 5m | Infrastructure secrets | Certificate credentials | Balance between freshness and load |
-| 3m | Application secrets | SonarQube tokens, Grafana credentials | Higher change frequency |
+| 5m | Infrastructure secrets | Certificate credentials | Balance freshness vs load |
+| 3m | Application secrets | SonarQube tokens, Grafana creds | Higher change frequency |
 
 **Guidelines**:
 
@@ -167,6 +168,7 @@ All changes should be validated against:
 
 ## References
 
-- [Kubernetes Recommended Labels](https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/)
-- [Kyverno Best Practices](https://kyverno.io/policies/)
-- [ArgoCD Sync Waves](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/)
+- Kubernetes labels guide:
+  <https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/>
+- Kyverno best practices: <https://kyverno.io/policies/>
+- ArgoCD sync waves: <https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/>
