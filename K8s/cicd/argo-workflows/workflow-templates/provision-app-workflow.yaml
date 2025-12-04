@@ -59,7 +59,15 @@ spec:
     # Step 1: Create Namespace with IDP labels
     - name: create-namespace-template
       script:
-        image: bitnami/kubectl:latest
+        image: bitnami/kubectl:1.29.0-debian-12-r1
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
         command: [bash]
         source: |
           #!/bin/bash
@@ -145,6 +153,7 @@ spec:
               repo: "{{workflow.parameters.repo-url}}"
               depth: 1
       container:
+        # checkov:skip=CKV_ARGO_2:Kaniko requires root to build images
         image: gcr.io/kaniko-project/executor:latest
         command:
           - /kaniko/executor
@@ -170,7 +179,15 @@ spec:
     # Step 3: Create ArgoCD Application
     - name: create-argocd-app-template
       script:
-        image: bitnami/kubectl:latest
+        image: bitnami/kubectl:1.29.0-debian-12-r1
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
         command: [bash]
         source: |
           #!/bin/bash
@@ -225,7 +242,15 @@ spec:
     # Step 4: Wait for Deployment to be Ready
     - name: wait-for-deployment-template
       script:
-        image: bitnami/kubectl:latest
+        image: bitnami/kubectl:1.29.0-debian-12-r1
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
         command: [bash]
         source: |
           #!/bin/bash

@@ -28,8 +28,17 @@ spec:
         parameters:
           - name: app-name
           - name: namespace
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
       container:
         image: argoproj/argocd:v2.13.0
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
         command: ["/bin/sh", "-c"]
         args:
           - |

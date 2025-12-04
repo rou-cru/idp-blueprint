@@ -66,6 +66,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get install -y --no-install-recommends \
     python3=3.11.2-1+b1 \
     libsqlite3-0=3.40.1-2+deb12u2 \
+    curl=7.88.1-10+deb12u14 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -78,5 +79,8 @@ USER node
 
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--no-node-snapshot"
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl --fail http://localhost:7007/health || exit 1
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]

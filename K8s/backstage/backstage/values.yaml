@@ -127,9 +127,12 @@ postgresql:
   auth:
     username: backstage
     database: backstage
+    # checkov:skip=CKV_SECRET_6:False positive, key name not secret value
     existingSecret: backstage-postgresql
     secretKeys:
+      # checkov:skip=CKV_SECRET_6:False positive, key name not secret value
       adminPasswordKey: postgres-password
+      # checkov:skip=CKV_SECRET_6:False positive, key name not secret value
       userPasswordKey: password
   primary:
     persistence:

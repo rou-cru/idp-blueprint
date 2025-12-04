@@ -33,7 +33,17 @@ target "minimal" {
   args = {
     DEVBOX_CONFIG = ".devcontainer/devbox-minimal.json"
   }
-  tags = ["${IMAGE_NAME}:${IMAGE_TAG}"]
+  tags = ["${IMAGE_NAME}:${IMAGE_TAG_MINIMAL}"]
+  output = ["type=image"]
+}
+
+// Ops variant (cluster utility jobs)
+target "ops" {
+  inherits = ["default"]
+  args = {
+    DEVBOX_CONFIG = ".devcontainer/devbox-ops.json"
+  }
+  tags = ["${IMAGE_NAME}:${IMAGE_TAG_OPS}"]
   output = ["type=image"]
 }
 
@@ -46,6 +56,12 @@ target "release" {
 // Release minimal image
 target "release-minimal" {
   inherits = ["minimal"]
+  output = ["type=image,push=true"]
+}
+
+// Release ops image
+target "release-ops" {
+  inherits = ["ops"]
   output = ["type=image,push=true"]
 }
 
@@ -62,4 +78,14 @@ target "dev-portal" {
 target "dev-portal-release" {
   inherits = ["dev-portal"]
   output   = ["type=image,push=true"]
+}
+// Overwrite from Task Env vars (per variant tags)
+variable "IMAGE_TAG_MINIMAL" {
+  type    = string
+  default = "minimal"
+}
+
+variable "IMAGE_TAG_OPS" {
+  type    = string
+  default = "ops"
 }
