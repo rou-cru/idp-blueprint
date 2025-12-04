@@ -3,10 +3,8 @@
   "packages": [
     "kubectl@1.33.4",
     "argocd@3.1.6",
-    "git@2.46.2",
-    "curl@8.10.1",
+    "curl@8.17.0",
     "hadolint@2.12.0",
-    "container-structure-test",
-    "bash"
+    "git@2.51.2"
   ]
 }
