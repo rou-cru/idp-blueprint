@@ -1,0 +1,138 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+
+const headings = [
+  { depth: 2, text: 'Introduction', slug: 'introduction' },
+  { depth: 2, text: 'Getting Started', slug: 'getting-started' },
+  { depth: 3, text: 'Installation', slug: 'installation' },
+  { depth: 3, text: 'Configuration', slug: 'configuration' },
+  { depth: 2, text: 'Features', slug: 'features' },
+  { depth: 3, text: 'Feature One', slug: 'feature-one' },
+  { depth: 3, text: 'Feature Two', slug: 'feature-two' },
+  { depth: 2, text: 'Conclusion', slug: 'conclusion' },
+];
+---
+
+<DocsLayout
+  title="Layout Test Page"
+  description="Testing the new documentation layout"
+  headings={headings}
+>
+  <article class="prose">
+    <h1>Layout Test Page</h1>
+    <p class="text-lg text-dark-100">
+      This is a test page to verify that the new documentation layout is working correctly
+      with all navigation components.
+    </p>
+
+    <h2 id="introduction">Introduction</h2>
+    <p>
+      This page demonstrates the full layout structure including the header, sidebar,
+      main content area, and table of contents. The navigation should be fully functional
+      with proper highlighting and smooth scrolling.
+    </p>
+
+    <p>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+      incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+      exercitation ullamco laboris.
+    </p>
+
+    <h2 id="getting-started">Getting Started</h2>
+    <p>
+      To get started with this documentation system, you'll need to understand how the
+      different components work together.
+    </p>
+
+    <h3 id="installation">Installation</h3>
+    <p>
+      Install the required dependencies using your package manager:
+    </p>
+
+    <pre><code>pnpm install</code></pre>
+
+    <p>
+      This will install all the necessary packages including Astro, Svelte, Tailwind CSS,
+      and all the integrations.
+    </p>
+
+    <h3 id="configuration">Configuration</h3>
+    <p>
+      Configuration is handled through multiple files:
+    </p>
+
+    <ul>
+      <li><code>astro.config.mjs</code> - Main Astro configuration</li>
+      <li><code>tailwind.config.mjs</code> - Tailwind CSS theme configuration</li>
+      <li><code>src/lib/navigation.ts</code> - Navigation structure</li>
+    </ul>
+
+    <h2 id="features">Features</h2>
+    <p>
+      The documentation system includes several key features that make it easy to use
+      and maintain.
+    </p>
+
+    <h3 id="feature-one">Feature One</h3>
+    <p>
+      The first major feature is the responsive navigation system. It works seamlessly
+      across desktop and mobile devices, with a collapsible sidebar on mobile.
+    </p>
+
+    <p>
+      Key aspects include:
+    </p>
+    <ul>
+      <li>Automatic active state detection</li>
+      <li>Smooth scrolling to sections</li>
+      <li>Keyboard navigation support</li>
+      <li>Mobile-friendly menu overlay</li>
+    </ul>
+
+    <h3 id="feature-two">Feature Two</h3>
+    <p>
+      The second major feature is the table of contents that automatically tracks your
+      position in the document and highlights the current section.
+    </p>
+
+    <p>
+      Additional features:
+    </p>
+    <ul>
+      <li>Intersection Observer for active tracking</li>
+      <li>Hierarchical heading structure</li>
+      <li>Sticky positioning</li>
+      <li>Only visible on large screens (1280px+)</li>
+    </ul>
+
+    <h2 id="conclusion">Conclusion</h2>
+    <p>
+      This test page demonstrates all the key features of the documentation layout.
+      If you can see this properly formatted with working navigation, the layout is
+      functioning correctly.
+    </p>
+
+    <p>
+      Try scrolling through the page and notice how:
+    </p>
+    <ol>
+      <li>The table of contents highlights the current section</li>
+      <li>Clicking TOC links smoothly scrolls to that section</li>
+      <li>The sidebar shows your current page as active</li>
+      <li>On mobile (resize your browser), the menu works as an overlay</li>
+    </ol>
+
+    <div class="card-elevated mt-8">
+      <h4>Test Card</h4>
+      <p class="text-dark-400">
+        This card uses the Clerk-inspired styling we implemented in the design system.
+      </p>
+    </div>
+
+    <div class="mt-8 p-4 border-l-4 border-brand-purple bg-brand-purple/10 rounded-r-xl">
+      <p class="text-sm">
+        <strong>Note:</strong> This is a callout-style element to test styling consistency.
+      </p>
+    </div>
+  </article>
+</DocsLayout>
