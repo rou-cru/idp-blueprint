@@ -38,7 +38,7 @@ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/
 import { NotificationsPage } from '@backstage/plugin-notifications';
 import { SignalsDisplay } from '@backstage/plugin-signals';
 import { PolicyReportsPage } from '@kyverno/backstage-plugin-policy-reporter';
-import { patternflyTheme } from './theme/patternfly';
+import { primerTheme } from './theme/primer';
 import { UnifiedThemeProvider } from '@backstage/theme';
 
 const app = createApp({
@@ -77,11 +77,11 @@ const app = createApp({
     ),
   },
   themes: [{
-    id: 'patternfly',
-    title: 'PatternFly',
-    variant: 'light',
+    id: 'primer',
+    title: 'Primer Dark',
+    variant: 'dark',
     Provider: ({ children }) => (
-      <UnifiedThemeProvider theme={patternflyTheme} children={children} />
+      <UnifiedThemeProvider theme={primerTheme} children={children} />
     ),
   }],
 });
