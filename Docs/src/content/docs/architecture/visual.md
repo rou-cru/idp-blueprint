@@ -31,12 +31,9 @@ the following standard classes:
 
 Example usage:
 
-```d2
-classes: {
-  control: { style: { fill: "#111827"; stroke: "#6366f1"; font-color: white } }
-}
-Argo: { class: control }
-```
+![D2 Style Example](../assets/diagrams/architecture/d2-standards-example.svg)
+
+> **Source:** [d2-standards-example.d2](../assets/diagrams/architecture/d2-standards-example.d2)
 
 ## 1. Control backbone: GitOps, policy, secrets
 

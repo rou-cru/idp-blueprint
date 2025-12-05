@@ -29,9 +29,9 @@ before you grow into cloud cost tools.
 
 ## Flow from Labels to Dashboards
 
-![FinOps Tags Flow](../../../assets/diagrams/reference/finops-tags-flow.svg)
+![FinOps Tags Flow](../assets/diagrams/reference/finops-tags-flow.svg)
 
-> **Source:** [finops-tags-flow.d2](../../../assets/diagrams/reference/finops-tags-flow.d2)
+> **Source:** [finops-tags-flow.d2](../assets/diagrams/reference/finops-tags-flow.d2)
 
 ## Best Practices
 

@@ -1,8 +1,8 @@
 ---
 title: Security & Policy Model
 sidebar:
-label: Security & Policy
-order: 3
+  label: Security & Policy
+  order: 3
 ---
 
 This document describes the security architecture and policy governance model of the IDP

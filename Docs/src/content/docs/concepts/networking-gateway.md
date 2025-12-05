@@ -1,8 +1,8 @@
 ---
 title: Networking & Gateway
 sidebar:
-label: Networking & Gateway
-order: 4
+  label: Networking & Gateway
+  order: 4
 ---
 
 Make the networking model easy to reason about: a single Gateway receives HTTPS on

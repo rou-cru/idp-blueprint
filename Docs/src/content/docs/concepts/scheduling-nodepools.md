@@ -1,8 +1,8 @@
 ---
 title: Scheduling & NodePools
 sidebar:
-label: Scheduling & NodePools
-order: 5
+  label: Scheduling & NodePools
+  order: 5
 ---
 
 The platform treats capacity as a product feature. PriorityClasses and pools ensure critical

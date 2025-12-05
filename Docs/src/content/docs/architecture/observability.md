@@ -35,9 +35,7 @@ Grafana admin credentials are synced from Vault via `ExternalSecret`
 
 ## Data Flow
 
-![Observability Data Flow](../../../assets/diagrams/architecture/observability-dataflow.svg)
-
-Source: observability-dataflow.d2
+![Observability Data Flow](../assets/diagrams/architecture/observability-dataflow.svg)
 
 ## Instrumentation Strategy
 

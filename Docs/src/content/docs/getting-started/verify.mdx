@@ -5,16 +5,16 @@ sidebar:
   order: 5
 ---
 
-import { LinkButton } from '@astrojs/starlight/components';
+import { LinkButton } from '../../../components/content/index.ts';
 
-Let’s confirm things came up as expected and set realistic expectations for the first
+Let's confirm things came up as expected and set realistic expectations for the first
 minutes after deploy.
 
 ## What to expect in the first 5–10 minutes
 
-- ArgoCD continues syncing for a bit after “task deploy” finishes
+- ArgoCD continues syncing for a bit after "task deploy" finishes
 - Pods roll through Pending → Running → Ready as images download
-- It’s okay if not everything is Healthy/Synced immediately
+- It's okay if not everything is Healthy/Synced immediately
 
 {/*Sequence diagram removed for a simpler, first-contact explanation.*/}
 
@@ -40,35 +40,9 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 
 ### First look at the platform
 
-```d2
-direction: right
+![Platform Entry Points](../assets/diagrams/getting-started/verify-first-look.svg)
 
-classes: {
-  actor: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#38bdf8" }
-  gateway: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-  ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
-}
-
-User: { class: actor; label: "You\n(Laptop)" }
-Browser: { class: actor; label: "Browser" }
-
-Gateway: { class: gateway; label: "Gateway API\nTLS *.nip.io" }
-
-UIs: {
-  class: ui
-  Argo: "ArgoCD"
-  Grafana
-  Vault
-  Backstage
-}
-
-User -> Browser: "open https://<app>.<ip>.nip.io"
-Browser -> Gateway: HTTPS
-Gateway -> UIs.Argo
-Gateway -> UIs.Grafana
-Gateway -> UIs.Vault
-Gateway -> UIs.Backstage
-```
+> **Source:** [verify-first-look.d2](../assets/diagrams/getting-started/verify-first-look.d2)
 
 ### What you'll see in the ArgoCD UI
 
@@ -124,7 +98,7 @@ Reachable from other devices on your LAN using your workstation IP. Ensure the c
 NodePorts are allowed by your OS firewall.
 
 :::caution
-If you can’t reach the endpoints from another device, open NodePorts `30080`/`30443` (or
+If you can't reach the endpoints from another device, open NodePorts `30080`/`30443` (or
 the values in `config.toml`) in your OS firewall.
 :::
 
@@ -154,17 +128,26 @@ kubectl -n cert-manager get secret idp-demo-ca-secret \
   -o jsonpath='{.data.tls\.crt}' | base64 -d > idp-demo-ca.crt
 ```
 
-- macOS: Keychain Access → System → Certificates → import `idp-demo-ca.crt` → “Always
-  Trust”.
+- macOS: Keychain Access → System → Certificates → import `idp-demo-ca.crt` → "Always
+  Trust".
 - Linux (Debian/Ubuntu): `sudo cp idp-demo-ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`
-- Windows: `certmgr.msc`, import into “Trusted Root Certification Authorities”.
+- Windows: `certmgr.msc`, import into "Trusted Root Certification Authorities".
 
 :::tip
 Certificates are issued automatically by cert-manager using a wildcard certificate for
 `*.127-0-0-1.nip.io`.
 :::
 
-<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
+## Quick smoke checks (eventual consistency friendly)
+
+| Goal | Command | Success signal |
+| --- | --- | --- |
+| ArgoCD apps appear and converge | `kubectl -n argocd get applications` | Apps listed; `Sync` moves toward `Synced` over a few minutes |
+| Grafana up with datasources | Open `https://grafana.<ip>.nip.io` | UI loads; Prometheus/Loki datasources present |
+| Trivy Operator running | `kubectl -n security get pods | rg trivy` | `trivy-operator` and `trivy-server` pods Ready |
+| External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
+
+<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
   <LinkButton href="/getting-started/deployment/" variant="secondary" icon="arrow-left">
     Back: Deployment
   </LinkButton>

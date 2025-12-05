@@ -1,8 +1,8 @@
 ---
 title: GitOps Model
 sidebar:
-label: GitOps Model
-order: 2
+  label: GitOps Model
+  order: 2
 ---
 
 > **Prerequisites:** This builds on the [GitOps philosophy](design-philosophy.md#3-gitops).

@@ -15,3 +15,7 @@ ignoredBuiltDependencies:
   - '@ibm/plex-sans-thai'
   - '@ibm/plex-sans-thai-looped'
   - '@ibm/plex-serif'
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp

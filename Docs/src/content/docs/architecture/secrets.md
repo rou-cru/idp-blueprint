@@ -1,8 +1,8 @@
 ---
 title: Secrets Management
 sidebar:
-label: Secrets
-order: 4
+  label: Secrets
+  order: 4
 ---
 
 ## Overview
@@ -19,10 +19,10 @@ both in-cluster and external workloads.
 
 ## Architecture Diagram
 
-![Secrets Management Architecture](../../../assets/diagrams/architecture/secrets-
+![Secrets Management Architecture](../assets/diagrams/architecture/secrets-
 architecture.svg)
 
-> **Source:** [secrets-architecture.d2](../../../assets/diagrams/architecture/secrets-
+> **Source:** [secrets-architecture.d2](../assets/diagrams/architecture/secrets-
 > architecture.d2)
 
 ## Flow Explanation
