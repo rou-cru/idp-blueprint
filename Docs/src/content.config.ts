@@ -9,6 +9,7 @@ export const collections = {
       sidebar: z.object({
         label: z.string().optional(),
         order: z.number().optional(),
+        hidden: z.boolean().optional(),
       }).optional(),
       seo: z.object({
         title: z.string().optional(),

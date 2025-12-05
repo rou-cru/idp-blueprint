@@ -7,7 +7,8 @@ import Sidebar from '../components/navigation/Sidebar.svelte';
 import TableOfContents from '../components/navigation/TableOfContents.svelte';
 import Breadcrumbs from '../components/navigation/Breadcrumbs.svelte';
 import CodeBlockEnhancer from '../components/ui/CodeBlockEnhancer.astro';
-import { siteConfig } from '../lib/navigation';
+import { siteConfig, CATEGORY_LABELS, type NavSection } from '../lib/navigation';
+import { getCollection } from 'astro:content';
 
 interface Props {
   title: string;
@@ -20,152 +21,161 @@ const { title, description, headings = [] } = Astro.props;
 const pageTitle = title ? `${title} | ${siteConfig.title}` : siteConfig.title;
 const pageDescription = description || siteConfig.description;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// Generate sidebar config dynamically
+async function getSidebarConfig(): Promise<NavSection[]> {
+  const docs = await getCollection('docs');
+  const sections: Record<string, NavSection> = {};
+
+  // Helper to get or create a section
+  const getOrCreateSection = (key: string, label: string, collapsed: boolean = true) => {
+    if (!sections[key]) {
+      sections[key] = {
+        label,
+        collapsed,
+        items: [],
+      };
+    }
+    return sections[key];
+  };
+
+  for (const doc of docs) {
+    if (doc.data.sidebar?.hidden) continue;
+
+    const parts = doc.id.split('/');
+    const topLevel = parts[0];
+    
+    // Skip index page if it's the root index (id: 'index')
+    if (topLevel === 'index') continue;
+
+    const label = doc.data.sidebar?.label || doc.data.title;
+    const order = doc.data.sidebar?.order || 999;
+    const href = `/${doc.slug}`;
+
+    if (topLevel === 'components' && parts.length > 2) {
+      // Handle nested components structure: components/infrastructure/argocd
+      const subCategory = parts[1];
+      const componentsSection = getOrCreateSection('components', CATEGORY_LABELS['components'], true);
+      
+      // Find or create sub-section item
+      let subSectionItem = componentsSection.items.find(item => item.label === CATEGORY_LABELS[subCategory]);
+      if (!subSectionItem) {
+        subSectionItem = {
+          label: CATEGORY_LABELS[subCategory] || subCategory,
+          items: []
+        };
+        componentsSection.items.push(subSectionItem);
+      }
+      
+      if (subSectionItem.items) {
+        // @ts-ignore - Adding temporary order property for sorting
+        subSectionItem.items.push({ label, href, order });
+      }
+    } else {
+      // Standard sections
+      const sectionLabel = CATEGORY_LABELS[topLevel] || topLevel;
+      const section = getOrCreateSection(topLevel, sectionLabel, topLevel !== 'getting-started');
+      // @ts-ignore - Adding temporary order property for sorting
+      section.items.push({ label, href, order });
+    }
+  }
+
+  // Define section order
+  const sectionOrder = [
+    'Getting Started',
+    'Architecture',
+    'Concepts',
+    'Operate',
+    'Components',
+    'Reference'
+  ];
+
+  // Sort sections and items
+  const sortedSections = Object.values(sections).sort((a, b) => {
+    return sectionOrder.indexOf(a.label) - sectionOrder.indexOf(b.label);
+  });
+
+  sortedSections.forEach(section => {
+    // Sort items within sections
+    // @ts-ignore - accessing temporary order property
+    section.items.sort((a, b) => (a.order || 999) - (b.order || 999));
+    
+    // Sort nested items (for components)
+    section.items.forEach(item => {
+      if (item.items) {
+        // @ts-ignore - accessing temporary order property
+        item.items.sort((a, b) => (a.order || 999) - (b.order || 999));
+        // Clean up temporary order property
+        item.items.forEach(subItem => {
+            // @ts-ignore
+            delete subItem.order
+        });
+      }
+      // @ts-ignore
+      delete item.order;
+    });
+  });
+
+  return sortedSections;
+}
+
+const sidebarConfig = await getSidebarConfig();
 ---
 
 <!DOCTYPE html>
 <html lang="en" class="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content={Astro.generator}>
-
-  <!-- Primary Meta Tags -->
-  <title>{pageTitle}</title>
-  <meta name="title" content={pageTitle}>
-  <meta name="description" content={pageDescription}>
-  <link rel="canonical" href={canonicalURL}>
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content={canonicalURL}>
-  <meta property="og:title" content={pageTitle}>
-  <meta property="og:description" content={pageDescription}>
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content={canonicalURL}>
-  <meta property="twitter:title" content={pageTitle}>
-  <meta property="twitter:description" content={pageDescription}>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-</head>
-<body>
-  <div class="docs-layout">
-    <!-- Header -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-bg-base text-text-primary antialiased min-h-screen flex flex-col">
     <Header client:load />
+    
+    <div class="flex-1 flex max-w-[1600px] mx-auto w-full">
+      <Sidebar client:load sidebarConfig={sidebarConfig} currentPath={Astro.url.pathname} />
+      
+      <main class="flex-1 min-w-0 py-8 px-6 lg:px-12">
+        <div class="max-w-4xl mx-auto">
+          <Breadcrumbs currentPath={Astro.url.pathname} />
+          <slot />
+        </div>
+      </main>
 
-    <!-- Sidebar -->
-    <Sidebar client:load currentPath={Astro.url.pathname} />
+      <aside class="hidden xl:block w-64 py-8 px-6 sticky top-[3.5rem] h-[calc(100vh-3.5rem)] overflow-y-auto">
+        <TableOfContents headings={headings} client:idle />
+      </aside>
+    </div>
 
-    <!-- Main Content -->
-    <main class="docs-main">
-      <div class="docs-content page-transition-enter">
-        <Breadcrumbs currentPath={Astro.url.pathname} />
-        <slot />
-      </div>
-    </main>
+    <script>
+      // Mobile menu logic
+      const menuBtn = document.getElementById('menu-btn');
+      const mobileMenu = document.getElementById('mobile-menu');
+      const closeMenuBtn = document.getElementById('close-menu-btn');
 
-    <!-- Table of Contents -->
-    {headings.length > 0 && (
-      <TableOfContents client:visible headings={headings} />
-    )}
-  </div>
-
-  <!-- Mobile menu state management -->
-  <script>
-    // Handle mobile menu toggle
-    let isMobileMenuOpen = false;
-
-    function handleMenuToggle() {
-      isMobileMenuOpen = !isMobileMenuOpen;
-      document.querySelector('.sidebar')?.classList.toggle('mobile-open', isMobileMenuOpen);
-
-      // Prevent body scroll when mobile menu is open
-      if (isMobileMenuOpen) {
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.body.style.overflow = '';
+      function toggleMenu() {
+        const isHidden = mobileMenu?.classList.contains('hidden');
+        if (isHidden) {
+          mobileMenu?.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        } else {
+          mobileMenu?.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
       }
-    }
 
-    function handleMobileClose() {
-      isMobileMenuOpen = false;
-      document.querySelector('.sidebar')?.classList.remove('mobile-open');
-      document.body.style.overflow = '';
-    }
-
-    // Attach event listeners
-    document.querySelector('.mobile-menu-button')?.addEventListener('click', handleMenuToggle);
-    document.querySelector('.sidebar-overlay')?.addEventListener('click', handleMobileClose);
-
-    // Close mobile menu on navigation
-    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-      link.addEventListener('click', handleMobileClose);
-    });
-
-    // Close mobile menu on ESC key
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isMobileMenuOpen) {
-        handleMobileClose();
-      }
-    });
-  </script>
-
-  <!-- Code block copy button enhancer -->
-  <CodeBlockEnhancer />
-</body>
+      menuBtn?.addEventListener('click', toggleMenu);
+      closeMenuBtn?.addEventListener('click', toggleMenu);
+    </script>
+    <CodeBlockEnhancer />
+  </body>
 </html>
-
-<style>
-  .docs-layout {
-    position: relative;
-    min-height: 100vh;
-  }
-
-  .docs-main {
-    margin-top: 4rem; /* Header height */
-    margin-left: 0;
-    min-height: calc(100vh - 4rem);
-  }
-
-  @media (min-width: 1024px) {
-    .docs-main {
-      margin-left: 16rem; /* Sidebar width */
-    }
-  }
-
-  @media (min-width: 1280px) {
-    .docs-main {
-      margin-right: 14rem; /* TOC width */
-    }
-  }
-
-  .docs-content {
-    max-width: 56rem; /* 896px */
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
-
-  @media (min-width: 768px) {
-    .docs-content {
-      padding: 3rem 2rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .docs-content {
-      padding: 4rem 3rem;
-    }
-  }
-
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
-  }
-
-  /* Prevent layout shift */
-  html, body {
-    overflow-x: hidden;
-  }
-</style>

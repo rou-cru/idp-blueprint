@@ -1,15 +1,15 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
-  import { sidebarConfig } from '../../lib/navigation';
   import type { NavSection } from '../../lib/navigation';
 
   interface Props {
     currentPath: string;
+    sidebarConfig: NavSection[];
     isMobileOpen?: boolean;
     onMobileClose?: () => void;
   }
 
-  let { currentPath, isMobileOpen = false, onMobileClose }: Props = $props();
+  let { currentPath, sidebarConfig, isMobileOpen = false, onMobileClose }: Props = $props();
 
   // Track which sections are expanded
   let expandedSections = $state(new Set<string>(['Getting Started']));

@@ -4,12 +4,6 @@ description: Production-Ready Internal Developer Platform Reference
 ---
 
 import { Card, CardGrid, LinkButton } from '../../components/content/index.ts';
-import DocsLayout from '../../layouts/DocsLayout.astro';
-
-export const headings = [];
-
-<DocsLayout title={frontmatter.title} description={frontmatter.description} headings={headings}>
-
 <div class="hero-section">
   <h1 class="hero-title text-gradient-purple">IDP Blueprint</h1>
   <p class="hero-tagline">
@@ -142,5 +136,3 @@ The best-in-class open source components powering the platform.
     flex-wrap: wrap;
   }
 `}</style>
-
-</DocsLayout>
