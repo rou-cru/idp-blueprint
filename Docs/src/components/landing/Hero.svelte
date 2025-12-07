@@ -31,7 +31,7 @@
       
       <a 
         href="/architecture/overview/"
-        class="h-12 px-8 rounded-lg bg-bg-elevated border border-border-default hover:border-border-hover text-text-primary hover:bg-bg-subtle font-medium flex items-center gap-2 transition-all"
+        class="h-12 px-8 rounded-lg bg-bg-elevated border border-border-default hover:border-border-hover text-text-primary hover:bg-bg-subtle font-medium flex items-center gap-2 transition-all focus:ring-2 focus:ring-brand-purple-light focus:ring-offset-2 focus:ring-offset-bg-base"
       >
         <Icon icon="lucide:layers" width="20" height="20" class="text-text-secondary" />
         View Architecture
