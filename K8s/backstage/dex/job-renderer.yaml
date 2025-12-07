@@ -156,3 +156,5 @@ spec:
         - name: tpl
           configMap:
             name: dex-config-tpl
+        - name: tmp-volume
+          emptyDir: {}
