@@ -6,104 +6,57 @@ sidebar:
   label: Bootstrap
   order: 2
 ---
+import { Button } from '../../../components/content/index.ts';
 
+The **Bootstrap Layer** is the engine responsible for turning a collection of static definitions into a living platform. It solves the "chicken-and-egg" problem of Kubernetes: you need a cluster to run ArgoCD, but you need ArgoCD to manage the cluster.
 
-This directory contains the **static / bootstrap layer** of the platform. Everything here
-  must exist _before_ ArgoCD can reconcile Git.
+In this architecture, **Task** (`Taskfile.yaml`) acts as the imperative orchestrator that bridges this gap, handling the critical minutes between "empty laptop" and "GitOps ready".
 
-:::note
-The components are the same as in the infrastructure core. This page focuses on their **lifecycle over time** (bootstrap sequence). For the **structural view** of the same components, see [Infrastructure Core](infrastructure).
-:::
+## The Orchestrator: Taskfile
 
-## Guiding Principles
+We chose `task` over simple shell scripts or Makefiles to provide a robust, self-documenting interface for the platform's lifecycle. It encapsulates complexity, managing everything from local environment variables to the precise order of Helm chart applications.
 
-The structure follows two simple rules to keep things predictable.
-
-### 1. Helm Chart Configurations
-
-Configuration for a core component deployed via a Helm chart is defined in a single
-`*-values.yaml` file.
-
-- **Location**: Root of the `IT/` directory.
-- **Naming**: The filename is simple and references the component (e.g.,
-  `values.yaml`).
-
-### 2. Raw Kubernetes Manifests
-
-Static Kubernetes resources that are not part of a Helm chart installation (e.g., a
-`ClusterIssuer` or a `ClusterSecretStore`) are organized as raw YAML files.
-
-- **Location**: Placed inside a subdirectory named after the parent component (e.g.,
-  `cert-manager/`).
-- **Naming**: The filename **must** exactly match the `metadata.name` of the resource
-  defined within it (e.g., a `ClusterIssuer` with `name: ca-issuer` is saved
-  in `ca-issuer.yaml`).
-
-### 3. Bootstrap Resources via Kustomize
-
-Some components require orchestrated deployment of multiple resources. We wrap them in
-Kustomize and apply them with `kustomize build <dir>/ | kubectl apply -f -`.
-
-- **Location**: Subdirectories with their own `kustomization.yaml`.
-- **Purpose**:
-  - `namespaces/`: Bootstrap namespace definitions for core components.
-  - `cert-manager/`: Issuers and Certificate definitions.
-  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault and the
-    `ExternalSecret` for ArgoCD.
-  - `argocd/`: Kustomization to support the Helm chart.
-
-## Directory layout (short)
-
-The `IT/` directory is intentionally flat at the top level:
-
-```text
-IT/
-├── k3d-cluster.yaml
-├── kustomization.yaml
-├── namespaces/
-├── cert-manager/
-│   └── values.yaml
-├── external-secrets/
-│   └── values.yaml
-├── vault/
-│   └── values.yaml
-└── argocd/
-    └── values.yaml
-```
-
-## Quick Reference
-
-| Path | Purpose | Type |
-| --- | --- | --- |
-| `k3d-cluster.yaml` | Defines the k3d topology (1 server + 2 agents) including the local registry cache. | k3d Config |
-| `kustomization.yaml` | Root orchestrator (currently minimal but future-proof). | Kustomize |
-| `*-values.yaml` | Helm chart configuration for each bootstrap dependency. | Helm Values |
-| `namespaces/` | Namespaces + labels required before workloads land. | Kustomize Bootstrap |
-| `vault/` | Manual init / unseal helpers (e.g., `vault-manual-init.sh`). | Shell Script |
-| `cert-manager/` | ClusterIssuers, CA certificates, Gateway-friendly resources. | Raw Manifests |
-| `external-secrets/` | `ClusterSecretStore` + initial `ExternalSecret` objects. | Raw Manifests |
-| `argocd/` | Kustomize glue (RBAC, AppProjects) that supplements Helm. | Kustomize |
-
-## Deployment Workflow
+The bootstrap process isn't just running `kubectl apply`. It requires careful coordination of dependencies that cannot be purely declarative, such as:
+1.  **Secret Generation**: Creating strong crypto credentials for Vault and initial users.
+2.  **Wait Conditions**: Pausing until CRDs are established or webhooks are active.
+3.  **Environment Injection**: Templating configuration files with local IP addresses for ingress.
 
 ### Bootstrap timeline
 
 ![Bootstrap Timeline](../assets/diagrams/architecture/bootstrap-timeline.svg)
 
-> **Source:** [bootstrap-timeline.d2](../assets/diagrams/architecture/bootstrap-timeline.d2)
+## Custom Automation Highlights
 
-### Expanded Steps
+While standard tools like Helm do the heavy lifting, we developed specific automation to handle the unique constraints of a local, air-gapped-capable IDP.
 
-1. **Create the cluster** via `k3d-cluster.yaml` (includes a local registry cache to speed re-deployments).
-2. **Apply namespaces** so priority classes, quotas, and Kyverno label policies have a home.
-3. **Install Cilium** to replace the default CNI and enable the Gateway API dataplane.
-4. **Lay down Prometheus CRDs** using `prometheus-operator-crds` so later Helm releases skip CRD churn.
-5. **Install cert-manager** and immediately apply issuers/certificates from `cert-manager/`.
-6. **Deploy Vault** and run `Scripts/vault-init.sh` to unseal, store tokens, and enable Kubernetes auth.
-7. **Deploy External Secrets Operator** and apply `external-secrets/` to wire Vault → Kubernetes → ArgoCD.
-8. **Deploy ArgoCD** (Helm) plus AppProjects from `IT/argocd/`.
-9. **Apply the Gateway** (Kustomize) to expose HTTPS endpoints backed by cert-manager.
-10. **Apply Policies** (Kyverno + Policy Reporter) so governance exists before workloads.
-11. **Let ApplicationSets run**—ArgoCD handles stacks in `K8s/` automatically once the controller is online.
+### 1. Zero-Touch Vault Initialization
+Traditionally, HashiCorp Vault requires manual operator intervention to "unseal" it after deployment. We automated this using `Scripts/vault-init.sh`.
+*   **What it does:** It initializes the Vault implementation, securely captures the unseal keys and root token, and then immediately unseals the vault so other components (like External Secrets) can connect.
+*   **Why it matters:** It allows the entire platform to deploy unattended. You can run `task deploy` and walk away.
 
-**Key insight:** Everything above runs from `task deploy`, proving that a laptop-friendly IDP still benefits from strict boot order and clearly separated ownership.
+### 2. Dynamic Ingress Wiring (`nip.io`)
+A major challenge in local Kubernetes is getting valid TLS certificates and real DNS names without owning a domain or using a cloud LoadBalancer.
+*   **The Solution:** The orchestrator detects your machine's local LAN IP and injects it into the Gateway API configuration using `nip.io` (a wildcard DNS service).
+*   **The Result:** You get real URLs like `https://argocd.192-168-1-50.nip.io` that work from any device on your network, with zero manual DNS configuration.
+
+### 3. Gateway API Patching
+The Gateway API is the modern standard for ingress, but wiring it to a local `nodePort` service on a specific port (so you don't need `sudo` to bind port 443) requires precise patching.
+*   **Automation:** The bootstrap task waits for the Gateway to be programmed and then verifies that the NodePorts match the configuration in `config.toml`, ensuring predictable access points.
+
+## Sequence of Events
+
+The orchestrator executes the following sequence to reach a GitOps-ready state:
+
+1.  **Cluster & Foundation:** Provisions the k3d nodes and applies essential CRDs (Prometheus, Gateway API).
+2.  **Networking & Security:** Installs Cilium and Cert-Manager, establishing the secure transport layer.
+3.  **Identity & Secrets:** Deploys Vault, runs the auto-unseal automation, and configures the External Secrets Operator to trust it.
+4.  **GitOps Handover:** Finally, deploys ArgoCD. Once ArgoCD is healthy, the `Taskfile`'s job is largely done—ArgoCD takes over and hydrates the rest of the platform from Git.
+
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/overview/" variant="secondary" icon="arrow-left">
+    Back: Overview
+  </Button>
+  <Button href="/architecture/infrastructure/" variant="primary" icon="arrow-right">
+    Next: Infrastructure
+  </Button>
+</div>

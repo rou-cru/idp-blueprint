@@ -1,83 +1,46 @@
 ---
-title: Policies & governance — Kyverno + Policy Reporter
-description: Policies & governance — Kyverno + Policy Reporter
+title: Policies & Governance
+description: Policies & Governance
 layout: ../../../layouts/DocsLayout.astro
 sidebar:
   label: Policies
   order: 6
 ---
+import { Button } from '../../../components/content/index.ts';
 
+Governance in a platform is often seen as a blocker—a gate that slows down development. In this IDP, we invert that model. We treat **Policy as Code** as an enabler, using it to define the "rules of the road" so that developers can move fast without breaking things.
 
-Governance lives under `Policies/` and is deployed before any workload stacks sync. Kyverno enforces the rules, while Policy Reporter surfaces compliance status.
+Instead of manual reviews or PDF guidelines, we use **Kyverno** to enforce best practices, security standards, and operational hygiene automatically at the Kubernetes API level.
 
-This page shows the component view for the automation & governance layer (Kyverno + Policy Reporter).
+## The Governance Layer
 
-## Policy Layers
+The governance engine is deployed early in the bootstrap process, ensuring that the cluster is secure by default before any application workloads arrive. This creates a safe environment where compliance is continuous, not an afterthought.
 
-| Layer | Location | Purpose |
-| --- | --- | --- |
-| Baseline (namespaces, labels) | `Policies/rules/baseline/` | Ensures namespaces + workloads receive canonical labels, quotas, and annotations. |
-| Security safeguards | `Policies/rules/security/` | Blocks privileged pods, enforces read-only root FS, validates image registries. |
-| Platform hygiene | `Policies/rules/platform/` | Checks ServiceAccount usage, requires requests/limits, and validates priority classes. |
+We organize policies into three logical layers, each serving a distinct purpose in the platform's stability.
 
-## Deployment Path
+### Baseline Standards
+This layer enforces the non-negotiable structural requirements of the platform. It ensures that every namespace has the correct labels for cost allocation, that resource quotas are applied to prevent "noisy neighbor" problems, and that standard annotations are present for tools like the backup system or the developer portal.
 
-![Policies Deployment Path](../assets/diagrams/architecture/policies-deployment.svg)
+### Security Safeguards
+The security layer acts as the immune system of the cluster. It actively blocks unsafe configurations, such as containers requesting privileged access (`root`), mounting sensitive host paths, or pulling images from unverified public registries. By enforcing these rules at admission time, we prevent vulnerabilities from ever running.
 
-> **Source:** [policies-deployment.d2](../assets/diagrams/architecture/policies-deployment.d2)
+### Platform Hygiene
+This layer maintains the operational health of the fleet. It validates that workloads define proper requests and limits for the scheduler, that they use valid PriorityClasses, and that they don't abuse ServiceAccounts. This keeps the cluster efficient and predictable.
 
-- `Policies/app-kyverno.yaml` – ArgoCD Application applied during bootstrap.
-- `Policies/kustomization.yaml` – Installs both the Kyverno Helm release and all policy manifests.
-- `Policies/policy-reporter/` – Deploys Policy Reporter + UI for at-a-glance status.
+## Visibility and Reporting
+
+Enforcement is only half the battle; visibility is the other. Blocking a deployment without explanation frustrates developers.
+
+We solve this with **Policy Reporter**, a tool that aggregates policy violations and presents them in a unified dashboard. It turns "compliance" from a black box into a transparent metric. Developers can see exactly why a workload is non-compliant, while platform engineers can track the overall health score of the cluster over time.
 
 ![Policy Reporter UI Placeholder](../../../assets/images/policy-reporter-ui.png)
 
-### Repo wiring & tasks
+This visibility extends to the observability stack. Policy violations are exported as Prometheus metrics, allowing us to correlate a drop in compliance score with a new deployment or a spike in security alerts, closing the feedback loop.
 
-Bootstrap runs `task stacks:policies` after ArgoCD, applying `Policies/app-kyverno.yaml` with `REPO_URL`/`TARGET_REVISION` envsubst. Redeploy policies only with `task stacks:policies`. Lint and check before pushing using `task quality:lint` and `task quality:check`.
+![Policies Deployment Path](../assets/diagrams/architecture/policies-deployment.svg)
 
-## Sync Waves & Priority
-
-Kyverno policies plug into the same sync‑wave model described in
-[`GitOps, Policy, and Eventing`](](../concepts/gitops-model).
-
-| Resource | Sync Wave | Notes |
-| --- | --- | --- |
-| Kyverno Namespace/RBAC | `-2` | Must exist before CRDs/webhooks. |
-| Kyverno Helm Release | `-1` | Installs CRDs + controllers. |
-| ClusterPolicies | `0` | Apply after controllers are ready. |
-| Policy Reporter | `1` | Consumes policy reports after Kyverno starts emitting them. |
-
-## Policy lifecycle
-
-![Policy Lifecycle](../assets/diagrams/architecture/policies-lifecycle.svg)
-
-> **Source:** [policies-lifecycle.d2](../assets/diagrams/architecture/policies-lifecycle.d2)
-
-### Verify
-
-- Kyverno ready: `kubectl -n kyverno-system get deploy kyverno-admission-controller`
-- Reporter UI: check Service/Ingress in `kyverno-system` and the dashboards
-- Policy reports: `kubectl get policyreport,clusterpolicyreport -A`
-
-## Writing Good Policies
-
-1. **Stay declarative** – target labels and annotations (from the label standard) instead of naming individual workloads.
-2. **Test locally** – use `kyverno apply` or `kyverno test` against manifests before pushing.
-3. **Annotate severity** – add `policies.kyverno.io/severity` so Policy Reporter can filter.
-4. **Document remediation** – set `policies.kyverno.io/description` and `documentation` annotations so the UI links back to internal runbooks.
-
-### Local tests
-
-- `kyverno apply` on a manifest to see allow/deny
-- `kyverno test` on a curated set of cases under a `tests/` folder (optional pattern)
-
-## Policy Reporter Dashboards
-
-Policy Reporter exposes a UI (and Prometheus metrics) with:
-
-- **Policy compliance score** by namespace or application.
-- **Top failing policies** to highlight drift or missing labels.
-- **Audit history** for previously non-compliant resources.
-
-Hook Grafana into the Policy Reporter metrics endpoint to correlate policy drift with deployments or cost spikes.
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/secrets/" variant="secondary" icon="arrow-left">
+    Back: Secrets Management
+  </Button>
+</div>

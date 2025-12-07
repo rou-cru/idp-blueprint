@@ -6,7 +6,14 @@ sidebar:
   label: Design Philosophy
   order: 2
 ---
+import { Button } from '../../../components/content/index.ts';
 
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/policies/" variant="secondary" icon="arrow-left">
+    Back: Policies
+  </Button>
+  <!-- No Next button here, as this is the start of a new section -->
+</div>
 
 This document describes the core design philosophies that guide the architecture and
   implementation of the IDP Blueprint platform. These aren't just abstract principles—they
@@ -272,6 +279,6 @@ The platform accepts these trade-offs in exchange for reproducibility, auditabil
 
 - [GitOps Model](gitops-model): Deep dive into the GitOps workflow
 - [Security & Policy Model](security-policy-model): How Security as Code manifests
-- [Observability Model](../architecture/observability): How Observability as Code works
+- [Observability Model](../concepts/observability): How Observability as Code works
 - [ArgoCD Component](../components/infrastructure/argocd.mdx): GitOps engine
 - [Kyverno Component](../components/policy/kyverno.mdx): Policy engine

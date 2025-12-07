@@ -1,5 +1,5 @@
 ---
-title: Overview Architecture
+title: Architecture Overview
 description: High-level architecture overview of IDP Blueprint platform
 layout: ../../../layouts/DocsLayout.astro
 sidebar:
@@ -22,32 +22,22 @@ A single Kubernetes cluster sits between engineers and Git. Git owns all intent,
 ## Container view
 
 :::note
-This diagram zooms into the IDP Blueprint system to show the major containers (applications and data stores) and how they interact. Each container is a separately deployable/runnable unit.
+This diagram zooms into the IDP Blueprint system to show the major containers (applications and data stores) and their interactions. Each container is a separately deployable unit.
 :::
 
-The container view groups components into layers and planes:
+The architecture is organized into distinct logical planes, designed to separate concerns and maximize stability.
 
-- **Infrastructure core**
-  - Kubernetes API server and etcd (control plane).
-  - Cilium CNI and Gateway API for networking and ingress.
-- **Platform services**
-  - Vault for secrets management.
-  - External Secrets Operator (ESO) for syncing Vault → Kubernetes Secrets.
-  - cert‑manager for PKI and TLS certificates.
-  - Prometheus, Loki, Fluent‑bit, and supporting exporters for metrics and logs.
-- **Automation and governance**
-  - ArgoCD and ApplicationSets for GitOps reconciliation.
-  - Kyverno and Policy Reporter for policy‑as‑code and compliance reporting.
-- **Developer‑facing stacks**
-  - Observability UIs: Grafana, Pyrra.
-  - CI/CD: Argo Workflows, SonarQube.
-  - Security: Trivy Operator and related scanners.
+At the foundation lies the **Infrastructure Core**, which provides the compute control plane via the Kubernetes API and etcd. Networking and ingress are handled here by Cilium CNI and the Gateway API, ensuring secure and performant traffic management.
 
-All components are either bootstrapped once from `IT/` (infrastructure core) or continuously reconciled from `K8s/` (stacks).
+Above this sits the **Platform Services** layer, supplying essential utilities for operation. This includes HashiCorp Vault for secrets management, the External Secrets Operator for syncing credentials, and cert-manager for automated PKI. A comprehensive observability suite—comprising Prometheus, Loki, and Fluent-bit—also resides here to capture metrics and logs.
+
+To ensure stability and compliance, the **Automation and Governance** layer enforces state through ArgoCD's reconciliation loops and continuously audits configuration using Kyverno policies.
+
+Finally, the **Developer-Facing Stacks** provide the actual tools for engineering teams. This includes dashboards (Grafana, Pyrra), CI/CD pipelines (Argo Workflows), code quality gates (SonarQube), and security scanners (Trivy Operator).
+
+All components are either bootstrapped once from the `IT/` directory or continuously reconciled from `K8s/`.
 
 ![Container View](../assets/diagrams/architecture/overview-container-view.svg)
-
-> **Source:** [overview-container-view.d2](../assets/diagrams/architecture/overview-container-view.d2)
 
 ## Platform layers
 
@@ -74,27 +64,18 @@ High availability on a 3-node edge cluster requires a different approach than la
 
 When a node fails, the platform preserves visibility through Prometheus and Loki while maintaining the ability to repair via ArgoCD, even if some stacks run in degraded mode. See [Scheduling, priority, and node pools](../concepts/scheduling-nodepools) and [Disaster recovery](../operate/disaster-recovery) for operational details.
 
-## Selection criteria (why these technologies)
+## Technology Selection Criteria
 
-Components in this blueprint were chosen with a few strict constraints:
+The technology stack follows a strict set of design principles tailored for constrained environments. We prioritized components that exhibit **good behavior under limited resources**, avoiding heavyweight solutions that demand extensive node pools. Every selected tool must support **native declarative configuration** via Kubernetes CRDs to ensure full GitOps compatibility.
 
-- **Good behavior under resource constraints**: avoid heavyweight stacks that assume many nodes.
-- **Native declarative support**: first‑class Kubernetes CRDs and GitOps integration.
-- **Healthy ecosystems**: CNCF or widely adopted open source projects.
-- **No commercial licenses**: easy to adopt in labs and internal platforms.
-- **Cloud‑agnostic**: work on bare metal, on‑prem, or public cloud.
+We also mandate a **healthy open-source ecosystem** and **zero commercial license requirements**, ensuring the platform remains accessible for labs and internal use without vendor lock-in. Finally, the architecture is strictly **cloud-agnostic**, capable of running on bare metal, on-premises virtualization, or any public cloud provider without modification.
 
 The blueprint focuses on what must be provided at the platform layer (networking, security, observability, policy, GitOps). Cloud‑specific services are left out by design.
 
-## Where to go next
+import { Button } from '../../../components/content/index.ts';
 
-From here, you can dig into specific views:
-
-- **Bootstrap and infrastructure**: [IT directory architecture](infrastructure)
-- **GitOps application layer**: [K8s directory architecture](applications)
-- **Secrets and PKI**: [Secrets management architecture](secrets)
-- **Policy and governance**: [Security & policy model](../concepts/security-policy-model)
-- **Observability stack**: [Observability architecture](observability)
-- **CI/CD architecture**: [CI/CD architecture](cicd)
-
-If you have not deployed the platform yet, read [Getting started](../getting-started/overview) next and then come back here with a running cluster.
+<div class="flex justify-center mt-8">
+  <Button href="/architecture/bootstrap/" variant="primary" icon="arrow-right">
+    Next: Bootstrap
+  </Button>
+</div>

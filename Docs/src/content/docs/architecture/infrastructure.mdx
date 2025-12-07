@@ -6,120 +6,47 @@ sidebar:
   label: Infrastructure
   order: 3
 ---
+import { Button } from '../../../components/content/index.ts';
 
+The **Infrastructure Core** represents the "physical" and logical foundation of the IDP. Before we can talk about Developer Portals or CI/CD pipelines, we need a reliable substrate that handles compute, networking, identity, and secrets.
 
-This directory contains the **static** or **bootstrap layer** of the platform. These are
-  the core components required to bring up a functional Kubernetes cluster _before_ the
-  GitOps engine (e.g., ArgoCD) takes over.
+This layer is designed to be **cloud-agnostic** but optimized for resource-constrained environments (like a laptop or edge server). It replaces managed cloud services (AWS ALB, KMS, EKS) with open-source, self-hosted equivalents.
 
-This page shows the component view of the infrastructure core layer described in the
-  Architecture overview.
+## Compute: k3d & k3s
 
-:::note
-This page focuses on the **structural organization** of bootstrap components. For the **deployment sequence and lifecycle** of these components, see [Bootstrap Layer](bootstrap).
-:::
+We use **k3s** (via k3d) as the Kubernetes distribution.
+*   **Why:** It is a fully CNCF-compliant Kubernetes distribution but stripped of legacy cloud provider binaries, making it incredibly lightweight.
+*   **Topology:** The blueprint provisions a **3-node cluster** (1 Server + 2 Agents). This mimics a real production environment where workloads are separated from the control plane using scheduling rules (taints and tolerations), allowing you to test resilience scenarios like node failure locally.
 
-## Guiding Principles
+## Networking: Cilium & Gateway API
 
-The structure follows two simple rules to ensure consistency and clarity.
+Instead of the standard `kube-proxy` and generic Ingress controllers (like Nginx), this architecture adopts the modern networking stack.
 
-### 1. Helm Chart Configurations
+*   **Cilium (CNI):** Uses eBPF to handle networking at the kernel level. It provides superior performance and, crucially for a platform, deep observability and security capabilities that standard IPTables-based networking cannot match.
+*   **Gateway API:** The successor to the Ingress API. It allows us to define networking intent in a more expressive way, separating the role of the Cluster Operator (who manages the Gateway) from the Developer (who attaches Routes).
 
-Configuration for a core component deployed via a Helm chart is defined in a single
-`*-values.yaml` file.
+## Identity & Secrets: Vault & ESO
 
-- **Location**: Root of the `IT/` directory.
-- **Naming**: The filename is simple and references the component (e.g.,
-  `values.yaml`).
+Handling sensitive data is often the hardest part of a local platform. We solve this by implementing a full "Production-Grade" secrets pipeline.
 
-### 2. Raw Kubernetes Manifests
+*   **HashiCorp Vault:** Acts as the centralized source of truth for secrets. In a real enterprise, this would be your corporate Vault or AWS Secrets Manager. Here, we self-host it to prove the pattern.
+*   **External Secrets Operator (ESO):** Bridging the gap between Vault and Kubernetes. Applications shouldn't talk to Vault directly (it's complex). ESO automatically fetches secrets from Vault and injects them as native Kubernetes Secrets, so apps just see standard environment variables.
 
-Static Kubernetes resources that are not part of a Helm chart installation (e.g., a
-`ClusterIssuer` or a `ClusterSecretStore`) are organized as raw YAML files.
+## GitOps Engine: ArgoCD
 
-- **Location**: Placed inside a subdirectory named after the parent component (e.g.,
-  `cert-manager/`).
-- **Naming**: The filename **must** exactly match the `metadata.name` of the resource
-  defined within it (e.g., a `ClusterIssuer` with `name: ca-issuer` is saved
-  in `ca-issuer.yaml`).
+The heart of the platform's automation. Once the infrastructure core is bootstrapped, **ArgoCD** takes over. It is the only component that has permission to write to the cluster (eventually). By placing ArgoCD in the core infrastructure, we ensure that even the platform's own configuration is managed via GitOps.
 
-### 3. Bootstrap Resources via Kustomize
+## Component View
 
-Some components require orchestrated deployment of multiple resources.
-These use Kustomize for composition and are deployed via
-`kustomize build <dir>/ | kubectl apply -f -`.
-
-- **Location**: Subdirectories with their own `kustomization.yaml`.
-- **Purpose**:
-  - `namespaces/`: Bootstrap namespace definitions for core components.
-  - `cert-manager/`: Issuers and Certificate definitions.
-  - `external-secrets/`: The `ClusterSecretStore` to connect to Vault and
-    the `ExternalSecret` for ArgoCD.
-  - `argocd/`: Kustomization to support the Helm chart.
-
-## Directory layout (short)
-
-The `IT/` directory is intentionally simple:
-
-```text
-IT/
-├── k3d-cluster.yaml
-├── kustomization.yaml
-├── namespaces/
-├── cert-manager/
-│   └── values.yaml
-├── external-secrets/
-│   └── values.yaml
-├── vault/
-│   └── values.yaml
-├── cilium/
-│   └── values.yaml
-└── argocd/
-    └── values.yaml
-```
-
-## Quick Reference
-
-| File / Directory             | Purpose                                                                  | Type                |
-| ---------------------------- | ------------------------------------------------------------------------ | ------------------- |
-| `k3d-cluster.yaml`           | Defines the k3d cluster (includes local registry cache).                 | k3d Config          |
-| `kustomization.yaml`         | Root Kustomize orchestrator (currently minimal).                         | Kustomize           |
-| `*-values.yaml`              | Configures a core component's Helm chart.                                | Helm Values         |
-| `namespaces/`                | Bootstrap namespace definitions for core components.                     | Kustomize Bootstrap |
-| `vault/`                     | Contains the manual Vault initialization script (`vault-manual-init.sh`).| Shell Script        |
-| `cert-manager/`              | Raw manifests for cert-manager (ClusterIssuers, CA certificates).        | Raw Manifests       |
-| `external-secrets/`          | Raw manifests for External Secrets Operator (SecretStore, ExternalSecret).| Raw Manifests       |
-| `argocd/`                    | Kustomization to support the ArgoCD Helm chart deployment.               | Kustomize           |
-
-## Component view — infrastructure core
+The diagram below illustrates the static relationships between these components. Unlike the runtime view, this focuses on dependencies: how the Secrets system relies on Vault, how Ingress relies on the Gateway, and how they all act as dependencies for the Application Layer that follows.
 
 ![Infrastructure Component View](../assets/diagrams/architecture/infrastructure-component-view.svg)
 
-> **Source:** [infrastructure-component-view.d2](../assets/diagrams/architecture/infrastructure-component-view.d2)
-
-## Deployment Workflow
-
-The bootstrap process follows this order (orchestrated by `Taskfile.yaml`):
-
-1. **Create k3d cluster** (`k3d-cluster.yaml` includes the local registry cache).
-2. **Apply bootstrap namespaces** via Kustomize: `kustomize build namespaces/ | kubectl apply -f -`.
-3. **Deploy Cilium CNI** via Helm (`IT/cilium/values.yaml`).
-4. **Deploy Prometheus CRDs** via a dedicated Helm chart install.
-   This is done using the `kube-prometheus-stack` chart with the `crdsOnly=true` flag.
-5. **Deploy Cert-Manager** via Helm (`IT/cert-manager/values.yaml`).
-   - Wait for webhook readiness.
-   - Then apply Cert-Manager resources: `kustomize build cert-manager/ | kubectl apply -f -`.
-6. **Deploy Vault Stack**:
-   - Deploy Vault via Helm (`IT/vault/values.yaml`).
-   - Execute the initialization script (`vault-init.sh`) to initialize and unseal Vault.
-7. **Deploy External Secrets Operator** via Helm (`IT/external-secrets/values.yaml`).
-   - Then apply ESO resources (`ClusterSecretStore`, `ExternalSecret` for ArgoCD)
-     via Kustomize: `kustomize build external-secrets/ | kubectl apply -f -`.
-8. **Deploy ArgoCD** via Helm (`IT/argocd/values.yaml`).
-9. **Deploy Gateway API** via Kustomize: `kustomize build gateway/ | kubectl apply -f -`.
-   - Creates the Gateway resource with wildcard TLS certificate.
-10. **Deploy Policies** via ArgoCD Application: `kubectl apply -f Policies/app-kyverno.yaml`.
-11. **Deploy Application Stacks** via ApplicationSets: ArgoCD auto-discovers and deploys all apps.
-
-**Key Insight:** The bootstrap process is a carefully orchestrated sequence of Helm deployments
- and Kustomize applications, managed entirely by `Taskfile.yaml`.
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/bootstrap/" variant="secondary" icon="arrow-left">
+    Back: Bootstrap
+  </Button>
+  <Button href="/architecture/applications/" variant="primary" icon="arrow-right">
+    Next: Applications
+  </Button>
+</div>

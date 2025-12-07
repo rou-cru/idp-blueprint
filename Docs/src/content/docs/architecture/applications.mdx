@@ -6,149 +6,53 @@ sidebar:
   label: Applications
   order: 4
 ---
+import { Button } from '../../../components/content/index.ts';
 
+While the infrastructure core provides the necessary substrate—compute, networking, and secrets—it is the **Application Layer** that delivers actual value to developers. This layer is not a monolithic block but a composition of distinct, domain-focused **Stacks** managed entirely through GitOps.
 
-> **Context:** This page details the technical implementation of the [GitOps model](../concepts/gitops-model)
-  based
-  on the [GitOps philosophy](../concepts/design-philosophy.md#3-gitops).
+We organize these stacks to provide a cohesive platform experience, where tools are not just installed side-by-side but are integrated to support complete engineering workflows.
 
-This document outlines the GitOps strategy for managing all applications and services
-  (workloads) deployed on the cluster. This directory (`K8s/`) is the source of truth,
-  managed exclusively by ArgoCD.
+## The Observability Stack
 
-This page provides a component view of the GitOps application layer (automation/governance
-  and developer‑facing stacks).
+Visibility is the first requirement of any reliable platform. We implemented a comprehensive observability strategy that goes beyond simple dashboards, enabling a culture of Service Level Objectives (SLOs).
 
-## Core Pattern: App of AppSets
+The backbone of this stack is the **Kube Prometheus Stack**, which deploys Prometheus for metric collection and Grafana for visualization. It comes pre-loaded with rich dashboards that monitor the platform's own health—from Cilium networking flows to ArgoCD performance.
 
-We employ a modular, scalable pattern where multiple `ApplicationSet` resources are used
-instead of a single monolithic one. This provides flexibility, clear ownership, and
-reduces the blast radius of any configuration errors.
+To complement metrics with context, we deploy **Loki** as a lightweight log aggregation system, fed by **Fluent-bit** collectors running on every node. This ensures that developers can correlate a spike in error rates directly with the application logs that explain them, all within a single Grafana interface.
 
-Each primary directory under `K8s/` defines a stack (e.g., `observability/`, `cicd/`). For every stack there is an `applicationset-<stack>.yaml` file that discovers and manages the applications within that stack. A root ArgoCD `Application`, defined outside the `K8s/` directory, deploys the `ApplicationSet` resources.
+Taking reliability engineering a step further, we include **Pyrra**. This tool transforms SLOs from abstract concepts into first-class Kubernetes resources. Engineers can define availability targets in YAML (e.g., "99.9% success rate for the API"), and Pyrra automatically generates the necessary Prometheus recording rules and alerting configurations.
 
-### GitOps Workflow Diagram
+## The CI/CD Stack
 
-![GitOps App of AppSets](../assets/diagrams/architecture/applications-gitops-workflow.svg)
+Delivering code to production requires a robust factory floor. The CI/CD stack provides the engines necessary to build, test, and verify software supply chains.
 
-> **Source:** [applications-gitops-workflow.d2](../assets/diagrams/architecture/applications-gitops-workflow.d2)
+**Argo Workflows** serves as the general-purpose workflow engine. Unlike traditional CI systems that rely on heavy agents, Argo Workflows runs every step of the pipeline as a container in the cluster, allowing for massive parallelism and native integration with Kubernetes resources.
 
-## Bootstrap and Standalone Applications
+Quality gates are enforced by **SonarQube**, which performs static analysis on codebases to detect bugs, vulnerabilities, and code smells before they merge. By integrating this into the pipeline, we shift quality left, preventing technical debt from accumulating in the platform.
 
-Certain foundational, cross-cutting components like the policy engine are deployed
-first, before the main application stacks. This ensures the cluster's "rules of the
-road" are active before other workloads are deployed.
+## The Eventing Stack
 
-The policy engine (Kyverno) and its policies are deployed as a standalone ArgoCD `Application` defined in `Policies/app-kyverno.yaml`. This application is installed during the bootstrap phase via `Taskfile.yaml` and points to the `Policies/` directory, where Kustomize orchestrates the full stack.
+A truly modern IDP is reactive, not just passive. The Eventing stack creates a nervous system for the platform, allowing it to respond automatically to changes in state.
 
-This approach provides a secure bootstrap process at the cost of being a slight
-exception to the general "App of AppSets" pattern.
+We utilize **Argo Events** to capture signals from various sources—such as webhooks from GitHub, resource changes in Kubernetes, or alerts from Prometheus. These events trigger sensors that can execute complex remediation logic or launch provisioning workflows. For example, a "High Error Rate" alert could automatically trigger a remediation workflow to capture a heap dump or rollback a deployment, closing the loop between observability and action.
 
-## Directory structure (short)
+## The Security Stack
 
-The `K8s/` directory mirrors the stack and namespace strategy:
+Security in the IDP is continuous and embedded, not a final checkpoint. The Security stack ensures that workloads maintain a strong posture throughout their lifecycle.
 
-```text
-K8s/
-├── cicd/
-│   ├── applicationset-cicd.yaml
-│   ├── namespace.yaml
-│   ├── argo-workflows/
-│   │   └── kustomization.yaml
-│   └── governance/
-│       └── kustomization.yaml
-├── observability/
-│   ├── applicationset-observability.yaml
-│   ├── namespace.yaml
-│   ├── loki/
-│   │   └── kustomization.yaml
-│   └── kube-prometheus-stack/
-│       └── kustomization.yaml
-└── security/
-    ├── applicationset-security.yaml
-    └── namespace.yaml
-```
+**Trivy Operator** sits inside the cluster, continuously scanning running container images for known vulnerabilities (CVEs). This provides real-time visibility into the security risks of the fleet, alerting platform engineers to new threats in already-deployed software without waiting for the next build cycle.
 
-The stack directory contains `namespace.yaml` to define the namespace and common labels, an `applicationset-<stack>.yaml` to discover stack applications, and each component’s `<app-name>/kustomization.yaml` serves as the Kustomize entry point targeted by ArgoCD.
+## The Developer Portal (Backstage)
 
-## Application Manifests & Kustomize
+Finally, **Backstage** acts as the unified frontend for the entire platform. It aggregates information from all the underlying stacks—services from the catalog, build status from CI/CD, and documentation—into a single pane of glass.
 
-To manage the complexity of modern applications, we use **Kustomize** as the standard
-for defining and composing application manifests. Our philosophy is based on
-**resource composition** over complex inheritance via `overlays`.
+To secure this portal, we integrate **Dex** as an OpenID Connect provider. This handles identity federation, allowing developers to log in using standard Git providers or enterprise identity systems, ensuring that the portal remains secure while offering a seamless user experience.
 
-Two primary patterns for Kustomize are established in this project.
-
-### Pattern 1: local resource aggregation
-
-This is the standard approach for **in-house applications** or for grouping a set of
-related Kubernetes manifests.
-
-Pattern 1 aggregates local resources for in‑house applications or governance policies. A dedicated directory holds the component’s YAML files (e.g., `limitrange.yaml`, `resourcequota.yaml`) and a `kustomization.yaml` lists them under `resources`.
-
-- **Example (`K8s/cicd/governance/kustomization.yaml`):**
-
-    ```yaml
-    apiVersion: kustomize.config.k8s.io/v1beta1
-    kind: Kustomization
-    resources:
-      - limitrange.yaml
-      - resourcequota.yaml
-    ```
-
-### Pattern 2: Helm chart orchestration
-
-This is the **preferred, standard method** for deploying **third-party applications**
-or any software available as a Helm chart. It allows us to version and manage the
-configuration of these tools declaratively.
-
-Pattern 2 uses Helm chart orchestration for third‑party applications. The component directory includes a `kustomization.yaml` that declares the Helm chart in `helmCharts`, and a `values.yaml` provides custom configuration.
-
-- **Example (`K8s/cicd/argo-workflows/kustomization.yaml`):**
-
-    ```yaml
-    apiVersion: kustomize.config.k8s.io/v1beta1
-    kind: Kustomization
-    helmCharts:
-      - name: argo-workflows
-        repo: https://argoproj.github.io/argo-helm
-        version: 0.45.11
-        releaseName: argo-workflows
-        namespace: cicd
-        valuesFile: values.yaml
-    ```
-
-## Workflow for Deploying a New Application
-
-1. **Choose the Stack:** Identify which stack the new application belongs to (e.g.,
-    `observability`).
-2. **Create a Directory:** Create a new subdirectory for your application (e.g.,
-    `K8s/observability/my-new-app/`).
-3. **Add Manifests:** Add all Kubernetes manifest files for your application to this
-    new directory.
-4. **Create `kustomization.yaml`:** Add a `kustomization.yaml` file that lists all the
-    manifest files you just created.
-5. **Commit & Push:** Commit your changes to Git. The corresponding `ApplicationSet`
-    will automatically detect the new directory and deploy your application into the
-    correct namespace.
-
-## Component Versioning Strategy
-
-The project uses a two-tiered strategy for managing Helm chart versions,
-depending on how each component is deployed:
-
-1. **Core Infrastructure Components (Managed by `Taskfile.yaml`)**
-    - **Components**: Cilium, cert-manager, Vault, ArgoCD.
-    - **Method**: Deployed imperatively via `helm upgrade` tasks in the bootstrap Taskfile.
-    - **Version Source**: `config.toml [versions]` (e.g., `cilium`, `cert_manager`, `vault`, `argocd`).
-      Tasks read these values through `Scripts/config-get.sh`, so changing the TOML is the single point to pin or bump chart versions.
-
-2. **Application Stack Components (Managed by GitOps)**
-    - **Components**: Argo Workflows, SonarQube, Loki, Prometheus, Trivy, etc.
-    - **Method**: These components are deployed declaratively by ArgoCD via
-      `ApplicationSet` resources.
-    - **Version Source**: The Helm chart version is specified directly in each
-      application's respective `kustomization.yaml` file.
-      This approach keeps an application's entire configuration,
-      including its version, co-located in a single place,
-      adhering to GitOps principles.
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/infrastructure/" variant="secondary" icon="arrow-left">
+    Back: Infrastructure
+  </Button>
+  <Button href="/architecture/secrets/" variant="primary" icon="arrow-right">
+    Next: Secrets Management
+  </Button>
+</div>
