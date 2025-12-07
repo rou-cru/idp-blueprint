@@ -1,20 +1,53 @@
 ---
-import { getEntry } from 'astro:content';
-import DocsLayout from '../layouts/DocsLayout.astro';
+import '../styles/main.css';
+import Header from '../components/navigation/Header.svelte';
+import Hero from '../components/landing/Hero.svelte';
+import FeatureGrid from '../components/landing/FeatureGrid.svelte';
+import { siteConfig } from '../lib/site-config';
 
-const entry = await getEntry('docs', 'index');
-if (!entry) {
-  return Astro.redirect('/404');
-}
-
-const { Content, headings } = await entry.render();
-const { title, description, layout } = entry.data;
+const title = siteConfig.title;
+const description = siteConfig.description;
 ---
 
-{layout ? (
-  <Content />
-) : (
-  <DocsLayout title={title || 'Documentation'} description={description} headings={headings}>
-    <Content />
-  </DocsLayout>
-)}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-bg-base text-text-primary antialiased min-h-screen">
+    
+    <Header client:load />
+
+    <main class="pt-16">
+      <Hero client:load />
+      <FeatureGrid client:load />
+      
+      <!-- Footer-like CTA -->
+      <section class="py-24 text-center bg-bg-subtle border-t border-border-subtle">
+         <div class="max-w-2xl mx-auto px-6">
+           <h2 class="text-3xl font-bold text-text-primary mb-6">Ready to start building?</h2>
+           <p class="text-text-secondary mb-10 text-lg">
+             Deploy the full platform on your local machine in minutes and start exploring the capabilities.
+           </p>
+           <a 
+              href="/getting-started/overview/"
+              class="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-brand-purple hover:bg-brand-purple-light text-white font-medium transition-all hover:scale-105 shadow-lg shadow-brand-purple/20"
+            >
+              Read the Documentation
+            </a>
+         </div>
+      </section>
+    </main>
+
+  </body>
+</html>

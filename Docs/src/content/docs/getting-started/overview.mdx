@@ -14,72 +14,27 @@ Here we focus on what you need to know to run the commands with confidence.
 
 ## What you will build
 
-After completing the quickstart you will have:
+By the end of the quickstart you will be looking at a running k3d cluster named `idp-demo`
+with Cilium and the Gateway API wiring traffic, Vault seeded and bridged to External
+Secrets and cert‑manager, Prometheus/Loki/Grafana watching over the cluster, and ArgoCD
+driving GitOps together with Kyverno and Policy Reporter. ApplicationSets fan out the
+stacks in `K8s/` so observability, CI/CD, security scanning, events, and Backstage come up
+without extra flags. The whole story begins and ends with a single command: `task deploy`.
 
-- A local k3d Kubernetes cluster (by default `idp-demo`).
-- Core platform services:
-  - Cilium, Gateway API.
-  - Vault, External Secrets Operator, cert‑manager.
-  - Prometheus, Loki, Grafana.
-- GitOps and policy control planes:
-  - ArgoCD with ApplicationSets (a controller that generates many Applications
-    from the `K8s/` folder structure; see
-    [`GitOps, Policy, and Eventing`](../concepts/gitops-model)).
-  - Kyverno and Policy Reporter.
-- Stacks for:
-  - Observability.
-  - CI/CD.
-  - Security scanning.
+## Feature Toggles
 
-All of this is deployed from this repository using `task deploy`.
+Use the `[fuses]` section in `config.toml` to turn stacks on or off. The keys
+`policies`, `security`, `observability`, `cicd`, and `backstage` each gate a stack; `prod`
+hardens ArgoCD. Everything ships enabled except `prod`.
 
-## Feature Toggles (Fuses)
+## What `task deploy` does
 
-The platform includes feature toggles called "fuses" that allow you to control
-which components are deployed.
-In the `config.toml` file, you'll find a `[fuses]` section where you can enable or
-disable different stacks:
+With the default `config.toml`, `task deploy` spins up a three-node k3d cluster, layers in
+networking, certificates, Vault + External Secrets, and then brings up ArgoCD and the
+Gateway. It prints nip.io URLs from your LAN IP and lets ArgoCD reconcile the stacks you
+left enabled.
 
-- `policies`: Controls deployment of Kyverno policy engine
-- `security`: Controls deployment of security stack (Trivy Operator)
-- `observability`: Controls deployment of monitoring stack (Prometheus, Grafana, Loki)
-- `cicd`: Controls deployment of CI/CD stack (Argo Workflows, SonarQube)
-- `backstage`: Controls deployment of Backstage developer portal
-- `prod`: Enables production-hardened configurations
-
-By default, all stacks except `prod` are enabled. The events stack (Argo Events) is
-always deployed regardless of fuse settings.
-
-## One command: what `task deploy` actually does
-
-With the default `config.toml`, `task deploy` runs this end-to-end sequence. No manual
-flags or extra environment variables are needed; the Taskfile orchestrates everything.
-
-1) **Create the base**
-   - Checks inotify, creates a 3-node k3d cluster plus local registry cache.
-   - Applies namespaces and initial PriorityClasses.
-2) **Install CRDs and networking**
-   - Installs Gateway API and Prometheus Operator CRDs.
-   - Deploys Cilium as CNI and waits for pods to be `Ready`.
-3) **Certificates and secrets**
-   - Installs cert-manager and applies the CA/ClusterIssuers.
-   - Installs Vault, initializes it, and configures Kubernetes auth roles for ESO.
-   - Seeds initial secrets (ArgoCD, Grafana, SonarQube, Backstage, registry).
-   - Installs External Secrets Operator and waits for it to be available.
-4) **GitOps and gateway**
-   - Installs ArgoCD (standard mode), applies AppProjects per stack.
-   - Applies ExternalSecrets for ArgoCD credentials.
-   - Deploys Gateway API + wildcard TLS, verifies NodePorts (30080/30443), and
-     prints detected nip.io URLs.
-5) **Auto-pilot stacks (all enabled by default)**
-   - Applies the Kyverno/Policy Reporter Application.
-   - Applies ApplicationSets for observability, cicd, security, backstage, and events
-     (fuses gate all except events, which is always on).
-6) **Complete**
-   - Exits with "Deployment complete"; ArgoCD continues reconciling until everything is
-     Healthy/Synced.
-
-Real log fragments (high-level summary):
+Typical log snippets:
 
 ```text
 task: [k3d:k3d:create] ... k3d cluster create idp-demo ...
@@ -95,8 +50,9 @@ task: [stacks:events] applicationset-events created
 Deployment complete
 ```
 
-Tip for debugging timing: re-run with `task --summary deploy` or `task --verbose deploy`
-to see every underlying command as it executes.
+:::tip
+Run `task --summary deploy` or `task --verbose deploy` to see each command as it runs.
+:::
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
   <LinkButton href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">

@@ -7,10 +7,8 @@ sidebar:
 
 import { LinkButton } from '../../../components/content/index.ts';
 
----
-
-Spin up the full IDP locally with one command, then validate access and credentials.
-Expect eventual consistency for a few minutes while images download.
+Spin up the full IDP locally with one command, then watch it settle while images pull and
+ArgoCD syncs. Expect a few minutes of eventual consistency.
 
 ## Clone the repository
 
@@ -19,7 +17,10 @@ git clone https://github.com/rou-cru/idp-blueprint
 cd idp-blueprint
 ```
 
-Optional: open in VS Code and “Reopen in Container”, or run with Devbox.
+:::tip
+Open the repo in VS Code and “Reopen in Container”, or run with Devbox to get the tooling
+preinstalled.
+:::
 
 ## Deploy
 
@@ -27,53 +28,52 @@ Optional: open in VS Code and “Reopen in Container”, or run with Devbox.
 task deploy
 ```
 
-- Creates k3d cluster `idp-demo`
-- Bootstraps core: Cilium, cert-manager, Vault, External Secrets, ArgoCD, Gateway
-- Deploys Kyverno/Policy Reporter, then ApplicationSets for observability, CI/CD,
-  security, events, and backstage (gated by
-  [fuses](../architecture/overview.md#feature-toggles-fuses) except events)
+That single command creates the `idp-demo` k3d cluster, bootstraps Cilium, cert-manager,
+Vault, External Secrets, ArgoCD, and the Gateway, then lets ApplicationSets light up
+observability, CI/CD, security, events, and backstage—each gated by the fuses described in
+[Architecture overview](../architecture/overview#feature-toggles-fuses). On typical laptop
+hardware it takes about 5–10 minutes.
 
-Time: ~5–10 minutes depending on network and hardware.
+### What happens during deploy (quick tour)
 
-:::tip[Deploy behavior]
+The run creates the cluster and namespaces, installs networking CRDs and Cilium, brings in
+cert-manager plus Vault and External Secrets, then starts ArgoCD and exposes services
+through the Gateway with TLS. ApplicationSets generate ArgoCD Applications for each stack
+under `K8s/`, ordered with sync waves, and gated by your fuses in `config.toml`.
 
-- ArgoCD will keep syncing after the task completes. It’s normal for Applications to
-  become Healthy/Synced gradually as images download and pods become Ready.
-- The task prints the service URLs when Gateway is ready (for example
-  `https://argocd.<ip>.nip.io`). Copy them from the output.
-
+:::tip
+ArgoCD keeps syncing after the task completes; Applications turn Healthy/Synced gradually
+as images download and pods become Ready. The task prints the service URLs when Gateway is
+ready (for example `https://argocd.<ip>.nip.io`)—copy them from the output.
 :::
 
 ## First access
 
-When the Gateway is ready, open the printed URLs for exposed services. They use a nip.io
-wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`) and
-are exposed to LAN network..
+When the Gateway is ready, open the URLs the task prints. They use a nip.io wildcard based
+on your LAN IP (for example `https://argocd.192-168-1-20.nip.io`) and are reachable from
+the LAN.
 
 :::caution
-Gateway NodePorts come from `config.toml`. Make sure those ports are free and allowed in
-your OS firewall so LAN browsers can reach the services.
+Gateway NodePorts come from `config.toml`. Keep those ports free and open in your OS
+firewall so LAN browsers can reach the services.
 :::
 
-Also you could use `k9s` to inspect the cluster state visually in CLI.
+You can also open `k9s` to inspect the cluster state from the terminal.
 
 ### Credentials
 
-Vault is initialized, unsealed and creates secret values automatically during deploy.
-Then External Secrets propagate them to workloads than need it.
-
-Default values to the secrets created are from `config.toml` and the root token is hold in
-a secret.
+Vault is initialized, unsealed, and seeds secrets automatically during deploy, and
+External Secrets fans them out to workloads. Default values come from `config.toml`; the
+root token lives in a Kubernetes Secret.
 
 :::danger
-Local-only root/unseal material is managed by helper scripts. However thats just a
-workaround to demo purpouse, dont do this on production and instead replace the file for
-secure methods
+Local-only root/unseal material is managed by helper scripts for demo purposes—swap this
+for real secret management in production.
 :::
 
 See [Verify Installation](verify) for details about expected results.
 
-## 4. Clean up
+## Clean up
 
 Tear everything down when you’re done:
 
@@ -85,7 +85,7 @@ task destroy
   <LinkButton href="/getting-started/prerequisites/" variant="secondary" icon="arrow-left">
     Back: Prerequisites
   </LinkButton>
-  <LinkButton href="/getting-started/deployment/" variant="primary" icon="arrow-right">
-    Next: Deployment
+  <LinkButton href="/getting-started/verify/" variant="primary" icon="arrow-right">
+    Next: Verify Installation
   </LinkButton>
 </div>

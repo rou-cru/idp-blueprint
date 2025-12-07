@@ -2,19 +2,19 @@
 title: Verify Installation
 sidebar:
   label: Verify Installation
-  order: 5
+  order: 4
 ---
 
 import { LinkButton } from '../../../components/content/index.ts';
 
-Let's confirm things came up as expected and set realistic expectations for the first
-minutes after deploy.
+Now that the deploy command has run, let's confirm the platform is coming up and set
+realistic expectations for the first few minutes.
 
 ## What to expect in the first 5–10 minutes
 
-- ArgoCD continues syncing for a bit after "task deploy" finishes
-- Pods roll through Pending → Running → Ready as images download
-- It's okay if not everything is Healthy/Synced immediately
+ArgoCD keeps syncing after `task deploy` exits, pods progress from Pending to Ready as
+images download, and it is normal for Health/Sync to settle gradually rather than
+instantly.
 
 {/*Sequence diagram removed for a simpler, first-contact explanation.*/}
 
@@ -34,7 +34,7 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 ```
 
 :::tip
-`k9s` ships in the Devbox/Dev Container. Try `k9s -A` and toggle between `:pods`,
+`k9s` ships in the Devbox/Dev Container. Run `k9s -A` and toggle between `:pods`,
 `:deploy`, `:events` to watch things settle.
 :::
 
@@ -42,17 +42,12 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 
 ![Platform Entry Points](../assets/diagrams/getting-started/verify-first-look.svg)
 
-> **Source:** [verify-first-look.d2](../assets/diagrams/getting-started/verify-first-look.d2)
-
 ### What you'll see in the ArgoCD UI
 
-- Application cards with *Sync* (Git vs. cluster) and *Health* columns. It's normal to
-  see some `OutOfSync` right after deploy while things converge.
-- Projects in the left sidebar (e.g., `cicd`, `observability`, `backstage`) - these
-  correspond to the [fuses](../architecture/overview.md#feature-toggles-fuses) enabled in
-  your `config.toml`.
-- Each card opens a resource graph so you can inspect Deployments, Services, and
-  ConfigMaps.
+Application cards show Sync and Health; expect some OutOfSync while things converge.
+Projects in the left sidebar (cicd, observability, backstage, and friends) mirror the
+fuses you enabled in `config.toml`. Opening a card reveals the resource graph so you can
+walk through Deployments, Services, and ConfigMaps.
 
 ![ArgoCD — listado de Applications](../assets/images/verify/argocd_all_applications.png)
 
@@ -81,21 +76,16 @@ From there jump with `:ns`, `:pods`, `:deploy` and watch events live while ArgoC
 
 ## Access Endpoints
 
-`task deploy` prints the exact service URLs using your detected LAN IP (not 127.0.0.1 in
-normal cases). Example output:
+`task deploy` prints the service URLs using your detected LAN IP. Example output:
 
 ![Gateway URLs printed by task deploy](../assets/images/verify/gateway-urls.png)
 
-Patterns (replace with your IP-dashed value):
-
-- ArgoCD: `https://argocd.<ip-dashed>.nip.io`
-- Grafana: `https://grafana.<ip-dashed>.nip.io`
-- Vault: `https://vault.<ip-dashed>.nip.io`
-- Argo Workflows: `https://workflows.<ip-dashed>.nip.io`
-- SonarQube: `https://sonarqube.<ip-dashed>.nip.io`
-
-Reachable from other devices on your LAN using your workstation IP. Ensure the configured
-NodePorts are allowed by your OS firewall.
+Patterns replace `<ip-dashed>` with your LAN IP: ArgoCD at
+`https://argocd.<ip-dashed>.nip.io`, Grafana at `https://grafana.<ip-dashed>.nip.io`,
+Vault at `https://vault.<ip-dashed>.nip.io`, Argo Workflows at
+`https://workflows.<ip-dashed>.nip.io`, and SonarQube at
+`https://sonarqube.<ip-dashed>.nip.io`. They are reachable from other devices on your LAN
+as long as your OS firewall allows the configured NodePorts.
 
 :::caution
 If you can't reach the endpoints from another device, open NodePorts `30080`/`30443` (or
@@ -117,13 +107,14 @@ argocd login argocd.<ip-dashed>.nip.io --username admin \
 
 ## Certificate Warnings
 
-TLS uses a local, self‑signed root CA. Browsers will warn on first visit. You can
-proceed, or import the CA:
+TLS uses a local, self‑signed root CA issued for `*.${DNS_SUFFIX}` where `DNS_SUFFIX`
+comes from your LAN IP (for example `192-168-1-20.nip.io`). Browsers will warn on first
+visit. You can proceed, or import the CA:
 
 ![Browser warning — self-signed TLS prompt](../assets/images/verify/browser-warning.png)
 
 ```bash
-# Export the root CA from cert-manager
+# Export the root CA from cert-manager (cert-manager/idp-demo-ca-secret)
 kubectl -n cert-manager get secret idp-demo-ca-secret \
   -o jsonpath='{.data.tls\.crt}' | base64 -d > idp-demo-ca.crt
 ```
@@ -134,8 +125,8 @@ kubectl -n cert-manager get secret idp-demo-ca-secret \
 - Windows: `certmgr.msc`, import into "Trusted Root Certification Authorities".
 
 :::tip
-Certificates are issued automatically by cert-manager using a wildcard certificate for
-`*.127-0-0-1.nip.io`.
+Certificates are issued automatically by cert-manager using a wildcard for
+`*.${DNS_SUFFIX}`; the CA secret lives at `cert-manager/idp-demo-ca-secret`.
 :::
 
 ## Quick smoke checks (eventual consistency friendly)
@@ -148,8 +139,8 @@ Certificates are issued automatically by cert-manager using a wildcard certifica
 | External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
-  <LinkButton href="/getting-started/deployment/" variant="secondary" icon="arrow-left">
-    Back: Deployment
+  <LinkButton href="/getting-started/quickstart/" variant="secondary" icon="arrow-left">
+    Back: Quickstart
   </LinkButton>
   <LinkButton href="/operate/add-component/" variant="primary" icon="arrow-right">
     Next: Operate — Add Component

@@ -2,6 +2,7 @@
 import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 import type { GetStaticPaths } from 'astro';
 import DocsLayout from '../layouts/DocsLayout.astro';
+import Callout from '../components/content/CalloutWrapper.astro';
 
 export const getStaticPaths = (async () => {
   const docs = await getCollection('docs');
@@ -34,9 +35,9 @@ const hasOwnLayout = Boolean(layout);
 ---
 
 {hasOwnLayout ? (
-  <Content />
+  <Content components={{ callout: Callout }} />
 ) : (
   <DocsLayout title={title || 'Documentation'} description={description} headings={headings}>
-    <Content />
+    <Content components={{ callout: Callout }} />
   </DocsLayout>
 )}
