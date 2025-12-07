@@ -1,0 +1,43 @@
+---
+import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import DocsLayout from '../layouts/DocsLayout.astro';
+import Callout from '../components/content/CalloutWrapper.astro';
+
+export const getStaticPaths = (async () => {
+  const docs = await getCollection('docs');
+
+  return docs
+    .filter((entry) => entry.id !== 'index') // Filter out index, handled by index.astro
+    .map((entry) => {
+      // Remove .md or .mdx extension from the slug
+      const slug = entry.slug ?? entry.id.replace(/\.mdx?$/, '');
+
+      return {
+        params: { slug },
+        props: { slug: entry.slug },
+      };
+    });
+}) satisfies GetStaticPaths;
+
+const { slug } = Astro.props as { slug: CollectionEntry<'docs'>['slug'] };
+const entry = await getEntry('docs', slug);
+
+if (!entry) {
+  return Astro.redirect('/404');
+}
+
+const { Content, headings } = await entry.render();
+const { title, description, layout } = entry.data;
+
+// If the entry explicitly sets a layout in frontmatter, render it directly; otherwise wrap in DocsLayout.
+const hasOwnLayout = Boolean(layout);
+---
+
+{hasOwnLayout ? (
+  <Content components={{ callout: Callout }} />
+) : (
+  <DocsLayout title={title || 'Documentation'} description={description} headings={headings}>
+    <Content components={{ callout: Callout }} />
+  </DocsLayout>
+)}

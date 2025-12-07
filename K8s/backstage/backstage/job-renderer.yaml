@@ -154,7 +154,7 @@ spec:
               kubectl create configmap backstage-app-config-override \
                 --from-file=app-config.override.yaml=/tmp/config.yaml \
                 --dry-run=client -o yaml | \
-                kubectl apply -f - 
+                kubectl apply -f -
 
               echo "=== SUCCESS: ConfigMap patched successfully ==="
           volumeMounts:

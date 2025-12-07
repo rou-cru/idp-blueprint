@@ -1,0 +1,130 @@
+---
+title: Driven by Events
+description: Event-driven architecture within the platform
+layout: ../../../layouts/DocsLayout.astro
+sidebar:
+  label: Driven by Events
+  order: 7
+---
+import { Button } from '../../../components/content/index.ts';
+
+Platform automation requires responsiveness to external signals beyond Git state changes. Event-driven architecture enables platforms to react to observability alerts, user actions, and external system notifications, triggering automated workflows for remediation, provisioning, and integration.
+
+While GitOps handles desired state reconciliation, events enable imperative actions in response to runtime conditions.
+
+## Event Architecture
+
+Event-driven platforms transform reactive signals into automated responses. The architecture comprises three layers that work together to capture, route, and act on events from across the infrastructure.
+
+### Event Sources
+
+Events originate from systems throughout the platform landscape. External services communicate through webhooks—HTTP endpoints that receive notifications when Git commits land, pull requests merge, or developer portals trigger provisioning workflows. These webhooks provide lightweight integration without requiring platforms to poll external APIs continuously.
+
+High-volume scenarios benefit from message queues. Instead of direct HTTP calls, producers publish events to AMQP, Kafka, or NATS streams. The queue buffers events during traffic spikes and guarantees delivery even when consumers fall behind. Cloud providers emit events through their native mechanisms—SNS topics in AWS, Event Grid in Azure, Pub/Sub in GCP—which platforms can subscribe to for infrastructure-level notifications.
+
+The platform's own monitoring stack generates alerts when metrics cross thresholds or logs match patterns. Prometheus Alertmanager fires webhooks for SLO violations, resource exhaustion, or application degradation. These alerts form a critical feedback loop: the observability stack detects problems, the event system triggers remediation.
+
+Kubernetes itself emits a constant stream of cluster events. When pods crash, nodes become unschedulable, or resource quotas are exceeded, the API server broadcasts these state changes. Platforms can subscribe to this event stream to maintain awareness of infrastructure health without polling every resource.
+
+Finally, time drives certain operations. Certificate rotation, backup jobs, and periodic cleanup tasks trigger on schedules rather than external signals. Calendar-based event sources translate cron expressions into events at the appropriate intervals.
+
+### Event Bus
+
+The event bus sits between sources and processors, solving the distribution challenge. When an event arrives from any source, the bus must deliver it to every interested processor reliably. This requires durable messaging—events persist to disk before acknowledgment, ensuring they survive consumer crashes or restarts. A processor that fails mid-handling can retry from the last acknowledged position.
+
+Fan-out multiplies each event to multiple consumers. A single Git push might trigger build workflows, notification bots, and security scans simultaneously. The bus duplicates the event for each subscriber without requiring the source to know who is listening.
+
+Ordering matters for certain workflows. When events describe state changes, processors must see them in sequence. The bus provides ordering guarantees within partitions or topics, ensuring deployment events arrive in the order they occurred even if processed asynchronously.
+
+Back-pressure prevents overload. When processors fall behind, the bus queues events rather than dropping them. Slow consumers receive events at their processing rate while fast consumers drain the queue immediately. This decouples producer speed from consumer capacity.
+
+### Event Processors (Sensors)
+
+Sensors subscribe to the event bus and decide what actions to trigger. Each sensor defines conditions—filters that match specific events based on their content. A sensor watching for deployment failures might filter on alert labels, checking that `severity="critical"` and `component="argocd"`. Only matching events proceed to action triggers.
+
+Some scenarios require aggregation rather than immediate response. A sensor might wait for three consecutive failures within five minutes before declaring an incident. This prevents alert storms from triggering hundreds of workflows when a service flaps between healthy and degraded states.
+
+Event payloads carry context that actions need. A provisioning request includes the application name, repository URL, and owner team. Sensors extract these parameters and inject them into workflow templates, transforming generic workflows into specific actions. The same workflow template handles any application because the sensor adapts it with event data.
+
+Actions vary by use case. Sensors execute Kubernetes workflows for complex orchestration, update cluster resources directly through the API, or call external APIs to bridge the platform with outside systems. The sensor layer translates events into the specific operations each scenario requires.
+
+## Event-Driven Patterns
+
+### Self-Healing Automation
+
+Platforms become self-repairing when observability alerts trigger remediation workflows automatically. When Prometheus detects an SLO violation—say, an ArgoCD Application stuck in a degraded state—it fires an alert to Alertmanager. Alertmanager evaluates the alert's severity and duration, then posts a webhook to the event bus if the condition persists beyond the configured threshold.
+
+A sensor subscribed to remediation events filters incoming alerts by label. It checks for `slo="argocd-application-health"` and extracts the application name and namespace from the alert payload. With this context, the sensor triggers a workflow that syncs the ArgoCD Application, forcing reconciliation. If the application was merely out of sync due to a transient Git operation, the sync resolves it. If the underlying issue persists, subsequent alerts provide escalation paths—notification to on-call engineers, automatic rollback, or diagnostic data collection.
+
+This pattern closes the loop between detection and action. Traditional monitoring requires humans to read alerts, investigate context, and execute remediation steps. Event-driven automation executes the initial response immediately while still alerting humans if the automated fix fails. The platform attempts self-repair before escalating to operators.
+
+### Developer Self-Service
+
+Developer portals lower the barrier to platform operations by translating form submissions into infrastructure provisioning. When a developer needs a new application environment, they fill a template in the portal specifying the application name, repository URL, and resource requirements. The portal validates the input, checks the developer's permissions, then posts an event to the platform's event bus.
+
+A provisioning sensor receives the event and extracts the parameters. It generates a series of operations: create a namespace with appropriate labels and quotas, configure RBAC granting the owning team access, provision an ArgoCD Application pointing to the repository, and scaffold CI/CD pipeline definitions. These operations execute through a workflow engine, which can handle failures, retries, and rollbacks if any step fails.
+
+The developer sees the provisioning status in the portal without ever touching kubectl or editing manifests directly. This self-service model grants developers infrastructure capabilities without exposing cluster access or requiring deep Kubernetes knowledge. The event-driven workflow ensures consistent provisioning patterns while capturing all actions in audit logs for compliance.
+
+### External System Integration
+
+Platforms rarely operate in isolation. Events propagate beyond the cluster to integrate with organizational tooling. When deployments complete, notification bots post status updates to Slack channels or Microsoft Teams, keeping development teams informed without polling dashboards. When policy violations occur—containers running as root, privileged pods, or insecure configurations—the platform creates tickets in JIRA or ServiceNow, routing them to security teams for review.
+
+Audit requirements drive event streaming to Security Information and Event Management (SIEM) systems. Every policy decision, access grant, and infrastructure change generates an event that flows to centralized compliance platforms. This creates an immutable audit trail without requiring manual log aggregation.
+
+External status pages reflect platform health through event-driven updates. When services degrade, events update status pages automatically, notifying customers before support tickets arrive. When health recovers, subsequent events clear the incident status without human intervention.
+
+### Scheduled Operations
+
+Not all automation responds to external signals. Platforms require periodic maintenance that triggers on time schedules rather than events. Certificates approach expiration on predictable timelines. A calendar event source fires weekly to check certificate validity, triggering renewal workflows for certificates within 30 days of expiration. This ensures renewals happen during business hours when operators can monitor the process, rather than during emergency weekend rotations.
+
+Database backups follow similar patterns. Every day at 2 AM, a scheduled event triggers backup workflows for critical data stores. The workflow snapshots volumes, exports databases, and uploads archives to object storage. If backups fail, the workflow raises alerts. If they succeed, it prunes old backups based on retention policies.
+
+Cleanup jobs prevent resource accumulation. Temporary namespaces created for pull request previews expire after two weeks. A nightly cleanup event scans for namespaces matching the temporary label with creation timestamps beyond the threshold, deleting them and reclaiming cluster resources. Build artifacts older than 90 days are similarly purged, keeping storage costs controlled.
+
+Weekly or monthly reports aggregate platform metrics into summaries. A monthly event triggers cost analysis workflows that calculate resource consumption per team, generate chargeback reports, and email summaries to stakeholders. These scheduled operations maintain platform hygiene without manual toil.
+
+## Event vs GitOps
+
+| Aspect | GitOps | Event-Driven |
+|--------|--------|--------------|
+| **Trigger** | Git commit | External signal (webhook, alert, schedule) |
+| **State model** | Declarative desired state | Imperative action |
+| **Idempotency** | Reconciliation loop ensures convergence | Action executes once per event |
+| **Use case** | Infrastructure provisioning, application deployment | Remediation, provisioning workflows, integrations |
+| **Audit trail** | Git history | Event logs, workflow history |
+
+The two approaches are complementary: GitOps manages desired state, events trigger workflows that may update Git (creating a new GitOps loop).
+
+## Implementation in Demo
+
+The reference implementation uses:
+
+- **Event framework**: Argo Events with EventBus, EventSources, Sensors
+- **Message bus**: NATS (3 replicas) for durable event distribution
+- **Event sources**:
+  - Webhook: Alertmanager (SLO alerts), Backstage (provisioning requests)
+  - Future: Git webhooks, calendar schedules
+- **Sensors**:
+  - `slo-remediation`: Alertmanager alerts → remediation workflows (ArgoCD app sync, ExternalSecret refresh)
+  - `app-provisioning`: Backstage events → application scaffolding workflows
+- **Action targets**: Argo Workflows for executing remediation and provisioning logic
+
+**Example flow (SLO remediation):**
+
+1. Prometheus fires alert: `ArgoCD Application Unhealthy`
+2. Alertmanager webhook → Argo Events EventSource
+3. Sensor filters for `slo == 'argocd-application-health'`
+4. Sensor extracts `application` and `namespace` from alert labels
+5. Argo Workflow executes: `argocd app sync <application> --namespace <namespace>`
+
+See [Components - Argo Events](/components/eventing/argo-events/) for configuration details.
+
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/policies/" variant="secondary" icon="arrow-left">
+    Back: Policies
+  </Button>
+  <Button href="/architecture/portal/" variant="primary" icon="arrow-right">
+    Next: Portal
+  </Button>
+</div>
