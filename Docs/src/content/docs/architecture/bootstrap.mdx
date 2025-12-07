@@ -73,6 +73,7 @@ At this point, bootstrap automation completes. The platform transitions to conti
 ## Implementation in Demo
 
 The reference implementation uses:
+
 - **Orchestrator**: Task (`Taskfile.yaml`) for dependency sequencing and environment injection
 - **Compute**: k3d (k3s) for lightweight Kubernetes clusters
 - **Secrets automation**: `Scripts/vault-init.sh` for Vault initialization and auto-unseal

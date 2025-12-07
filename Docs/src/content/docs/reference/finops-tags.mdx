@@ -11,10 +11,10 @@ The platform front-loads tagging so you can attribute resource usage—even on a
 
 | Layer | Mechanism | Purpose |
 | --- | --- | --- |
-| Git defaults | `namespace.yaml` + `kustomization.yaml` | Bake canonical labels into every resource. |
-| Kyverno enforcement | `Policies/rules/baseline/*.yaml` | Patch/deny resources missing required tags. |
-| Observability labels | Prometheus/Fluent-bit relabel configs | Propagate tags into metrics/logs for dashboards. |
-| Export targets | Future cloud billing or Kubecost | Reuse the same labels for dollar allocation. |
+|Git defaults|`namespace.yaml` + `kustomization.yaml`|Bake canonical labels into every resource.|
+|Kyverno enforcement|`Policies/rules/baseline/*.yaml`|Patch/deny resources missing required tags.|
+|Observability labels|Prometheus/Fluent-bit relabel configs|Propagate tags into metrics/logs for dashboards.|
+|Export targets|Future cloud billing or Kubecost|Reuse the same labels for dollar allocation.|
 
 ## Label to FinOps Mapping
 
@@ -36,4 +36,5 @@ The platform front-loads tagging so you can attribute resource usage—even on a
 
 1. **Validate locally** using `Scripts/validate-consistency.sh` – it checks for missing labels.
 2. **Propagate to external tools** by mapping labels to e.g., `kubecost.cloud.google.com/team` via relabeling if you export metrics.
-3. **Document exceptions** – if a workload truly cannot carry certain labels, add a Kyverno `exclude` block and explain it in the PR.
+3. **Document exceptions** – if a workload truly cannot carry certain labels,
+  add a Kyverno `exclude` block and explain it in the PR.

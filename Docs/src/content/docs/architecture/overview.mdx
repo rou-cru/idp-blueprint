@@ -67,6 +67,7 @@ The reconciliation controller applies all changes from Git to the cluster. Manua
 High availability in edge and resource-constrained environments requires different strategies than large cloud deployments. The design prioritizes tiered criticality: the core control plane (Kubernetes API and etcd) receives highest priority, critical infrastructure (reconciliation controller, observability) must survive node loss, and other components can degrade or restart later.
 
 Scheduling mechanisms enforce this prioritization:
+
 - **PriorityClasses**: Separate infrastructure from application workloads
 - **Node labels**: Define resource pools (control plane, infrastructure, workloads)
 - **Tolerations**: Allow critical components to schedule on control plane nodes during degraded conditions

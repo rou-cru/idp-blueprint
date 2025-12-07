@@ -99,6 +99,7 @@ The two approaches are complementary: GitOps manages desired state, events trigg
 ## Implementation in Demo
 
 The reference implementation uses:
+
 - **Event framework**: Argo Events with EventBus, EventSources, Sensors
 - **Message bus**: NATS (3 replicas) for durable event distribution
 - **Event sources**:
@@ -110,6 +111,7 @@ The reference implementation uses:
 - **Action targets**: Argo Workflows for executing remediation and provisioning logic
 
 **Example flow (SLO remediation):**
+
 1. Prometheus fires alert: `ArgoCD Application Unhealthy`
 2. Alertmanager webhook → Argo Events EventSource
 3. Sensor filters for `slo == 'argocd-application-health'`

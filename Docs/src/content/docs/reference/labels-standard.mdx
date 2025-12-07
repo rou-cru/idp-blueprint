@@ -7,7 +7,8 @@ layout: ../../../layouts/DocsLayout.astro
 
 ## Default Label Values
 
-These defaults come from the demo profile (`config.toml`) and can be overridden per environment. Keep the keys; adjust the values as needed for your org.
+These defaults come from the demo profile (`config.toml`) and can be overridden per environment.
+Keep the keys; adjust the values as needed for your org.
 
 ### Business Labels
 
@@ -110,11 +111,11 @@ Guidelines:
 
 ## External Secrets RefreshInterval Strategy
 
-| Interval | Use Case | Examples | Rationale |
-|----------|----------|----------|-----------|
-| 1h | Rarely-changed secrets | ArgoCD admin password | Minimize API calls to Vault |
-| 5m | Infrastructure secrets | Certificate credentials | Balance between freshness and load |
-| 3m | Application secrets | SonarQube tokens, Grafana credentials | Higher change frequency |
+|Interval|Use Case|Examples|Rationale|
+|--------|--------|--------|---------|
+|1h|Rarely-changed secrets|ArgoCD admin password|Minimize API calls to Vault|
+|5m|Infrastructure secrets|Certificate credentials|Balance between freshness and load|
+|3m|Application secrets|SonarQube tokens, Grafana credentials|Higher change frequency|
 
 **Guidelines**:
 

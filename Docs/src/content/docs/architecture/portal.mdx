@@ -120,6 +120,7 @@ Portals reduce the Kubernetes knowledge required for common operations while mai
 ## Implementation in Demo
 
 The reference implementation uses:
+
 - **Portal framework**: Backstage (service catalog, software templates, TechDocs)
 - **Identity provider**: Dex (OpenID Connect for SSO, supports GitHub OAuth)
 - **Database**: PostgreSQL for Backstage metadata storage
@@ -137,6 +138,7 @@ The reference implementation uses:
 - **Provisioning templates**: Application scaffolding (creates repo, ArgoCD Application, namespace, RBAC)
 
 **Security considerations (demo vs production):**
+
 - Demo uses shared GitHub OAuth app and known credentials in `config.toml`
 - Production should use:
   - Corporate SSO (SAML, LDAP)

@@ -69,6 +69,7 @@ The diagram illustrates dependencies between infrastructure components: secrets 
 ## Implementation in Demo
 
 The reference implementation uses:
+
 - **Compute**: k3d (k3s distribution) with 3-node topology (1 control plane + 2 workers)
 - **CNI**: Cilium with eBPF datapath and Hubble observability
 - **Ingress**: Gateway API with Cilium gateway controller

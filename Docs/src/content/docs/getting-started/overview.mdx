@@ -12,7 +12,6 @@ The project **includes a demo implementation** optimized to run on laptop-class 
 
 **Architecture vs Implementation:** The reference architecture establishes technology-agnostic patterns applicable to production environments. The demo makes deliberate tradeoffs—simplified secret management, ephemeral DNS (nip.io), reduced resource reservations—to remain deployable on constrained hardware. Before production use, these demo-specific choices must be replaced with hardened alternatives matching your operational context.
 
-
 ## What the demo provides
 
 The reference implementation deploys a three-node local Kubernetes cluster with the full IDP stack. Deployment orchestration is automated through `task deploy`, which handles dependency sequencing and validation.
