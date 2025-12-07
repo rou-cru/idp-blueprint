@@ -146,9 +146,11 @@ export async function getSidebarConfig(): Promise<NavSection[]> {
         return {
           label: item.label,
           href: item.href,
+          ...(item.contexts && item.contexts.length > 0 && { contexts: item.contexts }), // Preserve contexts if it exists and is not empty
           items: item.items.map(subItem => ({
             label: subItem.label,
             href: subItem.href,
+            ...(subItem.contexts && subItem.contexts.length > 0 && { contexts: subItem.contexts }), // Preserve contexts if it exists and is not empty
             // Exclude order and items if empty/undefined
           }))
         };
@@ -156,6 +158,7 @@ export async function getSidebarConfig(): Promise<NavSection[]> {
       return {
         label: item.label,
         href: item.href,
+        ...(item.contexts && item.contexts.length > 0 && { contexts: item.contexts }), // Preserve contexts if it exists and is not empty
         // Exclude order
       };
     });

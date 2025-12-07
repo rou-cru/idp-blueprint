@@ -5,10 +5,6 @@
 
   let isOpen = $state(false);
 
-  onMount(() => {
-    loadPersistedContext();
-  });
-
   function toggleDropdown() {
     isOpen = !isOpen;
   }
@@ -28,6 +24,7 @@
   }
 
   onMount(() => {
+    loadPersistedContext();
     document.addEventListener('click', handleClickOutside);
     return () => {
       document.removeEventListener('click', handleClickOutside);

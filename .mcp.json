@@ -9,7 +9,7 @@
         "--context",
         "ide-assistant",
         "--project",
-        "/home/rc/idp-blueprint"
+        "${workspaceFolder}"
       ]
     },
     "repomix": {

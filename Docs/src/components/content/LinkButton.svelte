@@ -23,9 +23,8 @@
   href={href}
   class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-medium no-underline transition-all duration-200 ease-out whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2 {variants[variant]}"
 >
-  {#if icon && icon !== 'arrow-left' && icon !== 'arrow-right'}
-    <!-- Fallback for arbitrary icons -->
-     <Icon icon={icon} width="18" height="18" />
+  {#if icon}
+    <Icon icon={icon} width="18" height="18" />
   {/if}
 
   <span class="leading-none pb-[1px]">

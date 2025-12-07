@@ -1,5 +1,6 @@
 import { visit } from 'unist-util-visit';
 import type { Root } from 'mdast';
+import type { ContainerDirective } from 'mdast-util-directive';
 
 /**
  * Remark plugin to transform Starlight-style callouts (:::tip, :::note, etc.)
@@ -7,7 +8,7 @@ import type { Root } from 'mdast';
  */
 export function remarkCallouts() {
   return (tree: Root) => {
-    visit(tree, 'containerDirective', (node: any) => {
+    visit(tree, 'containerDirective', (node: ContainerDirective) => {
       // Check if this is a callout directive
       const validTypes = ['tip', 'caution', 'danger', 'note', 'warning', 'info'];
 
