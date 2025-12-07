@@ -56,19 +56,7 @@ const sidebarConfig = await getSidebarConfig();
           )}
           
           {Astro.url.pathname !== '/' ? (
-            <div class="prose prose-slate dark:prose-invert max-w-none 
-              prose-headings:scroll-mt-20 
-              prose-headings:font-semibold 
-              prose-headings:text-text-primary
-              prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 
-              prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-              prose-p:text-text-secondary prose-p:leading-7
-              prose-li:text-text-secondary
-              prose-strong:text-text-primary
-              prose-code:text-brand-purple-light prose-code:bg-bg-elevated prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-              prose-a:text-brand-purple prose-a:no-underline hover:prose-a:text-brand-purple-light hover:prose-a:underline
-              prose-blockquote:border-l-brand-purple prose-blockquote:bg-bg-subtle prose-blockquote:px-4 prose-blockquote:py-1 prose-blockquote:rounded-r
-              prose-img:rounded-lg prose-img:border prose-img:border-border-default">
+            <div class="prose prose-slate dark:prose-invert max-w-none">
               <slot />
             </div>
           ) : (

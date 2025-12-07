@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { normalizePath } from '../../utils/paths';
+
   interface Props {
     currentPath: string;
   }
@@ -13,7 +15,7 @@
 
   const breadcrumbs = $derived.by(() => {
     // Remove trailing slash and split path
-    const cleanPath = currentPath.replace(/\/$/, '');
+    const cleanPath = normalizePath(currentPath);
     const segments = cleanPath.split('/').filter(Boolean);
 
     // Always start with Home

@@ -4,7 +4,7 @@ sidebar:
   label: Prerequisites
   order: 2
 ---
-import { LinkButton } from '../../../components/content/index.ts';
+import { Button } from '../../../components/content/index.ts';
 
 Before deploying the demo, make sure the host can run local containers with enough headroom. Devbox or the VS Code Dev Container supplies the toolchain (task, kubectl, helm, k3d, k9s, argocd CLI); the host only needs a container runtime and git.
 
@@ -70,10 +70,10 @@ devbox shell
 ```
 
 <div class="flex justify-center gap-3 mt-8">
-  <LinkButton href="/getting-started/overview/" variant="secondary" icon="arrow-left">
+  <Button href="/getting-started/overview/" variant="secondary" icon="arrow-left">
     Back: Overview
-  </LinkButton>
-  <LinkButton href="/getting-started/quickstart/" variant="primary" icon="arrow-right">
+  </Button>
+  <Button href="/getting-started/quickstart/" variant="primary" icon="arrow-right">
     Next: Quickstart
-  </LinkButton>
+  </Button>
 </div>

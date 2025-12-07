@@ -3,6 +3,7 @@
   import type { NavSection, NavItem } from '../../lib/navigation';
   import { isMobileMenuOpen, closeMobileMenu } from '../../stores/ui';
   import { currentContext } from '../../stores/context';
+  import { normalizePath } from '../../utils/paths';
   import ContextSwitcher from './ContextSwitcher.svelte';
 
   interface Props {
@@ -12,28 +13,21 @@
 
   let { currentPath, sidebarConfig }: Props = $props();
 
-  // Helper to normalize paths for comparison
-  function normalize(path: string | undefined): string {
-    if (!path) return '';
-    // Remove trailing slash, but preserve root '/'
-    return path.replace(/\/$/, '') || '/';
-  }
-
   function isActive(href: string | undefined): boolean {
-    const normHref = normalize(href);
+    const normHref = normalizePath(href);
     if (!normHref) return false; // Don't match empty hrefs (groups)
-    return normalize(currentPath) === normHref;
+    return normalizePath(currentPath) === normHref;
   }
 
   // Find which section contains the active link to open it by default
   function getInitialSection(): string | null {
-    const normalizedCurrent = normalize(currentPath);
+    const normalizedCurrent = normalizePath(currentPath);
     if (!normalizedCurrent) return null;
     
     // Recursive check for active item
     const hasActiveItem = (items: NavItem[]): boolean => {
       return items.some(item => {
-        const normItemHref = normalize(item.href);
+        const normItemHref = normalizePath(item.href);
         if (normItemHref && normItemHref === normalizedCurrent) return true;
         if (item.items) return hasActiveItem(item.items);
         return false;

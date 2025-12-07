@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-import { LinkButton } from '../../../components/content/index.ts';
+import { Button } from '../../../components/content/index.ts';
 
 You just ran the deploy. Now confirm the demo is converging, note anything still settling, and gather the URLs and credentials you need. This remains a local demo, not production hardening.
 
@@ -89,9 +89,9 @@ Certificates are issued automatically by cert-manager using that wildcard; the C
 | --- | --- | --- |
 | ArgoCD apps listed and converging | `kubectl -n argocd get applications` | Apps present; Sync moves toward `Synced` over a few minutes |
 | Grafana up with datasources | open `https://grafana.<ip>.nip.io` | UI loads; Prometheus/Loki datasources present |
-| Trivy Operator running | `kubectl -n security get pods \| rg --line-number \"trivy\"` | `trivy-operator` and `trivy-server` pods Ready |
+| Trivy Operator running | `kubectl -n security get pods | rg --line-number "trivy"` | `trivy-operator` and `trivy-server` pods Ready |
 | External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
-| Gateway programmed with certs | `kubectl -n kube-system get gateway idp-gateway -o yaml \| rg --line-number \"Programmed\"` | Condition `Programmed` True; endpoints reachable over TLS |
+| Gateway programmed with certs | `kubectl -n kube-system get gateway idp-gateway -o yaml | rg --line-number "Programmed"` | Condition `Programmed` True; endpoints reachable over TLS |
 
 ## If something stalls
 
@@ -100,7 +100,7 @@ Certificates are issued automatically by cert-manager using that wildcard; the C
 - Applications stuck OutOfSync: use ArgoCD UI or `argocd app sync <name>` after images are present.
 
 <div class="flex justify-center gap-3 mt-8">
-  <LinkButton href="/getting-started/quickstart/" variant="secondary" icon="arrow-left">
+  <Button href="/getting-started/quickstart/" variant="secondary" icon="arrow-left">
     Back: Quickstart
-  </LinkButton>
+  </Button>
 </div>

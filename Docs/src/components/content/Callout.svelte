@@ -4,9 +4,10 @@
   interface Props {
     type?: 'tip' | 'caution' | 'danger' | 'note' | 'warning' | 'info';
     title?: string;
+    children?: import('svelte').Snippet;
   }
 
-  let { type = 'note', title }: Props = $props();
+  let { type = 'note', title, children }: Props = $props();
 
   const config = {
     tip: {
@@ -67,69 +68,16 @@
   const displayTitle = $derived(title || defaultTitles[type]);
 </script>
 
-<div class="callout {currentConfig.bgClass} {currentConfig.borderClass} animate-fade-in">
-  <div class="callout-header">
-    <div class="callout-icon {currentConfig.iconClass}">
+<div class="flex flex-col gap-3 p-4 my-6 rounded-xl border-l-[3px] animate-fade-in {currentConfig.bgClass} {currentConfig.borderClass}">
+  <div class="flex items-center gap-3">
+    <div class="flex items-center justify-center flex-shrink-0 {currentConfig.iconClass}">
       <Icon icon={currentConfig.icon} width="20" height="20" />
     </div>
     {#if displayTitle}
-      <h5 class="callout-title {currentConfig.titleClass}">{displayTitle}</h5>
+      <h5 class="text-sm font-semibold m-0 tracking-tight {currentConfig.titleClass}">{displayTitle}</h5>
     {/if}
   </div>
-  <div class="callout-content">
-    <slot />
+  <div class="text-sm leading-relaxed text-text-secondary [&_p]:m-0 [&_p+p]:mt-2 [&_a]:text-brand-purple-light [&_a]:underline [&_a]:decoration-brand-purple-light/30 [&_a:hover]:decoration-brand-purple-light/60 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_code]:bg-bg-subtle [&_ul]:my-2 [&_ul]:pl-6 [&_ol]:my-2 [&_ol]:pl-6 [&_li]:my-1">
+    {@render children?.()}
   </div>
 </div>
-
-<style>
-  .callout {
-    @apply flex flex-col gap-3 p-4 my-6;
-    @apply rounded-xl border-l-[3px];
-  }
-
-  .callout-header {
-    @apply flex items-center gap-3;
-  }
-
-  .callout-icon {
-    @apply flex items-center justify-center flex-shrink-0;
-  }
-
-  .callout-title {
-    @apply text-sm font-semibold m-0 tracking-tight;
-  }
-
-  .callout-content {
-    @apply text-sm leading-relaxed text-text-secondary;
-  }
-
-  .callout-content :global(p) {
-    @apply m-0;
-  }
-
-  .callout-content :global(p + p) {
-    @apply mt-2;
-  }
-
-  .callout-content :global(a) {
-    @apply text-brand-purple-light underline decoration-brand-purple-light/30;
-  }
-
-  .callout-content :global(a:hover) {
-    @apply decoration-brand-purple-light/60;
-  }
-
-  .callout-content :global(code) {
-    @apply px-1.5 py-0.5 rounded text-xs;
-    @apply bg-bg-subtle;
-  }
-
-  .callout-content :global(ul),
-  .callout-content :global(ol) {
-    @apply my-2 pl-6;
-  }
-
-  .callout-content :global(li) {
-    @apply my-1;
-  }
-</style>

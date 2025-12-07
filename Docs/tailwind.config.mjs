@@ -92,23 +92,40 @@ export default {
             '--tw-prose-code': theme('colors.brand.purple-light'),
             '--tw-prose-quote-borders': theme('colors.brand.purple'),
             
-            h1: {
+            // Headings
+            'h1, h2, h3, h4, h5, h6': {
               color: 'var(--tw-prose-headings)',
-              fontWeight: '600', // Semi-bold (Clerk spec)
+              fontWeight: '600',
+              scrollMarginTop: '5rem', // prose-headings:scroll-mt-20 (20 * 0.25rem = 5rem)
+            },
+            h1: {
               letterSpacing: '-0.025em',
             },
             h2: {
-              color: 'var(--tw-prose-headings)',
-              fontWeight: '600',
               marginTop: '2.5em',
               marginBottom: '1em',
+              fontSize: '1.5rem', // prose-h2:text-2xl
+              lineHeight: '2rem',
             },
             h3: {
-              color: 'var(--tw-prose-headings)',
-              fontWeight: '600',
               marginTop: '2em',
               marginBottom: '0.75em',
+              fontSize: '1.25rem', // prose-h3:text-xl
+              lineHeight: '1.75rem',
             },
+            
+            // Text & Lists
+            p: {
+              lineHeight: '1.75', // prose-p:leading-7
+            },
+            li: {
+              color: theme('colors.text.secondary'),
+            },
+            strong: {
+              color: theme('colors.text.primary'),
+            },
+            
+            // Links
             a: {
               color: 'var(--tw-prose-links)',
               textDecoration: 'none',
@@ -118,25 +135,39 @@ export default {
                 textDecoration: 'underline',
               },
             },
-            code: {
+            
+            // Code - Reset generic styles to let Expressive Code handle it
+            pre: {
+              backgroundColor: 'transparent',
+              padding: '0',
+              marginTop: '0',
+              marginBottom: '0',
+              borderRadius: '0',
+            },
+            
+            // Inline Code only
+            ':not(pre) > code': {
               color: 'var(--tw-prose-code)',
               backgroundColor: theme('colors.bg.elevated'),
               borderRadius: '0.25rem',
               padding: '0.125rem 0.375rem',
               fontWeight: '500',
             },
-            'code::before': {
-              content: '""',
-            },
-            'code::after': {
-              content: '""',
-            },
+            
+            // Blockquotes
             blockquote: {
               borderLeftColor: 'var(--tw-prose-quote-borders)',
               backgroundColor: theme('colors.bg.subtle'),
               padding: '0.5rem 1rem',
               borderRadius: '0 0.25rem 0.25rem 0',
               fontStyle: 'normal',
+            },
+            
+            // Images
+            img: {
+              borderRadius: '0.5rem', // rounded-lg
+              borderWidth: '1px',
+              borderColor: theme('colors.border.default'),
             },
           },
         },

@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-import { LinkButton } from '../../../components/content/index.ts';
+import { Button } from '../../../components/content/index.ts';
 
 Run the demo so you can observe the reference architecture in motion. This assumes you already met the prerequisites (container runtime + git; tooling via Devbox or Dev Container). Expect a few minutes for images to download and for ArgoCD to reconcile everything.
 
@@ -56,10 +56,10 @@ Running `task destroy` deletes the k3d cluster and all demo resources, returning
 ![task destroy](../assets/images/task-destroy.png)
 
 <div class="flex justify-center gap-3 mt-8">
-  <LinkButton href="/getting-started/prerequisites/" variant="secondary" icon="arrow-left">
+  <Button href="/getting-started/prerequisites/" variant="secondary" icon="arrow-left">
     Back: Prerequisites
-  </LinkButton>
-  <LinkButton href="/getting-started/verify/" variant="primary" icon="arrow-right">
+  </Button>
+  <Button href="/getting-started/verify/" variant="primary" icon="arrow-right">
     Next: Verify Installation
-  </LinkButton>
+  </Button>
 </div>
