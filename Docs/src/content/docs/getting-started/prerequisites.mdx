@@ -6,7 +6,7 @@ sidebar:
 ---
 import { Button } from '../../../components/content/index.ts';
 
-Before deploying the demo, make sure the host can run local containers with enough headroom. Devbox or the VS Code Dev Container supplies the toolchain (task, kubectl, helm, k3d, k9s, argocd CLI); the host only needs a container runtime and git.
+Before deploying the demo, verify the host meets the resource requirements below. Devbox or the VS Code Dev Container supplies the toolchain (task, kubectl, helm, k3d, k9s, argocd CLI); the host only needs a container runtime and git.
 
 ### Host requirements
 
@@ -36,7 +36,7 @@ cd idp-blueprint
 Install Docker Engine (`dockerd`), start the service, and add your user to the `docker` group (or use sudo). Verify virtualization is enabled in BIOS/UEFI and confirm with `docker info`.
 
 #### macOS
-Install Docker Desktop. The default CPU/RAM limits are fine for the demo; raise them in Settings → Resources only if you hit resource pressure. Virtualization is on by default (Intel or Apple Silicon).
+Install Docker Desktop. The default CPU/RAM limits are sufficient for the demo; increase them in Settings → Resources if memory utilization exceeds 80% or CPU throttling occurs. Virtualization is enabled by default (Intel or Apple Silicon).
 
 #### Windows: Use WSL2
 In an elevated PowerShell, enable WSL2 and install a distro:
@@ -57,13 +57,13 @@ Use VS Code, open the folder and “Reopen in Container” to get the toolchain 
 
 Default NodePorts are 30080 (HTTP) and 30443 (HTTPS); keep them free and allow inbound if you want LAN access. nip.io uses your LAN IP—make sure that IP is reachable from the browser device you will use.
 
-### For power users
+### Alternative: Devbox shell
 
 :::tip
-In Windows this have to be done direct in WSL console
+In Windows this has to be done directly in WSL console
 :::
 
-If you prefer to stay outside VS Code (e.g., for a long-running home lab), install Devbox and run:
+If you prefer to work outside VS Code (e.g., for a long-running home lab), install Devbox and run:
 
 ```bash
 devbox shell

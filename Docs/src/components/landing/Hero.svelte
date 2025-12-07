@@ -2,7 +2,7 @@
   import Icon from '@iconify/svelte';
 </script>
 
-<section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-6 overflow-hidden">
+<section class="relative py-32 px-6 overflow-hidden">
   <!-- Background Glow -->
   <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-40 pointer-events-none z-0">
     <div class="absolute top-[-10%] left-[20%] w-[600px] h-[600px] bg-brand-purple/20 blur-[120px] rounded-full mix-blend-screen"></div>
@@ -10,24 +10,14 @@
   </div>
 
   <div class="relative z-10 max-w-4xl mx-auto text-center">
-    <div class="inline-flex items-center gap-2 px-3 py-1 mb-8 rounded-full bg-bg-elevated border border-border-subtle text-xs font-medium text-brand-purple-light animate-fade-in">
-      <span class="relative flex h-2 w-2">
-        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-purple opacity-75"></span>
-        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-purple"></span>
-      </span>
-      v1.0 Public Preview
-    </div>
-
-    <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-text-primary mb-8 leading-[1.1]">
-      The Enterprise <br />
+    <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-12 leading-[1.1]">
       <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple-light via-brand-purple to-brand-purple-dark">
         IDP Blueprint
       </span>
     </h1>
 
-    <p class="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed max-w-2xl mx-auto">
-      A complete, production-ready Internal Developer Platform reference architecture. 
-      Built on Kubernetes, ArgoCD, and GitOps principles.
+    <p class="text-xl md:text-2xl text-text-secondary mb-12 leading-relaxed max-w-3xl mx-auto">
+      Open-source reference architecture and working implementation for building production-ready Internal Developer Platforms
     </p>
 
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -48,16 +38,22 @@
       </a>
     </div>
 
-    <div class="mt-16 pt-8 border-t border-border-subtle/30 flex justify-center gap-12 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
-        <!-- Placeholder for Tech Stack Logos (can be added later) -->
-        <div class="flex items-center gap-2 text-sm text-text-tertiary font-mono">
-           <span>KUBERNETES</span>
-           <span class="mx-2">•</span>
-           <span>ARGOCD</span>
-           <span class="mx-2">•</span>
-           <span>CILIUM</span>
-           <span class="mx-2">•</span>
-           <span>VAULT</span>
+    <div class="mt-16 pt-8 border-t border-border-subtle/30 flex justify-center gap-8">
+        <div class="flex items-center gap-3 text-text-secondary group hover:text-text-primary transition-colors">
+          <Icon icon="simple-icons:kubernetes" width="24" height="24" />
+          <span class="text-sm font-medium">Kubernetes</span>
+        </div>
+        <div class="flex items-center gap-3 text-text-secondary group hover:text-text-primary transition-colors">
+          <Icon icon="simple-icons:argo" width="24" height="24" />
+          <span class="text-sm font-medium">ArgoCD</span>
+        </div>
+        <div class="flex items-center gap-3 text-text-secondary group hover:text-text-primary transition-colors">
+          <Icon icon="simple-icons:cilium" width="24" height="24" />
+          <span class="text-sm font-medium">Cilium</span>
+        </div>
+        <div class="flex items-center gap-3 text-text-secondary group hover:text-text-primary transition-colors">
+          <Icon icon="simple-icons:vault" width="24" height="24" />
+          <span class="text-sm font-medium">Vault</span>
         </div>
     </div>
   </div>

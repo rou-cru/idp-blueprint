@@ -7,7 +7,7 @@ sidebar:
 
 import { Button } from '../../../components/content/index.ts';
 
-You just ran the deploy. Now confirm the demo is converging, note anything still settling, and gather the URLs and credentials you need. This remains a local demo, not production hardening.
+Verify the deployment is converging, identify any resources still settling, and gather the URLs and credentials needed to access platform services.
 
 ## First few minutes
 
@@ -28,13 +28,17 @@ kubectl -n argocd get applications -w &
 kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --timeout=300s
 ```
 
-Expected signals: three Ready nodes (`k3d-idp-demo`), ArgoCD Applications listed (may need minutes to turn Healthy/Synced), Gateway wait succeeds before you browse, External Secrets objects present and ArgoCD secret exists in `argocd` namespace.
+**Expected signals:**
+- Three Ready nodes (named `k3d-idp-demo-*`)
+- ArgoCD Applications listed (may require minutes to reach Healthy/Synced)
+- Gateway wait command succeeds (condition: Programmed)
+- External Secrets objects present, ArgoCD secret exists in `argocd` namespace
 
 ## Visual walkthrough
 
 ![Platform Entry Points](../assets/diagrams/getting-started/verify-first-look.svg)
 
-Application cards in ArgoCD show Sync and Health; some OutOfSync is normal while things converge. Left sidebar projects mirror the fuses in `config.toml`. Opening a card reveals the resource graph and metadata.
+Application cards in ArgoCD show Sync and Health status; some OutOfSync states are normal during initial convergence. Left sidebar projects correspond to the fuses enabled in `config.toml`. Opening a card reveals the resource graph and metadata.
 
 ![ArgoCD — Applications list](../assets/images/verify/argocd_all_applications.png)
 

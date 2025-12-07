@@ -7,7 +7,7 @@
       icon: "lucide:git-branch",
       color: "#f97316",
       stackIcons: [
-        { icon: "devicon:argocd", label: "Argo CD" },
+        { icon: "simple-icons:argo", label: "Argo CD" },
       ],
     },
     {
@@ -15,7 +15,7 @@
       icon: "lucide:shield-check",
       color: "#22c55e",
       stackIcons: [
-        { icon: "simple-icons:kyverno", label: "Kyverno" },
+        { icon: "lucide:file-shield", label: "Kyverno" },
       ],
     },
     {
@@ -23,8 +23,8 @@
       icon: "lucide:lock",
       color: "#0ea5e9",
       stackIcons: [
-        { icon: "simple-icons:hashicorp", label: "Vault" },
-        { icon: "logos:external-secrets", label: "External Secrets Operator" },
+        { icon: "simple-icons:vault", label: "Vault" },
+        { icon: "lucide:key-square", label: "External Secrets Operator" },
       ],
     },
     {
@@ -33,7 +33,7 @@
       color: "#6366f1",
       stackIcons: [
         { icon: "simple-icons:cilium", label: "Cilium" },
-        { icon: "logos:cert-manager", label: "cert-manager" },
+        { icon: "lucide:shield-check", label: "cert-manager" },
         { icon: "simple-icons:kubernetes", label: "Gateway API" },
       ],
     },
@@ -44,7 +44,7 @@
       stackIcons: [
         { icon: "simple-icons:prometheus", label: "Prometheus" },
         { icon: "simple-icons:grafana", label: "Grafana" },
-        { icon: "simple-icons:loki", label: "Loki" },
+        { icon: "simple-icons:grafana", label: "Loki" },
         { icon: "simple-icons:fluentbit", label: "Fluent Bit" },
       ],
     },
@@ -55,7 +55,7 @@
       href: "/operate/",
       stackIcons: [
         { icon: "simple-icons:backstage", label: "Backstage" },
-        { icon: "logos:dex", label: "Dex" },
+        { icon: "lucide:key-round", label: "Dex" },
       ],
     }
   ];
@@ -69,11 +69,11 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
       {#each features as feature, i}
-        <div 
-          class="group relative flex flex-col items-center gap-3 p-5 rounded-lg bg-bg-elevated border border-border-default hover:border-border-hover transition-all duration-300 overflow-hidden text-center"
+        <div
+          class="group relative flex flex-col items-center gap-3 p-5 rounded-lg bg-bg-elevated border border-border-default hover:border-border-hover hover:scale-[1.02] hover:shadow-xl hover:shadow-brand-purple/5 transition-all duration-300 overflow-hidden text-center"
         >
           <!-- Background Decor -->
-          <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-300 grayscale pointer-events-none">
+          <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity duration-300 pointer-events-none" style="color: {feature.color}">
              <Icon icon={feature.icon} width="96" height="96" />
           </div>
           <!-- Header -->
@@ -82,7 +82,7 @@
             {#if feature.stackIcons}
               <div class="flex flex-wrap justify-center gap-3">
                 {#each feature.stackIcons as stack}
-                  <div class="flex items-center gap-1 px-3 py-1 rounded-full bg-bg-subtle border border-border-subtle text-sm text-text-secondary">
+                  <div class="flex items-center gap-1 px-3 py-1 rounded-full bg-bg-elevated/50 border border-border-default/50 text-sm text-text-primary">
                     <Icon icon={stack.icon} width="18" height="18" />
                     <span>{stack.label}</span>
                   </div>
@@ -93,6 +93,9 @@
 
           <!-- Footer / CTA -->
           {#if feature.href}
+            <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+              <Icon icon="lucide:arrow-up-right" width="20" height="20" class="text-brand-purple" />
+            </div>
             <a href={feature.href} class="absolute inset-0" aria-label={`Read more about ${feature.title}`}></a>
           {/if}
         </div>

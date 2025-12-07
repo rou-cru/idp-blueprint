@@ -7,11 +7,13 @@ sidebar:
 
 import { Button } from '../../../components/content/index.ts';
 
-Run the demo so you can observe the reference architecture in motion. This assumes you already met the prerequisites (container runtime + git; tooling via Devbox or Dev Container). Expect a few minutes for images to download and for ArgoCD to reconcile everything.
+Deploy the reference implementation to observe the architecture in a live cluster. This assumes you meet the prerequisites (container runtime + git; tooling via Devbox or Dev Container). Initial deployment requires image downloads and ArgoCD reconciliation, typically 5–7 minutes on most connections.
 
-## Optional: trim the demo
+The deployment orchestration reads `config.toml` for component versions, NodePort assignments, default credentials, and stack enablement. Before deploying, you may customize which stacks to include.
 
-Edit `config.toml` `[fuses]` to disable stacks you do not need (`observability`, `cicd`, `security`, `events`, `backstage`). The `prod` flag hardens ArgoCD defaults. These toggles change what the demo deploys; they do not change the architecture model. Make changes before running `task deploy`.
+## Optional: Configure deployment scope
+
+Edit `config.toml` `[fuses]` to disable stacks you do not need (`observability`, `cicd`, `security`, `events`, `backstage`). The `prod` flag hardens ArgoCD defaults. These fuses control what the demo deploys; they do not change the underlying architecture model. Make changes before running `task deploy`.
 
 ![config.toml toggles](../assets/images/configs.png)
 
@@ -43,7 +45,7 @@ You can open `k9s` to watch resources settle.
 
 ![k9s pods view](../assets/images/task-destroy.png)
 
-Do not worry if things take a few minutes or some workloads show transient issues. Multiple Helm charts reconcile in parallel under GitOps; the cluster converges as images finish pulling. On most setups it settles in ~5 minutes; slower networks may take closer to 10–15.
+Some workloads may show transient states (Pending, ContainerCreating) during initial convergence. Multiple Helm charts reconcile in parallel under GitOps control; the cluster reaches steady state as images finish pulling. Typical convergence time is 5–7 minutes on most setups; networks with <10Mbps bandwidth or high latency may require 10–15 minutes.
 
 ## Clean up
 
