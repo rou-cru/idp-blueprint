@@ -9,10 +9,6 @@ import { LinkButton } from '../../../components/content/index.ts';
 
 Run the demo so you can observe the reference architecture in motion. This assumes you already met the prerequisites (container runtime + git; tooling via Devbox or Dev Container). Expect a few minutes for images to download and for ArgoCD to reconcile everything.
 
-## Enter the toolchain
-
-Open the project in VS Code and choose “Reopen in Container”, or start a Devbox shell with `devbox shell`. Both options supply `task`, `k3d`, `kubectl`, `helm`, `k9s`, and `argocd` for the session. Stay in the project root while you work so the Taskfile targets resolve correctly.
-
 ## Optional: trim the demo
 
 Edit `config.toml` `[fuses]` to disable stacks you do not need (`observability`, `cicd`, `security`, `events`, `backstage`). The `prod` flag hardens ArgoCD defaults. These toggles change what the demo deploys; they do not change the architecture model. Make changes before running `task deploy`.
@@ -29,35 +25,25 @@ Never keep real passwords or secrets in plain text. The demo ships simple values
 task deploy
 ```
 
-Run it from the repository root. It spins up a three-node k3d cluster, sets up networking (Cilium, Gateway API), cert-manager, Vault + External Secrets, ArgoCD, and then lets ApplicationSets bring up the stacks you left enabled. Typical laptops take ~5–10 minutes. If you see port conflicts or insufficient resources, stop here and resolve them before retrying.
+Run it from the repository root. It spins up a three-node k3d cluster, sets up networking (Cilium, Gateway API), cert-manager,
+Vault + External Secrets, ArgoCD, and then lets ApplicationSets bring up the stacks you left enabled.
 
-:::tip
-Use `task --summary deploy` or `task --verbose deploy` if you want to watch each step.
-:::
+Typical runs take about 5–15 minutes depending on bandwidth and available resources.
 
 ### What to expect while it runs
 
-Early logs cover k3d creation and Cilium; later you will see ArgoCD, Gateway NodePorts, and ApplicationSets per stack. ArgoCD keeps reconciling after `task deploy` exits, so Healthy/Synced states appear gradually as images finish pulling. The task prints nip.io URLs (based on your LAN IP) when the Gateway is ready—save them for Verify.
+Early logs cover k3d creation and Cilium; later you will see ArgoCD, Gateway NodePorts, and ApplicationSets per stack.
 
 ![task deploy](../assets/images/task-deploy.png)
 
-## First access
+ArgoCD keeps reconciling after `task deploy` exits, so Healthy/Synced states appear gradually as images finish pulling.
+The task prints nip.io URLs (based on your LAN IP) when the Gateway is ready.
 
-When the Gateway is ready, open the printed URLs (e.g., `https://argocd.<ip>.nip.io`). They are reachable from your LAN.
-
-:::caution
-Gateway NodePorts come from `config.toml` (default 30080/30443). Keep those ports free and allow inbound traffic if you want LAN access.
-:::
-
-You can also open `k9s` to watch resources settle.
+You can open `k9s` to watch resources settle.
 
 ![k9s pods view](../assets/images/task-destroy.png)
 
-### Credentials
-
-ArgoCD admin user: `admin`. The password comes from `config.toml` (`passwords.argocd_admin`, default `argo`) and is stored bcrypt in the ArgoCD Secret. Vault is initialized and unsealed for the demo; secrets fan out via External Secrets. Treat this material as local-only and replace it for anything beyond the demo.
-
-See [Verify Installation](verify) for expected signals and smoke checks.
+Do not worry if things take a few minutes or some workloads show transient issues. Multiple Helm charts reconcile in parallel under GitOps; the cluster converges as images finish pulling. On most setups it settles in ~5 minutes; slower networks may take closer to 10–15.
 
 ## Clean up
 
