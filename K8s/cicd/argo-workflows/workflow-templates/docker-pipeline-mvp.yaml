@@ -48,6 +48,8 @@ spec:
         items:
           - key: .dockerconfigjson
             path: config.json
+    - name: tmp-volume
+      emptyDir: {}
 
   templates:
     # Main DAG pipeline
@@ -72,14 +74,20 @@ spec:
     # Step 1: Git Clone
     - name: clone-repo
       container:
-        image: alpine/git:2.43.0
-        command: [sh, -c]
+        image: roucru/idp-blueprint:ops
+        imagePullPolicy: IfNotPresent
+        command: ["devbox", "run", "--", "sh", "-c"]
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
           runAsNonRoot: true
           runAsUser: 1000
+        env:
+          - name: HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp/.cache
         resources:
           requests:
             cpu: 50m
@@ -108,18 +116,26 @@ spec:
         volumeMounts:
           - name: workspace
             mountPath: /workspace
+          - name: tmp-volume
+            mountPath: /tmp
 
     # Step 2: Hadolint - Dockerfile Linting
     - name: hadolint-check
       container:
-        image: hadolint/hadolint:latest-alpine
-        command: [sh, -c]
+        image: roucru/idp-blueprint:ops
+        imagePullPolicy: IfNotPresent
+        command: ["devbox", "run", "--", "sh", "-c"]
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
           runAsNonRoot: true
           runAsUser: 1000
+        env:
+          - name: HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp/.cache
         resources:
           requests:
             cpu: 50m
@@ -152,6 +168,8 @@ spec:
         volumeMounts:
           - name: workspace
             mountPath: /workspace
+          - name: tmp-volume
+            mountPath: /tmp
 
     # Step 3: Kaniko Build & Push
     - name: kaniko-build

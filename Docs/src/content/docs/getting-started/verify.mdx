@@ -2,22 +2,18 @@
 title: Verify Installation
 sidebar:
   label: Verify Installation
-  order: 5
+  order: 4
 ---
 
-import { LinkButton } from '@astrojs/starlight/components';
+import { Button } from '../../../components/content/index.ts';
 
-Let’s confirm things came up as expected and set realistic expectations for the first minutes after deploy.
+Verify the deployment is converging, identify any resources still settling, and gather the URLs and credentials needed to access platform services.
 
-## What to expect in the first 5–10 minutes
+## First few minutes
 
-- ArgoCD continues syncing for a bit after “task deploy” finishes
-- Pods roll through Pending → Running → Ready as images download
-- It’s okay if not everything is Healthy/Synced immediately
+ArgoCD keeps syncing after `task deploy` exits. Pods move from Pending to Ready as images download, so Sync/Health will improve gradually rather than instantly.
 
-{/*Sequence diagram removed for a simpler, first-contact explanation.*/}
-
-## Quick Checks
+## Quick checks from the terminal
 
 ```bash
 kubectl get nodes
@@ -28,138 +24,88 @@ kubectl -n argocd get applications
 kubectl get pods -A -w &
 kubectl -n argocd get applications -w &
 
-# Gateway becomes ready when TLS and routes bind
+# Gateway readiness (TLS and routes bound)
 kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --timeout=300s
 ```
 
-:::tip
-`k9s` ships in the Devbox/Dev Container. Try `k9s -A` and toggle between `:pods`, `:deploy`, `:events` to watch things settle.
-:::
+**Expected signals:**
 
-### First look at the platform
+- Three Ready nodes (named `k3d-idp-demo-*`)
+- ArgoCD Applications listed (may require minutes to reach Healthy/Synced)
+- Gateway wait command succeeds (condition: Programmed)
+- External Secrets objects present, ArgoCD secret exists in `argocd` namespace
 
-```d2
-direction: right
+## Visual walkthrough
 
-classes: { actor: { style.fill: "#0f172a"; style.font-color: white; style.stroke: "#38bdf8" }
-           gateway: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
-           ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white } }
+![Platform Entry Points](../assets/diagrams/getting-started/verify-first-look.svg)
 
-User: { class: actor; label: "You\n(Laptop)" }
-Browser: { class: actor; label: "Browser" }
+Application cards in ArgoCD show Sync and Health status; some OutOfSync states are normal during initial convergence. Left sidebar projects correspond to the fuses enabled in `config.toml`. Opening a card reveals the resource graph and metadata.
 
-Gateway: { class: gateway; label: "Gateway API\nTLS *.nip.io" }
+![ArgoCD — Applications list](../assets/images/verify/argocd_all_applications.png)
 
-UIs: {
-  class: ui
-  Argo: "ArgoCD"
-  Grafana
-  Vault
-  Backstage
-}
+Inside an application (e.g., `observability-kube-prometheus-stack`) you can see the graph plus source, destination, and manual Refresh/Sync controls.
 
-User -> Browser: "open https://<app>.<ip>.nip.io"
-Browser -> Gateway: HTTPS
-Gateway -> UIs.Argo
-Gateway -> UIs.Grafana
-Gateway -> UIs.Vault
-Gateway -> UIs.Backstage
-```
+![ArgoCD — Application detail](../assets/images/verify/argocd_view_fluentbit-app.png)
 
-### What you'll see in the ArgoCD UI
+Prefer the terminal? Use `k9s -A` and jump between `:pods`, `:deploy`, `:events` to watch live.
 
-- Application cards with *Sync* (Git vs. cluster) and *Health* columns. It's normal to see some `OutOfSync` right after deploy while things converge.
-- Projects in the left sidebar (e.g., `cicd`, `observability`, `backstage`) - these correspond to the [fuses](../architecture/overview.md#feature-toggles-fuses) enabled in your `config.toml`.
-- Each card opens a resource graph so you can inspect Deployments, Services, and ConfigMaps.
+![k9s — exploring resources](../assets/images/verify/k9s_xray.png)
 
-![ArgoCD — listado de Applications](../assets/images/verify/argocd_all_applications.png)
+## Access endpoints
 
-### Example: inside an Application
-
-Opening an Application (e.g., `observability-kube-prometheus-stack`) shows a resource graph plus metadata:
-
-- Git source (`K8s/observability/kube-prometheus-stack`) and revision (`main`).
-- Destination (`https://kubernetes.default.svc`, namespace `observability`).
-- *Refresh* and *Sync* buttons to trigger reconciliation on demand.
-
-![ArgoCD — detalle de Application](../assets/images/verify/argocd_view_fluentbit-app.png)
-
-### CLI/TUI alternative: k9s
-
-Prefer a terminal? Use the bundled `k9s` TUI. Quick start:
-
-```bash
-k9s -A
-```
-
-From there jump with `:ns`, `:pods`, `:deploy` and watch events live while ArgoCD syncs.
-
-![k9s — explorando recursos](../assets/images/verify/k9s_xray.png)
-
-## Access Endpoints
-
-`task deploy` prints the exact service URLs using your detected LAN IP (not 127.0.0.1 in normal cases). Example output:
+`task deploy` prints nip.io URLs based on your LAN IP:
 
 ![Gateway URLs printed by task deploy](../assets/images/verify/gateway-urls.png)
 
-Patterns (replace with your IP-dashed value):
+Patterns replace `<ip-dashed>` with your LAN IP: ArgoCD at `https://argocd.<ip-dashed>.nip.io`, Grafana at `https://grafana.<ip-dashed>.nip.io`, Vault at `https://vault.<ip-dashed>.nip.io`, Argo Workflows at `https://workflows.<ip-dashed>.nip.io`, SonarQube at `https://sonarqube.<ip-dashed>.nip.io`. They are reachable from other devices on your LAN if your OS firewall allows NodePorts `30080`/`30443` (or the values in `config.toml`).
 
-- ArgoCD: `https://argocd.<ip-dashed>.nip.io`
-- Grafana: `https://grafana.<ip-dashed>.nip.io`
-- Vault: `https://vault.<ip-dashed>.nip.io`
-- Argo Workflows: `https://workflows.<ip-dashed>.nip.io`
-- SonarQube: `https://sonarqube.<ip-dashed>.nip.io`
+## Login notes
 
-Reachable from other devices on your LAN using your workstation IP. Ensure the configured NodePorts are allowed by your OS firewall.
-
-:::caution
-If you can’t reach the endpoints from another device, open NodePorts `30080`/`30443` (or the values in `config.toml`) in your OS firewall.
-:::
-
-## Login Notes
-
-- ArgoCD admin username: `admin`
-- ArgoCD admin password: stored as bcrypt in the Secret; use the value in `config.toml` (`passwords.argocd_admin`, default `argo`).
-- For CLI from your LAN, use `--plaintext` because ArgoCD runs in `insecure` mode (HTTP behind the Gateway):
+- ArgoCD admin: `admin`
+- Password: value from `config.toml` (`passwords.argocd_admin`, default `argo`), stored bcrypt in the ArgoCD secret.
+- CLI from LAN: ArgoCD runs HTTP behind the Gateway, so use `--plaintext`:
 
 ```bash
-argocd login argocd.<ip-dashed>.nip.io --username admin --password <value-from-config.toml> --plaintext
+argocd login argocd.<ip-dashed>.nip.io --username admin \
+  --password <value-from-config.toml> --plaintext
 ```
 
-## Certificate Warnings
+## Certificates
 
-TLS uses a local, self‑signed root CA. Browsers will warn on first visit. You can proceed, or import the CA:
+TLS uses a local, self-signed root CA for `*.${DNS_SUFFIX}` (derived from your LAN IP). Browsers will warn on first visit; you can proceed or import the CA.
 
 ![Browser warning — self-signed TLS prompt](../assets/images/verify/browser-warning.png)
 
 ```bash
-# Export the root CA from cert-manager
+# Export the root CA from cert-manager (cert-manager/idp-demo-ca-secret)
 kubectl -n cert-manager get secret idp-demo-ca-secret \
   -o jsonpath='{.data.tls\.crt}' | base64 -d > idp-demo-ca.crt
 ```
 
-- macOS: Keychain Access → System → Certificates → import `idp-demo-ca.crt` → “Always Trust”.
+- macOS: Keychain Access → System → Certificates → import `idp-demo-ca.crt` → "Always Trust".
 - Linux (Debian/Ubuntu): `sudo cp idp-demo-ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`
-- Windows: `certmgr.msc`, import into “Trusted Root Certification Authorities”.
+- Windows: `certmgr.msc`, import into "Trusted Root Certification Authorities".
 
-:::tip
-Certificates are issued automatically by cert-manager using a wildcard certificate for `*.127-0-0-1.nip.io`.
-:::
+Certificates are issued automatically by cert-manager using that wildcard; the CA secret lives at `cert-manager/idp-demo-ca-secret`.
 
-## Quick smoke checks (eventual consistency friendly)
+## Smoke checks
 
-| Goal | Command | Success signal |
+| Goal | Command | Expected result |
 | --- | --- | --- |
-| ArgoCD apps appear and converge | `kubectl -n argocd get applications` | Apps listed; `Sync` moves toward `Synced` over a few minutes |
-| Grafana up with datasources | Open `https://grafana.<ip>.nip.io` | UI loads; Prometheus/Loki datasources present |
-| Trivy Operator running | `kubectl -n security get pods \| rg trivy` | `trivy-operator` and `trivy-server` pods Ready |
+| ArgoCD apps listed and converging | `kubectl -n argocd get applications` | Apps present; Sync moves toward `Synced` over a few minutes |
+| Grafana up with datasources | open `https://grafana.<ip>.nip.io` | UI loads; Prometheus/Loki datasources present |
+| Trivy Operator running | `kubectl -n security get pods | rg --line-number "trivy"` | `trivy-operator` and `trivy-server` pods Ready |
 | External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
+| Gateway programmed with certs | `kubectl -n kube-system get gateway idp-gateway -o yaml | rg --line-number "Programmed"` | Condition `Programmed` True; endpoints reachable over TLS |
 
-<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
-  <LinkButton href="/getting-started/deployment/" variant="secondary" icon="arrow-left">
-    Back: Deployment
-  </LinkButton>
-  <LinkButton href="/operate/add-component/" variant="primary" icon="arrow-right">
-    Next: Operate — Add Component
-  </LinkButton>
+## If something stalls
+
+- Pods in `ImagePullBackOff`: check network access, free disk, then retry `task deploy`.
+- Gateway not ready: free the ports defined in `config.toml` and re-run the wait command.
+- Applications stuck OutOfSync: use ArgoCD UI or `argocd app sync <name>` after images are present.
+
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/getting-started/quickstart/" variant="secondary" icon="arrow-left">
+    Back: Quickstart
+  </Button>
 </div>

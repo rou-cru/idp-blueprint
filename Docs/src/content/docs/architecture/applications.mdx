@@ -1,0 +1,120 @@
+---
+title: Application Architecture
+description: Application Architecture
+layout: ../../../layouts/DocsLayout.astro
+sidebar:
+  label: Applications
+  order: 4
+---
+import { Button } from '../../../components/content/index.ts';
+
+While the infrastructure core provides compute, networking, and secrets management, the **Application Layer** delivers capabilities directly consumed by development teams. This layer comprises distinct, domain-focused **Stacks** managed through GitOps.
+
+These stacks integrate to support complete engineering workflows rather than operating as isolated tools.
+
+## Observability Stack
+
+Platforms cannot operate blind. Reliable platforms require comprehensive visibility into system behavior through three integrated capabilities: metrics collection, log aggregation, and formalized Service Level Objectives.
+
+### Metrics Collection and Visualization
+
+Metrics form the quantitative foundation. A time-series database captures measurements from every layer—infrastructure resource utilization, networking throughput, GitOps controller reconciliation latency, application request rates. This data feeds visualization dashboards that surface platform health at a glance. Operations teams monitor resource consumption patterns to identify capacity constraints before they cause outages. Platform engineers track controller performance to detect degradation in the GitOps reconciliation loop.
+
+Alerting transforms metrics into action. Rule-based notifications fire when conditions degrade—resource exhaustion, elevated error rates, or service unavailability. These alerts integrate with on-call systems, routing notifications to responsible teams based on severity and component ownership.
+
+### Log Aggregation
+
+Logs provide contextual detail that metrics cannot capture. Lightweight collectors run on each node, capturing container output without requiring application modifications. These collectors stream logs to centralized storage where retention policies balance queryability with storage costs. Short-term logs remain immediately accessible for troubleshooting recent incidents. Long-term archives preserve compliance evidence and historical analysis capabilities.
+
+The unified interface correlates logs with metrics during investigations. When alerts fire for elevated error rates, operators query logs for the same timeframe, filtering by service and severity. This correlation accelerates root cause identification—metrics reveal what failed, logs explain why.
+
+### Service Level Objectives (SLOs)
+
+SLO management formalizes reliability targets through declarative definitions. Platform teams specify availability requirements as Kubernetes resources—"maintain 99.9% success rate for authentication service" or "keep p95 latency below 200ms for API requests." The SLO tooling translates these human-readable targets into Prometheus recording rules that continuously calculate compliance.
+
+Error budgets emerge from SLO definitions. When a service maintains 99.9% availability but experiences a brief outage, the error budget tracks remaining tolerance. If the budget depletes rapidly, automated alerts warn teams to prioritize stability over feature velocity. This data-driven approach balances innovation with reliability.
+
+## CI/CD Stack
+
+Software delivery requires automated build, test, and verification pipelines that operate without manual gates or agent maintenance overhead.
+
+### Workflow Engine
+
+A Kubernetes-native workflow engine executes pipeline steps directly on cluster resources. Each step runs as a container—compilation, testing, security scanning, deployment—eliminating the operational burden of managing dedicated build agents. When pipelines require specific toolchains, they specify container images containing those tools. The cluster schedules these workloads like any other pod, applying resource limits and node affinity rules.
+
+Parallelism accelerates delivery. Independent pipeline stages execute concurrently when their dependencies permit. A workflow might run unit tests, integration tests, and linting simultaneously, then merge results before proceeding to deployment. The cluster's scheduling capacity determines throughput—additional nodes expand pipeline capacity without reconfiguring build infrastructure.
+
+Integration with Kubernetes primitives simplifies secrets and configuration management. Workflows access Secrets for registry credentials or API tokens without embedding sensitive data in pipeline definitions. ConfigMaps provide environment-specific parameters. Persistent Volume Claims preserve build caches across executions, reducing redundant work.
+
+Complex pipelines express dependencies as directed acyclic graphs (DAGs). A deployment workflow might require sequential steps—build artifact, scan for vulnerabilities, push to registry, update GitOps repository—with conditional branches for quality gate failures or approval requirements.
+
+### Quality Gates
+
+Static analysis enforces code quality standards before integration. Automated scanning analyzes codebases for bugs, security vulnerabilities, code smells, and maintainability issues. These scans execute during pull request validation, blocking merges when code fails established thresholds. A codebase configured to reject high-severity bugs prevents regressions from reaching the main branch.
+
+Trend tracking monitors quality metrics over time. As codebases evolve, the analysis platform charts technical debt accumulation—increasing complexity, declining test coverage, or growing duplication. Teams address deteriorating metrics before they compound into architectural problems. This visibility supports informed decisions about refactoring priorities versus feature development.
+
+## Eventing Stack
+
+Platforms require responsiveness beyond scheduled jobs or manual triggers. Event-driven automation enables reaction to state changes across infrastructure, applications, and external systems without constant polling or human intervention.
+
+### Event Sources
+
+Events originate from diverse systems. External webhooks receive notifications from Git providers when commits land, pull requests merge, or releases publish. These lightweight HTTP endpoints eliminate the need for continuous API polling while maintaining near-real-time awareness of repository activity.
+
+Cluster events broadcast Kubernetes state changes—pod crashes, node failures, resource quota violations. The API server emits these events continuously as resources transition through their lifecycle. Platforms subscribe to this stream to maintain awareness of infrastructure health and workload status.
+
+Observability alerts signal operational issues. When Prometheus detects metric threshold violations or Loki identifies error patterns in logs, it fires webhooks carrying alert context. These notifications become events that trigger automated responses.
+
+### Event Processing
+
+Event processors filter incoming signals and decide what actions to trigger. Processors match events based on content—alert severity, resource type, namespace labels—routing them to appropriate handlers. A processor watching for deployment failures might filter on alert labels, checking for critical severity and specific component tags before proceeding.
+
+Some scenarios require aggregation rather than immediate response. A processor might wait for three consecutive failures within five minutes before triggering remediation workflows. This prevents alert storms from launching hundreds of workflow executions when services flap between healthy and degraded states.
+
+Processors extract parameters from event payloads and inject them into workflow templates. A provisioning request event carries application name, repository URL, and team ownership. The processor transforms this data into workflow arguments, turning generic templates into specific actions. The same workflow handles any application because the processor adapts it with event context.
+
+Actions vary by use case. Processors launch Kubernetes workflows for complex orchestration, update cluster resources directly through the API, or call external systems to bridge platform events with organizational tools. Automated rollback triggers when error rates spike. Infrastructure provisioning begins when repositories match specific patterns. Chat notifications post when deployments complete.
+
+## Security Stack
+
+Security posture requires continuous monitoring beyond pre-deployment scanning. Vulnerabilities discovered after deployment demand detection without waiting for rebuild cycles.
+
+Container images accumulate known vulnerabilities over time. An image scanned clean at build time may develop CVE exposure when new vulnerabilities are disclosed. Runtime scanning detects these issues in deployed workloads, identifying which services run affected images and prioritizing remediation based on severity and exposure.
+
+Compliance reporting aggregates findings across the cluster. Security teams query for all workloads running images with critical vulnerabilities, track remediation progress, and demonstrate security posture to auditors. This centralized view prevents blind spots where individual teams deploy insecure software without visibility.
+
+Integration with observability platforms exports security metrics for alerting and trending. When critical vulnerabilities appear in production workloads, alerts fire to responsible teams. Dashboards track vulnerability counts over time, revealing whether security posture improves or degrades as deployments proceed.
+
+## Developer Portal
+
+Platforms require a unified interface that reduces cognitive load for development teams. Rather than navigating multiple systems to discover services, trigger workflows, or access operational data, a developer portal consolidates capabilities behind a coherent experience.
+
+The service catalog forms the foundation—a searchable inventory of everything running on the platform. Services appear with ownership, dependencies, and documentation visible at a glance. When developers join teams or plan integrations, they discover which services exist, where code lives, and how components interconnect without asking colleagues or searching wikis.
+
+Workflow integration surfaces CI/CD status inline with service information. Recent build history shows which commits passed tests and which failed. Deployment history reveals when versions reached production and whether health checks succeeded. Quality gate results—static analysis findings, code coverage trends, security scan outcomes—appear alongside the code they evaluate.
+
+Self-service operations grant developers capabilities without requiring cluster access or Kubernetes expertise. Developers trigger workflows, view logs, access dashboards, and provision infrastructure through forms and UI elements rather than kubectl commands. This abstraction reduces the platform knowledge required for common operations while maintaining GitOps and policy guardrails.
+
+Identity federation integrates authentication with enterprise systems. Developers authenticate using corporate SSO credentials or Git provider OAuth, linking their organizational identity to platform access. Role-based controls restrict capabilities by team—developers operate on services they own while maintaining read access for discovery and collaboration.
+
+## Implementation in Demo
+
+The reference implementation uses:
+
+- **Observability**: Kube Prometheus Stack (Prometheus + Grafana), Loki, Fluent-bit, Pyrra
+- **CI/CD**: Argo Workflows for pipelines, SonarQube for static analysis
+- **Eventing**: Argo Events with event sources and sensors
+- **Security**: Trivy Operator for vulnerability scanning
+- **Developer Portal**: Backstage with Dex (OpenID Connect provider)
+
+See [Components](/components/) for per-stack documentation.
+
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/infrastructure/" variant="secondary" icon="arrow-left">
+    Back: Infrastructure
+  </Button>
+  <Button href="/architecture/secrets/" variant="primary" icon="arrow-right">
+    Next: Secrets Management
+  </Button>
+</div>

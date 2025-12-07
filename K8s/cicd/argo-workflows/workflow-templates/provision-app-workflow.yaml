@@ -59,13 +59,30 @@ spec:
     # Step 1: Create Namespace with IDP labels
     - name: create-namespace-template
       script:
-        image: bitnami/kubectl:latest
-        command: [bash]
+        image: roucru/idp-blueprint:ops
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        env:
+          - name: HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp/.cache
+        volumeMounts:
+          - name: tmp-volume
+            mountPath: /tmp
+        command: ["devbox", "run", "--", "bash"]
         source: |
           #!/bin/bash
           set -e
 
-          echo "Creating namespace {{workflow.parameters.app-name}}..."
+          echo "Creating namespace {{workflow.parameters.app-name}}"...
 
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
@@ -134,6 +151,9 @@ spec:
 
           echo "✅ LimitRange created"
           echo "🎉 Namespace {{workflow.parameters.app-name}} fully provisioned!"
+      volumes:
+        - name: tmp-volume
+          emptyDir: {{}}
 
     # Step 2: Build and Push Container Image
     - name: build-and-push-image-template
@@ -145,6 +165,7 @@ spec:
               repo: "{{workflow.parameters.repo-url}}"
               depth: 1
       container:
+        # checkov:skip=CKV_ARGO_2:Kaniko requires root to build images
         image: gcr.io/kaniko-project/executor:latest
         command:
           - /kaniko/executor
@@ -170,13 +191,30 @@ spec:
     # Step 3: Create ArgoCD Application
     - name: create-argocd-app-template
       script:
-        image: bitnami/kubectl:latest
-        command: [bash]
+        image: roucru/idp-blueprint:ops
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        env:
+          - name: HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp/.cache
+        volumeMounts:
+          - name: tmp-volume
+            mountPath: /tmp
+        command: ["devbox", "run", "--", "bash"]
         source: |
           #!/bin/bash
           set -e
 
-          echo "Creating ArgoCD Application for {{workflow.parameters.app-name}}..."
+          echo "Creating ArgoCD Application for {{workflow.parameters.app-name}}"...
 
           cat <<EOF | kubectl apply -f -
           apiVersion: argoproj.io/v1alpha1
@@ -221,17 +259,37 @@ spec:
 
           echo "✅ ArgoCD Application created"
           echo "🚀 Application will sync automatically!"
+      volumes:
+        - name: tmp-volume
+          emptyDir: {{}}
 
     # Step 4: Wait for Deployment to be Ready
     - name: wait-for-deployment-template
       script:
-        image: bitnami/kubectl:latest
-        command: [bash]
+        image: roucru/idp-blueprint:ops
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        env:
+          - name: HOME
+            value: /tmp
+          - name: XDG_CACHE_HOME
+            value: /tmp/.cache
+        volumeMounts:
+          - name: tmp-volume
+            mountPath: /tmp
+        command: ["devbox", "run", "--", "bash"]
         source: |
           #!/bin/bash
           set -e
 
-          echo "Waiting for deployment in namespace {{workflow.parameters.app-name}}..."
+          echo "Waiting for deployment in namespace {{workflow.parameters.app-name}}"...
 
           # Wait up to 5 minutes for deployment to exist
           timeout=300
@@ -271,6 +329,9 @@ spec:
           echo "  kubectl get all -n {{workflow.parameters.app-name}}"
           echo ""
           echo "ArgoCD Application:"
-          echo "  https://argocd.\${DNS_SUFFIX}/applications/{{workflow.parameters.app-name}}"
+          echo "  https://argocd.${DNS_SUFFIX}/applications/{{workflow.parameters.app-name}}"
           echo ""
           echo "======================================"
+      volumes:
+        - name: tmp-volume
+          emptyDir: {{}}

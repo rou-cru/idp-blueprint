@@ -1,41 +1,46 @@
 ---
 title: IDP Blueprint
 description: Production-Ready Internal Developer Platform Reference
-template: splash
-hero:
-  tagline: An enterprise-grade Internal Developer Platform reference architecture. Built with Kubernetes, ArgoCD, and GitOps principles to deliver a complete developer experience in minutes.
-  actions:
-    - text: Start Building
-      link: /getting-started/overview/
-      icon: rocket
-      variant: primary
-    - text: View Architecture
-      link: /architecture/overview/
-      icon: right-arrow
-      variant: minimal
 ---
 
-import { Card, CardGrid, LinkButton, Icon } from '@astrojs/starlight/components';
+import { Card, CardGrid, Button } from '../../components/content/index.ts';
+
+<div class="text-center py-16 px-4 max-w-4xl mx-auto">
+  <h1 class="text-6xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-purple-light mb-6">IDP Blueprint</h1>
+  <p class="text-xl leading-relaxed text-text-secondary mb-8">
+    An enterprise-grade Internal Developer Platform reference architecture. Built with Kubernetes, ArgoCD, and GitOps principles to deliver a complete developer experience in minutes.
+  </p>
+  <div class="flex flex-wrap gap-4 justify-center">
+    <Button href="/getting-started/overview/" variant="primary" icon="arrow-right">
+      Start Building
+    </Button>
+    <Button href="/architecture/overview/" variant="secondary" icon="arrow-right">
+      View Architecture
+    </Button>
+  </div>
+</div>
+
+<div class="prose dark:prose-invert max-w-none">
 
 ## Platform Capabilities
 
-<CardGrid stagger>
-  <Card title="GitOps Native" icon="github">
+<CardGrid columns={3}>
+  <Card title="GitOps Native" icon="lucide:git">
     Everything is code. Infrastructure, applications, and policies are reconciled automatically from Git using **ArgoCD** and **ApplicationSets**.
   </Card>
-  <Card title="Policy as Code" icon="approve-check-circle">
+  <Card title="Policy as Code" icon="lucide:shield-check">
     Guardrails are built-in. **Kyverno** enforces labels, limits, and security contracts at the cluster level before deployment.
   </Card>
-  <Card title="Full Observability" icon="magnifier">
+  <Card title="Full Observability" icon="lucide:search">
     Day-2 ready. Pre-configured **Prometheus**, **Grafana**, **Loki**, and **Fluent-bit** stacks with dashboards and SLOs managed as code.
   </Card>
-  <Card title="Secure by Design" icon="lock">
+  <Card title="Secure by Design" icon="lucide:lock">
     No secrets in Git. **Vault** integrates with **External Secrets Operator** to inject credentials securely into Kubernetes Secrets.
   </Card>
-  <Card title="Automated Networking" icon="laptop">
+  <Card title="Automated Networking" icon="lucide:network">
     One Gateway to rule them all. **Gateway API** + **Cilium** handle traffic with automated TLS certificates via **cert-manager** and `nip.io`.
   </Card>
-  <Card title="Local to Prod" icon="laptop">
+  <Card title="Local to Prod" icon="lucide:laptop">
     Bootstraps a full enterprise-like environment on your laptop (via k3d) in **< 10 minutes**, mirroring production constraints perfectly.
   </Card>
 </CardGrid>
@@ -46,120 +51,7 @@ import { Card, CardGrid, LinkButton, Icon } from '@astrojs/starlight/components'
 
 A complete logical map of the platform layers, from the developer's commit to the running service.
 
-```d2
-direction: right
-
-classes: {
-  actors: { style.fill: "#1e3a8a"; style.font-color: white; style.stroke: "#60a5fa" }
-  system: { style.fill: "#111827"; style.font-color: white; style.stroke: "#22d3ee" }
-  infra:  { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
-  gov:    { style.fill: "#111827"; style.stroke: "#6366f1"; style.font-color: white }
-  svc:    { style.fill: "#0f766e"; style.stroke: "#34d399"; style.font-color: white }
-  ux:     { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
-}
-
-External: {
-  class: actors
-  Devs: {
-    shape: person
-    label: "Developers"
-  }
-  Platform: {
-    shape: person
-    label: "Platform Engineers"
-  }
-  Security: {
-    shape: person
-    label: "Security/Compliance"
-  }
-}
-
-IDP: {
-  class: system
-  label: "IDP Blueprint cluster"
-
-  Infra: {
-    class: infra
-    label: "Infrastructure Core"
-    K8s: "Kubernetes API"
-    Cilium
-    Gateway: {
-      label: "Gateway API"
-      shape: hexagon
-    }
-  }
-
-  Governance: {
-    class: gov
-    label: "Automation & Governance"
-    Argo: {
-      label: "ArgoCD"
-      link: https://argo-cd.readthedocs.io
-      tooltip: |md
-        GitOps continuous delivery tool.
-        Automatically syncs Git with cluster state.
-      |
-    }
-    Kyverno: {
-      link: https://kyverno.io
-      tooltip: |md
-        Kubernetes-native policy engine.
-        Validates, mutates, and generates resources.
-      |
-    }
-    Vault: {
-      shape: cylinder
-      link: https://www.vaultproject.io
-      tooltip: |md
-        Secrets management system.
-        Single source of truth for all secrets.
-      |
-    }
-    ESO: {
-      label: "External Secrets"
-      link: https://external-secrets.io
-    }
-  }
-
-  Services: {
-    class: svc
-    label: "Platform Services"
-    Prom: {
-      label: "Prometheus"
-      link: https://prometheus.io
-    }
-    Loki: {
-      shape: cylinder
-      link: https://grafana.com/oss/loki
-    }
-    Fluent: "Fluent-bit"
-  }
-
-  UX: {
-    class: ux
-    label: "Developer Experience"
-    Grafana: {
-      link: https://grafana.com
-    }
-    ArgoWorkflows: {
-      label: "Argo Workflows"
-      link: https://argoproj.github.io/workflows
-    }
-    SonarQube: {
-      link: https://www.sonarqube.org
-    }
-    Backstage: {
-      link: https://backstage.io
-    }
-  }
-}
-
-External.Devs -> IDP.Governance.Argo: "Git Push"
-IDP.Governance.Argo -> IDP.Services.Prom: "Sync"
-IDP.Governance.Argo -> IDP.UX.ArgoWorkflows
-IDP.Infra.Gateway -> IDP.UX.Grafana: "HTTPS"
-IDP.Infra.Gateway -> IDP.UX.Backstage
-```
+![IDP Blueprint Architecture](./assets/diagrams/index-architecture.svg)
 
 ---
 
@@ -167,17 +59,17 @@ IDP.Infra.Gateway -> IDP.UX.Backstage
 
 The best-in-class open source components powering the platform.
 
-<CardGrid>
-  <Card title="Orchestration" icon="seti:kubernetes">
+<CardGrid columns={2}>
+  <Card title="Orchestration" icon="lucide:box">
     **Kubernetes** (k3d/k3s) + **Cilium** CNI for eBPF networking.
   </Card>
-  <Card title="Delivery" icon="rocket">
+  <Card title="Delivery" icon="lucide:rocket">
     **ArgoCD** for continuous delivery and **Argo Workflows** for pipelines.
   </Card>
-  <Card title="Security" icon="seti:lock">
+  <Card title="Security" icon="lucide:shield">
     **HashiCorp Vault** for secrets, **Trivy** for scanning, and **cert-manager** for PKI.
   </Card>
-  <Card title="Monitoring" icon="seti:chart">
+  <Card title="Monitoring" icon="lucide:bar-chart-3">
     **Prometheus** & **Grafana** for metrics, **Loki** for logs.
   </Card>
 </CardGrid>
@@ -186,24 +78,26 @@ The best-in-class open source components powering the platform.
 
 ## Who is this for?
 
-<CardGrid>
-  <Card title="Platform Engineers" icon="setting">
+<CardGrid columns={2}>
+  <Card title="Platform Engineers" icon="lucide:settings">
     Bootstrap a reference implementation to compare against your internal stack or start fresh with best practices.
-    <br/>
+
     [Explore Operational Guides](/operate/)
   </Card>
-  <Card title="Application Teams" icon="puzzle">
+  <Card title="Application Teams" icon="lucide:puzzle">
     Understand how your workloads interact with the platform, policies, and pipelines.
-    <br/>
+
     [See CI/CD Components](/components/cicd/)
   </Card>
 </CardGrid>
 
 ---
 
-<div style="text-align: center;">
-  <p>Want to learn more?</p>
-  <LinkButton href="/getting-started/overview/" variant="primary" icon="open-book" style="font-size: 1.2rem;">
+<div class="text-center mt-12 mb-0">
+  <p class="text-lg mb-6">Want to learn more?</p>
+  <Button href="/getting-started/overview/" variant="primary" icon="arrow-right">
     Explore the Documentation
-  </LinkButton>
+  </Button>
+</div>
+
 </div>

@@ -1,0 +1,28 @@
+direction: right
+
+classes: {
+  actor: {
+    shape: person
+    style: { fill: "#1e3a8a"; stroke: "#60a5fa"; font-color: white }
+  }
+  system: {
+    style: { fill: "#111827"; stroke: "#34d399"; font-color: white }
+  }
+  ext: {
+    style: { fill: "#0f172a"; stroke: "#22d3ee"; font-color: white }
+  }
+}
+
+Platform Engineer: { class: actor }
+Application Developer: { class: actor }
+
+IDP: { class: system; label: "IDP Blueprint\n(Kubernetes Cluster)" }
+Git: { class: ext; label: "Git Provider" }
+Registry: { class: ext; label: "Container Registry" }
+
+Platform Engineer -> Git: "Configures"
+Application Developer -> Git: "Commits code"
+Git -> IDP: "Syncs state"
+Registry -> IDP: "Provides images"
+IDP -> Application Developer: "Serves apps"
+Platform Engineer -> IDP: "Observes"

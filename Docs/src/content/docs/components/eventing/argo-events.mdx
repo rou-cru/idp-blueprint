@@ -1,5 +1,8 @@
 ---
 title: argo-events
+sidebar:
+  label: Argo Events
+  order: 1
 ---
 
 import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
@@ -53,41 +56,32 @@ The configuration uses a three-node NATS cluster as the default EventBus. All ev
 publish to this bus, and all sensors subscribe to it. This provides reliable event delivery
 with at-least-once semantics.
 
-See [CI/CD Model](../../architecture/cicd.md) for how Argo Events integrates into the
+See [CI/CD Model](../../concepts/cicd) for how Argo Events integrates into the
 platform automation.
-
-## Deployment Layout
-
-| Path | Purpose |
-|------|---------|
-| `K8s/events/governance/` | Namespace and resource limits applied early for capacity reservation. |
-| `K8s/events/argo-events/values.yaml` | Helm values for controller + webhook with priority, tolerations, etc. |
-| `K8s/events/argo-events/eventbus.yaml` | Defines the `EventBus` using native NATS with three replicas. |
-| `K8s/events/applicationset-events.yaml` | ApplicationSet that points ArgoCD to every Eventing folder. |
 
 ## Scheduling & Reliability
 
-- Both controller and webhook use the `platform-events` PriorityClass and pin to control-plane
-  nodes through node affinity and tolerations so automation continues even if worker nodes are
-  under pressure (`values.yaml`).
-- Rolling updates use `maxUnavailable: 0` / `maxSurge: 1` to enforce zero-downtime restarts for
-  the controller.
-- The EventBus (`eventbus.yaml`) provisions a three-node NATS cluster with token auth; it is
-  the single default bus referenced by all Sensors.
+- Both controller and webhook use the `platform-events` PriorityClass and pin to
+  control-plane nodes through node affinity and tolerations so automation continues even
+  if worker nodes are under pressure (`values.yaml`).
+- Rolling updates use `maxUnavailable: 0` / `maxSurge: 1` to enforce zero-downtime
+  restarts for the controller.
+- The EventBus (`eventbus.yaml`) provisions a three-node NATS cluster with token auth; it
+  is the single default bus referenced by all Sensors.
 
 ## Building Sensors and Event Sources
 
 1. Create a folder under `K8s/events/<source>-<purpose>/`.
 2. Add `EventSource` and `Sensor` manifests that point to the `default` EventBus.
 3. Label everything with the canonical metadata (`app.kubernetes.io/part-of: idp`,
-   `owner: platform-team`, etc.) and include governance files if the folder introduces its own
-   namespace.
+   `owner: platform-team`, etc.) and include governance files if the folder introduces its
+   own namespace.
 4. Commit and let the ApplicationSet reconcile it—no manual registration is required.
 
 Common recipes:
 
-- **Git webhooks** → trigger Argo Workflows templates or invoke the ArgoCD API for intelligent
-  syncs.
+- **Git webhooks** → trigger Argo Workflows templates or invoke the ArgoCD API for
+  intelligent syncs.
 - **Alertmanager or Prometheus burn-rate alerts** → Sensor that dispatches remediation
   workflows.
 - **Cron-style schedules** → `Calendar` trigger to fan out maintenance jobs.
@@ -98,13 +92,13 @@ Argo Events supports multiple event source types:
 
 | Type | Use Case | Example |
 |------|----------|---------|
-| **Webhook** | HTTP endpoints for external systems | GitHub push events, GitLab merge requests |
-| **Calendar** | Cron-like scheduled events | Periodic backups, nightly jobs |
-| **Resource** | Kubernetes resource changes | Pod failures, ConfigMap updates |
+| **Webhook** | HTTP endpoints for external systems | GitHub push events |
+| **Calendar** | Cron-like scheduled events | Periodic backups |
+| **Resource** | Kubernetes resource changes | ConfigMap updates |
 | **AMQP** | Message queue events | RabbitMQ, Azure Service Bus |
 | **Kafka** | Stream processing | High-throughput event streams |
 | **NATS** | Pub/sub messaging | Inter-service communication |
-| **Redis** | Cache and pub/sub | Session events, cache invalidation |
+| **Redis** | Cache and pub/sub | Session events |
 | **AWS SNS/SQS** | Cloud events | AWS service notifications |
 | **GCP Pub/Sub** | Cloud events | GCP service notifications |
 
@@ -138,7 +132,7 @@ spec:
               spec:
                 workflowTemplateRef:
                   name: docker-build-push
-```text
+```
 
 ### Trigger ArgoCD Sync
 
@@ -166,7 +160,7 @@ triggers:
   - template:
       name: notification
       http: {...}
-```text
+```
 
 ## Observability & Operations
 
@@ -215,7 +209,7 @@ GitHub Push Event → EventSource (webhook)
                   → Sensor (filters by branch)
                   → Argo Workflow (build + test + push image)
                   → ArgoCD Sync (deploy to cluster)
-```text
+```
 
 ### Automated Incident Response
 
@@ -224,7 +218,7 @@ Prometheus Alert → Alertmanager webhook → EventSource
                                         → Sensor (filters by severity)
                                         → Argo Workflow (remediation script)
                                         → Slack notification
-```text
+```
 
 ### Scheduled Maintenance
 
@@ -234,7 +228,7 @@ Calendar EventSource (cron: 0 2 * * *)
   → Argo Workflow (database backup)
   → Argo Workflow (cleanup old resources)
   → Notification on completion
-```text
+```
 
 ## Configuration Values
 

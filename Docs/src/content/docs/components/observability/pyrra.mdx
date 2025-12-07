@@ -1,5 +1,8 @@
 ---
 title: pyrra
+sidebar:
+  label: Pyrra
+  order: 5
 ---
 
 import MarkdownPartial from '../../../../components/MarkdownPartial.astro';
@@ -43,8 +46,8 @@ Key integration points:
 
 - **Prometheus**: Pyrra generates `PrometheusRule` resources that Prometheus evaluates
 - **Grafana**: Pyrra provides a built-in UI for SLO visualization and burn-rate tracking
-- **Alertmanager**: Receives burn-rate alerts from Prometheus when error budgets deplete too
-  quickly
+- **Alertmanager**: Receives burn-rate alerts from Prometheus when error budgets deplete
+  too quickly
 - **ServiceMonitor**: Exposes Pyrra's own metrics to Prometheus for meta-monitoring
 
 The configuration uses the `ServiceLevelObjective` CRD (API version `pyrra.dev/v1alpha1`) to
@@ -57,22 +60,8 @@ define SLOs. Each SLO specifies:
 Pyrra continuously evaluates these SLOs and updates burn-rate metrics. When the burn rate
 exceeds safe thresholds, Prometheus fires alerts to Alertmanager.
 
-See [Observability Model](../../architecture/observability.md) for the complete observability
+See [Observability Model](../../concepts/observability) for the complete observability
 architecture.
-
-## Current SLO Definitions
-
-The platform includes pre-configured SLOs for core infrastructure components:
-
-| SLO | Target | Window | Metric | Location |
-|-----|--------|--------|--------|----------|
-| **Prometheus Targets Up** | 99.0% | 6h | `up` metric availability | `K8s/observability/...` |
-| **Loki Ingest Availability** | 99.0% | 6h | Successful log ingestion rate | `K8s/observability/...` |
-| **Certificate Readiness** | 99.0% | 6h | Valid certificates | `K8s/observability/slo/certs-ready-slo.yaml` |
-| **Secrets Sync** | 99.0% | 6h | External Secrets sync success | `K8s/observability/slo/secrets-sync-slo.yaml` |
-
-All SLO definitions are in `K8s/observability/slo/` and deployed through the observability
-ApplicationSet.
 
 ## Accessing the Dashboard
 

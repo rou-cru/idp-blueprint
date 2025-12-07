@@ -1,6 +1,7 @@
 version: "3"
 
 # Load all variables from .env (auto-generated from config.toml)
+dotenv: [".env"]
 
 vars:
   # Default fallback values (overridden by .env if present)

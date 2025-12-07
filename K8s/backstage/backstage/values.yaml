@@ -34,8 +34,20 @@ backstage:
   # Wait for Dex to be ready before starting Backstage
   initContainers:
     - name: wait-for-dex
-      image: curlimages/curl:latest
+      image: roucru/idp-blueprint:ops
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: HOME
+          value: /tmp
+        - name: XDG_CACHE_HOME
+          value: /tmp/.cache
+      volumeMounts:
+        - name: tmp-volume
+          mountPath: /tmp
       command:
+        - devbox
+        - run
+        - --
         - sh
         - -c
         - |
@@ -51,7 +63,19 @@ backstage:
             echo "Attempt $attempt/$max_attempts: Dex not ready, waiting 5 seconds..."
             sleep 5
           done
-          echo "SUCCESS: Dex is ready!"
+                      echo "SUCCESS: Dex is ready!"
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                        drop: ["ALL"]
+                      readOnlyRootFilesystem: true
+                      runAsNonRoot: true
+                      runAsUser: 1001
+            extraVolumeMounts:    - name: tmp-volume
+      mountPath: /tmp
+  extraVolumes:
+    - name: tmp-volume
+      emptyDir: {}
 
 # @section -- Pod settings
 replicaCount: 1
@@ -127,9 +151,12 @@ postgresql:
   auth:
     username: backstage
     database: backstage
+    # checkov:skip=CKV_SECRET_6:False positive, key name not secret value
     existingSecret: backstage-postgresql
     secretKeys:
+      # checkov:skip=CKV_SECRET_6:False positive, key name not secret value
       adminPasswordKey: postgres-password
+      # checkov:skip=CKV_SECRET_6:False positive, key name not secret value
       userPasswordKey: password
   primary:
     persistence:

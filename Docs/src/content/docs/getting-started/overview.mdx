@@ -1,104 +1,43 @@
 ---
-title: Getting Started
+title: Overview
 sidebar:
   label: Overview
   order: 1
 ---
-import { LinkButton } from '@astrojs/starlight/components';
+import { Button } from '../../../components/content/index.ts';
 
-Welcome. In this section you will deploy the platform locally, check that it is healthy, and
-understand at a high level what you just created.
+IDP Blueprint is an **open-source reference architecture for Internal Developer Platforms** on Kubernetes. It defines patterns for GitOps-driven infrastructure, policy enforcement, secrets management, observability, and developer tooling—designed with production concerns (scalability, security, maintainability) as primary constraints.
 
-If you want the full architectural view, see [Architecture overview](../architecture/overview.md).
-Here we focus on what you need to know to run the commands with confidence.
+The project **includes a demo implementation** optimized to run on laptop-class hardware, home labs, or single-node development clusters. The demo validates the architecture in a live environment, allowing you to explore component interactions and operational workflows rather than relying solely on documentation.
 
-## What you will build
+**Architecture vs Implementation:** The reference architecture establishes technology-agnostic patterns applicable to production environments. The demo makes deliberate tradeoffs—simplified secret management, ephemeral DNS (nip.io), reduced resource reservations—to remain deployable on constrained hardware. Before production use, these demo-specific choices must be replaced with hardened alternatives matching your operational context.
 
-After completing the quickstart you will have:
+## What the demo provides
 
-- A local k3d Kubernetes cluster (by default `idp-demo`).
-- Core platform services:
-  - Cilium, Gateway API.
-  - Vault, External Secrets Operator, cert‑manager.
-  - Prometheus, Loki, Grafana.
-- GitOps and policy control planes:
-  - ArgoCD with ApplicationSets (a controller that generates many Applications
-    from the `K8s/` folder structure; see
-    [`GitOps, Policy, and Eventing`](../concepts/gitops-model.md)).
-  - Kyverno and Policy Reporter.
-- Stacks for:
-  - Observability.
-  - CI/CD.
-  - Security scanning.
+The reference implementation deploys a three-node local Kubernetes cluster with the full IDP stack. Deployment orchestration is automated through `task deploy`, which handles dependency sequencing and validation.
 
-All of this is deployed from this repository using `task deploy`.
+The demo environment includes operational tooling (kubectl, k9s, ArgoCD CLI, MCP integrations) encapsulated in Devbox or VS Code Dev Containers. The host requires only a container runtime, git, and sufficient hardware resources.
 
-## Feature Toggles (Fuses)
+## Demo vs Production
 
-The platform includes feature toggles called "fuses" that allow you to control which components are
-deployed. In the `config.toml` file, you'll find a `[fuses]` section where you can enable or
-disable different stacks:
+The demo implementation makes deliberate tradeoffs to remain deployable on constrained hardware. **These are implementation choices for the demo, not architectural decisions of the IDP reference.**
 
-- `policies`: Controls deployment of Kyverno policy engine
-- `security`: Controls deployment of security stack (Trivy Operator)
-- `observability`: Controls deployment of monitoring stack (Prometheus, Grafana, Loki)
-- `cicd`: Controls deployment of CI/CD stack (Argo Workflows, SonarQube)
-- `backstage`: Controls deployment of Backstage developer portal
-- `prod`: Enables production-hardened configurations
+| Aspect | Demo Implementation | Production Recommendation |
+|--------|---------------------|---------------------------|
+| **Secrets** | Credentials in `config.toml` (Git-tracked) | External secret store (Vault cluster, cloud KMS) + sealed secrets |
+| **DNS** | nip.io wildcard (ephemeral, no registration) | Registered domain + DNS provider integration |
+| **TLS** | Self-signed CA, HTTP internal to services | Valid CA certificates, end-to-end TLS |
+| **Vault** | Standalone, auto-unseal via K8s Secret | HA cluster (Raft/Consul), hardware/cloud auto-unseal |
+| **Networking** | NodePort (30080/30443) on k3d | LoadBalancer with cloud integration or MetalLB/Cilium L2 |
+| **Resource sizing** | Minimal requests/limits, single replicas | Sized for load, multi-replica, HPA enabled |
+| **Retention** | Short-term (Loki 6h, small PVCs) | Long-term retention, object storage backends |
 
-By default, all stacks except `prod` are enabled. The events stack (Argo Events) is always deployed
-regardless of fuse settings.
+The underlying architecture—GitOps control plane, policy-driven governance, layered infrastructure, observability stack—applies to production. See the Architecture section for design decisions independent of demo-specific implementations.
 
-## One command: what `task deploy` actually does
+The following sections guide you through deploying and validating the reference implementation.
 
-With the default `config.toml`, `task deploy` runs this end-to-end sequence. No manual
-flags or extra environment variables are needed; the Taskfile orchestrates everything.
-
-1) **Create the base**
-   - Checks inotify, creates a 3-node k3d cluster plus local registry cache.
-   - Applies namespaces and initial PriorityClasses.
-2) **Install CRDs and networking**
-   - Installs Gateway API and Prometheus Operator CRDs.
-   - Deploys Cilium as CNI and waits for pods to be `Ready`.
-3) **Certificates and secrets**
-   - Installs cert-manager and applies the CA/ClusterIssuers.
-   - Installs Vault, initializes it, and configures Kubernetes auth roles for ESO.
-   - Seeds initial secrets (ArgoCD, Grafana, SonarQube, Backstage, registry).
-   - Installs External Secrets Operator and waits for it to be available.
-4) **GitOps and gateway**
-   - Installs ArgoCD (standard mode), applies AppProjects per stack.
-   - Applies ExternalSecrets for ArgoCD credentials.
-   - Deploys Gateway API + wildcard TLS, verifies NodePorts (30080/30443), and
-     prints detected nip.io URLs.
-5) **Auto-pilot stacks (all enabled by default)**
-   - Applies the Kyverno/Policy Reporter Application.
-   - Applies ApplicationSets for observability, cicd, security, backstage, and events
-     (fuses gate all except events, which is always on).
-6) **Complete**
-   - Exits with "Deployment complete"; ArgoCD continues reconciling until everything is
-     Healthy/Synced.
-
-Real log fragments (high-level summary):
-
-```text
-task: [k3d:k3d:create] ... k3d cluster create idp-demo ...
-task: [bootstrap:cilium:deploy] helm upgrade --install cilium ...
-task: [bootstrap:vault:init] Vault initialized successfully
-task: [bootstrap:argocd:deploy] helm upgrade --install argocd ...
-task: [bootstrap:gateway:deploy] NodePorts verified: HTTP=30080, HTTPS=30443
-task: [stacks:observability] applicationset-observability created
-task: [stacks:cicd] applicationset-cicd created
-task: [stacks:security] applicationset-security created
-task: [stacks:backstage] applicationset-backstage created
-task: [stacks:events] applicationset-events created
-Deployment complete
-```
-
-Tip for debugging timing: re-run with `task --summary deploy` or `task --verbose deploy`
-to see every underlying command as it executes.
-
-<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
-  <LinkButton href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">
     Next: Prerequisites
-  </LinkButton>
+  </Button>
 </div>

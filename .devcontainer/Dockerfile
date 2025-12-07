@@ -5,6 +5,9 @@ FROM jetpackio/devbox:0.16.0
 WORKDIR /code
 USER root:root
 
+# Ensure devbox binary is readable and executable by all users (e.g., 1001)
+RUN chmod a+rx /usr/local/bin/devbox
+
 RUN mkdir -p /code /code/.devcontainer && chown "${DEVBOX_USER}":"${DEVBOX_USER}" /code /code/.devcontainer
 USER ${DEVBOX_USER}:${DEVBOX_USER}
 

@@ -13,9 +13,17 @@ tasks:
     desc: 'Build minimal image for CI/Jobs'
     env:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
-      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
+      IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
     cmds:
       - docker bake minimal --progress=tty
+
+  image:build:ops:
+    desc: 'Build ops image for cluster utility jobs'
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG_OPS: '{{.DOCKER_IMAGE_TAG_OPS}}'
+    cmds:
+      - docker bake ops --progress=tty
 
   image:release:
     desc: 'Build and push full image to Registry'
@@ -39,15 +47,32 @@ tasks:
         - DOCKER_REGISTRY_PASSWORD
     env:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
-      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
+      IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
     cmds:
       - docker bake release-minimal --progress=tty
 
-  image:release:all:
-    desc: 'Build and push both full and minimal images'
+  image:release:ops:
+    desc: 'Build and push ops image to Registry'
+    requires:
+      vars:
+        - DOCKER_REGISTRY_URL
+        - DOCKER_REGISTRY_USERNAME
+        - DOCKER_REGISTRY_PASSWORD
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG_OPS: '{{.DOCKER_IMAGE_TAG_OPS}}'
     cmds:
-      - task: image:release:minimal
-      - task: image:release
+      - docker bake release-ops --progress=tty
+
+  image:release:all:
+    desc: 'Build and push all bake targets (full, minimal, ops, dev-portal)'
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: '{{.DOCKER_IMAGE_TAG}}'
+      IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
+      IMAGE_TAG_OPS: '{{.DOCKER_IMAGE_TAG_OPS}}'
+    cmds:
+      - docker bake release release-minimal release-ops dev-portal-release --progress=tty
 
   registry:clean:
     desc: 'Remove registry cache data'

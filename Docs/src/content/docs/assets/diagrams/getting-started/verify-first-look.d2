@@ -1,0 +1,27 @@
+direction: right
+
+classes: {
+  actor: { style.fill: "#0f172a"; style.stroke: "#38bdf8"; style.font-color: white }
+  gateway: { style.fill: "#0f172a"; style.stroke: "#22d3ee"; style.font-color: white }
+  ui: { style.fill: "#7c3aed"; style.stroke: "#a855f7"; style.font-color: white }
+}
+
+User: { class: actor; label: "You\n(Laptop)" }
+Browser: { class: actor; label: "Browser" }
+
+Gateway: { class: gateway; label: "Gateway API\nTLS *.nip.io" }
+
+UIs: {
+  class: ui
+  Argo: "ArgoCD"
+  Grafana
+  Vault
+  Backstage
+}
+
+User -> Browser: "open https://<app>.<ip>.nip.io"
+Browser -> Gateway: HTTPS
+Gateway -> UIs.Argo
+Gateway -> UIs.Grafana
+Gateway -> UIs.Vault
+Gateway -> UIs.Backstage

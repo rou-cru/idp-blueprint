@@ -1,0 +1,43 @@
+---
+title: Contracts
+description: Contracts
+layout: ../../../layouts/DocsLayout.astro
+sidebar:
+  label: Contracts
+  order: 3
+---
+
+This page lists every platform contract: what it is, its type, where it lives in Git, how it's enforced, and what breaks if you violate it.
+
+## Contract flow overview
+
+How configuration sources flow through the platform to enforce contracts:
+
+![Platform Contracts Flow](../assets/diagrams/operate/contracts-flow.svg)
+
+## Platform Contracts Reference
+
+| Contract | Type | Lives In | Enforcement | Failure Mode |
+|---|---|---|---|---|
+| **GitOps Source** | API/config | `config.toml [git]`, `Taskfile.yaml`, ApplicationSets | Observed via ArgoCD UI | Wrong repo/branch → no sync |
+| **Labels & Metadata** | Data schema | Kyverno `enforce-namespace-labels`, `require-component-labels` | Kyverno (namespace: enforce; components: audit) | Cost attribution breaks; policies won't match |
+| **Prometheus Selection** | Label-based ingest | `serviceMonitorSelector` = `prometheus=kube-prometheus` | Prometheus Operator selectors | ServiceMonitor without label → never scraped |
+| **Grafana Dashboards** | Config discovery | Grafana sidecar `dashboards.label = grafana_dashboard` | Sidecar importer | ConfigMap without label → not visible in UI |
+| **Gateway Routes** | Hostname→Service | HTTPRoutes (`IT/gateway/httproutes/*`), `DNS_SUFFIX` | Gateway API controller | Service renames break routes |
+| **Secrets Flow** | Access/data policy | ExternalSecret manifests; `creationPolicy: Merge` | ESO controller; optional Kyverno | Wrong path → stale secrets; no Merge → overwrite |
+| **Priority & Scheduling** | Operational contract | `IT/priorityclasses/`; coverage script | CI check script; optional Kyverno | Critical planes preempted under pressure |
+| **Namespace Governance** | Operational guardrail | `K8s/*/governance/{limitrange,resourcequota}.yaml` | Kubernetes admission | Noisy neighbors; unbounded resources |
+| **Folder → Application** | Structural convention | `K8s/*/applicationset-*.yaml` | ArgoCD ApplicationSet controller | Wrong folder → wrong namespace/project |
+| **CRDs First** | Installation order | `Task/bootstrap.yaml it:apply-crds` | Tasks execute in order | CRs rejected (no CRD) |
+| **Helm Repositories** | Dependency mapping | `IT/argocd/values.yaml` → `configs.repositories` | ArgoCD chart lookup | Sync failures "chart not found" |
+| **Admin Credentials** | Security contract | `config.toml [passwords]`, `vault-generate.sh`, ExternalSecret | ESO + Vault | Weak defaults; race avoided by Merge |
+| **Observability Rules** | Behavior contract | `K8s/observability/slo/*.yaml` (Pyrra) | Pyrra → PrometheusRule → Alertmanager | Wrong metrics/labels → SLOs don't compute |
+| **Eventing** | Event schema + routing | `K8s/events/*` (sources, sensors, triggers) | Argo Events controllers | Webhooks misrouted; triggers not firing |
+
+## Contract meta checklist
+
+- Validations: `Scripts/validate-consistency.sh` (labels, priority coverage, deprecated APIs)
+- Profiles/Fuses: `config.toml [fuses]` toggle stacks and prod hardening
+- Cluster name: `config.toml [cluster] name` used by k3d and Cilium
+
+Keep this page updated when introducing new stacks or toggles. Every new capability needs an explicit, documented contract.
