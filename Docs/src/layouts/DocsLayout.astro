@@ -4,7 +4,6 @@ import Header from '../components/navigation/Header.svelte';
 import Sidebar from '../components/navigation/Sidebar.svelte';
 import TableOfContents from '../components/navigation/TableOfContents.svelte';
 import Breadcrumbs from '../components/navigation/Breadcrumbs.svelte';
-import CodeBlockEnhancer from '../components/ui/CodeBlockEnhancer.astro';
 import { getSidebarConfig } from '../lib/navigation';
 import { siteConfig, canonicalUrl } from '../lib/site-config';
 
@@ -69,7 +68,5 @@ const sidebarConfig = await getSidebarConfig();
         <TableOfContents headings={headings} client:idle />
       </aside>
     </div>
-
-    <CodeBlockEnhancer />
   </body>
 </html>
