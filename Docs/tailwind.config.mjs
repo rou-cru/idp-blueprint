@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Clerk-inspired brand colors
+        // Brand Colors
         brand: {
           purple: '#6C47FF',
           'purple-light': '#8B6DFF',
@@ -15,7 +15,12 @@ export default {
           yellow: '#FFF963',
           cyan: '#38DAFD',
         },
-        // Dark theme color scale
+        // Status Colors
+        success: '#22C55E',
+        warning: '#FB923C',
+        danger: '#EF4444',
+        info: '#3B82F6',
+        // Legacy Dark Palette (Keep for transition compatibility)
         dark: {
           50: '#FAFAFA',
           100: '#F5F5F5',
@@ -30,33 +35,112 @@ export default {
           900: '#171717',
           950: '#0A0A0A',
         },
-        // Semantic colors
-        success: '#22C55E',
-        warning: '#FB923C',
-        danger: '#EF4444',
-        info: '#3B82F6',
+        // Semantic System (The Truth)
+        bg: {
+          base: '#000000', // Pure black (Clerk spec)
+          elevated: '#121212',
+          subtle: '#171717',
+          overlay: '#1F1F1F',
+          muted: '#262626',
+          hover: 'rgba(255, 255, 255, 0.04)',
+          active: 'rgba(255, 255, 255, 0.08)',
+        },
+        text: {
+          primary: '#FAFAFA',
+          secondary: '#A1A1AA',
+          tertiary: '#71717A',
+          muted: '#52525B',
+          inverted: '#0A0A0A',
+        },
+        border: {
+          default: 'rgba(255, 255, 255, 0.08)',
+          hover: 'rgba(255, 255, 255, 0.12)',
+          subtle: 'rgba(255, 255, 255, 0.05)',
+          emphasis: 'rgba(255, 255, 255, 0.1)',
+          focus: 'rgba(108, 71, 255, 0.5)',
+        },
+        ui: {
+          'scrollbar-track': '#171717',
+          'scrollbar-thumb': '#404040',
+          'scrollbar-hover': '#525252',
+          'backdrop': 'rgba(10, 10, 10, 0.6)',
+          'backdrop-solid': 'rgba(10, 10, 10, 0.8)',
+        },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['Monaco', 'ui-monospace', 'SFMono-Regular', 'Consolas', 'monospace'],
-      },
-      borderRadius: {
-        '2xl': '1rem',
-        '3xl': '1.5rem',
+        sans: ['Geist', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['Geist Mono', 'JetBrains Mono', 'Monaco', 'ui-monospace', 'monospace'],
       },
       spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '112': '28rem',
-        '128': '32rem',
+        'header-h': '4rem',
+        'sidebar-w': '19rem',
+        'toc-w': '14rem',
+        'content-max': '80rem',
+        'container-max': '112.5rem',
       },
-      fontSize: {
-        '2xs': ['0.625rem', { lineHeight: '0.875rem' }],
+      backdropBlur: {
+        'header': '16px',
       },
-      boxShadow: {
-        'purple-glow': '0 0 20px rgba(108, 71, 255, 0.15)',
-        'purple-glow-lg': '0 0 40px rgba(108, 71, 255, 0.25)',
-      },
+      // Centralized Typography Configuration
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            maxWidth: 'none',
+            color: theme('colors.text.secondary'),
+            '--tw-prose-headings': theme('colors.text.primary'),
+            '--tw-prose-links': theme('colors.brand.purple'),
+            '--tw-prose-code': theme('colors.brand.purple-light'),
+            '--tw-prose-quote-borders': theme('colors.brand.purple'),
+            
+            h1: {
+              color: 'var(--tw-prose-headings)',
+              fontWeight: '600', // Semi-bold (Clerk spec)
+              letterSpacing: '-0.025em',
+            },
+            h2: {
+              color: 'var(--tw-prose-headings)',
+              fontWeight: '600',
+              marginTop: '2.5em',
+              marginBottom: '1em',
+            },
+            h3: {
+              color: 'var(--tw-prose-headings)',
+              fontWeight: '600',
+              marginTop: '2em',
+              marginBottom: '0.75em',
+            },
+            a: {
+              color: 'var(--tw-prose-links)',
+              textDecoration: 'none',
+              transition: 'color 0.2s',
+              '&:hover': {
+                color: theme('colors.brand.purple-light'),
+                textDecoration: 'underline',
+              },
+            },
+            code: {
+              color: 'var(--tw-prose-code)',
+              backgroundColor: theme('colors.bg.elevated'),
+              borderRadius: '0.25rem',
+              padding: '0.125rem 0.375rem',
+              fontWeight: '500',
+            },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
+            blockquote: {
+              borderLeftColor: 'var(--tw-prose-quote-borders)',
+              backgroundColor: theme('colors.bg.subtle'),
+              padding: '0.5rem 1rem',
+              borderRadius: '0 0.25rem 0.25rem 0',
+              fontStyle: 'normal',
+            },
+          },
+        },
+      }),
     },
   },
   plugins: [

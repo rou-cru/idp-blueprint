@@ -19,122 +19,27 @@
 <svelte:element
   this={Component}
   href={isLink ? href : undefined}
-  class="card card-hover"
-  class:card-link={isLink}
+  class="group block p-6 rounded-xl h-full bg-bg-elevated border border-border-default transition-all duration-200 ease-out
+    {isLink ? 'no-underline cursor-pointer hover:border-border-hover hover:bg-bg-subtle hover:-translate-y-0.5 hover:shadow-card-hover' : ''}"
 >
-  <div class="card-inner">
+  <div class="flex flex-col gap-4 h-full">
     {#if icon}
-      <div class="card-icon">
+      <div class="flex items-center justify-center flex-shrink-0 w-10 h-10 bg-bg-subtle border border-border-subtle rounded-lg text-text-primary">
         <Icon icon={icon} width="24" height="24" />
       </div>
     {/if}
 
-    <div class="card-content">
-      <h3 class="card-title">
+    <div class="flex flex-col gap-2 flex-1">
+      <h3 class="flex items-center gap-2 m-0 text-base font-semibold text-text-primary tracking-tight">
         {title}
         {#if isLink}
-          <Icon icon="lucide:arrow-right" width="16" height="16" class="card-arrow" />
+          <Icon icon="lucide:arrow-right" width="16" height="16" class="opacity-0 -translate-x-1 text-text-secondary transition-all duration-200 ease-out group-hover:opacity-100 group-hover:translate-x-0" />
         {/if}
       </h3>
 
-      <div class="card-description">
+      <div class="text-sm leading-relaxed text-text-secondary [&_p]:m-0 [&_p+p]:mt-2 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_code]:bg-bg-subtle [&_code]:border [&_code]:border-border-subtle [&_code]:text-text-primary">
         {@render children?.default?.({})}
       </div>
     </div>
   </div>
 </svelte:element>
-
-<style>
-  .card {
-    display: block;
-    background: rgb(23 23 23);
-    border: 1px solid rgb(38 38 38);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    transition: all 0.2s ease;
-  }
-
-  .card-link {
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .card-link:hover {
-    border-color: rgba(108, 71, 255, 0.5);
-    background: rgb(31 31 31);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(108, 71, 255, 0.1);
-  }
-
-  .card-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    height: 100%;
-  }
-
-  .card-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    background: rgba(108, 71, 255, 0.1);
-    border: 1px solid rgba(108, 71, 255, 0.2);
-    border-radius: 0.75rem;
-    color: rgb(139 109 255);
-    flex-shrink: 0;
-  }
-
-  .card-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-  }
-
-  .card-title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: rgb(250 250 250);
-    margin: 0;
-    letter-spacing: -0.02em;
-  }
-
-  .card-title :global(.card-arrow) {
-    opacity: 0;
-    transition: all 0.2s ease;
-    transform: translateX(-4px);
-    color: rgb(139 109 255);
-  }
-
-  .card-link:hover .card-title :global(.card-arrow) {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .card-description {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: rgb(163 163 163);
-  }
-
-  .card-description :global(p) {
-    margin: 0;
-  }
-
-  .card-description :global(p + p) {
-    margin-top: 0.5rem;
-  }
-
-  .card-description :global(code) {
-    background: rgb(10 10 10);
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.8125rem;
-    color: rgb(139 109 255);
-  }
-</style>

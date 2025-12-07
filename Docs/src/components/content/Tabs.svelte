@@ -4,15 +4,13 @@
     value: string;
   }
 
-  const props = $props<{
+  interface Props {
     tabs: Tab[];
     defaultTab?: string;
     children?: { default?: (args: { activeTab: string }) => unknown };
-  }>();
+  }
 
-  const tabs = $derived(props.tabs);
-  const defaultTab = $derived(props.defaultTab);
-  const children = $derived(props.children);
+  let { tabs, defaultTab, children }: Props = $props();
 
   let activeTab = $state(defaultTab || tabs[0]?.value || '');
 
@@ -21,12 +19,14 @@
   }
 </script>
 
-<div class="tabs-container">
-  <div class="tabs-list" role="tablist">
+<div class="my-8 rounded-xl overflow-hidden border border-border-default bg-bg-elevated">
+  <div class="flex gap-1 p-2 overflow-x-auto bg-bg-base border-b border-border-default scrollbar-thin scrollbar-thumb-ui-scrollbar-thumb scrollbar-track-transparent" role="tablist">
     {#each tabs as tab}
       <button
-        class="tab"
-        class:active={activeTab === tab.value}
+        class="flex-shrink-0 px-3 py-1.5 text-xs font-medium text-text-secondary bg-transparent border-0 rounded-md cursor-pointer transition-all duration-200 whitespace-nowrap hover:text-text-primary hover:bg-bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2 focus-visible:ring-offset-bg-base"
+        class:text-text-primary={activeTab === tab.value}
+        class:bg-bg-active={activeTab === tab.value}
+        class:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]={activeTab === tab.value}
         role="tab"
         aria-selected={activeTab === tab.value}
         onclick={() => handleTabClick(tab.value)}
@@ -36,85 +36,7 @@
     {/each}
   </div>
 
-  <div class="tabs-content">
+  <div class="p-6 [&_pre]:m-0 [&_>_*:first-child]:mt-0 [&_>_*:last-child]:mb-0">
     {@render children?.default?.({ activeTab })}
   </div>
 </div>
-
-<style>
-  .tabs-container {
-    margin: 2rem 0;
-    border: 1px solid rgb(38 38 38);
-    border-radius: 1rem;
-    overflow: hidden;
-    background: rgb(23 23 23);
-  }
-
-  .tabs-list {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid rgb(38 38 38);
-    background: rgb(10 10 10);
-    padding: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: thin;
-  }
-
-  .tabs-list::-webkit-scrollbar {
-    height: 0.25rem;
-  }
-
-  .tabs-list::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .tabs-list::-webkit-scrollbar-thumb {
-    background: rgb(64 64 64);
-    border-radius: 0.25rem;
-  }
-
-  .tab {
-    flex-shrink: 0;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: rgb(163 163 163);
-    background: transparent;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-  }
-
-  .tab:hover {
-    color: rgb(250 250 250);
-    background: rgb(31 31 31);
-  }
-
-  .tab.active {
-    color: rgb(250 250 250);
-    background: rgb(108 71 255);
-  }
-
-  .tab:focus-visible {
-    outline: 2px solid rgb(108 71 255);
-    outline-offset: 2px;
-  }
-
-  .tabs-content {
-    padding: 1.5rem;
-  }
-
-  .tabs-content :global(pre) {
-    margin: 0;
-  }
-
-  .tabs-content :global(> *:first-child) {
-    margin-top: 0;
-  }
-
-  .tabs-content :global(> *:last-child) {
-    margin-bottom: 0;
-  }
-</style>

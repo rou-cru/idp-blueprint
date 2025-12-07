@@ -48,22 +48,22 @@
   });
 </script>
 
-<nav aria-label="Breadcrumb" class="breadcrumbs">
-  <ol class="breadcrumb-list">
+<nav aria-label="Breadcrumb" class="py-3 mb-6 border-b border-border-default">
+  <ol class="flex flex-wrap items-center gap-2 list-none p-0 m-0 text-sm leading-tight">
     {#each breadcrumbs as crumb, index (crumb.href)}
-      <li class="breadcrumb-item">
+      <li class="flex items-center gap-2 group">
         {#if crumb.isCurrentPage}
-          <span class="breadcrumb-current" aria-current="page">
+          <span class="text-text-primary font-medium sm:block {index > 0 && index < breadcrumbs.length - 1 ? 'hidden sm:block' : ''}" aria-current="page">
             {crumb.label}
           </span>
         {:else}
-          <a href={crumb.href} class="breadcrumb-link">
+          <a href={crumb.href} class="text-text-tertiary no-underline transition-colors duration-200 relative hover:text-brand-purple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple focus-visible:ring-offset-2 focus-visible:rounded sm:block {index > 0 && index < breadcrumbs.length - 1 ? 'hidden sm:block' : ''}">
             {crumb.label}
           </a>
         {/if}
 
         {#if index < breadcrumbs.length - 1}
-          <span class="breadcrumb-separator" aria-hidden="true">
+          <span class="flex items-center text-text-tertiary sm:flex {index > 0 && index < breadcrumbs.length - 1 ? 'hidden sm:flex' : ''}" aria-hidden="true">
             <svg
               width="16"
               height="16"
@@ -85,69 +85,3 @@
     {/each}
   </ol>
 </nav>
-
-<style>
-  .breadcrumbs {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--color-dark-800);
-    margin-bottom: 1.5rem;
-  }
-
-  .breadcrumb-list {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-  }
-
-  .breadcrumb-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .breadcrumb-link {
-    color: var(--color-dark-400);
-    text-decoration: none;
-    transition: color 0.2s ease;
-    position: relative;
-  }
-
-  .breadcrumb-link:hover {
-    color: var(--color-brand-purple);
-  }
-
-  .breadcrumb-link:focus-visible {
-    outline: 2px solid var(--color-brand-purple);
-    outline-offset: 2px;
-    border-radius: 0.25rem;
-  }
-
-  .breadcrumb-current {
-    color: var(--color-dark-100);
-    font-weight: 500;
-  }
-
-  .breadcrumb-separator {
-    display: flex;
-    align-items: center;
-    color: var(--color-dark-600);
-  }
-
-  /* Responsive: Hide breadcrumb labels on small screens except first and last */
-  @media (max-width: 640px) {
-    .breadcrumb-item:not(:first-child):not(:last-child) .breadcrumb-link,
-    .breadcrumb-item:not(:first-child):not(:last-child) .breadcrumb-current {
-      display: none;
-    }
-
-    .breadcrumb-item:not(:first-child):not(:last-child) .breadcrumb-separator {
-      display: none;
-    }
-  }
-</style>

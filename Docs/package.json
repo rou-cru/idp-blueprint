@@ -28,6 +28,7 @@
     "astro-seo": "^0.8.4",
     "marked": "^17.0.1",
     "mermaid": "^11.12.1",
+    "nanostores": "^1.1.0",
     "sharp": "^0.34.2"
   },
   "devDependencies": {

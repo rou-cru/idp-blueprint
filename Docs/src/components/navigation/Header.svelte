@@ -2,20 +2,13 @@
   import Icon from '@iconify/svelte';
   import Search from './Search.svelte';
   import { onMount } from 'svelte';
-
-  interface Props {
-    onMenuToggle?: () => void;
-    isMobileMenuOpen?: boolean;
-  }
-
-  let { onMenuToggle, isMobileMenuOpen = false }: Props = $props();
+  import { siteConfig } from '../../lib/site-config';
+  import { isMobileMenuOpen, toggleMobileMenu } from '../../stores/ui';
 
   let searchOpen = $state(false);
 
   function handleMenuToggle() {
-    if (onMenuToggle) {
-      onMenuToggle();
-    }
+    toggleMobileMenu();
   }
 
   function handleSearch() {
@@ -43,28 +36,28 @@
   });
 </script>
 
-<header class="header">
-  <div class="header-container">
+<header class="fixed top-0 left-0 right-0 z-50 h-header-h bg-ui-backdrop backdrop-blur-header border-b border-border-default">
+  <div class="flex items-center justify-between h-full w-full px-6">
     <!-- Mobile menu button -->
     <button
-      class="mobile-menu-button"
+      class="flex items-center justify-center p-2 lg:hidden text-text-secondary rounded-md transition-all duration-200 bg-transparent border-0 cursor-pointer hover:text-text-primary hover:bg-bg-hover"
       onclick={handleMenuToggle}
       aria-label="Toggle menu"
-      aria-expanded={isMobileMenuOpen}
+      aria-expanded={$isMobileMenuOpen}
     >
-      <Icon icon={isMobileMenuOpen ? "lucide:x" : "lucide:menu"} width="24" height="24" />
+      <Icon icon={$isMobileMenuOpen ? "lucide:x" : "lucide:menu"} width="24" height="24" />
     </button>
 
     <!-- Logo and title -->
-    <a href="/" class="logo">
-      <span class="logo-text">IDP Blueprint</span>
+    <a href="/" class="flex items-center gap-3 text-lg font-semibold text-text-primary no-underline transition-opacity duration-200 hover:opacity-90">
+      <span class="tracking-tight">{siteConfig.title}</span>
     </a>
 
     <!-- Navigation actions -->
-    <div class="header-actions">
+    <div class="flex items-center gap-2">
       <!-- Search button -->
       <button
-        class="action-button"
+        class="flex items-center justify-center p-2 text-text-secondary rounded-md transition-all duration-200 bg-transparent border-0 cursor-pointer no-underline hover:text-text-primary hover:bg-bg-hover"
         onclick={handleSearch}
         aria-label="Search documentation"
         title="Search (⌘K)"
@@ -74,8 +67,8 @@
 
       <!-- GitHub link -->
       <a
-        href="https://github.com/rou-cru/idp-blueprint"
-        class="action-button"
+        href={siteConfig.social.github}
+        class="flex items-center justify-center p-2 text-text-secondary rounded-md transition-all duration-200 bg-transparent border-0 cursor-pointer no-underline hover:text-text-primary hover:bg-bg-hover"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View on GitHub"
@@ -90,94 +83,3 @@
 
 <!-- Search Component -->
 <Search bind:open={searchOpen} onClose={handleSearchClose} />
-
-<style>
-  .header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgb(38 38 38);
-    height: 4rem;
-  }
-
-  .header-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 100%;
-    height: 100%;
-    padding: 0 1rem;
-  }
-
-  .mobile-menu-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-    color: rgb(163 163 163);
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .mobile-menu-button:hover {
-    color: rgb(250 250 250);
-    background: rgb(23 23 23);
-  }
-
-  @media (min-width: 1024px) {
-    .mobile-menu-button {
-      display: none;
-    }
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.125rem;
-    color: rgb(250 250 250);
-    transition: color 0.2s;
-  }
-
-  .logo:hover {
-    color: rgb(139 109 255);
-  }
-
-  .logo-text {
-    letter-spacing: -0.02em;
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .action-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-    color: rgb(163 163 163);
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    text-decoration: none;
-  }
-
-  .action-button:hover {
-    color: rgb(250 250 250);
-    background: rgb(23 23 23);
-  }
-</style>

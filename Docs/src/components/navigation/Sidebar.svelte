@@ -1,77 +1,164 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
-  import type { NavSection } from '../../lib/navigation';
+  import type { NavSection, NavItem } from '../../lib/navigation';
+  import { isMobileMenuOpen, closeMobileMenu } from '../../stores/ui';
+  import { currentContext } from '../../stores/context';
+  import ContextSwitcher from './ContextSwitcher.svelte';
 
   interface Props {
     currentPath: string;
     sidebarConfig: NavSection[];
-    isMobileOpen?: boolean;
-    onMobileClose?: () => void;
   }
 
-  let { currentPath, sidebarConfig, isMobileOpen = false, onMobileClose }: Props = $props();
+  let { currentPath, sidebarConfig }: Props = $props();
 
-  // Track which sections are expanded
-  let expandedSections = $state(new Set<string>(['Getting Started']));
-
-  function toggleSection(sectionLabel: string) {
-    if (expandedSections.has(sectionLabel)) {
-      expandedSections.delete(sectionLabel);
-    } else {
-      expandedSections.add(sectionLabel);
-    }
-    expandedSections = new Set(expandedSections); // Trigger reactivity
+  // Helper to normalize paths for comparison
+  function normalize(path: string | undefined): string {
+    if (!path) return '';
+    // Remove trailing slash, but preserve root '/'
+    return path.replace(/\/$/, '') || '/';
   }
 
   function isActive(href: string | undefined): boolean {
-    if (!href) return false;
-    // Normalize paths for comparison
-    const normalizedCurrent = currentPath.replace(/\/$/, '') || '/';
-    const normalizedHref = href.replace(/\/$/, '') || '/';
-    return normalizedCurrent === normalizedHref;
+    const normHref = normalize(href);
+    if (!normHref) return false; // Don't match empty hrefs (groups)
+    return normalize(currentPath) === normHref;
+  }
+
+  // Find which section contains the active link to open it by default
+  function getInitialSection(): string | null {
+    const normalizedCurrent = normalize(currentPath);
+    if (!normalizedCurrent) return null;
+    
+    // Recursive check for active item
+    const hasActiveItem = (items: NavItem[]): boolean => {
+      return items.some(item => {
+        const normItemHref = normalize(item.href);
+        if (normItemHref && normItemHref === normalizedCurrent) return true;
+        if (item.items) return hasActiveItem(item.items);
+        return false;
+      });
+    };
+
+    for (const section of sidebarConfig) {
+      if (hasActiveItem(section.items)) return section.label;
+    }
+    // Don't default to the first section blindly, return null if no match
+    return null;
+  }
+
+  // Track the single expanded section
+  let expandedSection = $state<string | null>(getInitialSection());
+
+  function toggleSection(sectionLabel: string) {
+    if (expandedSection === sectionLabel) {
+      expandedSection = null;
+    } else {
+      expandedSection = sectionLabel;
+    }
   }
 
   function handleLinkClick() {
-    if (onMobileClose) {
-      onMobileClose();
-    }
+    closeMobileMenu();
   }
+
+  // Filter items based on current context
+  function filterItemsByContext(items: NavItem[]): NavItem[] {
+    if ($currentContext === 'all') return items;
+
+    return items
+      .map(item => {
+        // Check if item matches current context
+        const matchesContext = !item.contexts || item.contexts.includes($currentContext) || item.contexts.includes('all');
+
+        if (!matchesContext) return null;
+
+        // If item has children, filter them recursively
+        if (item.items) {
+          const filteredChildren = filterItemsByContext(item.items);
+          if (filteredChildren.length === 0) return null;
+          return { ...item, items: filteredChildren };
+        }
+
+        return item;
+      })
+      .filter((item): item is NavItem => item !== null);
+  }
+
+  // Filtered sidebar config based on context
+  $: filteredSidebarConfig = sidebarConfig.map(section => ({
+    ...section,
+    items: filterItemsByContext(section.items)
+  })).filter(section => section.items.length > 0);
 </script>
 
-<aside class="sidebar" class:mobile-open={isMobileOpen}>
-  <nav class="sidebar-nav">
-    {#each sidebarConfig as section}
-      <div class="nav-section">
+{#snippet renderItems(items: NavItem[], depth: number = 0)}
+  <div class="flex flex-col gap-0.5">
+    {#each items as item}
+      {#if item.items && item.items.length > 0}
+        <!-- Group / Folder -->
+        <div class="flex flex-col">
+          <!-- Group Label -->
+          <div 
+            class="px-3 py-1.5 mt-2 mb-1 text-[0.65rem] font-bold uppercase tracking-wider text-text-tertiary select-none"
+            style="padding-left: {depth === 0 ? '0.75rem' : `${depth * 0.75 + 0.75}rem`}"
+          >
+            {item.label}
+          </div>
+          <!-- Recursive Children -->
+          {@render renderItems(item.items, depth + 1)}
+        </div>
+      {:else}
+        <!-- Leaf Link -->
+        <a
+          href={item.href}
+          class="block py-1.5 rounded-md text-sm text-text-secondary no-underline transition-all duration-200 border border-transparent hover:text-text-primary hover:bg-bg-hover"
+          class:text-text-primary={isActive(item.href)}
+          class:bg-bg-active={isActive(item.href)}
+          class:font-medium={isActive(item.href)}
+          style="padding-left: {depth === 0 ? '0.75rem' : `${depth * 0.75 + 0.75}rem`}; padding-right: 0.75rem;"
+          onclick={handleLinkClick}
+        >
+          {item.label}
+        </a>
+      {/if}
+    {/each}
+  </div>
+{/snippet}
+
+<aside
+  class="fixed left-0 z-40 -translate-x-full lg:translate-x-0 transition-transform duration-300 bg-bg-base border-r border-border-default overflow-y-auto top-header-h h-[calc(100vh-theme(spacing.header-h))] w-sidebar-w scrollbar-thin scrollbar-thumb-ui-scrollbar-thumb scrollbar-track-transparent hover:scrollbar-thumb-ui-scrollbar-hover"
+  class:translate-x-0={$isMobileMenuOpen}
+>
+  <div class="pt-6">
+    <ContextSwitcher />
+  </div>
+
+  <nav class="flex flex-col gap-2 px-6 pb-20">
+    {#each filteredSidebarConfig as section}
+      <div class="flex flex-col">
         <button
-          class="section-header"
-          class:expanded={expandedSections.has(section.label)}
+          class="group flex items-center justify-between w-full px-3 py-2 rounded-md text-xs font-semibold uppercase tracking-wider text-text-secondary bg-transparent border-0 cursor-pointer transition-all duration-200 text-left hover:text-text-primary hover:bg-bg-hover"
+          class:text-text-primary={expandedSection === section.label}
           onclick={() => toggleSection(section.label)}
-          aria-expanded={expandedSections.has(section.label)}
+          aria-expanded={expandedSection === section.label}
         >
           <span class="section-label">{section.label}</span>
           <Icon
             icon="lucide:chevron-down"
             width="16"
             height="16"
-            class="chevron"
+            class="transition-transform duration-200 text-text-tertiary group-hover:text-text-secondary {expandedSection === section.label ? 'rotate-180' : ''}"
           />
         </button>
 
-        {#if expandedSections.has(section.label)}
-          <div class="section-items">
+        {#if expandedSection === section.label}
+          <div class="mt-1 mb-3">
             {#if section.items.length === 0}
-              <p class="empty-message">Coming soon...</p>
+              <p class="px-3 py-2 text-xs text-text-tertiary italic">Coming soon...</p>
             {:else}
-              {#each section.items as item}
-                <a
-                  href={item.href}
-                  class="nav-link"
-                  class:active={isActive(item.href)}
-                  onclick={handleLinkClick}
-                >
-                  {item.label}
-                </a>
-              {/each}
+              <!-- Start Recursion -->
+              {@render renderItems(section.items, 0)}
             {/if}
           </div>
         {/if}
@@ -81,164 +168,13 @@
 </aside>
 
 <!-- Mobile overlay -->
-{#if isMobileOpen}
+{#if $isMobileMenuOpen}
   <div
-    class="sidebar-overlay"
-    onclick={onMobileClose}
-    onkeydown={(e) => e.key === 'Escape' && onMobileClose?.()}
+    class="fixed inset-0 z-30 lg:hidden bg-ui-backdrop-solid backdrop-blur-sm top-header-h"
+    onclick={closeMobileMenu}
+    onkeydown={(e) => e.key === 'Escape' && closeMobileMenu()}
     role="button"
     tabindex="0"
     aria-label="Close sidebar"
   ></div>
 {/if}
-
-<style>
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 4rem;
-    height: calc(100vh - 4rem);
-    width: 16rem;
-    background: rgb(10 10 10);
-    border-right: 1px solid rgb(38 38 38);
-    overflow-y: auto;
-    z-index: 40;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-
-  @media (min-width: 1024px) {
-    .sidebar {
-      transform: translateX(0);
-    }
-  }
-
-  .sidebar.mobile-open {
-    transform: translateX(0);
-  }
-
-  .sidebar-nav {
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .nav-section {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0.625rem 0.75rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: rgb(163 163 163);
-    background: transparent;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-  }
-
-  .section-header:hover {
-    color: rgb(250 250 250);
-    background: rgb(23 23 23);
-  }
-
-  .section-label {
-    letter-spacing: -0.01em;
-  }
-
-  .section-header :global(.chevron) {
-    transition: transform 0.2s;
-    color: rgb(115 115 115);
-  }
-
-  .section-header.expanded :global(.chevron) {
-    transform: rotate(180deg);
-  }
-
-  .section-items {
-    display: flex;
-    flex-direction: column;
-    gap: 0.125rem;
-    padding-left: 0.5rem;
-    margin-top: 0.25rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .nav-link {
-    display: block;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
-    color: rgb(163 163 163);
-    text-decoration: none;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-    border-left: 2px solid transparent;
-  }
-
-  .nav-link:hover {
-    color: rgb(250 250 250);
-    background: rgb(23 23 23);
-  }
-
-  .nav-link.active {
-    color: rgb(139 109 255);
-    background: rgba(108, 71, 255, 0.1);
-    border-left-color: rgb(108 71 255);
-    font-weight: 500;
-  }
-
-  .empty-message {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-    color: rgb(115 115 115);
-    font-style: italic;
-  }
-
-  /* Mobile overlay */
-  .sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    top: 4rem;
-    z-index: 39;
-    background: rgba(10, 10, 10, 0.8);
-    backdrop-filter: blur(4px);
-  }
-
-  @media (min-width: 1024px) {
-    .sidebar-overlay {
-      display: none;
-    }
-  }
-
-  /* Custom scrollbar for sidebar */
-  .sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(64 64 64) rgb(23 23 23);
-  }
-
-  .sidebar::-webkit-scrollbar {
-    width: 0.375rem;
-  }
-
-  .sidebar::-webkit-scrollbar-track {
-    background: rgb(23 23 23);
-  }
-
-  .sidebar::-webkit-scrollbar-thumb {
-    background: rgb(64 64 64);
-    border-radius: 0.25rem;
-  }
-
-  .sidebar::-webkit-scrollbar-thumb:hover {
-    background: rgb(82 82 82);
-  }
-</style>

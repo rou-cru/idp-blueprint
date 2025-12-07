@@ -78,16 +78,18 @@
 </script>
 
 {#if headings.length > 0}
-  <aside class="toc-container">
-    <nav class="toc">
-      <h2 class="toc-title">On this page</h2>
-      <ul class="toc-list">
+  <aside class="hidden xl:block h-full">
+    <nav class="flex flex-col gap-4">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-text-tertiary">On this page</h2>
+      <ul class="flex flex-col gap-1 list-none p-0 m-0">
         {#each headings as heading}
-          <li class="toc-item {getIndentClass(heading.depth)}">
+          <li class="{getIndentClass(heading.depth)}">
             <a
               href={`#${heading.slug}`}
-              class="toc-link"
-              class:active={activeId === heading.slug}
+              class="block py-1 text-sm text-text-secondary no-underline transition-all duration-200 border-l-2 border-transparent pl-3 -ml-3 hover:text-text-primary"
+              class:text-brand-purple-light={activeId === heading.slug}
+              class:border-l-brand-purple={activeId === heading.slug}
+              class:font-medium={activeId === heading.slug}
               onclick={(e) => handleClick(heading.slug, e)}
             >
               {heading.text}
@@ -98,112 +100,3 @@
     </nav>
   </aside>
 {/if}
-
-<style>
-  .toc-container {
-    display: none;
-  }
-
-  @media (min-width: 1280px) {
-    .toc-container {
-      display: block;
-      position: fixed;
-      right: 0;
-      top: 4rem;
-      width: 14rem;
-      height: calc(100vh - 4rem);
-      overflow-y: auto;
-      border-left: 1px solid rgb(38 38 38);
-      padding: 1.5rem 1rem;
-    }
-  }
-
-  .toc {
-    position: sticky;
-    top: 1rem;
-  }
-
-  .toc-title {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: rgb(115 115 115);
-    margin-bottom: 1rem;
-  }
-
-  .toc-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.375rem;
-  }
-
-  .toc-list li {
-    line-height: 1.4;
-  }
-
-  .toc-link {
-    display: block;
-    font-size: 0.8125rem;
-    color: rgb(163 163 163);
-    text-decoration: none;
-    transition: color 0.2s;
-    padding: 0.25rem 0;
-    border-left: 2px solid transparent;
-    padding-left: 0.75rem;
-    margin-left: -0.75rem;
-  }
-
-  .toc-link:hover {
-    color: rgb(250 250 250);
-  }
-
-  .toc-link.active {
-    color: rgb(139 109 255);
-    border-left-color: rgb(108 71 255);
-    font-weight: 500;
-  }
-
-  /* Indentation classes */
-  .toc-item.pl-0 {
-    padding-left: 0;
-  }
-
-  .toc-item.pl-3 {
-    padding-left: 0.75rem;
-  }
-
-  .toc-item.pl-6 {
-    padding-left: 1.5rem;
-  }
-
-  .toc-item.pl-9 {
-    padding-left: 2.25rem;
-  }
-
-  /* Custom scrollbar */
-  .toc-container {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(64 64 64) transparent;
-  }
-
-  .toc-container::-webkit-scrollbar {
-    width: 0.375rem;
-  }
-
-  .toc-container::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .toc-container::-webkit-scrollbar-thumb {
-    background: rgb(64 64 64);
-    border-radius: 0.25rem;
-  }
-
-  .toc-container::-webkit-scrollbar-thumb:hover {
-    background: rgb(82 82 82);
-  }
-</style>

@@ -9,7 +9,7 @@
         "--context",
         "ide-assistant",
         "--project",
-        "${workspaceFolder}"
+        "/home/rc/idp-blueprint"
       ]
     },
     "repomix": {
@@ -21,7 +21,9 @@
     },
     "react-guide": {
       "command": "npx",
-      "args": ["@mrnitro360/react-native-mcp-guide@1.1.0"]
+      "args": [
+        "@mrnitro360/react-native-mcp-guide@1.1.0"
+      ]
     },
     "sequential-thinking": {
       "command": "npx",
@@ -47,7 +49,7 @@
         "https://mcp.docs.astro.build/mcp"
       ]
     },
-   "grafana": {
+    "grafana": {
       "command": "mcp-grafana",
       "args": [],
       "env": {
@@ -55,6 +57,15 @@
         "GRAFANA_USERNAME": "admin",
         "GRAFANA_PASSWORD": "graf"
       }
+    },
+    "svelte": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sveltejs/mcp"
+      ],
+      "env": {}
     }
   }
 }

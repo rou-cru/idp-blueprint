@@ -13,43 +13,43 @@
   const config = {
     tip: {
       icon: 'lucide:lightbulb',
-      bgClass: 'bg-info/10',
-      borderClass: 'border-info',
-      iconClass: 'text-info',
-      titleClass: 'text-info',
+      bgClass: 'bg-success/10',
+      borderClass: 'border-success/30',
+      iconClass: 'text-success',
+      titleClass: 'text-success',
     },
     caution: {
       icon: 'lucide:alert-triangle',
       bgClass: 'bg-warning/10',
-      borderClass: 'border-warning',
+      borderClass: 'border-warning/30',
       iconClass: 'text-warning',
       titleClass: 'text-warning',
     },
     danger: {
       icon: 'lucide:alert-octagon',
       bgClass: 'bg-danger/10',
-      borderClass: 'border-danger',
+      borderClass: 'border-danger/30',
       iconClass: 'text-danger',
       titleClass: 'text-danger',
     },
     note: {
       icon: 'lucide:info',
-      bgClass: 'bg-dark-900/50',
-      borderClass: 'border-dark-700',
-      iconClass: 'text-dark-400',
-      titleClass: 'text-dark-200',
+      bgClass: 'bg-bg-subtle',
+      borderClass: 'border-border-emphasis',
+      iconClass: 'text-text-muted',
+      titleClass: 'text-text-secondary',
     },
     warning: {
       icon: 'lucide:alert-triangle',
       bgClass: 'bg-warning/10',
-      borderClass: 'border-warning',
+      borderClass: 'border-warning/30',
       iconClass: 'text-warning',
       titleClass: 'text-warning',
     },
     info: {
       icon: 'lucide:info',
       bgClass: 'bg-info/10',
-      borderClass: 'border-info',
+      borderClass: 'border-info/30',
       iconClass: 'text-info',
       titleClass: 'text-info',
     },
@@ -86,73 +86,53 @@
 
 <style>
   .callout {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem;
-    border-left-width: 3px;
-    border-radius: 0.75rem;
-    margin: 1.5rem 0;
+    @apply flex flex-col gap-3 p-4 my-6;
+    @apply rounded-xl border-l-[3px];
   }
 
   .callout-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+    @apply flex items-center gap-3;
   }
 
   .callout-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+    @apply flex items-center justify-center flex-shrink-0;
   }
 
   .callout-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin: 0;
-    letter-spacing: -0.01em;
+    @apply text-sm font-semibold m-0 tracking-tight;
   }
 
   .callout-content {
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: rgb(163 163 163);
+    @apply text-sm leading-relaxed text-text-secondary;
   }
 
   .callout-content :global(p) {
-    margin: 0;
+    @apply m-0;
   }
 
   .callout-content :global(p + p) {
-    margin-top: 0.5rem;
+    @apply mt-2;
   }
 
   .callout-content :global(a) {
-    color: rgb(139 109 255);
-    text-decoration: underline;
-    text-decoration-color: rgba(139, 109, 255, 0.3);
+    @apply text-brand-purple-light underline decoration-brand-purple-light/30;
   }
 
   .callout-content :global(a:hover) {
-    text-decoration-color: rgba(139, 109, 255, 0.6);
+    @apply decoration-brand-purple-light/60;
   }
 
   .callout-content :global(code) {
-    background: rgb(23 23 23);
-    padding: 0.125rem 0.375rem;
-    border-radius: 0.25rem;
-    font-size: 0.8125rem;
+    @apply px-1.5 py-0.5 rounded text-xs;
+    @apply bg-bg-subtle;
   }
 
   .callout-content :global(ul),
   .callout-content :global(ol) {
-    margin: 0.5rem 0;
-    padding-left: 1.5rem;
+    @apply my-2 pl-6;
   }
 
   .callout-content :global(li) {
-    margin: 0.25rem 0;
+    @apply my-1;
   }
 </style>

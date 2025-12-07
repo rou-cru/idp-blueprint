@@ -14,9 +14,11 @@ import tailwind from '@astrojs/tailwind';
 import remarkDirective from 'remark-directive';
 import { remarkCallouts } from './src/utils/remark-callouts.ts';
 
+import { siteConfig, isAnalyticsEnabled } from './src/lib/site-config.ts';
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://idp-blueprint.roura.xyz',
+  site: siteConfig.site,
   integrations: [
     // Code highlighting with custom theme
     expressiveCode({
@@ -53,7 +55,7 @@ export default defineConfig({
     robotsTxt(),
     favicons(),
     sitemap(),
-    yeskunallumami({ id: 'placeholder-id' }),
+    ...(isAnalyticsEnabled() ? [yeskunallumami({ id: siteConfig.analytics.umamiId })] : []),
   ],
 
   markdown: {

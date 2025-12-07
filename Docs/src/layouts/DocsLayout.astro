@@ -1,14 +1,12 @@
 ---
-import '../styles/clerk-theme.css';
-import '../styles/typography.css';
-import '../styles/animations.css';
+import '../styles/main.css'; // New minimal CSS for Tailwind directives and fonts
 import Header from '../components/navigation/Header.svelte';
 import Sidebar from '../components/navigation/Sidebar.svelte';
 import TableOfContents from '../components/navigation/TableOfContents.svelte';
 import Breadcrumbs from '../components/navigation/Breadcrumbs.svelte';
 import CodeBlockEnhancer from '../components/ui/CodeBlockEnhancer.astro';
-import { siteConfig, CATEGORY_LABELS, type NavSection } from '../lib/navigation';
-import { getCollection } from 'astro:content';
+import { getSidebarConfig } from '../lib/navigation';
+import { siteConfig, canonicalUrl } from '../lib/site-config';
 
 interface Props {
   title: string;
@@ -20,105 +18,9 @@ const { title, description, headings = [] } = Astro.props;
 
 const pageTitle = title ? `${title} | ${siteConfig.title}` : siteConfig.title;
 const pageDescription = description || siteConfig.description;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const canonicalURL = canonicalUrl(Astro.url.pathname);
 
-// Generate sidebar config dynamically
-async function getSidebarConfig(): Promise<NavSection[]> {
-  const docs = await getCollection('docs');
-  const sections: Record<string, NavSection> = {};
-
-  // Helper to get or create a section
-  const getOrCreateSection = (key: string, label: string, collapsed: boolean = true) => {
-    if (!sections[key]) {
-      sections[key] = {
-        label,
-        collapsed,
-        items: [],
-      };
-    }
-    return sections[key];
-  };
-
-  for (const doc of docs) {
-    if (doc.data.sidebar?.hidden) continue;
-
-    const parts = doc.id.split('/');
-    const topLevel = parts[0];
-    
-    // Skip index page if it's the root index (id: 'index')
-    if (topLevel === 'index') continue;
-
-    const label = doc.data.sidebar?.label || doc.data.title;
-    const order = doc.data.sidebar?.order || 999;
-    const href = `/${doc.slug}`;
-
-    if (topLevel === 'components' && parts.length > 2) {
-      // Handle nested components structure: components/infrastructure/argocd
-      const subCategory = parts[1];
-      const componentsSection = getOrCreateSection('components', CATEGORY_LABELS['components'], true);
-      
-      // Find or create sub-section item
-      let subSectionItem = componentsSection.items.find(item => item.label === CATEGORY_LABELS[subCategory]);
-      if (!subSectionItem) {
-        subSectionItem = {
-          label: CATEGORY_LABELS[subCategory] || subCategory,
-          items: []
-        };
-        componentsSection.items.push(subSectionItem);
-      }
-      
-      if (subSectionItem.items) {
-        // @ts-ignore - Adding temporary order property for sorting
-        subSectionItem.items.push({ label, href, order });
-      }
-    } else {
-      // Standard sections
-      const sectionLabel = CATEGORY_LABELS[topLevel] || topLevel;
-      const section = getOrCreateSection(topLevel, sectionLabel, topLevel !== 'getting-started');
-      // @ts-ignore - Adding temporary order property for sorting
-      section.items.push({ label, href, order });
-    }
-  }
-
-  // Define section order
-  const sectionOrder = [
-    'Getting Started',
-    'Architecture',
-    'Concepts',
-    'Operate',
-    'Components',
-    'Reference'
-  ];
-
-  // Sort sections and items
-  const sortedSections = Object.values(sections).sort((a, b) => {
-    return sectionOrder.indexOf(a.label) - sectionOrder.indexOf(b.label);
-  });
-
-  sortedSections.forEach(section => {
-    // Sort items within sections
-    // @ts-ignore - accessing temporary order property
-    section.items.sort((a, b) => (a.order || 999) - (b.order || 999));
-    
-    // Sort nested items (for components)
-    section.items.forEach(item => {
-      if (item.items) {
-        // @ts-ignore - accessing temporary order property
-        item.items.sort((a, b) => (a.order || 999) - (b.order || 999));
-        // Clean up temporary order property
-        item.items.forEach(subItem => {
-            // @ts-ignore
-            delete subItem.order
-        });
-      }
-      // @ts-ignore
-      delete item.order;
-    });
-  });
-
-  return sortedSections;
-}
-
+// Generate sidebar config dynamically using shared logic
 const sidebarConfig = await getSidebarConfig();
 ---
 
@@ -136,46 +38,50 @@ const sidebarConfig = await getSidebarConfig();
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   </head>
   <body class="bg-bg-base text-text-primary antialiased min-h-screen flex flex-col">
     <Header client:load />
-    
-    <div class="flex-1 flex max-w-[1600px] mx-auto w-full">
+
+    <div class="flex-1 flex max-w-container-max mx-auto w-full pt-header-h">
       <Sidebar client:load sidebarConfig={sidebarConfig} currentPath={Astro.url.pathname} />
-      
-      <main class="flex-1 min-w-0 py-8 px-6 lg:px-12">
-        <div class="max-w-4xl mx-auto">
+
+      <main class="flex-1 min-w-0 py-8 px-6 lg:px-12 lg:ml-sidebar-w">
+        <div class="max-w-5xl mx-auto">
           <Breadcrumbs currentPath={Astro.url.pathname} />
-          <slot />
+          
+          {/* Render title automatically except on homepage which has its own hero */}
+          {Astro.url.pathname !== '/' && title && (
+            <h1 class="text-4xl font-bold tracking-tight text-text-primary mb-6">{title}</h1>
+          )}
+          
+          {Astro.url.pathname !== '/' ? (
+            <div class="prose prose-slate dark:prose-invert max-w-none 
+              prose-headings:scroll-mt-20 
+              prose-headings:font-semibold 
+              prose-headings:text-text-primary
+              prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 
+              prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+              prose-p:text-text-secondary prose-p:leading-7
+              prose-li:text-text-secondary
+              prose-strong:text-text-primary
+              prose-code:text-brand-purple-light prose-code:bg-bg-elevated prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+              prose-a:text-brand-purple prose-a:no-underline hover:prose-a:text-brand-purple-light hover:prose-a:underline
+              prose-blockquote:border-l-brand-purple prose-blockquote:bg-bg-subtle prose-blockquote:px-4 prose-blockquote:py-1 prose-blockquote:rounded-r
+              prose-img:rounded-lg prose-img:border prose-img:border-border-default">
+              <slot />
+            </div>
+          ) : (
+            <slot />
+          )}
         </div>
       </main>
 
-      <aside class="hidden xl:block w-64 py-8 px-6 sticky top-[3.5rem] h-[calc(100vh-3.5rem)] overflow-y-auto">
+      <aside class="hidden xl:block w-toc-w py-8 px-6 sticky top-header-h h-[calc(100vh-theme(spacing.header-h))] overflow-y-auto">
         <TableOfContents headings={headings} client:idle />
       </aside>
     </div>
 
-    <script>
-      // Mobile menu logic
-      const menuBtn = document.getElementById('menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
-      const closeMenuBtn = document.getElementById('close-menu-btn');
-
-      function toggleMenu() {
-        const isHidden = mobileMenu?.classList.contains('hidden');
-        if (isHidden) {
-          mobileMenu?.classList.remove('hidden');
-          document.body.style.overflow = 'hidden';
-        } else {
-          mobileMenu?.classList.add('hidden');
-          document.body.style.overflow = '';
-        }
-      }
-
-      menuBtn?.addEventListener('click', toggleMenu);
-      closeMenuBtn?.addEventListener('click', toggleMenu);
-    </script>
     <CodeBlockEnhancer />
   </body>
 </html>

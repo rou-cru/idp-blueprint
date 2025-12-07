@@ -15,13 +15,18 @@
   let selectedIndex = $state(0);
   let pagefind: any = $state(null);
 
+  const pagefindScript = (() => {
+    const base = import.meta.env.BASE_URL || '/';
+    return `${base.replace(/\/$/, '')}/pagefind/pagefind.js`;
+  })();
+
   async function loadPagefind() {
     if (!import.meta.env.PROD || typeof window === 'undefined') return null;
     if (pagefind) return pagefind;
 
     await new Promise<void>((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = '/pagefind/pagefind.js';
+      script.src = pagefindScript;
       script.async = true;
       script.onload = () => resolve();
       script.onerror = () => reject(new Error('Failed to load pagefind.js'));
@@ -113,16 +118,16 @@
 {#if open}
   <!-- Modal Overlay -->
   <div
-    class="search-overlay"
+    class="fixed inset-0 bg-ui-backdrop-solid/75 backdrop-blur-sm z-50 animate-in fade-in duration-200"
     onclick={handleClose}
     aria-hidden="true"
   ></div>
 
   <!-- Search Modal -->
-  <div class="search-modal" role="dialog" aria-modal="true" aria-labelledby="search-title">
-    <div class="search-header">
+  <div class="fixed top-[20%] left-1/2 -translate-x-1/2 w-[90%] max-w-2xl max-h-[60vh] bg-bg-elevated border border-border-default rounded-xl shadow-2xl z-[51] flex flex-col animate-in zoom-in-95 duration-200 md:max-h-[70vh]" role="dialog" aria-modal="true" aria-labelledby="search-title">
+    <div class="flex items-center gap-3 p-4 border-b border-border-default">
       <svg
-        class="search-icon"
+        class="flex-shrink-0 text-text-tertiary"
         width="20"
         height="20"
         viewBox="0 0 20 20"
@@ -144,12 +149,12 @@
         onkeydown={handleKeydown}
         type="text"
         placeholder="Search documentation..."
-        class="search-input"
+        class="flex-1 bg-transparent border-0 outline-none text-text-primary text-base placeholder:text-text-tertiary"
         id="search-title"
         aria-label="Search documentation"
       />
 
-      <button class="search-close" onclick={handleClose} aria-label="Close search">
+      <button class="flex-shrink-0 bg-transparent border-0 text-text-tertiary cursor-pointer p-1 rounded transition-colors duration-200 hover:text-text-primary hover:bg-bg-hover" onclick={handleClose} aria-label="Close search">
         <svg
           width="20"
           height="20"
@@ -170,43 +175,45 @@
 
     <!-- Search Results -->
     {#if query.trim().length > 0}
-      <div class="search-results">
+      <div class="overflow-y-auto max-h-[calc(60vh-5rem)] scrollbar-thin scrollbar-thumb-ui-scrollbar-thumb scrollbar-track-transparent">
         {#if isSearching}
-          <div class="search-loading">
-            <div class="spinner"></div>
+          <div class="flex items-center justify-center gap-3 p-12 text-text-tertiary">
+            <div class="w-6 h-6 border-2 border-border-default border-t-brand-purple rounded-full animate-spin"></div>
             <span>Searching...</span>
           </div>
         {:else if results.length > 0}
-          <ul class="results-list" role="listbox">
+          <ul class="list-none p-0 m-0" role="listbox">
             {#each results as result, index (result.url)}
               <li
-                class="result-item"
-                class:selected={index === selectedIndex}
+                class="border-b border-border-default last:border-0"
+                class:bg-bg-hover={index === selectedIndex}
                 role="option"
                 aria-selected={index === selectedIndex}
               >
                 <button
-                  class="result-button"
+                  class="w-full text-left bg-transparent border-0 border-l-[3px] border-transparent p-4 cursor-pointer transition-all duration-150 block hover:bg-bg-hover hover:border-l-brand-purple"
+                  class:border-l-brand-purple={index === selectedIndex}
                   onclick={() => handleResultClick(result.url)}
                   onmouseenter={() => (selectedIndex = index)}
                 >
-                  <div class="result-title">{result.meta?.title || 'Untitled'}</div>
+                  <div class="text-text-primary font-medium mb-1 text-[0.9375rem]">{result.meta?.title || 'Untitled'}</div>
                   {#if result.excerpt}
-                    <div class="result-excerpt">{@html result.excerpt}</div>
+                    <div class="text-text-tertiary text-sm leading-relaxed mb-2 [&_mark]:bg-brand-purple/20 [&_mark]:text-brand-purple-light [&_mark]:px-1 [&_mark]:rounded-sm">{@html result.excerpt}</div>
                   {/if}
-                  <div class="result-url">{result.url}</div>
+                  <div class="text-text-tertiary text-xs font-mono">{result.url}</div>
                 </button>
               </li>
             {/each}
           </ul>
         {:else}
-          <div class="search-empty">
+          <div class="flex flex-col items-center justify-center p-12 text-center text-text-tertiary">
             <svg
               width="48"
               height="48"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              class="mb-4 opacity-50"
             >
               <path
                 d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4-4"
@@ -216,276 +223,21 @@
                 stroke-linejoin="round"
               />
             </svg>
-            <p>No results found for "<strong>{query}</strong>"</p>
-            <p class="search-hint">Try different keywords or check for typos</p>
+            <p class="my-2">No results found for "<strong class="text-text-primary">{query}</strong>"</p>
+            <p class="text-sm text-text-tertiary">Try different keywords or check for typos</p>
           </div>
         {/if}
       </div>
     {:else}
-      <div class="search-hints">
-        <p class="hint-title">Quick tips:</p>
-        <ul>
-          <li>Use keywords to find what you're looking for</li>
-          <li>Navigate results with arrow keys</li>
-          <li>Press Enter to open a result</li>
-          <li>Press Esc to close</li>
+      <div class="p-6 text-text-tertiary">
+        <p class="font-medium text-text-secondary mb-3">Quick tips:</p>
+        <ul class="list-none p-0 m-0">
+          <li class="py-2 text-sm flex items-center gap-2 before:content-['→'] before:text-brand-purple">Use keywords to find what you're looking for</li>
+          <li class="py-2 text-sm flex items-center gap-2 before:content-['→'] before:text-brand-purple">Navigate results with arrow keys</li>
+          <li class="py-2 text-sm flex items-center gap-2 before:content-['→'] before:text-brand-purple">Press Enter to open a result</li>
+          <li class="py-2 text-sm flex items-center gap-2 before:content-['→'] before:text-brand-purple">Press Esc to close</li>
         </ul>
       </div>
     {/if}
   </div>
 {/if}
-
-<style>
-  .search-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    animation: fadeIn 0.2s ease;
-  }
-
-  .search-modal {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    max-width: 42rem;
-    max-height: 60vh;
-    background: var(--color-dark-900);
-    border: 1px solid var(--color-dark-700);
-    border-radius: 1rem;
-    box-shadow:
-      0 20px 25px -5px rgba(0, 0, 0, 0.5),
-      0 10px 10px -5px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(108, 71, 255, 0.1);
-    z-index: 1001;
-    display: flex;
-    flex-direction: column;
-    animation: slideIn 0.2s ease;
-  }
-
-  .search-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--color-dark-800);
-  }
-
-  .search-icon {
-    flex-shrink: 0;
-    color: var(--color-dark-400);
-  }
-
-  .search-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--color-dark-50);
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  .search-input::placeholder {
-    color: var(--color-dark-500);
-  }
-
-  .search-close {
-    flex-shrink: 0;
-    background: transparent;
-    border: none;
-    color: var(--color-dark-400);
-    cursor: pointer;
-    padding: 0.25rem;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .search-close:hover {
-    color: var(--color-dark-100);
-    background: var(--color-dark-800);
-  }
-
-  .search-results {
-    overflow-y: auto;
-    max-height: calc(60vh - 5rem);
-  }
-
-  .search-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 3rem;
-    color: var(--color-dark-400);
-  }
-
-  .spinner {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid var(--color-dark-700);
-    border-top-color: var(--color-brand-purple);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-
-  .results-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .result-item {
-    border-bottom: 1px solid var(--color-dark-800);
-  }
-
-  .result-item:last-child {
-    border-bottom: none;
-  }
-
-  .result-item.selected .result-button {
-    background: var(--color-dark-800);
-    border-left-color: var(--color-brand-purple);
-  }
-
-  .result-button {
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    border: none;
-    border-left: 3px solid transparent;
-    padding: 1rem 1.25rem;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    display: block;
-  }
-
-  .result-button:hover {
-    background: var(--color-dark-800);
-    border-left-color: var(--color-brand-purple);
-  }
-
-  .result-title {
-    color: var(--color-dark-100);
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-    font-size: 0.9375rem;
-  }
-
-  .result-excerpt {
-    color: var(--color-dark-400);
-    font-size: 0.875rem;
-    line-height: 1.5;
-    margin-bottom: 0.5rem;
-  }
-
-  .result-excerpt :global(mark) {
-    background: rgba(108, 71, 255, 0.2);
-    color: var(--color-brand-purple-light);
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-  }
-
-  .result-url {
-    color: var(--color-dark-500);
-    font-size: 0.8125rem;
-    font-family: 'Monaco', 'Courier New', monospace;
-  }
-
-  .search-empty {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 2rem;
-    text-align: center;
-    color: var(--color-dark-400);
-  }
-
-  .search-empty svg {
-    margin-bottom: 1rem;
-    opacity: 0.5;
-  }
-
-  .search-empty p {
-    margin: 0.5rem 0;
-  }
-
-  .search-empty strong {
-    color: var(--color-dark-100);
-  }
-
-  .search-hint {
-    font-size: 0.875rem;
-    color: var(--color-dark-500);
-  }
-
-  .search-hints {
-    padding: 1.5rem 1.25rem;
-    color: var(--color-dark-400);
-  }
-
-  .hint-title {
-    font-weight: 500;
-    color: var(--color-dark-200);
-    margin-bottom: 0.75rem;
-  }
-
-  .search-hints ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .search-hints li {
-    padding: 0.5rem 0;
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .search-hints li::before {
-    content: '→';
-    color: var(--color-brand-purple);
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(-1rem);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  }
-
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @media (max-width: 768px) {
-    .search-modal {
-      top: 10%;
-      max-height: 70vh;
-    }
-  }
-</style>
