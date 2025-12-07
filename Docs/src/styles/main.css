@@ -29,6 +29,20 @@
   }
 }
 
+/* 
+  Override Tailwind Typography margins for Expressive Code blocks 
+  to prevent double spacing (Prose margin + AEC margin)
+*/
+.prose figure.expressive-code {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose figure.expressive-code pre {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border-radius: 0.5rem; /* Ensure nicer rounding if lost */
+}
 
 /* Fuentes: Se asume que las fuentes se cargan aquí si no se hacen via Google Fonts Link */
 /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap'); */

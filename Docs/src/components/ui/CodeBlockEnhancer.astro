@@ -10,9 +10,19 @@
       // Mark as enhanced
       pre.classList.add('enhanced');
 
-      // Make pre position relative for absolute button positioning
-      if (!(pre instanceof HTMLElement)) return;
-      pre.style.position = 'relative';
+      // Find the proper container to attach the button to.
+      // Astro Expressive Code wraps pre in a div/figure with class .expressive-code
+      const container = pre.closest('.expressive-code') || pre;
+
+      // Make container relative for absolute button positioning
+      if (!(container instanceof HTMLElement)) return;
+      
+      // Ensure container has relative positioning if it's not the pre itself
+      if (container !== pre) {
+        container.style.position = 'relative';
+      } else {
+        pre.style.position = 'relative';
+      }
 
       // Get the code text
       const code = pre.querySelector('code');
@@ -63,7 +73,8 @@
         }
       });
 
-      pre.appendChild(button);
+      // Append button to the container (wrapper or pre)
+      container.appendChild(button);
     });
   }
 
