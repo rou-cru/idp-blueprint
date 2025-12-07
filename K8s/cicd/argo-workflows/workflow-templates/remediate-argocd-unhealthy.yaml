@@ -57,7 +57,7 @@ spec:
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "sh", "-c"]
+        command: ["devbox", "run", "--", "bash", "-c"]
         args:
           - |
             echo "=== ArgoCD Application Remediation ==="

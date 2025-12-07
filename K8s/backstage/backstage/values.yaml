@@ -45,10 +45,7 @@ backstage:
         - name: tmp-volume
           mountPath: /tmp
       command:
-        - devbox
-        - run
-        - --
-        - sh
+        - /bin/sh
         - -c
         - |
           echo "Waiting for Dex service to be ready..."

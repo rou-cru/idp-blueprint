@@ -59,7 +59,7 @@ spec:
             value: /tmp
           - name: XDG_CACHE_HOME
             value: /tmp/.cache
-        command: ["devbox", "run", "--", "sh", "-c"]
+        command: ["devbox", "run", "--", "bash", "-c"]
         args:
           - |
             git clone --branch {{workflow.parameters.branch}} --single-branch {{workflow.parameters.repo-url}} /workspace

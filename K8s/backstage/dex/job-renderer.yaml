@@ -70,7 +70,7 @@ spec:
         - name: renderer
           image: roucru/idp-blueprint:ops
           imagePullPolicy: Always
-          command: ["/bin/bash", "-c"]
+          command: ["devbox", "run", "--", "bash", "-c"]
           args:
             - |
               # Load variables
