@@ -9,7 +9,7 @@ sidebar:
 
 ## Context and goals
 
-IDP Blueprint provides a compact, self-hosted platform stack for Kubernetes clusters. The architecture supports edge, on-premises, and constrained environments where horizontal scaling is limited, though the same patterns apply to larger deployments. The platform operates GitOps-first with Git as the source of truth and ArgoCD handling reconciliation. No managed control planes or commercial licenses are required, making it fully cloud-agnostic.
+IDP Blueprint provides a compact, self-hosted platform stack for Kubernetes clusters. The architecture supports edge, on-premises, and constrained environments where horizontal scaling is limited, though the same patterns apply to larger deployments. The platform operates GitOps-first with Git as the source of truth and a reconciliation controller handling continuous synchronization. No managed control planes or commercial licenses are required, making it fully cloud-agnostic.
 
 The platform serves three primary use cases. Engineers can evaluate a realistic platform stack on a laptop or lab cluster without cloud dependencies. Teams can prototype internal developer platforms without vendor commitments. Organizations can train platform, SRE, and security engineers on GitOps and policy-driven operations with hands-on infrastructure.
 
@@ -35,7 +35,7 @@ To ensure stability and compliance, the **Automation and Governance** layer enfo
 
 Finally, the **Developer-Facing Stacks** provide the actual tools for engineering teams. This includes dashboards (Grafana, Pyrra), CI/CD pipelines (Argo Workflows), code quality gates (SonarQube), and security scanners (Trivy Operator).
 
-All components are either bootstrapped once from the `IT/` directory or continuously reconciled from `K8s/`.
+Components are deployed in two phases: bootstrap (one-time installation of foundational infrastructure) and continuous reconciliation (GitOps-managed application stacks).
 
 ![Container View](../assets/diagrams/architecture/overview-container-view.svg)
 
@@ -54,23 +54,35 @@ This layering is reflected in the repository layout and in the deployment order.
 
 ## GitOps backbone
 
-The control plane operates through Git-driven automation across three layers. Bootstrap (`IT/`) handles one-time installation of core infrastructure including Cilium, Vault, ESO, cert-manager, ArgoCD, and Gateway API, along with minimal namespaces and RBAC. GitOps (`K8s/`) manages continuously reconciled state through stacks grouped by concern—observability, CI/CD, and security—with one ApplicationSet per stack that discovers subdirectories and generates ArgoCD Applications. Policies (`Policies/`) define Kyverno rules and related configuration.
+The control plane operates through Git-driven automation across three layers:
 
-ArgoCD applies all changes from these directories to the cluster. Manual cluster modifications are treated as drift and automatically reverted. For implementation details, see [GitOps model](../concepts/gitops-model) and [K8s directory architecture](applications).
+1. **Bootstrap**: One-time installation of core infrastructure (networking, secrets management, PKI, reconciliation controller, ingress) along with foundational namespaces and RBAC.
+2. **Application Stacks**: Continuously reconciled state for observability, CI/CD, security, and developer tooling, organized by functional concern.
+3. **Policies**: Declarative governance rules and compliance configuration.
 
-## Resilience on a small cluster
+The reconciliation controller applies all changes from Git to the cluster. Manual cluster modifications are treated as drift and automatically reverted. For implementation details, see [GitOps model](../concepts/gitops-model) and [Application architecture](applications).
 
-High availability on a 3-node edge cluster requires a different approach than large cloud deployments. The design prioritizes tiered criticality: the core control plane (Kubernetes API and etcd) receives highest priority, critical infrastructure like ArgoCD and Prometheus must survive node loss, and everything else can degrade or restart later. Scheduling uses PriorityClasses to separate infrastructure from workloads, node labels to define pools (control plane, infra, workloads), and tolerations that allow critical components to use the control plane node as a lifeboat.
+## Resilience on constrained clusters
 
-When a node fails, the platform preserves visibility through Prometheus and Loki while maintaining the ability to repair via ArgoCD, even if some stacks run in degraded mode. See [Scheduling, priority, and node pools](../concepts/scheduling-nodepools) and [Disaster recovery](../operate/disaster-recovery) for operational details.
+High availability in edge and resource-constrained environments requires different strategies than large cloud deployments. The design prioritizes tiered criticality: the core control plane (Kubernetes API and etcd) receives highest priority, critical infrastructure (reconciliation controller, observability) must survive node loss, and other components can degrade or restart later.
+
+Scheduling mechanisms enforce this prioritization:
+- **PriorityClasses**: Separate infrastructure from application workloads
+- **Node labels**: Define resource pools (control plane, infrastructure, workloads)
+- **Tolerations**: Allow critical components to schedule on control plane nodes during degraded conditions
+
+When a node fails, the platform preserves visibility (metrics, logs) and maintains repair capability (GitOps reconciliation), even if some stacks run in degraded mode. See [Scheduling, priority, and node pools](../concepts/scheduling-nodepools) for operational details.
 
 ## Technology Selection Criteria
 
-The technology stack follows a strict set of design principles tailored for constrained environments. We prioritized components that exhibit **good behavior under limited resources**, avoiding heavyweight solutions that demand extensive node pools. Every selected tool must support **native declarative configuration** via Kubernetes CRDs to ensure full GitOps compatibility.
+The architecture follows design principles tailored for constrained environments:
 
-We also mandate a **healthy open-source ecosystem** and **zero commercial license requirements**, ensuring the platform remains accessible for labs and internal use without vendor lock-in. Finally, the architecture is strictly **cloud-agnostic**, capable of running on bare metal, on-premises virtualization, or any public cloud provider without modification.
+- **Resource efficiency**: Components exhibit predictable behavior under limited resources, avoiding solutions that require extensive node pools or high baseline consumption.
+- **Declarative configuration**: All components support native Kubernetes CRDs and GitOps workflows, eliminating imperative configuration steps.
+- **Open-source ecosystem**: Technologies maintain active communities and development without commercial license requirements, ensuring accessibility for labs and internal use.
+- **Cloud-agnostic design**: The stack runs on bare metal, on-premises virtualization, or any public cloud provider without modification.
 
-The blueprint focuses on what must be provided at the platform layer (networking, security, observability, policy, GitOps). Cloud‑specific services are left out by design.
+The blueprint focuses on platform-layer concerns (networking, security, observability, policy, GitOps). Cloud-specific managed services are explicitly excluded to maintain portability.
 
 import { Button } from '../../../components/content/index.ts';
 
