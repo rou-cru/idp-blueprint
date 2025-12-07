@@ -68,7 +68,7 @@ spec:
         fsGroup: 1001
       containers:
         - name: renderer
-          image: bitnami/kubectl:1.29.0-debian-12-r1
+          image: roucru/idp-blueprint:ops
           imagePullPolicy: Always
           command: ["/bin/bash", "-c"]
           args:

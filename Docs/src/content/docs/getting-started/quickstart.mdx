@@ -17,11 +17,10 @@ Open the project in VS Code and choose “Reopen in Container”, or start a Dev
 
 Edit `config.toml` `[fuses]` to disable stacks you do not need (`observability`, `cicd`, `security`, `events`, `backstage`). The `prod` flag hardens ArgoCD defaults. These toggles change what the demo deploys; they do not change the architecture model. Make changes before running `task deploy`.
 
-![config.toml screenshot](../assets/images/configs.png)
+![config.toml toggles](../assets/images/configs.png)
 
 :::danger
-**Never save your real passwords in plain text!** this was made in pourpuse to simplify the process to you
-but **IS NOT a good idea**, dont underestimate the risk about this. the use of this metod is just for demo, not real use.
+Never keep real passwords or secrets in plain text. The demo ships simple values for convenience—replace them with your own secure secrets for anything beyond local exploration.
 :::
 
 ## Deploy
@@ -52,7 +51,7 @@ Gateway NodePorts come from `config.toml` (default 30080/30443). Keep those port
 
 You can also open `k9s` to watch resources settle.
 
-{/* ![k9s](../assets/images/k9s.png) */}
+![k9s pods view](../assets/images/task-destroy.png)
 
 ### Credentials
 
