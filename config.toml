@@ -1,8 +1,10 @@
-# IDP Blueprint Configuration
-# Adjust values as needed; defaults mirror a fresh clone.
+# IDP Blueprint Demo SetUp
+
+[cluster]
+# Name of the local k3d cluster
+name = "idp-demo"
 
 [fuses]
-# Stacks
 policies = true
 security = true
 observability = true
@@ -49,10 +51,6 @@ github_branch = "main"
 
 github_token = " "
 
-[cluster]
-# Name of the local k3d cluster
-name = "idp-demo"
-
 [argocd]
 sync_timeout = "8m"
 backoff_duration = "10s"
@@ -62,17 +60,6 @@ retry_limit = 10
 
 [gateway]
 wait_timeout = "60s"
-
-[passwords]
-# Empty strings instruct Vault helpers to generate random secrets.
-argocd_admin = "argo"
-grafana_admin = "graf"
-# SonarQube admin password requires a minimum of 12 characters and at least one uppercase letter.
-sonarqube_admin = "Sonar-Secret-123"
-sonarqube_monitoring = "sonar"
-kyverno_admin = "kyver"
-vault_admin = "vault"
-backstage_dex_client = "dex-secret"
 
 [registry]
 url = "docker.io"

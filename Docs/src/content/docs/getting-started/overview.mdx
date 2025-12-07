@@ -6,47 +6,25 @@ sidebar:
 ---
 import { LinkButton } from '../../../components/content/index.ts';
 
-## What you will build
+This is an **open-source reference architecture for an Internal Developer Platform** (IDP) and **includes a demo implementation** that is
+optimized to run locally on personal hardware, a home lab, or even a laptop.
 
-By the end of the quickstart you will be looking at a running k3d cluster named `idp-demo`
-with Cilium and the Gateway API wiring traffic, Vault seeded and bridged to External
-Secrets and cert‑manager, Prometheus/Loki/Grafana watching over the cluster, and ArgoCD
-driving GitOps together with Kyverno and Policy Reporter. ApplicationSets fan out the
-stacks in `K8s/` so observability, CI/CD, security scanning, events, and Backstage come up
-without extra flags. The whole story begins and ends with a single command: `task deploy`.
+The next sections walk you through the demo so **you can explore the architecture in a live environment**, digging into implementation details
+instead of only reading high-level architecture descriptions.
 
-## Feature Toggles
+This is not a production guide and the demo is not production-ready out of the box. The architecture, however, is **designed with real
+production needs in mind**—scalability, maintainability, security, and more—so **it's a starting point to shape your own design**.
 
-Use the `[fuses]` section in `config.toml` to turn stacks on or off. The keys
-`policies`, `security`, `observability`, `cicd`, and `backstage` each gate a stack; `prod`
-hardens ArgoCD. Everything ships enabled except `prod`.
+The demo uses production-like workflows and wiring between components but favors ease of deployment, so some trade-offs must be addressed
+before any real production use. You may also want to customize other aspects to match your environment.
 
-## What `task deploy` does
 
-With the default `config.toml`, `task deploy` spins up a three-node k3d cluster, layers in
-networking, certificates, Vault + External Secrets, and then brings up ArgoCD and the
-Gateway. It prints nip.io URLs from your LAN IP and lets ArgoCD reconcile the stacks you
-left enabled.
+## Deploy the demo
 
-Typical log snippets:
+By the end of the quickstart you will have an active local Kubernetes cluster with three nodes, exposed to your LAN.
+The experience starts with a single command: `task deploy`, so don't be afraid of dependencies or complex steps.
 
-```text
-task: [k3d:k3d:create] ... k3d cluster create idp-demo ...
-task: [bootstrap:cilium:deploy] helm upgrade --install cilium ...
-task: [bootstrap:vault:init] Vault initialized successfully
-task: [bootstrap:argocd:deploy] helm upgrade --install argocd ...
-task: [bootstrap:gateway:deploy] NodePorts verified: HTTP=30080, HTTPS=30443
-task: [stacks:observability] applicationset-observability created
-task: [stacks:cicd] applicationset-cicd created
-task: [stacks:security] applicationset-security created
-task: [stacks:backstage] applicationset-backstage created
-task: [stacks:events] applicationset-events created
-Deployment complete
-```
-
-:::tip
-Run `task --summary deploy` or `task --verbose deploy` to see each command as it runs.
-:::
+The demo environment also includes kubectl, k9s, the ArgoCD CLI, and an MCP setup for LLM models. All of that is encapsulated so the host only needs a container runtime, git, and hardware resources. The next section lists the requirements to deploy the demo.
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
   <LinkButton href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">

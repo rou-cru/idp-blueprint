@@ -7,14 +7,12 @@ sidebar:
 
 import { LinkButton } from '../../../components/content/index.ts';
 
-Now that the deploy command has run, let's confirm the platform is coming up and set
-realistic expectations for the first few minutes.
+Now that the deploy command has run, confirm the demo platform is converging and note where it is still settling. This is a local demo, not production hardening.
 
 ## What to expect in the first 5–10 minutes
 
-ArgoCD keeps syncing after `task deploy` exits, pods progress from Pending to Ready as
-images download, and it is normal for Health/Sync to settle gradually rather than
-instantly.
+ArgoCD keeps syncing after `task deploy` exits, pods move from Pending to Ready as
+images download, and Health/Sync will settle gradually rather than instantly.
 
 {/*Sequence diagram removed for a simpler, first-contact explanation.*/}
 
@@ -38,6 +36,13 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 `:deploy`, `:events` to watch things settle.
 :::
 
+**Expected signals**
+
+- Nodes: 3 Ready nodes in the `k3d-idp-demo` cluster.
+- ArgoCD Applications: appear within a minute; Healthy/Synced may take several minutes while images pull.
+- Gateway wait: command above should complete before accessing URLs.
+- Secrets: `kubectl get externalsecrets,secretstores -A` should list resources; ArgoCD secret should exist in `argocd` namespace.
+
 ### First look at the platform
 
 ![Platform Entry Points](../assets/diagrams/getting-started/verify-first-look.svg)
@@ -49,7 +54,7 @@ Projects in the left sidebar (cicd, observability, backstage, and friends) mirro
 fuses you enabled in `config.toml`. Opening a card reveals the resource graph so you can
 walk through Deployments, Services, and ConfigMaps.
 
-![ArgoCD — listado de Applications](../assets/images/verify/argocd_all_applications.png)
+![ArgoCD — Applications list](../assets/images/verify/argocd_all_applications.png)
 
 ### Example: inside an Application
 
@@ -60,7 +65,7 @@ graph plus metadata:
 - Destination (`https://kubernetes.default.svc`, namespace `observability`).
 - *Refresh* and *Sync* buttons to trigger reconciliation on demand.
 
-![ArgoCD — detalle de Application](../assets/images/verify/argocd_view_fluentbit-app.png)
+![ArgoCD — Application detail](../assets/images/verify/argocd_view_fluentbit-app.png)
 
 ### CLI/TUI alternative: k9s
 
@@ -72,7 +77,7 @@ k9s -A
 
 From there jump with `:ns`, `:pods`, `:deploy` and watch events live while ArgoCD syncs.
 
-![k9s — explorando recursos](../assets/images/verify/k9s_xray.png)
+![k9s — exploring resources](../assets/images/verify/k9s_xray.png)
 
 ## Access Endpoints
 
@@ -137,6 +142,13 @@ Certificates are issued automatically by cert-manager using a wildcard for
 | Grafana up with datasources | Open `https://grafana.<ip>.nip.io` | UI loads; Prometheus/Loki datasources present |
 | Trivy Operator running | `kubectl -n security get pods | rg trivy` | `trivy-operator` and `trivy-server` pods Ready |
 | External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
+| Gateway certs bound | `kubectl -n kube-system get gateway idp-gateway -o yaml | rg Programmed` | Condition `Programmed` True; endpoints reachable over TLS |
+
+### If something stalls
+
+- Pods in `ImagePullBackOff`: check network access and retry `task deploy` after clearing space.
+- Gateway not ready: ensure host ports in `config.toml` are free; re-run the wait command above.
+- Applications stuck OutOfSync: use ArgoCD UI or `argocd app sync <name>` once images are present.
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
   <LinkButton href="/getting-started/quickstart/" variant="secondary" icon="arrow-left">

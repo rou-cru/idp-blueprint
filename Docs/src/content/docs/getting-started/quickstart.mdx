@@ -7,19 +7,21 @@ sidebar:
 
 import { LinkButton } from '../../../components/content/index.ts';
 
-Spin up the full IDP locally with one command, then watch it settle while images pull and
-ArgoCD syncs. Expect a few minutes of eventual consistency.
+Run the demo so you can observe the reference architecture in motion. This assumes you already met the prerequisites (container runtime + git; tooling via Devbox or Dev Container). Expect a few minutes for images to download and for ArgoCD to reconcile everything.
 
-## Clone the repository
+## Enter the toolchain
 
-```bash
-git clone https://github.com/rou-cru/idp-blueprint
-cd idp-blueprint
-```
+Open the project in VS Code and choose “Reopen in Container”, or start a Devbox shell with `devbox shell`. Both options supply `task`, `k3d`, `kubectl`, `helm`, `k9s`, and `argocd` for the session. Stay in the project root while you work so the Taskfile targets resolve correctly.
 
-:::tip
-Open the repo in VS Code and “Reopen in Container”, or run with Devbox to get the tooling
-preinstalled.
+## Optional: trim the demo
+
+Edit `config.toml` `[fuses]` to disable stacks you do not need (`observability`, `cicd`, `security`, `events`, `backstage`). The `prod` flag hardens ArgoCD defaults. These toggles change what the demo deploys; they do not change the architecture model. Make changes before running `task deploy`.
+
+![config.toml screenshot](../assets/images/configs.png)
+
+:::danger
+**Never save your real passwords in plain text!** this was made in pourpuse to simplify the process to you
+but **IS NOT a good idea**, dont underestimate the risk about this. the use of this metod is just for demo, not real use.
 :::
 
 ## Deploy
@@ -28,58 +30,45 @@ preinstalled.
 task deploy
 ```
 
-That single command creates the `idp-demo` k3d cluster, bootstraps Cilium, cert-manager,
-Vault, External Secrets, ArgoCD, and the Gateway, then lets ApplicationSets light up
-observability, CI/CD, security, events, and backstage—each gated by the fuses described in
-[Architecture overview](../architecture/overview#feature-toggles-fuses). On typical laptop
-hardware it takes about 5–10 minutes.
-
-### What happens during deploy (quick tour)
-
-The run creates the cluster and namespaces, installs networking CRDs and Cilium, brings in
-cert-manager plus Vault and External Secrets, then starts ArgoCD and exposes services
-through the Gateway with TLS. ApplicationSets generate ArgoCD Applications for each stack
-under `K8s/`, ordered with sync waves, and gated by your fuses in `config.toml`.
+Run it from the repository root. It spins up a three-node k3d cluster, sets up networking (Cilium, Gateway API), cert-manager, Vault + External Secrets, ArgoCD, and then lets ApplicationSets bring up the stacks you left enabled. Typical laptops take ~5–10 minutes. If you see port conflicts or insufficient resources, stop here and resolve them before retrying.
 
 :::tip
-ArgoCD keeps syncing after the task completes; Applications turn Healthy/Synced gradually
-as images download and pods become Ready. The task prints the service URLs when Gateway is
-ready (for example `https://argocd.<ip>.nip.io`)—copy them from the output.
+Use `task --summary deploy` or `task --verbose deploy` if you want to watch each step.
 :::
+
+### What to expect while it runs
+
+Early logs cover k3d creation and Cilium; later you will see ArgoCD, Gateway NodePorts, and ApplicationSets per stack. ArgoCD keeps reconciling after `task deploy` exits, so Healthy/Synced states appear gradually as images finish pulling. The task prints nip.io URLs (based on your LAN IP) when the Gateway is ready—save them for Verify.
+
+![task deploy](../assets/images/task-deploy.png)
 
 ## First access
 
-When the Gateway is ready, open the URLs the task prints. They use a nip.io wildcard based
-on your LAN IP (for example `https://argocd.192-168-1-20.nip.io`) and are reachable from
-the LAN.
+When the Gateway is ready, open the printed URLs (e.g., `https://argocd.<ip>.nip.io`). They are reachable from your LAN.
 
 :::caution
-Gateway NodePorts come from `config.toml`. Keep those ports free and open in your OS
-firewall so LAN browsers can reach the services.
+Gateway NodePorts come from `config.toml` (default 30080/30443). Keep those ports free and allow inbound traffic if you want LAN access.
 :::
 
-You can also open `k9s` to inspect the cluster state from the terminal.
+You can also open `k9s` to watch resources settle.
+
+{/* ![k9s](../assets/images/k9s.png) */}
 
 ### Credentials
 
-Vault is initialized, unsealed, and seeds secrets automatically during deploy, and
-External Secrets fans them out to workloads. Default values come from `config.toml`; the
-root token lives in a Kubernetes Secret.
+ArgoCD admin user: `admin`. The password comes from `config.toml` (`passwords.argocd_admin`, default `argo`) and is stored bcrypt in the ArgoCD Secret. Vault is initialized and unsealed for the demo; secrets fan out via External Secrets. Treat this material as local-only and replace it for anything beyond the demo.
 
-:::danger
-Local-only root/unseal material is managed by helper scripts for demo purposes—swap this
-for real secret management in production.
-:::
-
-See [Verify Installation](verify) for details about expected results.
+See [Verify Installation](verify) for expected signals and smoke checks.
 
 ## Clean up
-
-Tear everything down when you’re done:
 
 ```bash
 task destroy
 ```
+
+Running `task destroy` deletes the k3d cluster and all demo resources, returning your host to the state before deployment. Use it when you finish exploring or need to reclaim disk space.
+
+![task destroy](../assets/images/task-destroy.png)
 
 <div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: 2rem;">
   <LinkButton href="/getting-started/prerequisites/" variant="secondary" icon="arrow-left">
