@@ -47,7 +47,7 @@
       "export CODEX_HOME=$workspaceFolder/.codex",
       "echo 'Preparing Env...'",
       ". .devcontainer/init.sh",
-      "clear"
+      "[ -n \"$TERM\" ] && [ \"$TERM\" != \"dumb\" ] && clear || true"
     ]
   }
 }

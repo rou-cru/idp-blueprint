@@ -8,6 +8,10 @@ USER root:root
 # Ensure devbox binary is readable and executable by all users (e.g., 1001)
 RUN chmod a+rx /usr/local/bin/devbox
 
+# Make nix-installed CLIs (kubectl, helm, etc.) available for all variants
+# (dev, minimal, ops) without needing to tweak PATH at runtime.
+ENV PATH="/code/.devbox/nix/profile/default/bin:${PATH}"
+
 RUN mkdir -p /code /code/.devcontainer && chown "${DEVBOX_USER}":"${DEVBOX_USER}" /code /code/.devcontainer
 USER ${DEVBOX_USER}:${DEVBOX_USER}
 

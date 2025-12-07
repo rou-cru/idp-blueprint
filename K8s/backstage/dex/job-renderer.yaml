@@ -131,6 +131,8 @@ spec:
               mountPath: /vars
             - name: tpl
               mountPath: /tpl
+            - name: tmp-volume
+              mountPath: /tmp
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
@@ -156,5 +158,7 @@ spec:
         - name: tpl
           configMap:
             name: dex-config-tpl
+        - name: tmp-volume
+          emptyDir: {}
         - name: tmp-volume
           emptyDir: {}
