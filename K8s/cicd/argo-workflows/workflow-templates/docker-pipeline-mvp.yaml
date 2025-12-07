@@ -76,7 +76,7 @@ spec:
       container:
         image: roucru/idp-blueprint:ops
         imagePullPolicy: IfNotPresent
-        command: ["devbox", "run", "--", "sh", "-c"]
+        command: ["devbox", "run", "--", "bash", "-c"]
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -124,7 +124,7 @@ spec:
       container:
         image: roucru/idp-blueprint:ops
         imagePullPolicy: IfNotPresent
-        command: ["devbox", "run", "--", "sh", "-c"]
+        command: ["devbox", "run", "--", "bash", "-c"]
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

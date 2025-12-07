@@ -24,4 +24,5 @@ COPY --chown=${DEVBOX_USER}:${DEVBOX_USER} .devcontainer/handle-env-vars.sh .dev
 
 RUN devbox install && nix-store --gc && nix-store --optimise \
     && devbox shellenv --init-hook >> ~/.profile \
-    && devbox run -- /bin/sh .devcontainer/init.sh
+    && devbox run -- /bin/sh .devcontainer/init.sh \
+    && chmod -R a+rX /code/.devbox
