@@ -86,10 +86,10 @@
   }
 
   // Filtered sidebar config based on context
-  $: filteredSidebarConfig = sidebarConfig.map(section => ({
+  const filteredSidebarConfig = $derived(sidebarConfig.map(section => ({
     ...section,
     items: filterItemsByContext(section.items)
-  })).filter(section => section.items.length > 0);
+  })).filter(section => section.items.length > 0));
 </script>
 
 {#snippet renderItems(items: NavItem[], depth: number = 0)}

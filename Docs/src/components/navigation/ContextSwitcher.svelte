@@ -34,7 +34,7 @@
     };
   });
 
-  $: selectedContext = CONTEXTS.find(c => c.value === $currentContext) || CONTEXTS[0];
+  const selectedContext = $derived(CONTEXTS.find(c => c.value === $currentContext) || CONTEXTS[0]);
 </script>
 
 <div id="context-switcher" class="relative mb-6 px-3">
