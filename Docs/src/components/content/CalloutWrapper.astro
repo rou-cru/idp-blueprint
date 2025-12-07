@@ -1,0 +1,14 @@
+---
+import CalloutSvelte from './Callout.svelte';
+
+interface Props {
+  type?: 'tip' | 'caution' | 'danger' | 'note' | 'warning' | 'info';
+  title?: string;
+}
+
+const { type, title, ...attrs } = Astro.props;
+---
+
+<CalloutSvelte type={type} title={title} client:load>
+  <slot />
+</CalloutSvelte>

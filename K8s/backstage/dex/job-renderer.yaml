@@ -66,97 +66,89 @@ spec:
         runAsNonRoot: true
         runAsUser: 1001
         fsGroup: 1001
-                containers:
-                  - name: renderer
-                    image: roucru/idp-blueprint:ops
-                    imagePullPolicy: IfNotPresent
-                    command: ["devbox", "run", "--", "bash", "-c"]
-                    env:
-                      - name: HOME
-                        value: /tmp
-                      - name: XDG_CACHE_HOME
-                        value: /tmp/.cache
-                    args:
-                      - |
-                        set -e
-                        mkdir -p /tmp/.cache
-                        # Load variables
-                        if [ -f /vars/DNS_SUFFIX ]; then
-                          export DNS_SUFFIX=$(cat /vars/DNS_SUFFIX)
-                        fi
-                        if [ -f /vars/GITHUB_ORG ]; then
-                          export GITHUB_ORG=$(cat /vars/GITHUB_ORG)
-                        fi
-                        if [ -f /vars/GITHUB_REPO ]; then
-                          export GITHUB_REPO=$(cat /vars/GITHUB_REPO)
-                        fi
-                        if [ -f /vars/GITHUB_BRANCH ]; then
-                          export GITHUB_BRANCH=$(cat /vars/GITHUB_BRANCH)
-                        fi
-      
-                        if [ -f /vars/env ]; then
-                          source /vars/env
-                        fi
-      
-                        if [ -z "$DNS_SUFFIX" ]; then
-                           echo "No variables found!"
-                           exit 1
-                        fi
-      
-                        if [ -z "$GITHUB_ORG" ]; then
-                          export GITHUB_ORG="rou-cru"
-                        fi
-                        if [ -z "$GITHUB_REPO" ]; then
-                          export GITHUB_REPO="idp-blueprint"
-                        fi
-                        if [ -z "$GITHUB_BRANCH" ]; then
-                          export GITHUB_BRANCH="main"
-                        fi
-      
-                        echo "Rendering Dex configuration using DNS_SUFFIX=$DNS_SUFFIX, GITHUB_ORG=$GITHUB_ORG"
-      
-                        # Read template
-                        cp /tpl/config.yaml /tmp/config.yaml
-      
-                        # Replace variable
-                        sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
-                        sed -i "s/\${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
-                        sed -i "s/\${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
-                        sed -i "s/\${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
-      
-                        # Patch Secret (using stringData logic via kubectl create --dry-run)
-                        # Note: We use 'create secret generic ... --dry-run' which produces 'data' (base64).
-                        # This effectively replaces the secret content.
-      
-                        kubectl create secret generic dex \
-                          --from-file=config.yaml=/tmp/config.yaml \
-                          --dry-run=client -o yaml | \
-                          kubectl apply -f -
-                        echo "Dex Secret patched successfully."
-                    volumeMounts:
-                      - name: vars
-                        mountPath: /vars
-                      - name: tpl
-                        mountPath: /tpl
-                      - name: tmp-volume
-                        mountPath: /tmp
-                    securityContext:
-                      allowPrivilegeEscalation: false
-                      readOnlyRootFilesystem: true
-                      runAsNonRoot: true
-                      runAsUser: 1001
-                      seccompProfile:
-                        type: RuntimeDefault
-                      capabilities:
-                        drop:
-                          - ALL
-                    resources:
-                      requests:
-                        memory: "64Mi"
-                        cpu: "50m"
-                      limits:
-                        memory: "128Mi"
-                        cpu: "100m"      volumes:
+      containers:
+        - name: renderer
+          image: roucru/idp-blueprint:ops
+          imagePullPolicy: Always
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              # Load variables
+              if [ -f /vars/DNS_SUFFIX ]; then
+                export DNS_SUFFIX=$(cat /vars/DNS_SUFFIX)
+              fi
+              if [ -f /vars/GITHUB_ORG ]; then
+                export GITHUB_ORG=$(cat /vars/GITHUB_ORG)
+              fi
+              if [ -f /vars/GITHUB_REPO ]; then
+                export GITHUB_REPO=$(cat /vars/GITHUB_REPO)
+              fi
+              if [ -f /vars/GITHUB_BRANCH ]; then
+                export GITHUB_BRANCH=$(cat /vars/GITHUB_BRANCH)
+              fi
+
+              if [ -f /vars/env ]; then
+                source /vars/env
+              fi
+
+              if [ -z "$DNS_SUFFIX" ]; then
+                 echo "No variables found!"
+                 exit 1
+              fi
+
+              if [ -z "$GITHUB_ORG" ]; then
+                export GITHUB_ORG="rou-cru"
+              fi
+              if [ -z "$GITHUB_REPO" ]; then
+                export GITHUB_REPO="idp-blueprint"
+              fi
+              if [ -z "$GITHUB_BRANCH" ]; then
+                export GITHUB_BRANCH="main"
+              fi
+
+              echo "Rendering Dex configuration using DNS_SUFFIX=$DNS_SUFFIX, GITHUB_ORG=$GITHUB_ORG"
+
+              # Read template
+              cp /tpl/config.yaml /tmp/config.yaml
+
+              # Replace variable
+              sed -i "s/\${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
+              sed -i "s/\${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
+
+              # Patch Secret (using stringData logic via kubectl create --dry-run)
+              # Note: We use 'create secret generic ... --dry-run' which produces 'data' (base64).
+              # This effectively replaces the secret content.
+
+              kubectl create secret generic dex \
+                --from-file=config.yaml=/tmp/config.yaml \
+                --dry-run=client -o yaml | \
+                kubectl apply -f -
+              echo "Dex Secret patched successfully."
+          volumeMounts:
+            - name: vars
+              mountPath: /vars
+            - name: tpl
+              mountPath: /tpl
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1001
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+      volumes:
         - name: vars
           configMap:
             name: idp-vars-dex

@@ -63,9 +63,15 @@ backstage:
             echo "Attempt $attempt/$max_attempts: Dex not ready, waiting 5 seconds..."
             sleep 5
           done
-          echo "SUCCESS: Dex is ready!"
-  extraVolumeMounts:
-    - name: tmp-volume
+                      echo "SUCCESS: Dex is ready!"
+                    securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                        drop: ["ALL"]
+                      readOnlyRootFilesystem: true
+                      runAsNonRoot: true
+                      runAsUser: 1001
+            extraVolumeMounts:    - name: tmp-volume
       mountPath: /tmp
   extraVolumes:
     - name: tmp-volume
