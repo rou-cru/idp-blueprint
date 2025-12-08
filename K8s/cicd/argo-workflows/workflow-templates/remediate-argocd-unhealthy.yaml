@@ -44,10 +44,6 @@ spec:
             drop:
               - ALL
         env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
           - name: ARGOCD_TOKEN
             valueFrom:
               secretKeyRef:
@@ -57,7 +53,7 @@ spec:
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "bash", "-c"]
+        command: ["bash", "-c"]
         args:
           - |
             echo "=== ArgoCD Application Remediation ==="
