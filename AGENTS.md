@@ -5,6 +5,7 @@
 IDP Blueprint is a comprehensive open-source Internal Developer Platform reference implementation designed for local or lab Kubernetes clusters (k3d by default). It provides a complete GitOps-based platform with integrated tools for policy governance, observability, CI/CD, and secrets management.
 
 **Key Characteristics:**
+
 - Production-ready enterprise platform architecture
 - One-command deployment with full automation
 - Modular component design with feature toggles
@@ -13,9 +14,18 @@ IDP Blueprint is a comprehensive open-source Internal Developer Platform referen
 - Policy-driven governance with Kyverno
 - Security-first design with multiple scanning layers
 
+## How to work
+
+- **Serena**: If Serena MCP is available, then its the main tool for all related with code base including investigation and exploring. Always.
+- **Playwright**: If Playright MCP is available, ask the user if is need it a visual check or debug in browser after changes related with Backstage or Astro Documentation
+- **Sequential Thinking**: If sequential-thinking MCP is available, use it to arge againts your first plan for huge or critical changes. All is wrong until you can demostrate with objective evidence that your plan is correct and robust, just after that you can ask the user for appoval.
+- **Planning**: Dont patch symptompts, find root causes and plan the fix before edit files
+- **User Plan requested**: If the user ask explicetly for a planing task for a refactor or a complex fix, after complete the planning read .serena/memories/validate_plan.md and do the validations.
+
 ## Technology Stack
 
 ### Core Infrastructure
+
 - **Container Orchestration**: Kubernetes (k3d for local development)
 - **GitOps Engine**: ArgoCD with ApplicationSets (app-of-appsets pattern)
 - **Container Network**: Cilium CNI with Gateway API
@@ -24,6 +34,7 @@ IDP Blueprint is a comprehensive open-source Internal Developer Platform referen
 - **Documentation**: Astro + Svelte 5 + Tailwind for documentation site
 
 ### Platform Components
+
 1. **Policy & Governance**: Kyverno + Policy Reporter
 2. **Networking**: Cilium CNI, Gateway API with wildcard TLS (nip.io)
 3. **Secrets Management**: Vault + External Secrets Operator
@@ -49,6 +60,7 @@ IDP Blueprint is a comprehensive open-source Internal Developer Platform referen
 ## Build and Test Commands
 
 ### Primary Deployment
+
 ```bash
 # Full platform deployment
 task deploy
@@ -60,6 +72,7 @@ task policies    # Kyverno policies
 ```
 
 ### Quality Checks
+
 ```bash
 # Run all quality checks
 task quality
@@ -74,6 +87,7 @@ task validate-consistency
 ```
 
 ### Development Environment
+
 ```bash
 # Setup development environment
 devbox shell
@@ -87,6 +101,7 @@ task k3d:delete
 ```
 
 ### Documentation
+
 ```bash
 # Build documentation
 task docs:build
@@ -101,27 +116,32 @@ task docs:linkcheck
 ## Code Style Guidelines
 
 ### Prettier Configuration
+
 - **Line Length**: 88 characters
 - **Quote Style**: Single quotes
 - **Markdown**: Prose wrap enabled
 
 ### YAML Standards (yamllint)
+
 - Extends default configuration
 - Line length handled by Prettier
 - Document-start and comments disabled
 - Relaxed braces, brackets, quoted-strings
 
 ### Markdown Standards (markdownlint)
+
 - Line length: 92 characters
 - Unordered lists use dashes
 - Specific HTML elements allowed: `<details>`, `<summary>`, `<img>`
 
 ### Shell Script Standards
+
 - All `.sh` files must pass shellcheck
 - Follow POSIX compliance where possible
 - Include proper error handling
 
 ### Resource Requirements
+
 - All workloads must specify CPU/memory requests and limits
 - Use appropriate units (m for CPU, Mi/Gi for memory)
 - Cilium components are exempt from resource requirements
@@ -129,6 +149,7 @@ task docs:linkcheck
 ## Testing Instructions
 
 ### Infrastructure Validation
+
 ```bash
 # Validate Kustomize builds
 task validate-kustomize
@@ -141,12 +162,14 @@ task lint-helm-docs
 ```
 
 ### Consistency Validation
+
 - Labels must follow canonical standards
 - PriorityClasses required on all workloads
 - ArgoCD sync waves properly configured
 - Resource requirements enforced
 
 ### Security Scanning
+
 ```bash
 # Infrastructure as Code scanning
 task security:iac
@@ -158,24 +181,28 @@ task security:secrets
 ## Security Considerations
 
 ### Policy Enforcement
+
 - Kyverno policies enforce organizational standards
 - Automatic label propagation required
 - Namespace governance with required labels
 - Business label auditing and enforcement
 
 ### Secret Management
+
 - Vault used for secret storage
 - External Secrets Operator for Kubernetes integration
 - No hardcoded secrets in manifests
 - Regular secret scanning in CI pipeline
 
 ### Container Security
+
 - Multi-variant images (full, minimal, ops)
 - Security scanning in CI pipeline
 - Checkov for infrastructure security validation
 - Trufflehog for secret detection
 
 ### Access Control
+
 - ArgoCD projects for domain isolation
 - RBAC policies in Backstage
 - Service accounts with minimal permissions
@@ -184,25 +211,30 @@ task security:secrets
 ## Development Conventions
 
 ### Git Workflow
+
 - All changes via pull requests
 - Atomic commits for bisect-friendly history
 - Commit message linting with commitlint-rs
 - Stale issue management automation
 
 ### Label Standards
+
 Required labels across all resources:
+
 - `owner`: Team or individual responsible
 - `business-unit`: Business unit ownership
 - `environment`: Environment designation
 - `app.kubernetes.io/part-of`: Application grouping
 
 ### ArgoCD Conventions
+
 - ApplicationSets for bulk deployments
 - AppProjects for domain isolation
 - Sync waves for deployment order
 - Health checks and sync policies
 
 ### Documentation Standards
+
 - Auto-generated Helm documentation
 - Component-specific architecture docs
 - Conceptual documentation for design decisions
@@ -211,16 +243,17 @@ Required labels across all resources:
 ## Feature Toggles
 
 Configuration in `config.toml`:
+
 - `enable_policies`: Kyverno policy enforcement
 - `enable_observability`: Monitoring stack
 - `enable_cicd`: CI/CD components
 - `enable_security`: Security scanning
 - `enable_backstage`: Developer portal
-- `enable_events`: Event-driven components
 
 ## Common Development Tasks
 
 ### Adding New Components
+
 1. Create Kustomize base in appropriate directory
 2. Add ArgoCD ApplicationSet configuration
 3. Update feature toggle in config.toml
@@ -228,12 +261,14 @@ Configuration in `config.toml`:
 5. Include in Task orchestration
 
 ### Updating Dependencies
+
 - Dependabot manages automated updates
 - Grouped updates for related packages
 - Security updates prioritized
 - Review required for breaking changes
 
 ### Debugging Deployments
+
 - Check ArgoCD sync status and logs
 - Validate Kubernetes events
 - Review policy reports for violations
