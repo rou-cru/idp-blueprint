@@ -3,7 +3,7 @@ import type { Root } from 'mdast';
 import type { ContainerDirective } from 'mdast-util-directive';
 
 /**
- * Remark plugin to transform Starlight-style callouts (:::tip, :::note, etc.)
+ * Remark plugin to transform callouts (:::tip, :::note, etc.)
  * into our custom Callout components
  */
 export function remarkCallouts() {

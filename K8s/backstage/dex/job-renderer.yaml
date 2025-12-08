@@ -69,8 +69,8 @@ spec:
       containers:
         - name: renderer
           image: roucru/idp-blueprint:ops
-          imagePullPolicy: Always
-          command: ["devbox", "run", "--", "bash", "-c"]
+          imagePullPolicy: IfNotPresent
+          command: ["bash", "-c"]
           args:
             - |
               # Load variables
@@ -158,7 +158,5 @@ spec:
         - name: tpl
           configMap:
             name: dex-config-tpl
-        - name: tmp-volume
-          emptyDir: {}
         - name: tmp-volume
           emptyDir: {}
