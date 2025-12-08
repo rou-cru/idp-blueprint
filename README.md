@@ -71,7 +71,7 @@ Repository layout
 - `Taskfile.yaml` and `Task/` – orchestration entrypoints and includes.
 - `Scripts/` – helpers for config extraction, vault init/seed, helm-docs,
   validation.
-- `Docs/` – Astro/Starlight documentation site (authoring source).
+- `Docs/` – Astro documentation site (authoring source).
 - `config.toml` – user-facing configuration defaults.
 
 Common tasks
@@ -88,7 +88,7 @@ Common tasks
 Documentation
 -------------
 
-- Source lives in `Docs/` (Astro/Starlight). Run `task docs:astro:build` to
+- Source lives in `Docs/` (Astro). Run `task docs:astro:build` to
   build, or `task docs:astro:dev` to serve locally.
 
 Contributing

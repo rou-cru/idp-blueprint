@@ -63,9 +63,6 @@ backstage:
         readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 1001
-      extraVolumeMounts:
-        - name: tmp-volume
-          mountPath: /tmp
   extraVolumes:
     - name: tmp-volume
       emptyDir: {}

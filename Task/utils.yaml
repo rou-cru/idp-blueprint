@@ -16,7 +16,7 @@ tasks:
       - task: docs:helm
 
   docs:astro:build:
-    desc: 'Build Astro/Starlight docs site'
+    desc: 'Build Astro docs site'
     cmds:
       - |
         cd Docs
@@ -24,7 +24,7 @@ tasks:
         pnpm build
 
   docs:astro:dev:
-    desc: 'Run Astro/Starlight docs in dev mode'
+    desc: 'Run Astro docs in dev mode'
     cmds:
       - |
         cd Docs

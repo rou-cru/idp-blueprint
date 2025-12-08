@@ -1,6 +1,6 @@
-# IDP Blueprint Documentation (Astro/Starlight)
+# IDP Blueprint Documentation (Astro + Svelte 5 + Tailwind)
 
-This folder hosts the documentation site built with **Astro 5 + Starlight**.
+This folder hosts the documentation site built with **Astro 5 + Svelte 5 + Tailwind CSS**.
 Use these steps to work on docs locally and keep generated content in sync
 with the codebase.
 
