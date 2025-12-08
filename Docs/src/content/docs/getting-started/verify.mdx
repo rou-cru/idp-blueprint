@@ -7,11 +7,13 @@ sidebar:
 
 import { Button } from '../../../components/content/index.ts';
 
-Verify the deployment is converging, identify any resources still settling, and gather the URLs and credentials needed to access platform services.
+Verify the deployment is converging, identify any resources still settling, and gather
+the URLs and credentials needed to access platform services.
 
 ## First few minutes
 
-ArgoCD keeps syncing after `task deploy` exits. Pods move from Pending to Ready as images download, so Sync/Health will improve gradually rather than instantly.
+ArgoCD keeps syncing after `task deploy` exits. Pods move from Pending to Ready as
+images download, so Sync/Health will improve gradually rather than instantly.
 
 ## Quick checks from the terminal
 
@@ -39,15 +41,19 @@ kubectl -n kube-system wait --for=condition=Programmed gateway/idp-gateway --tim
 
 ![Platform Entry Points](../assets/diagrams/getting-started/verify-first-look.svg)
 
-Application cards in ArgoCD show Sync and Health status; some OutOfSync states are normal during initial convergence. Left sidebar projects correspond to the fuses enabled in `config.toml`. Opening a card reveals the resource graph and metadata.
+Application cards in ArgoCD show Sync and Health status; some OutOfSync states are
+normal during initial convergence. Left sidebar projects correspond to the fuses enabled
+in `config.toml`. Opening a card reveals the resource graph and metadata.
 
 ![ArgoCD — Applications list](../assets/images/verify/argocd_all_applications.png)
 
-Inside an application (e.g., `observability-kube-prometheus-stack`) you can see the graph plus source, destination, and manual Refresh/Sync controls.
+Inside an application (e.g., `observability-kube-prometheus-stack`) you can see the
+graph plus source, destination, and manual Refresh/Sync controls.
 
 ![ArgoCD — Application detail](../assets/images/verify/argocd_view_fluentbit-app.png)
 
-Prefer the terminal? Use `k9s -A` and jump between `:pods`, `:deploy`, `:events` to watch live.
+Prefer the terminal? Use `k9s -A` and jump between `:pods`, `:deploy`, `:events` to
+watch live.
 
 ![k9s — exploring resources](../assets/images/verify/k9s_xray.png)
 
@@ -57,12 +63,19 @@ Prefer the terminal? Use `k9s -A` and jump between `:pods`, `:deploy`, `:events`
 
 ![Gateway URLs printed by task deploy](../assets/images/verify/gateway-urls.png)
 
-Patterns replace `<ip-dashed>` with your LAN IP: ArgoCD at `https://argocd.<ip-dashed>.nip.io`, Grafana at `https://grafana.<ip-dashed>.nip.io`, Vault at `https://vault.<ip-dashed>.nip.io`, Argo Workflows at `https://workflows.<ip-dashed>.nip.io`, SonarQube at `https://sonarqube.<ip-dashed>.nip.io`. They are reachable from other devices on your LAN if your OS firewall allows NodePorts `30080`/`30443` (or the values in `config.toml`).
+Patterns replace `<ip-dashed>` with your LAN IP: ArgoCD at
+`https://argocd.<ip-dashed>.nip.io`, Grafana at `https://grafana.<ip-dashed>.nip.io`,
+Vault at `https://vault.<ip-dashed>.nip.io`, Argo Workflows at
+`https://workflows.<ip-dashed>.nip.io`, SonarQube at
+`https://sonarqube.<ip-dashed>.nip.io`. They are reachable from other devices on your
+LAN if your OS firewall allows NodePorts `30080`/`30443` (or the values in
+`config.toml`).
 
 ## Login notes
 
 - ArgoCD admin: `admin`
-- Password: value from `config.toml` (`passwords.argocd_admin`, default `argo`), stored bcrypt in the ArgoCD secret.
+- Password: value from `config.toml` (`passwords.argocd_admin`, default `argo`), stored
+  bcrypt in the ArgoCD secret.
 - CLI from LAN: ArgoCD runs HTTP behind the Gateway, so use `--plaintext`:
 
 ```bash
@@ -72,7 +85,8 @@ argocd login argocd.<ip-dashed>.nip.io --username admin \
 
 ## Certificates
 
-TLS uses a local, self-signed root CA for `*.${DNS_SUFFIX}` (derived from your LAN IP). Browsers will warn on first visit; you can proceed or import the CA.
+TLS uses a local, self-signed root CA for `*.${DNS_SUFFIX}` (derived from your LAN IP).
+Browsers will warn on first visit; you can proceed or import the CA.
 
 ![Browser warning — self-signed TLS prompt](../assets/images/verify/browser-warning.png)
 
@@ -82,27 +96,38 @@ kubectl -n cert-manager get secret idp-demo-ca-secret \
   -o jsonpath='{.data.tls\.crt}' | base64 -d > idp-demo-ca.crt
 ```
 
-- macOS: Keychain Access → System → Certificates → import `idp-demo-ca.crt` → "Always Trust".
-- Linux (Debian/Ubuntu): `sudo cp idp-demo-ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`
+- macOS: Keychain Access → System → Certificates → import `idp-demo-ca.crt` → "Always
+  Trust".
+- Linux (Debian/Ubuntu):
+  `sudo cp idp-demo-ca.crt /usr/local/share/ca-certificates/ && sudo update-ca-certificates`
 - Windows: `certmgr.msc`, import into "Trusted Root Certification Authorities".
 
-Certificates are issued automatically by cert-manager using that wildcard; the CA secret lives at `cert-manager/idp-demo-ca-secret`.
+Certificates are issued automatically by cert-manager using that wildcard; the CA secret
+lives at `cert-manager/idp-demo-ca-secret`.
 
 ## Smoke checks
 
-| Goal | Command | Expected result |
-| --- | --- | --- |
-| ArgoCD apps listed and converging | `kubectl -n argocd get applications` | Apps present; Sync moves toward `Synced` over a few minutes |
-| Grafana up with datasources | open `https://grafana.<ip>.nip.io` | UI loads; Prometheus/Loki datasources present |
-| Trivy Operator running | `kubectl -n security get pods | rg --line-number "trivy"` | `trivy-operator` and `trivy-server` pods Ready |
-| External Secrets working | `kubectl get externalsecrets,secretstores -A` | Objects present; ArgoCD secret exists (`kubectl -n argocd get secret argocd-secret`) |
-| Gateway programmed with certs | `kubectl -n kube-system get gateway idp-gateway -o yaml | rg --line-number "Programmed"` | Condition `Programmed` True; endpoints reachable over TLS |
+- **ArgoCD apps listed and converging:** `kubectl -n argocd get applications`
+  → apps show up and move toward `Synced` within a few minutes.
+- **Grafana up with datasources:** open `https://grafana.<ip>.nip.io`
+  → UI loads with Prometheus/Loki datasources present.
+- **Trivy Operator running:**
+  `kubectl -n security get pods | rg --line-number "trivy"`
+  → `trivy-operator` and `trivy-server` pods are Ready.
+- **External Secrets working:**
+  `kubectl get externalsecrets,secretstores -A`
+  → objects exist; ArgoCD secret present (`kubectl -n argocd get secret argocd-secret`).
+- **Gateway programmed with certs:**
+  `kubectl -n kube-system get gateway idp-gateway -o yaml | rg --line-number "Programmed"`
+  → condition `Programmed` is True and endpoints reachable over TLS.
 
 ## If something stalls
 
 - Pods in `ImagePullBackOff`: check network access, free disk, then retry `task deploy`.
-- Gateway not ready: free the ports defined in `config.toml` and re-run the wait command.
-- Applications stuck OutOfSync: use ArgoCD UI or `argocd app sync <name>` after images are present.
+- Gateway not ready: free the ports defined in `config.toml` and re-run the wait
+  command.
+- Applications stuck OutOfSync: use ArgoCD UI or `argocd app sync <name>` after images
+  are present.
 
 <div class="flex justify-center gap-3 mt-8">
   <Button href="/getting-started/quickstart/" variant="secondary" icon="arrow-left">

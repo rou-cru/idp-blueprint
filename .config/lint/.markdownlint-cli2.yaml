@@ -45,6 +45,7 @@ config:
 
   MD013:
     line_length: 92
+    tables: false
 
 # Allow the use of inline HTML like <details> and <summary>
 
@@ -72,4 +73,5 @@ config:
         'Card',
         'CardGrid',
         'div',
+        'Button',
       ]

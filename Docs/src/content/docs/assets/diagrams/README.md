@@ -69,18 +69,18 @@ Get-ChildItem -Path "Docs\src\assets\diagrams" -Recurse -Filter "*.d2" | ForEach
 
 All diagrams follow a consistent color scheme defined in classes:
 
-| Class | Description | Fill | Stroke |
-|-------|-------------|------|--------|
-| `actor` | Users, Engineers | `#0f172a` | `#38bdf8` |
+| Class     | Description                         | Fill      | Stroke    |
+| --------- | ----------------------------------- | --------- | --------- |
+| `actor`   | Users, Engineers                    | `#0f172a` | `#38bdf8` |
 | `control` | Control Logic (ArgoCD, Controllers) | `#111827` | `#6366f1` |
-| `infra` | Infrastructure (K8s, Clusters) | `#0f172a` | `#38bdf8` |
-| `data` | Data/State (Vault, Git, DBs) | `#0f766e` | `#34d399` |
-| `ui` | UI/Dashboards | `#7c3aed` | `#a855f7` |
-| `ext` | External Systems | `#0f172a` | `#22d3ee` |
+| `infra`   | Infrastructure (K8s, Clusters)      | `#0f172a` | `#38bdf8` |
+| `data`    | Data/State (Vault, Git, DBs)        | `#0f766e` | `#34d399` |
+| `ui`      | UI/Dashboards                       | `#7c3aed` | `#a855f7` |
+| `ext`     | External Systems                    | `#0f172a` | `#22d3ee` |
 
 Example usage:
 
-```
+```d2
 classes: {
   control: { style: { fill: "#111827"; stroke: "#6366f1"; font-color: white } }
 }

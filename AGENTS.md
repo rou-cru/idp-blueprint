@@ -2,7 +2,10 @@
 
 ## Project Overview
 
-IDP Blueprint is a comprehensive open-source Internal Developer Platform reference implementation designed for local or lab Kubernetes clusters (k3d by default). It provides a complete GitOps-based platform with integrated tools for policy governance, observability, CI/CD, and secrets management.
+IDP Blueprint is a comprehensive open-source Internal Developer Platform reference
+implementation designed for local or lab Kubernetes clusters (k3d by default). It
+provides a complete GitOps-based platform with integrated tools for policy governance,
+observability, CI/CD, and secrets management.
 
 **Key Characteristics:**
 
@@ -16,12 +19,22 @@ IDP Blueprint is a comprehensive open-source Internal Developer Platform referen
 
 ## How to work
 
-- **Serena**: If Serena MCP is available, then its the main tool for all related with code base including investigation and exploring. Always.
-- **Playwright**: If Playright MCP is available, ask the user if is need it a visual check or debug in browser after changes related with Backstage or Astro Documentation
-- **Sequential Thinking**: If sequential-thinking MCP is available, use it to arge againts your first plan for huge or critical changes. All is wrong until you can demostrate with objective evidence that your plan is correct and robust, just after that you can ask the user for appoval.
-- **Planning**: Dont patch symptompts, find root causes and plan the fix before edit files
-- **User Plan requested**: If the user ask explicetly for a planing task for a refactor or a complex fix, after complete the planning read .serena/memories/validate_plan.md and do the validations.
-- **Commits**: If Code Rabbit is available always run "cr --prompt-only" after stashed the changes and before complete the commit. Fix all the issues reported by Code Rabbit.
+- **Serena**: If Serena MCP is available, then it's the main tool for all code-base
+  work including investigation and exploring. Always.
+- **Playwright**: If Playwright MCP is available, ask the user if a visual check or
+  browser debug is needed after changes related to Backstage or Astro Documentation.
+- **Sequential Thinking**: If sequential-thinking MCP is available, use it to argue
+  against your first plan for huge or critical changes. Everything is wrong until
+  you can demonstrate with objective evidence that your plan is correct and robust;
+  only then ask the user for approval.
+- **Planning**: Don't patch symptoms—find root causes and plan the fix before editing
+  files.
+- **User Plan requested**: If the user asks explicitly for a planning task for a
+  refactor or a complex fix, after completing the planning read
+  .serena/memories/validate_plan.md and do the validations.
+- **Commits**: If Code Rabbit is available always run "cr --prompt-only" after stashed
+  the changes and before complete the commit. Fix all the issues reported by Code
+  Rabbit.
 
 ## Technology Stack
 
@@ -48,8 +61,8 @@ IDP Blueprint is a comprehensive open-source Internal Developer Platform referen
 
 ```text
 /home/rc/idp-blueprint/
-├── IT/                    # Bootstrap layer (Cilium, cert-manager, Vault, ESO, ArgoCD, Gateway)
-├── K8s/                   # GitOps application stacks (backstage, cicd, events, observability, security)
+├── IT/        # Bootstrap layer (Cilium, cert-manager, Vault, ESO, ArgoCD)
+├── K8s/       # GitOps stacks (backstage, cicd, events, observability, security)
 ├── Policies/              # Kyverno engine and policies
 ├── Task/                  # Taskfile orchestration modules
 ├── Scripts/               # Helper scripts for config, vault, validation, documentation
@@ -275,4 +288,6 @@ Configuration in `config.toml`:
 - Review policy reports for violations
 - Check resource quotas and limits
 
-This guide provides comprehensive information for AI agents working with the IDP Blueprint project. Always refer to the actual configuration files and documentation for the most current information.
+This guide provides comprehensive information for AI agents working with the IDP
+Blueprint project. Always refer to the actual configuration files and documentation for
+the most current information.
