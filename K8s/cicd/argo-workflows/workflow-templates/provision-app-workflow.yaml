@@ -69,15 +69,10 @@ spec:
           capabilities:
             drop:
               - ALL
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "bash"]
+        command: ["bash"]
         source: |
           #!/bin/bash
           set -e
@@ -201,15 +196,10 @@ spec:
           capabilities:
             drop:
               - ALL
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "bash"]
+        command: ["bash"]
         source: |
           #!/bin/bash
           set -e
@@ -276,15 +266,10 @@ spec:
           capabilities:
             drop:
               - ALL
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "bash"]
+        command: ["bash"]
         source: |
           #!/bin/bash
           set -e

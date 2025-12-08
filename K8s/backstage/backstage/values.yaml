@@ -36,11 +36,6 @@ backstage:
     - name: wait-for-dex
       image: roucru/idp-blueprint:ops
       imagePullPolicy: IfNotPresent
-      env:
-        - name: HOME
-          value: /tmp
-        - name: XDG_CACHE_HOME
-          value: /tmp/.cache
       volumeMounts:
         - name: tmp-volume
           mountPath: /tmp
@@ -60,16 +55,14 @@ backstage:
             echo "Attempt $attempt/$max_attempts: Dex not ready, waiting 5 seconds..."
             sleep 5
           done
-                      echo "SUCCESS: Dex is ready!"
-                    securityContext:
-                      allowPrivilegeEscalation: false
-                      capabilities:
-                        drop: ["ALL"]
-                      readOnlyRootFilesystem: true
-                      runAsNonRoot: true
-                      runAsUser: 1001
-            extraVolumeMounts:    - name: tmp-volume
-      mountPath: /tmp
+          echo "SUCCESS: Dex is ready!"
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 1001
   extraVolumes:
     - name: tmp-volume
       emptyDir: {}
