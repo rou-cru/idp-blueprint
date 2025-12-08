@@ -4,37 +4,58 @@ sidebar:
   label: Overview
   order: 1
 ---
+
 import { Button } from '../../../components/content/index.ts';
 
-IDP Blueprint is an **open-source reference architecture for Internal Developer Platforms** on Kubernetes. It defines patterns for GitOps-driven infrastructure, policy enforcement, secrets management, observability, and developer tooling—designed with production concerns (scalability, security, maintainability) as primary constraints.
+IDP Blueprint is an **open-source reference architecture for Internal Developer
+Platforms** on Kubernetes. It defines patterns for GitOps-driven infrastructure, policy
+enforcement, secrets management, observability, and developer tooling—designed with
+production concerns (scalability, security, maintainability) as primary constraints.
 
-The project **includes a demo implementation** optimized to run on laptop-class hardware, home labs, or single-node development clusters. The demo validates the architecture in a live environment, allowing you to explore component interactions and operational workflows rather than relying solely on documentation.
+The project **includes a demo implementation** optimized to run on laptop-class
+hardware, home labs, or single-node development clusters. The demo validates the
+architecture in a live environment, allowing you to explore component interactions and
+operational workflows rather than relying solely on documentation.
 
-**Architecture vs Implementation:** The reference architecture establishes technology-agnostic patterns applicable to production environments. The demo makes deliberate tradeoffs—simplified secret management, ephemeral DNS (nip.io), reduced resource reservations—to remain deployable on constrained hardware. Before production use, these demo-specific choices must be replaced with hardened alternatives matching your operational context.
+**Architecture vs Implementation:** The reference architecture establishes
+technology-agnostic patterns applicable to production environments. The demo makes
+deliberate tradeoffs—simplified secret management, ephemeral DNS (nip.io), reduced
+resource reservations—to remain deployable on constrained hardware. Before production
+use, these demo-specific choices must be replaced with hardened alternatives matching
+your operational context.
 
 ## What the demo provides
 
-The reference implementation deploys a three-node local Kubernetes cluster with the full IDP stack. Deployment orchestration is automated through `task deploy`, which handles dependency sequencing and validation.
+The reference implementation deploys a three-node local Kubernetes cluster with the full
+IDP stack. Deployment orchestration is automated through `task deploy`, which handles
+dependency sequencing and validation.
 
-The demo environment includes operational tooling (kubectl, k9s, ArgoCD CLI, MCP integrations) encapsulated in Devbox or VS Code Dev Containers. The host requires only a container runtime, git, and sufficient hardware resources.
+The demo environment includes operational tooling (kubectl, k9s, ArgoCD CLI, MCP
+integrations) encapsulated in Devbox or VS Code Dev Containers. The host requires only a
+container runtime, git, and sufficient hardware resources.
 
 ## Demo vs Production
 
-The demo implementation makes deliberate tradeoffs to remain deployable on constrained hardware. **These are implementation choices for the demo, not architectural decisions of the IDP reference.**
+The demo implementation makes deliberate tradeoffs to remain deployable on constrained
+hardware. **These are implementation choices for the demo, not architectural decisions
+of the IDP reference.**
 
-| Aspect | Demo Implementation | Production Recommendation |
-|--------|---------------------|---------------------------|
-| **Secrets** | Credentials in `config.toml` (Git-tracked) | External secret store (Vault cluster, cloud KMS) + sealed secrets |
-| **DNS** | nip.io wildcard (ephemeral, no registration) | Registered domain + DNS provider integration |
-| **TLS** | Self-signed CA, HTTP internal to services | Valid CA certificates, end-to-end TLS |
-| **Vault** | Standalone, auto-unseal via K8s Secret | HA cluster (Raft/Consul), hardware/cloud auto-unseal |
-| **Networking** | NodePort (30080/30443) on k3d | LoadBalancer with cloud integration or MetalLB/Cilium L2 |
-| **Resource sizing** | Minimal requests/limits, single replicas | Sized for load, multi-replica, HPA enabled |
-| **Retention** | Short-term (Loki 6h, small PVCs) | Long-term retention, object storage backends |
+| Aspect              | Demo Implementation                          | Production Recommendation                                         |
+| ------------------- | -------------------------------------------- | ----------------------------------------------------------------- |
+| **Secrets**         | Credentials in `config.toml` (Git-tracked)   | External secret store (Vault cluster, cloud KMS) + sealed secrets |
+| **DNS**             | nip.io wildcard (ephemeral, no registration) | Registered domain + DNS provider integration                      |
+| **TLS**             | Self-signed CA, HTTP internal to services    | Valid CA certificates, end-to-end TLS                             |
+| **Vault**           | Standalone, auto-unseal via K8s Secret       | HA cluster (Raft/Consul), hardware/cloud auto-unseal              |
+| **Networking**      | NodePort (30080/30443) on k3d                | LoadBalancer with cloud integration or MetalLB/Cilium L2          |
+| **Resource sizing** | Minimal requests/limits, single replicas     | Sized for load, multi-replica, HPA enabled                        |
+| **Retention**       | Short-term (Loki 6h, small PVCs)             | Long-term retention, object storage backends                      |
 
-The underlying architecture—GitOps control plane, policy-driven governance, layered infrastructure, observability stack—applies to production. See the Architecture section for design decisions independent of demo-specific implementations.
+The underlying architecture—GitOps control plane, policy-driven governance, layered
+infrastructure, observability stack—applies to production. See the Architecture section
+for design decisions independent of demo-specific implementations.
 
-The following sections guide you through deploying and validating the reference implementation.
+The following sections guide you through deploying and validating the reference
+implementation.
 
 <div class="flex justify-center gap-3 mt-8">
   <Button href="/getting-started/prerequisites/" variant="primary" icon="arrow-right">

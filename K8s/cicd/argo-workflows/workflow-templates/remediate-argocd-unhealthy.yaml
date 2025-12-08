@@ -15,6 +15,9 @@ metadata:
 spec:
   entrypoint: force-sync
   serviceAccountName: argo-workflow
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
   arguments:
     parameters:
       - name: app-name
@@ -31,13 +34,12 @@ spec:
         parameters:
           - name: app-name
           - name: namespace
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
       container:
         image: roucru/idp-blueprint:ops
         imagePullPolicy: IfNotPresent
         securityContext:
+          runAsNonRoot: true
+          runAsUser: 10001
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           capabilities:

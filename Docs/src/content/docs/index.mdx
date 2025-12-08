@@ -6,9 +6,16 @@ description: Production-Ready Internal Developer Platform Reference
 import { Card, CardGrid, Button } from '../../components/content/index.ts';
 
 <div class="text-center py-16 px-4 max-w-4xl mx-auto">
-  <h1 class="text-6xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-purple-light mb-6">IDP Blueprint</h1>
+  <h1
+    class="text-6xl md:text-7xl font-bold tracking-tight bg-clip-text text-transparent
+    bg-gradient-to-r from-brand-purple to-brand-purple-light mb-6"
+  >
+    IDP Blueprint
+  </h1>
   <p class="text-xl leading-relaxed text-text-secondary mb-8">
-    An enterprise-grade Internal Developer Platform reference architecture. Built with Kubernetes, ArgoCD, and GitOps principles to deliver a complete developer experience in minutes.
+    An enterprise-grade Internal Developer Platform reference architecture. Built with
+    Kubernetes, ArgoCD, and GitOps principles to deliver a complete developer
+    experience in minutes.
   </p>
   <div class="flex flex-wrap gap-4 justify-center">
     <Button href="/getting-started/overview/" variant="primary" icon="arrow-right">
@@ -26,22 +33,28 @@ import { Card, CardGrid, Button } from '../../components/content/index.ts';
 
 <CardGrid columns={3}>
   <Card title="GitOps Native" icon="lucide:git">
-    Everything is code. Infrastructure, applications, and policies are reconciled automatically from Git using **ArgoCD** and **ApplicationSets**.
+    Everything is code. Infrastructure, applications, and policies are reconciled
+    automatically from Git using **ArgoCD** and **ApplicationSets**.
   </Card>
   <Card title="Policy as Code" icon="lucide:shield-check">
-    Guardrails are built-in. **Kyverno** enforces labels, limits, and security contracts at the cluster level before deployment.
+    Guardrails are built-in. **Kyverno** enforces labels, limits, and security
+    contracts at the cluster level before deployment.
   </Card>
   <Card title="Full Observability" icon="lucide:search">
-    Day-2 ready. Pre-configured **Prometheus**, **Grafana**, **Loki**, and **Fluent-bit** stacks with dashboards and SLOs managed as code.
+    Day-2 ready. Pre-configured **Prometheus**, **Grafana**, **Loki**, and
+    **Fluent-bit** stacks with dashboards and SLOs managed as code.
   </Card>
   <Card title="Secure by Design" icon="lucide:lock">
-    No secrets in Git. **Vault** integrates with **External Secrets Operator** to inject credentials securely into Kubernetes Secrets.
+    No secrets in Git. **Vault** integrates with **External Secrets Operator** to
+    inject credentials securely into Kubernetes Secrets.
   </Card>
   <Card title="Automated Networking" icon="lucide:network">
-    One Gateway to rule them all. **Gateway API** + **Cilium** handle traffic with automated TLS certificates via **cert-manager** and `nip.io`.
+    One Gateway to rule them all. **Gateway API** + **Cilium** handle traffic with
+    automated TLS certificates via **cert-manager** and `nip.io`.
   </Card>
   <Card title="Local to Prod" icon="lucide:laptop">
-    Bootstraps a full enterprise-like environment on your laptop (via k3d) in **< 10 minutes**, mirroring production constraints perfectly.
+    Bootstraps a full enterprise-like environment on your laptop (via k3d) in **< 10
+    minutes**, mirroring production constraints perfectly.
   </Card>
 </CardGrid>
 
@@ -49,7 +62,8 @@ import { Card, CardGrid, Button } from '../../components/content/index.ts';
 
 ## High-Level Architecture
 
-A complete logical map of the platform layers, from the developer's commit to the running service.
+A complete logical map of the platform layers, from the developer's commit to the
+running service.
 
 ![IDP Blueprint Architecture](./assets/diagrams/index-architecture.svg)
 
@@ -80,7 +94,8 @@ The best-in-class open source components powering the platform.
 
 <CardGrid columns={2}>
   <Card title="Platform Engineers" icon="lucide:settings">
-    Bootstrap a reference implementation to compare against your internal stack or start fresh with best practices.
+    Bootstrap a reference implementation to compare against your internal stack or
+    start fresh with best practices.
 
     [Explore Operational Guides](/operate/)
   </Card>

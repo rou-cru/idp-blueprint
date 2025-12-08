@@ -6,24 +6,36 @@ sidebar:
   label: Bootstrap
   order: 2
 ---
+
 import { Button } from '../../../components/content/index.ts';
 
-The **Bootstrap Layer** addresses the initialization problem inherent in GitOps-managed platforms: declarative tooling (reconciliation controllers) requires an operational cluster, but the cluster itself needs initial configuration before declarative management can begin.
+The **Bootstrap Layer** addresses the initialization problem inherent in GitOps-managed
+platforms: declarative tooling (reconciliation controllers) requires an operational
+cluster, but the cluster itself needs initial configuration before declarative
+management can begin.
 
-This layer bridges the gap between bare infrastructure and GitOps-ready state through imperative orchestration, handling foundational dependencies that cannot be purely declarative.
+This layer bridges the gap between bare infrastructure and GitOps-ready state through
+imperative orchestration, handling foundational dependencies that cannot be purely
+declarative.
 
 ## Bootstrap Requirements
 
-Bootstrap orchestration requires capabilities beyond simple manifest application. The orchestrator must handle:
+Bootstrap orchestration requires capabilities beyond simple manifest application. The
+orchestrator must handle:
 
-1. **Dependency sequencing**: Components have strict ordering requirements (e.g., CRDs before custom resources, webhooks before dependent resources).
-2. **Secret initialization**: Cryptographic material (CA certificates, encryption keys, initial credentials) must be generated securely before dependent services start.
-3. **Readiness gates**: The orchestrator must wait for conditions (API server readiness, CRD establishment, webhook availability) before proceeding.
-4. **Environment-specific templating**: Certain values (ingress endpoints, storage classes, node selectors) cannot be predetermined and require runtime injection.
+1. **Dependency sequencing**: Components have strict ordering requirements (e.g., CRDs
+   before custom resources, webhooks before dependent resources).
+2. **Secret initialization**: Cryptographic material (CA certificates, encryption keys,
+   initial credentials) must be generated securely before dependent services start.
+3. **Readiness gates**: The orchestrator must wait for conditions (API server readiness,
+   CRD establishment, webhook availability) before proceeding.
+4. **Environment-specific templating**: Certain values (ingress endpoints, storage
+   classes, node selectors) cannot be predetermined and require runtime injection.
 
 ### Bootstrap Timeline
 
-The bootstrap sequence progresses through distinct phases, each establishing prerequisites for the next:
+The bootstrap sequence progresses through distinct phases, each establishing
+prerequisites for the next:
 
 ![Bootstrap Timeline](../assets/diagrams/architecture/bootstrap-timeline.svg)
 
@@ -33,18 +45,22 @@ Bootstrap automation addresses challenges common to self-hosted platforms:
 
 ### Secrets Store Initialization
 
-Centralized secrets stores typically require manual initialization (key generation, unseal procedures) that blocks automated deployment. The bootstrap layer automates this workflow:
+Centralized secrets stores typically require manual initialization (key generation,
+unseal procedures) that blocks automated deployment. The bootstrap layer automates this
+workflow:
 
 1. Initialize the secrets store with appropriate key shares and threshold
 2. Securely capture initialization credentials (unseal keys, root tokens)
 3. Perform initial unseal to enable operator connectivity
 4. Store initialization artifacts in the cluster for subsequent operations
 
-This enables fully unattended deployment while maintaining appropriate security boundaries.
+This enables fully unattended deployment while maintaining appropriate security
+boundaries.
 
 ### Dynamic Ingress Configuration
 
-Constrained environments often lack static IP addresses, load balancers, or DNS infrastructure. Bootstrap addresses this through runtime configuration:
+Constrained environments often lack static IP addresses, load balancers, or DNS
+infrastructure. Bootstrap addresses this through runtime configuration:
 
 - Detect available network interfaces and addresses
 - Generate ingress endpoints based on discovered network topology
@@ -53,7 +69,8 @@ Constrained environments often lack static IP addresses, load balancers, or DNS 
 
 ### API Server Extensions
 
-Kubernetes API extensions (admission webhooks, conversion webhooks, CRDs) require careful sequencing to avoid race conditions:
+Kubernetes API extensions (admission webhooks, conversion webhooks, CRDs) require
+careful sequencing to avoid race conditions:
 
 - Deploy CRDs and wait for establishment before applying custom resources
 - Ensure webhook services are ready before dependent API calls
@@ -63,23 +80,32 @@ Kubernetes API extensions (admission webhooks, conversion webhooks, CRDs) requir
 
 The bootstrap process follows a dependency-ordered sequence to reach GitOps-ready state:
 
-1. **Cluster & Foundation**: Provision compute nodes and install essential CRDs (observability operators, ingress APIs).
-2. **Networking & Security**: Deploy CNI, establish network policies, install PKI infrastructure for certificate management.
-3. **Secrets Management**: Deploy centralized secrets store, execute initialization automation, configure secrets synchronization operators.
-4. **GitOps Handover**: Deploy reconciliation controller and configure repository access. Once operational, the reconciliation controller assumes responsibility for all subsequent configuration.
+1. **Cluster & Foundation**: Provision compute nodes and install essential CRDs
+   (observability operators, ingress APIs).
+2. **Networking & Security**: Deploy CNI, establish network policies, install PKI
+   infrastructure for certificate management.
+3. **Secrets Management**: Deploy centralized secrets store, execute initialization
+   automation, configure secrets synchronization operators.
+4. **GitOps Handover**: Deploy reconciliation controller and configure repository
+   access. Once operational, the reconciliation controller assumes responsibility for
+   all subsequent configuration.
 
-At this point, bootstrap automation completes. The platform transitions to continuous reconciliation from Git, with all further changes managed declaratively.
+At this point, bootstrap automation completes. The platform transitions to continuous
+reconciliation from Git, with all further changes managed declaratively.
 
 ## Implementation in Demo
 
 The reference implementation uses:
 
-- **Orchestrator**: Task (`Taskfile.yaml`) for dependency sequencing and environment injection
+- **Orchestrator**: Task (`Taskfile.yaml`) for dependency sequencing and environment
+  injection
 - **Compute**: k3d (k3s) for lightweight Kubernetes clusters
-- **Secrets automation**: `Scripts/vault-init.sh` for Vault initialization and auto-unseal
+- **Secrets automation**: `Scripts/vault-init.sh` for Vault initialization and
+  auto-unseal
 - **Ingress discovery**: nip.io wildcard DNS based on detected LAN IP
 
-See [Getting Started - Quickstart](/getting-started/quickstart/) for deployment procedures.
+See [Getting Started - Quickstart](/getting-started/quickstart/) for deployment
+procedures.
 
 <div class="flex justify-center gap-3 mt-8">
   <Button href="/architecture/overview/" variant="secondary" icon="arrow-left">

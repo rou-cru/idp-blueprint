@@ -6,63 +6,161 @@ sidebar:
   label: Infrastructure
   order: 3
 ---
+
 import { Button } from '../../../components/content/index.ts';
 
-The **Infrastructure Core** provides the foundational capabilities required by platform services and application workloads: compute scheduling, network connectivity, secret distribution, and traffic routing.
+The **Infrastructure Core** provides the foundational capabilities required by platform
+services and application workloads: compute scheduling, network connectivity, secret
+distribution, and traffic routing.
 
-This layer establishes cloud-agnostic primitives suitable for resource-constrained environments (edge, on-premises, development clusters) while remaining applicable to larger deployments. It replaces managed cloud services with self-hosted, open-source alternatives.
+This layer establishes cloud-agnostic primitives suitable for resource-constrained
+environments (edge, on-premises, development clusters) while remaining applicable to
+larger deployments. It replaces managed cloud services with self-hosted, open-source
+alternatives.
 
 ## Compute Substrate
 
-Kubernetes forms the foundation, but not all distributions suit constrained environments. The platform requires a CNCF-compliant distribution stripped of cloud-provider integrations that assume AWS, Azure, or GCP infrastructure. Legacy components designed for massive cloud deployments add overhead without benefit in edge or on-premises scenarios. A minimal distribution provides the Kubernetes API and scheduling without the baggage.
+Kubernetes forms the foundation, but not all distributions suit constrained
+environments. The platform requires a CNCF-compliant distribution stripped of
+cloud-provider integrations that assume AWS, Azure, or GCP infrastructure. Legacy
+components designed for massive cloud deployments add overhead without benefit in edge
+or on-premises scenarios. A minimal distribution provides the Kubernetes API and
+scheduling without the baggage.
 
-Multi-node topologies prove essential even in small deployments. Separating control plane and worker nodes enables realistic scheduling patterns—workloads tagged with taints that prevent them from running on control plane nodes, critical infrastructure components that tolerate those taints as a failover path. This mimics production constraints where control plane capacity is reserved, forcing proper resource declarations and priority handling.
+Multi-node topologies prove essential even in small deployments. Separating control
+plane and worker nodes enables realistic scheduling patterns—workloads tagged with
+taints that prevent them from running on control plane nodes, critical infrastructure
+components that tolerate those taints as a failover path. This mimics production
+constraints where control plane capacity is reserved, forcing proper resource
+declarations and priority handling.
 
-Fast provisioning supports development workflows. Developers and CI systems spin up clusters for testing, validate changes, then tear down the infrastructure. Distributions optimized for this use case provision clusters in seconds or minutes rather than hours, enabling rapid feedback loops without cloud costs.
+Fast provisioning supports development workflows. Developers and CI systems spin up
+clusters for testing, validate changes, then tear down the infrastructure. Distributions
+optimized for this use case provision clusters in seconds or minutes rather than hours,
+enabling rapid feedback loops without cloud costs.
 
 ## Networking & Ingress
 
-Basic Kubernetes networking connects pods, but platforms need deeper capabilities: traffic encryption, fine-grained access control, and visibility into connection patterns. Modern CNI implementations address these requirements through eBPF—kernel-level programs that process packets with minimal overhead. Traditional iptables-based networking struggles with large rule sets and provides limited observability. eBPF datapaths scale to thousands of services while exposing network flow metadata for troubleshooting and security analysis.
+Basic Kubernetes networking connects pods, but platforms need deeper capabilities:
+traffic encryption, fine-grained access control, and visibility into connection
+patterns. Modern CNI implementations address these requirements through
+eBPF—kernel-level programs that process packets with minimal overhead. Traditional
+iptables-based networking struggles with large rule sets and provides limited
+observability. eBPF datapaths scale to thousands of services while exposing network flow
+metadata for troubleshooting and security analysis.
 
-Network policies become enforceable at the CNI layer. Rather than relying on application-level controls, policies block traffic between namespaces, restrict egress to specific external endpoints, or require mutual TLS for inter-service communication. These policies apply transparently—applications don't implement the controls themselves; the network fabric enforces them.
+Network policies become enforceable at the CNI layer. Rather than relying on
+application-level controls, policies block traffic between namespaces, restrict egress
+to specific external endpoints, or require mutual TLS for inter-service communication.
+These policies apply transparently—applications don't implement the controls themselves;
+the network fabric enforces them.
 
-Service mesh capabilities emerge from CNI features rather than requiring sidecar proxies. Transparent encryption protects inter-pod traffic without modifying application code or injecting additional containers. Load balancing occurs in the datapath rather than through separate proxy processes, reducing latency and resource consumption. This approach delivers service mesh benefits with lower operational complexity.
+Service mesh capabilities emerge from CNI features rather than requiring sidecar
+proxies. Transparent encryption protects inter-pod traffic without modifying application
+code or injecting additional containers. Load balancing occurs in the datapath rather
+than through separate proxy processes, reducing latency and resource consumption. This
+approach delivers service mesh benefits with lower operational complexity.
 
-Ingress management evolved beyond the original Ingress API through Gateway API. The new model separates concerns: infrastructure operators provision Gateway resources that define listeners, TLS configuration, and backend capacity. Developers attach HTTPRoute or GRPCRoute resources that specify routing rules for their applications. This separation prevents developers from modifying infrastructure (TLS certificates, load balancer configuration) while granting them control over how traffic reaches their services.
+Ingress management evolved beyond the original Ingress API through Gateway API. The new
+model separates concerns: infrastructure operators provision Gateway resources that
+define listeners, TLS configuration, and backend capacity. Developers attach HTTPRoute
+or GRPCRoute resources that specify routing rules for their applications. This
+separation prevents developers from modifying infrastructure (TLS certificates, load
+balancer configuration) while granting them control over how traffic reaches their
+services.
 
-Gateway API supports protocol-specific routing that the original Ingress API couldn't express. HTTP routes match on headers, query parameters, or path patterns. gRPC routes direct traffic based on service and method names. TCP and UDP routes handle non-HTTP protocols. This expressiveness eliminates the need for annotation-based configuration that plagued Ingress controllers.
+Gateway API supports protocol-specific routing that the original Ingress API couldn't
+express. HTTP routes match on headers, query parameters, or path patterns. gRPC routes
+direct traffic based on service and method names. TCP and UDP routes handle non-HTTP
+protocols. This expressiveness eliminates the need for annotation-based configuration
+that plagued Ingress controllers.
 
-Backends aren't limited to cluster services. Routes direct traffic to external endpoints—legacy systems outside Kubernetes, cloud-managed databases, or partner APIs. Traffic splitting sends a percentage of requests to each backend, enabling canary deployments or gradual migrations. Custom filters inject authentication checks, rate limiting, or header transformations without modifying application code.
+Backends aren't limited to cluster services. Routes direct traffic to external
+endpoints—legacy systems outside Kubernetes, cloud-managed databases, or partner APIs.
+Traffic splitting sends a percentage of requests to each backend, enabling canary
+deployments or gradual migrations. Custom filters inject authentication checks, rate
+limiting, or header transformations without modifying application code.
 
 ## Secrets Management
 
-Managed cloud services like AWS KMS or Azure Key Vault aren't available in self-hosted environments. Platforms must run their own secrets infrastructure, providing encrypted storage, access control, and audit capabilities without relying on cloud providers.
+Managed cloud services like AWS KMS or Azure Key Vault aren't available in self-hosted
+environments. Platforms must run their own secrets infrastructure, providing encrypted
+storage, access control, and audit capabilities without relying on cloud providers.
 
-A centralized secrets store anchors this architecture. Unlike Kubernetes Secrets, which are merely base64-encoded (not encrypted), a dedicated store encrypts data at rest using configurable backends. Production deployments might use hardware security modules (HSMs) for encryption keys, while development environments accept filesystem encryption. The store supports pluggable backends—object storage for durability, databases for queryability—matching the deployment environment's constraints.
+A centralized secrets store anchors this architecture. Unlike Kubernetes Secrets, which
+are merely base64-encoded (not encrypted), a dedicated store encrypts data at rest using
+configurable backends. Production deployments might use hardware security modules (HSMs)
+for encryption keys, while development environments accept filesystem encryption. The
+store supports pluggable backends—object storage for durability, databases for
+queryability—matching the deployment environment's constraints.
 
-Access control operates at a finer granularity than Kubernetes RBAC. Policies grant specific identities permission to read particular secret paths, write to designated prefixes, or rotate credentials within defined namespaces. An application's service account might read database passwords but not modify them. Operations team accounts can rotate all secrets. Audit logs capture every access: who read which secret, when, and from what client IP. This satisfies compliance requirements that Kubernetes Secret access logs cannot meet.
+Access control operates at a finer granularity than Kubernetes RBAC. Policies grant
+specific identities permission to read particular secret paths, write to designated
+prefixes, or rotate credentials within defined namespaces. An application's service
+account might read database passwords but not modify them. Operations team accounts can
+rotate all secrets. Audit logs capture every access: who read which secret, when, and
+from what client IP. This satisfies compliance requirements that Kubernetes Secret
+access logs cannot meet.
 
-High availability requires multi-node deployment with replication. When a secrets store node fails, others continue serving requests without interruption. Raft consensus or database replication keeps secrets synchronized across nodes. This availability proves critical—if the secrets store becomes unavailable, applications can't start, workflows can't authenticate, and the platform degrades.
+High availability requires multi-node deployment with replication. When a secrets store
+node fails, others continue serving requests without interruption. Raft consensus or
+database replication keeps secrets synchronized across nodes. This availability proves
+critical—if the secrets store becomes unavailable, applications can't start, workflows
+can't authenticate, and the platform degrades.
 
-Applications don't integrate with the secrets store directly. A synchronization operator bridges the gap. Developers declare what secrets their applications need through custom resources—declarative definitions specifying the secret path, target namespace, and refresh interval. The operator watches for these definitions, authenticates to the secrets store using its platform identity, fetches the secret material, and creates standard Kubernetes Secrets in the appropriate namespaces.
+Applications don't integrate with the secrets store directly. A synchronization operator
+bridges the gap. Developers declare what secrets their applications need through custom
+resources—declarative definitions specifying the secret path, target namespace, and
+refresh interval. The operator watches for these definitions, authenticates to the
+secrets store using its platform identity, fetches the secret material, and creates
+standard Kubernetes Secrets in the appropriate namespaces.
 
-This indirection maintains application portability. Applications consume secrets through environment variables or volume mounts, standard Kubernetes patterns they'd use regardless of the underlying secrets infrastructure. The secrets store and operator remain platform concerns that applications don't depend on directly. When secrets rotate in the store, the operator updates the Kubernetes Secret, triggering pod restarts if configured. Applications receive new credentials without manual intervention.
+This indirection maintains application portability. Applications consume secrets through
+environment variables or volume mounts, standard Kubernetes patterns they'd use
+regardless of the underlying secrets infrastructure. The secrets store and operator
+remain platform concerns that applications don't depend on directly. When secrets rotate
+in the store, the operator updates the Kubernetes Secret, triggering pod restarts if
+configured. Applications receive new credentials without manual intervention.
 
 ## GitOps Control Plane
 
-Git serves as the source of truth, but something must translate commits into cluster state. The reconciliation controller fills this role, continuously monitoring Git repositories for changes and applying them to the cluster. When platform engineers commit new manifest files, the controller detects the change, applies the resources, and verifies they reach the desired state.
+Git serves as the source of truth, but something must translate commits into cluster
+state. The reconciliation controller fills this role, continuously monitoring Git
+repositories for changes and applying them to the cluster. When platform engineers
+commit new manifest files, the controller detects the change, applies the resources, and
+verifies they reach the desired state.
 
-Drift detection forms a critical capability. Operators occasionally make manual changes during incidents—scaling a deployment to handle unexpected load, modifying a ConfigMap to alter behavior temporarily. The reconciliation controller identifies these deviations from Git state and reverts them automatically. This enforcement prevents configuration drift that makes environments diverge over time.
+Drift detection forms a critical capability. Operators occasionally make manual changes
+during incidents—scaling a deployment to handle unexpected load, modifying a ConfigMap
+to alter behavior temporarily. The reconciliation controller identifies these deviations
+from Git state and reverts them automatically. This enforcement prevents configuration
+drift that makes environments diverge over time.
 
-Application composition through declarative definitions simplifies deployment management. Rather than applying dozens of manifests individually, platform engineers define Applications—resources that group related manifests, specify sync policies, and declare health checks. The controller handles the complexity: determining apply order based on dependencies, waiting for resources to become healthy before proceeding, rolling back changes if health checks fail.
+Application composition through declarative definitions simplifies deployment
+management. Rather than applying dozens of manifests individually, platform engineers
+define Applications—resources that group related manifests, specify sync policies, and
+declare health checks. The controller handles the complexity: determining apply order
+based on dependencies, waiting for resources to become healthy before proceeding,
+rolling back changes if health checks fail.
 
-Multi-tenancy isolation operates through projects and namespaces. Different teams manage separate Git repositories or subdirectories. The controller enforces that team A's applications deploy only to team A's namespaces, preventing cross-contamination. RBAC policies restrict which teams can modify which Git paths, creating organizational boundaries that survive into the cluster.
+Multi-tenancy isolation operates through projects and namespaces. Different teams manage
+separate Git repositories or subdirectories. The controller enforces that team A's
+applications deploy only to team A's namespaces, preventing cross-contamination. RBAC
+policies restrict which teams can modify which Git paths, creating organizational
+boundaries that survive into the cluster.
 
-Positioning the reconciliation controller in infrastructure rather than as a separate layer reinforces a key principle: the platform's own configuration follows GitOps. Infrastructure components, policies, and operator configurations are managed through the same Git-driven workflows that applications use. This consistency simplifies operations—there's one deployment model, one drift detection mechanism, one audit trail in Git history.
+Positioning the reconciliation controller in infrastructure rather than as a separate
+layer reinforces a key principle: the platform's own configuration follows GitOps.
+Infrastructure components, policies, and operator configurations are managed through the
+same Git-driven workflows that applications use. This consistency simplifies
+operations—there's one deployment model, one drift detection mechanism, one audit trail
+in Git history.
 
 ## Component View
 
-The diagram illustrates dependencies between infrastructure components: secrets synchronization depends on the centralized store, ingress routing depends on the gateway controller, and application stacks depend on all infrastructure services.
+The diagram illustrates dependencies between infrastructure components: secrets
+synchronization depends on the centralized store, ingress routing depends on the gateway
+controller, and application stacks depend on all infrastructure services.
 
 ![Infrastructure Component View](../assets/diagrams/architecture/infrastructure-component-view.svg)
 
@@ -73,7 +171,8 @@ The reference implementation uses:
 - **Compute**: k3d (k3s distribution) with 3-node topology (1 control plane + 2 workers)
 - **CNI**: Cilium with eBPF datapath and Hubble observability
 - **Ingress**: Gateway API with Cilium gateway controller
-- **Secrets store**: HashiCorp Vault (standalone mode for demo; HA recommended for production)
+- **Secrets store**: HashiCorp Vault (standalone mode for demo; HA recommended for
+  production)
 - **Secrets operator**: External Secrets Operator (ESO)
 - **Reconciliation**: ArgoCD with ApplicationSets for stack discovery
 

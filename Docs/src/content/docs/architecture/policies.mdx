@@ -6,59 +6,127 @@ sidebar:
   label: Policies
   order: 6
 ---
+
 import { Button } from '../../../components/content/index.ts';
 
-Platform governance establishes operational boundaries without manual review processes. **Policy as Code** defines enforceable rules at the Kubernetes API level, enabling development velocity while maintaining security and operational standards.
+Platform governance establishes operational boundaries without manual review processes.
+**Policy as Code** defines enforceable rules at the Kubernetes API level, enabling
+development velocity while maintaining security and operational standards.
 
-Policies enforce best practices, security requirements, and operational hygiene automatically through admission control rather than documentation or manual review.
+Policies enforce best practices, security requirements, and operational hygiene
+automatically through admission control rather than documentation or manual review.
 
 ## Policy Enforcement
 
-The policy engine deploys during bootstrap, establishing secure defaults before application workloads arrive. Compliance operates continuously through admission control rather than periodic audits. When developers submit manifests—whether through GitOps commits or direct API calls—the policy engine intercepts the request before resources reach the cluster. Policies evaluate the resource against defined rules, rejecting submissions that violate security standards or operational requirements.
+The policy engine deploys during bootstrap, establishing secure defaults before
+application workloads arrive. Compliance operates continuously through admission control
+rather than periodic audits. When developers submit manifests—whether through GitOps
+commits or direct API calls—the policy engine intercepts the request before resources
+reach the cluster. Policies evaluate the resource against defined rules, rejecting
+submissions that violate security standards or operational requirements.
 
 Policies are organized into functional layers that address different platform concerns.
 
 ### Baseline Standards
 
-Platform structural requirements ensure consistent resource organization and integration with platform services. Namespace labeling enables cost allocation and ownership tracking—when resources are tagged with team and project identifiers, the platform can generate chargeback reports and route alerts to responsible parties. Resource quotas prevent resource exhaustion by establishing consumption limits per namespace, ensuring that no single team monopolizes cluster capacity. Standard annotations provide integration points for platform services—backup systems detect which namespaces require protection, developer portals discover service metadata, and observability tooling identifies monitoring targets.
+Platform structural requirements ensure consistent resource organization and integration
+with platform services. Namespace labeling enables cost allocation and ownership
+tracking—when resources are tagged with team and project identifiers, the platform can
+generate chargeback reports and route alerts to responsible parties. Resource quotas
+prevent resource exhaustion by establishing consumption limits per namespace, ensuring
+that no single team monopolizes cluster capacity. Standard annotations provide
+integration points for platform services—backup systems detect which namespaces require
+protection, developer portals discover service metadata, and observability tooling
+identifies monitoring targets.
 
 ### Security Controls
 
-Admission-time security enforcement prevents dangerous configurations from reaching production. The policy engine blocks privileged containers and dangerous Linux capabilities—CAP_SYS_ADMIN, CAP_NET_ADMIN, CAP_SYS_MODULE—that grant containers excessive host access. Mounting sensitive host paths like `/var/run/docker.sock` or `/etc/kubernetes` is prohibited, preventing container escape vectors that expose the underlying node or cluster control plane.
+Admission-time security enforcement prevents dangerous configurations from reaching
+production. The policy engine blocks privileged containers and dangerous Linux
+capabilities—CAP_SYS_ADMIN, CAP_NET_ADMIN, CAP_SYS_MODULE—that grant containers
+excessive host access. Mounting sensitive host paths like `/var/run/docker.sock` or
+`/etc/kubernetes` is prohibited, preventing container escape vectors that expose the
+underlying node or cluster control plane.
 
-Image source restrictions ensure workloads deploy only from approved registries. Organizations configure allowed registries—internal artifact repositories, vetted public registries—and the policy engine rejects images from unapproved sources. This prevents supply chain attacks through malicious public images and enforces vulnerability scanning workflows that gate registry admission.
+Image source restrictions ensure workloads deploy only from approved registries.
+Organizations configure allowed registries—internal artifact repositories, vetted public
+registries—and the policy engine rejects images from unapproved sources. This prevents
+supply chain attacks through malicious public images and enforces vulnerability scanning
+workflows that gate registry admission.
 
-Pod security standards codify baseline security posture. Containers must run as non-root users, preventing privilege escalation vulnerabilities that assume root filesystem access. Root filesystems are enforced as read-only, limiting an attacker's ability to modify binaries or persist malware within compromised containers.
+Pod security standards codify baseline security posture. Containers must run as non-root
+users, preventing privilege escalation vulnerabilities that assume root filesystem
+access. Root filesystems are enforced as read-only, limiting an attacker's ability to
+modify binaries or persist malware within compromised containers.
 
 ### Operational Guardrails
 
-Resource management policies optimize cluster efficiency and prevent scheduling failures. The policy engine requires resource requests and limits for all workloads, ensuring the scheduler makes informed placement decisions. Without declared requests, the scheduler cannot assess whether nodes have capacity. Without limits, runaway processes consume unbounded resources, starving neighboring workloads.
+Resource management policies optimize cluster efficiency and prevent scheduling
+failures. The policy engine requires resource requests and limits for all workloads,
+ensuring the scheduler makes informed placement decisions. Without declared requests,
+the scheduler cannot assess whether nodes have capacity. Without limits, runaway
+processes consume unbounded resources, starving neighboring workloads.
 
-PriorityClass validation enforces workload tiering. Critical infrastructure components—CNI plugins, DNS resolvers, monitoring agents—receive high priorities that allow preemption of lower-priority workloads during resource contention. Application workloads use standard priorities unless explicitly elevated through review processes. The policy engine validates PriorityClass assignments, preventing teams from inappropriately escalating their workloads.
+PriorityClass validation enforces workload tiering. Critical infrastructure
+components—CNI plugins, DNS resolvers, monitoring agents—receive high priorities that
+allow preemption of lower-priority workloads during resource contention. Application
+workloads use standard priorities unless explicitly elevated through review processes.
+The policy engine validates PriorityClass assignments, preventing teams from
+inappropriately escalating their workloads.
 
-ServiceAccount best practices prevent privilege accumulation. The default ServiceAccount in each namespace receives minimal permissions, but many applications inadvertently use it because developers don't specify alternatives. The policy engine enforces explicit ServiceAccount declarations, ensuring each workload receives appropriate RBAC grants rather than inheriting overly broad defaults.
+ServiceAccount best practices prevent privilege accumulation. The default ServiceAccount
+in each namespace receives minimal permissions, but many applications inadvertently use
+it because developers don't specify alternatives. The policy engine enforces explicit
+ServiceAccount declarations, ensuring each workload receives appropriate RBAC grants
+rather than inheriting overly broad defaults.
 
 ## Visibility and Reporting
 
-Policy enforcement without transparency creates frustration. Developers encounter rejected deployments without understanding why or how to remediate. Effective policy systems provide clear feedback and aggregate compliance data for platform-wide visibility.
+Policy enforcement without transparency creates frustration. Developers encounter
+rejected deployments without understanding why or how to remediate. Effective policy
+systems provide clear feedback and aggregate compliance data for platform-wide
+visibility.
 
 ### Violation Aggregation
 
-A policy reporting dashboard aggregates violations across the cluster, transforming individual rejections into actionable intelligence. Violation details explain which policy blocked a resource and why—the specific rule that failed, the configuration that triggered rejection, and the remediation path to achieve compliance. When a deployment fails because containers lack resource limits, the dashboard shows the offending pod specification and links to documentation for setting requests and limits.
+A policy reporting dashboard aggregates violations across the cluster, transforming
+individual rejections into actionable intelligence. Violation details explain which
+policy blocked a resource and why—the specific rule that failed, the configuration that
+triggered rejection, and the remediation path to achieve compliance. When a deployment
+fails because containers lack resource limits, the dashboard shows the offending pod
+specification and links to documentation for setting requests and limits.
 
-Historical tracking trends compliance scores over time, revealing whether policy adherence improves or degrades as the platform evolves. A rising violation rate after a major deployment suggests teams don't understand new policies or lack tooling to meet requirements. Declining violations indicate effective developer education or improved guardrails in CI/CD pipelines.
+Historical tracking trends compliance scores over time, revealing whether policy
+adherence improves or degrades as the platform evolves. A rising violation rate after a
+major deployment suggests teams don't understand new policies or lack tooling to meet
+requirements. Declining violations indicate effective developer education or improved
+guardrails in CI/CD pipelines.
 
-Namespace breakdown identifies teams or applications with frequent violations. Some teams may require targeted training or template updates to align with platform standards. Persistent violations might indicate policies that conflict with legitimate use cases, suggesting policy refinement rather than enforcement escalation.
+Namespace breakdown identifies teams or applications with frequent violations. Some
+teams may require targeted training or template updates to align with platform
+standards. Persistent violations might indicate policies that conflict with legitimate
+use cases, suggesting policy refinement rather than enforcement escalation.
 
 ![Policy Reporter UI Placeholder](../../../assets/images/policy-reporter-ui.png)
 
 ### Observability Integration
 
-Policy violations export as Prometheus metrics, enabling integration with the platform's broader observability stack. Metrics correlate compliance drops with deployments—a spike in violations following a new application release reveals policy compatibility issues. This correlation guides incident response, pointing operators toward recent changes that introduced non-compliant configurations.
+Policy violations export as Prometheus metrics, enabling integration with the platform's
+broader observability stack. Metrics correlate compliance drops with deployments—a spike
+in violations following a new application release reveals policy compatibility issues.
+This correlation guides incident response, pointing operators toward recent changes that
+introduced non-compliant configurations.
 
-Alerting on security policy violations provides real-time awareness of dangerous configurations. When policies detect privileged containers, host path mounts, or unapproved registries, alerts fire to security teams for investigation. This enables rapid response to potential security incidents rather than discovering violations during periodic audits.
+Alerting on security policy violations provides real-time awareness of dangerous
+configurations. When policies detect privileged containers, host path mounts, or
+unapproved registries, alerts fire to security teams for investigation. This enables
+rapid response to potential security incidents rather than discovering violations during
+periodic audits.
 
-Dashboards track cluster-wide compliance trends, surfacing long-term patterns in policy adherence. Platform teams monitor whether policy violations concentrate in specific namespaces, whether new policies increase rejection rates beyond acceptable thresholds, and whether compliance improves as teams adopt best practices.
+Dashboards track cluster-wide compliance trends, surfacing long-term patterns in policy
+adherence. Platform teams monitor whether policy violations concentrate in specific
+namespaces, whether new policies increase rejection rates beyond acceptable thresholds,
+and whether compliance improves as teams adopt best practices.
 
 ![Policies Deployment Path](../assets/diagrams/architecture/policies-deployment.svg)
 
@@ -70,7 +138,8 @@ The reference implementation uses:
 - **Reporting**: Policy Reporter for violation aggregation and dashboard
 - **Policy definitions**: Located in `Policies/` directory, applied via GitOps
 
-See [Components - Kyverno](/components/policy/kyverno/) and [Components - Policy Reporter](/components/policy/policy-reporter/) for details.
+See [Components - Kyverno](/components/policy/kyverno/) and
+[Components - Policy Reporter](/components/policy/policy-reporter/) for details.
 
 <div class="flex justify-center gap-3 mt-8">
   <Button href="/architecture/secrets/" variant="secondary" icon="arrow-left">
