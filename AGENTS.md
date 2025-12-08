@@ -21,6 +21,7 @@ IDP Blueprint is a comprehensive open-source Internal Developer Platform referen
 - **Sequential Thinking**: If sequential-thinking MCP is available, use it to arge againts your first plan for huge or critical changes. All is wrong until you can demostrate with objective evidence that your plan is correct and robust, just after that you can ask the user for appoval.
 - **Planning**: Dont patch symptompts, find root causes and plan the fix before edit files
 - **User Plan requested**: If the user ask explicetly for a planing task for a refactor or a complex fix, after complete the planning read .serena/memories/validate_plan.md and do the validations.
+- **Commits**: If Code Rabbit is available always run "cr --prompt-only" after stashed the changes and before complete the commit. Fix all the issues reported by Code Rabbit.
 
 ## Technology Stack
 
