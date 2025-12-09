@@ -147,15 +147,10 @@ spec:
               echo "  GITHUB_REPO=$GITHUB_REPO"
               echo "  GITHUB_BRANCH=$GITHUB_BRANCH"
 
-              # Copy template to temp
-              cp /tpl/app-config.override.yaml /tmp/config.yaml
-
-              # Render template using sed
-              sed -i "s/${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
-              sed -i "s/${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
-              sed -i "s/${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
-              sed -i "s/${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
-              sed -i "s/${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
+              # Render template using envsubst (more robust than sed)
+              # We explicitly list variables to avoid replacing runtime secrets (like ${BACKEND_SECRET})
+              export VARS_TO_SUBST='$DNS_SUFFIX $CLUSTER_NAME $GITHUB_ORG $GITHUB_REPO $GITHUB_BRANCH'
+              envsubst "$VARS_TO_SUBST" < /tpl/app-config.override.yaml > /tmp/config.yaml
 
               echo "=== Rendered configuration preview (first 20 lines) ==="
               head -n 20 /tmp/config.yaml
