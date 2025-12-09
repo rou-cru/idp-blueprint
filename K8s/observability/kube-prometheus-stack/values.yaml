@@ -177,6 +177,51 @@ grafana:
     - grafana-piechart-panel
     - grafana-polystat-panel
     - marcusolsson-json-datasource
+  
+  # -- Declare dashboards to be downloaded and provisioned by the chart
+  dashboards:
+    default:
+      argocd:
+        gnetId: 14584
+        revision: 1
+        datasource: Prometheus
+      cilium-agent:
+        gnetId: 17659
+        revision: 1
+        datasource: Prometheus
+      cilium-operator:
+        gnetId: 17737
+        revision: 1
+        datasource: Prometheus
+      cilium-envoy:
+        gnetId: 17738
+        revision: 1
+        datasource: Prometheus
+      external-secrets:
+        gnetId: 17676
+        revision: 1
+        datasource: Prometheus
+      kyverno:
+        gnetId: 17789
+        revision: 1
+        datasource: Prometheus
+      policy-reporter:
+        gnetId: 17897
+        revision: 1
+        datasource: Prometheus
+      trivy-operator:
+        gnetId: 17663
+        revision: 1
+        datasource: Prometheus
+      argo-events:
+        gnetId: 14029
+        revision: 1
+        datasource: Prometheus
+      loki-logs:
+        gnetId: 15141
+        revision: 1
+        datasource: Loki
+
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
   defaultDashboardsEnabled: false
   sidecar:
