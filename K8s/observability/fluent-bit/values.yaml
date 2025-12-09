@@ -80,6 +80,15 @@ config:
         Match       kube.*
         script      /fluent-bit/scripts/remove_labels.lua
         call        remove_labels
+
+    [FILTER]
+        Name modify
+        Match *
+        Condition Key_Exists kubernetes
+        Rename kubernetes.namespace_name namespace
+        Rename kubernetes.pod_name pod
+        Rename kubernetes.container_name container
+
   outputs: |
     [OUTPUT]
         Name loki
@@ -88,6 +97,8 @@ config:
         Port 3100
         # -- Automatically add all Kubernetes labels to the log record.
         auto_kubernetes_labels true
+        # -- Add Kubernetes metadata as labels
+        LabelKeys namespace,pod,container
         # -- Number of retries before dropping logs.
         Retry_Limit 5
 

@@ -49,6 +49,12 @@ kubeProxy:
 prometheus:
   prometheusSpec:
     priorityClassName: platform-observability
+    # -- Disable default behavior of adding release label when selector is empty
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+
     # -- Select all ServiceMonitors across all namespaces
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
