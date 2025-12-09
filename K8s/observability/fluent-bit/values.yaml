@@ -98,7 +98,7 @@ config:
         # -- Automatically add all Kubernetes labels to the log record.
         auto_kubernetes_labels true
         # -- Add Kubernetes metadata as labels
-        LabelKeys namespace,pod,container
+        label_keys namespace,pod,container
         # -- Number of retries before dropping logs.
         Retry_Limit 5
 

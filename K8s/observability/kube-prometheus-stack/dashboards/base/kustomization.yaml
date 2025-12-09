@@ -3,28 +3,10 @@ kind: Kustomization
 namespace: observability
 
 configMapGenerator:
-  - name: custom-dashboards-node-exporter
+  - name: custom-dashboards-all
+    # Kustomize will load all files from this directory
     files:
-      - node-exporter-nodes.json
-      - node-exporter-use-cluster.json
-      - node-exporter-use-node.json
-    options:
-      labels:
-        grafana_dashboard: "1"
-  - name: custom-dashboards-k8s-resources
-    files:
-      - k8s-resources-workloads.json
-      - k8s-resources-pod.json
-      - k8s-resources-cluster.json
-      - k8s-pv.json
-    options:
-      labels:
-        grafana_dashboard: "1"
-  - name: custom-dashboards-k8s-networking
-    files:
-      - k8s-networking-namespace.json
-      - k8s-networking-cluster.json
-      - coredns.json
+      - json
     options:
       labels:
         grafana_dashboard: "1"
