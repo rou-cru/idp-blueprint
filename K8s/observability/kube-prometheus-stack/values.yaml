@@ -167,9 +167,18 @@ grafana:
       cpu: 250m
       # -- (string) Memory limit
       memory: 256Mi
+  datasources:
+      enabled: true
+      defaultDatasourceEnabled: true
+      isDefaultDatasource: true
+      name: Prometheus
+      uid: Prometheus
+  extraJsonData:
+    prometheusType: Prometheus
   # -- Additional datasources for Grafana.
   additionalDataSources:
     - name: Loki
+      uid: Loki
       type: loki
       url: http://loki.observability.svc.cluster.local:3100
       access: proxy
