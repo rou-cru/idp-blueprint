@@ -201,32 +201,44 @@ grafana:
       argocd:
         gnetId: 14584
         revision: 1
-        datasource: Prometheus
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       # Cilium Agent metrics (v1.12 dashboard, compatible with v1.18)
       cilium-agent:
         gnetId: 16611
         revision: 1
-        datasource: Prometheus
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       # Cilium Operator metrics (v1.12 dashboard, compatible with v1.18)
       cilium-operator:
         gnetId: 16612
         revision: 1
-        datasource: Prometheus
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       # Kyverno policy monitoring - Official Kyverno dashboard
       kyverno:
         gnetId: 15804
         revision: 1
-        datasource: Prometheus
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       # Trivy Operator security scanning - Official Trivy dashboard
       trivy-operator:
         gnetId: 17813
         revision: 1
-        datasource: Prometheus
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       # Loki log viewer - Official Loki Kubernetes Logs dashboard
       loki-logs:
         gnetId: 15141
         revision: 1
-        datasource: Loki
+        datasource:
+          - name: DS_LOKI
+            value: Loki
 
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
   defaultDashboardsEnabled: false
