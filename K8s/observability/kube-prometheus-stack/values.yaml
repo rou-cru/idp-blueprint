@@ -210,23 +210,9 @@ grafana:
   # provide their own dashboards via ConfigMaps and are not listed here.
   dashboards:
     default:
-      # cilium - Network dashboard
-      cilium:
-        gnetId: 21431
-        revision: 6
-        datasource:
-          - name: DS_PROMETHEUS
-            value: Prometheus
-      # Envoy - Network dashboard
-      envoy:
-        gnetId: 24459
-        revision: 1
-        datasource:
-          - name: DS_PROMETHEUS
-            value: Prometheus
       # K8s - Event dashboard
       k8s-event:
-        gnetId: 16967
+        gnetId: 14003
         revision: 1
         datasource:
           - name: DS_LOKI
@@ -247,7 +233,7 @@ grafana:
             value: Prometheus
       # K8s - Namespace dashboard
       k8s-namespace:
-        gnetId: 1471 
+        gnetId: 15760 
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
@@ -257,7 +243,7 @@ grafana:
         gnetId: 22082
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: DS__VICTORIAMETRICS-PROD-ALL
             value: Prometheus
       # Cert-manager monitoring - Overview dashboard
       cert-manager:
@@ -275,14 +261,14 @@ grafana:
             value: Prometheus
       # Cilium Agent metrics
       cilium-agent:
-        gnetId: 16611
+        gnetId: 17658
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
             value: Prometheus
       # Cilium Operator metrics
       cilium-operator:
-        gnetId: 16612
+        gnetId: 17660
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
