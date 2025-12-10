@@ -36,6 +36,8 @@ alertmanager:
           - url: 'http://alertmanager-eventsource-svc.events.svc.cluster.local:12000/webhook'
             send_resolved: true
 
+# @section -- Exporters
+# -- Disables because it doesnt exist in k3s.
 kubeEtcd:
   enabled: false
 kubeControllerManager:
@@ -44,6 +46,10 @@ kubeScheduler:
   enabled: false
 kubeProxy:
   enabled: false
+# -- Disables unnecessary components.
+windows-exporter:
+  enabled: false
+
 
 # @section -- Prometheus
 prometheus:
@@ -54,7 +60,6 @@ prometheus:
     podMonitorSelectorNilUsesHelmValues: false
     probeSelectorNilUsesHelmValues: false
     ruleSelectorNilUsesHelmValues: false
-
     # -- Select all ServiceMonitors across all namespaces
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
@@ -90,7 +95,6 @@ prometheus:
         cpu: 500m
         # -- (string) Memory limit
         memory: 1536Mi
-
     additionalScrapeConfigs:
       - job_name: 'kube-scheduler'
         kubernetes_sd_configs:
@@ -108,7 +112,6 @@ prometheus:
             target_label: __address__
           - source_labels: [__meta_kubernetes_node_name]
             target_label: instance
-
       - job_name: 'kube-controller-manager'
         kubernetes_sd_configs:
           - role: node
@@ -125,7 +128,6 @@ prometheus:
             target_label: __address__
           - source_labels: [__meta_kubernetes_node_name]
             target_label: instance
-
       - job_name: 'kube-proxy'
         kubernetes_sd_configs:
           - role: node
@@ -177,46 +179,50 @@ grafana:
     - grafana-piechart-panel
     - grafana-polystat-panel
     - marcusolsson-json-datasource
-  
+  # -- Dashboard providers configuration for dashboards downloaded via gnetId
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
   # -- Declare dashboards to be downloaded and provisioned by the chart
+  # Note: Components like external-secrets, policy-reporter, pyrra, and fluent-bit
+  # provide their own dashboards via ConfigMaps and are not listed here.
   dashboards:
     default:
+      # ArgoCD monitoring - Official ArgoCD dashboard
       argocd:
         gnetId: 14584
         revision: 1
         datasource: Prometheus
+      # Cilium Agent metrics (v1.12 dashboard, compatible with v1.18)
       cilium-agent:
-        gnetId: 17659
+        gnetId: 16611
         revision: 1
         datasource: Prometheus
+      # Cilium Operator metrics (v1.12 dashboard, compatible with v1.18)
       cilium-operator:
-        gnetId: 17737
+        gnetId: 16612
         revision: 1
         datasource: Prometheus
-      cilium-envoy:
-        gnetId: 17738
-        revision: 1
-        datasource: Prometheus
-      external-secrets:
-        gnetId: 17676
-        revision: 1
-        datasource: Prometheus
+      # Kyverno policy monitoring - Official Kyverno dashboard
       kyverno:
-        gnetId: 17789
+        gnetId: 15804
         revision: 1
         datasource: Prometheus
-      policy-reporter:
-        gnetId: 17897
-        revision: 1
-        datasource: Prometheus
+      # Trivy Operator security scanning - Official Trivy dashboard
       trivy-operator:
-        gnetId: 17663
+        gnetId: 17813
         revision: 1
         datasource: Prometheus
-      argo-events:
-        gnetId: 14029
-        revision: 1
-        datasource: Prometheus
+      # Loki log viewer - Official Loki Kubernetes Logs dashboard
       loki-logs:
         gnetId: 15141
         revision: 1
@@ -245,7 +251,6 @@ grafana:
 prometheusOperator:
   # -- (string) Priority class
   priorityClassName: platform-observability
-
   # -- Admission webhooks configuration for PrometheusRules validation
   admissionWebhooks:
     enabled: true
@@ -260,7 +265,6 @@ prometheusOperator:
     # -- Disable Helm hook-based certificate management (incompatible with ArgoCD+Kustomize)
     patch:
       enabled: false
-
   resources:
     requests:
       # -- (string) CPU request
@@ -340,7 +344,3 @@ prometheus-node-exporter:
       # -- (string) Memory limit
       memory: 48Mi
 
-# @section -- Windows Exporter
-# -- Disables unnecessary components.
-windows-exporter:
-  enabled: false
