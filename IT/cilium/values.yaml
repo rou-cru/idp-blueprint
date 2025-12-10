@@ -71,6 +71,9 @@ hubble:
       - port-distribution
       - icmp
       - http
+    port: 9091
+    serviceMonitor:
+      enabled: true
 
 # @section -- CNI Configuration
 # Cilium operates as the primary CNI
@@ -142,10 +145,6 @@ operator:
     serviceMonitor:
       # -- (bool) Enable ServiceMonitor
       enabled: true
-      # -- (string) Scrape interval for critical CNI metrics
-      interval: 30s
-      # -- (string) Scrape timeout
-      scrapeTimeout: 25s
   resources:
     requests:
       # -- (string) CPU request
@@ -165,19 +164,6 @@ prometheus:
   serviceMonitor:
     # -- (bool) Create ServiceMonitor CRD
     enabled: true
-    # -- (string) Scrape interval for eBPF events and network flows
-    interval: 30s
-    # -- (string) Scrape timeout
-    scrapeTimeout: 25s
-  dashboards:
-    # -- (bool) Create ConfigMap with official Cilium dashboard
-    enabled: true
-    # -- (string) Namespace for dashboard ConfigMap
-    namespace: observability
-    # -- (string) Label key for dashboard discovery
-    label: grafana_dashboard
-    # -- (string) Label value for dashboard discovery
-    labelValue: "1"
 
 # -- (string) Default enforcement mode for CiliumNetworkPolicy
 # @section -- Network Policy
