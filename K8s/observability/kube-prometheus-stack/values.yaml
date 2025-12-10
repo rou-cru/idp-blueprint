@@ -46,8 +46,8 @@ kubeScheduler:
   enabled: false
 kubeProxy:
   enabled: false
-# -- Disables unnecessary components.
-windows-exporter:
+# -- Disables unnecessary components (Windows nodes not present in k3d demo)
+windowsMonitoring:
   enabled: false
 
 
@@ -364,4 +364,3 @@ prometheus-node-exporter:
       cpu: 30m
       # -- (string) Memory limit
       memory: 48Mi
-
