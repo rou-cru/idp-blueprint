@@ -167,14 +167,19 @@ grafana:
       cpu: 250m
       # -- (string) Memory limit
       memory: 256Mi
+  # Datasource file expected by Grafana chart (avoids bool map type errors)
   datasources:
-      enabled: true
-      defaultDatasourceEnabled: true
-      isDefaultDatasource: true
-      name: Prometheus
-      uid: Prometheus
-  extraJsonData:
-    prometheusType: Prometheus
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus
+          uid: prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-operated.observability.svc.cluster.local:9090
+          isDefault: true
+          jsonData:
+            prometheusType: Prometheus
   # -- Additional datasources for Grafana.
   additionalDataSources:
     - name: Loki
@@ -193,14 +198,14 @@ grafana:
     dashboardproviders.yaml:
       apiVersion: 1
       providers:
-      - name: 'default'
-        orgId: 1
-        folder: ''
-        type: file
-        disableDeletion: false
-        editable: true
-        options:
-          path: /var/lib/grafana/dashboards/default
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
   # -- Declare dashboards to be downloaded and provisioned by the chart
   # Note: Components like external-secrets, policy-reporter, pyrra, and fluent-bit
   # provide their own dashboards via ConfigMaps and are not listed here.
