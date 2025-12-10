@@ -191,8 +191,8 @@ grafana:
     - grafana-piechart-panel
     - grafana-polystat-panel
     - marcusolsson-json-datasource
-    - mosaic-plot
-    - bubblechart-panel
+    # - mosaic-plot
+    # - bubblechart-panel
   # -- Dashboard providers configuration for dashboards downloaded via gnetId
   dashboardProviders:
     dashboardproviders.yaml:
