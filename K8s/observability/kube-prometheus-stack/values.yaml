@@ -172,14 +172,6 @@ grafana:
     datasources.yaml:
       apiVersion: 1
       datasources:
-        - name: Prometheus
-          uid: prometheus
-          type: prometheus
-          access: proxy
-          url: http://prometheus-operated.observability.svc.cluster.local:9090
-          isDefault: true
-          jsonData:
-            prometheusType: Prometheus
         - name: Loki
           uid: Loki
           type: loki
