@@ -167,7 +167,7 @@ grafana:
       cpu: 250m
       # -- (string) Memory limit
       memory: 256Mi
-  # Datasource file expected by Grafana chart (avoids bool map type errors)
+  # Datasource file expected by Grafana chart (single file with both DS)
   datasources:
     datasources.yaml:
       apiVersion: 1
@@ -180,14 +180,12 @@ grafana:
           isDefault: true
           jsonData:
             prometheusType: Prometheus
-  # -- Additional datasources for Grafana.
-  additionalDataSources:
-    - name: Loki
-      uid: Loki
-      type: loki
-      url: http://loki.observability.svc.cluster.local:3100
-      access: proxy
-      isDefault: false
+        - name: Loki
+          uid: Loki
+          type: loki
+          access: proxy
+          url: http://loki.observability.svc.cluster.local:3100
+          isDefault: false
   # -- Automatically install useful plugins on startup.
   plugins:
     - grafana-piechart-panel
@@ -278,6 +276,9 @@ grafana:
       allow_sign_up: false
       # -- Set the default UI theme to dark.
       default_theme: dark
+    feature_toggles:
+      provisioning: true
+      kubernetesDashboards: true
 
 # @section -- Prometheus Operator
 # -- Resource limits and requests for the Prometheus Operator.
