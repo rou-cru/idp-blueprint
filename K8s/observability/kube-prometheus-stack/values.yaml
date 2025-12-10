@@ -209,10 +209,45 @@ grafana:
   # provide their own dashboards via ConfigMaps and are not listed here.
   dashboards:
     default:
+      # K8s - Event dashboard
+      k8s-event:
+        gnetId: 16967
+        revision: 1
+        datasource:
+          - name: DS_LOKI
+            value: Loki
+      # K8s - Deployment dashboard
+      k8s-deployment:
+        gnetId: 17685
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - Resource dashboard
+      k8s-resource:
+        gnetId: 21839 
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - Namespace dashboard
+      k8s-namespace:
+        gnetId: 1471 
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       # K8s monitoring - Overview dashboard
       k8s:
-        gnetId: 15661
-        revision: 2
+        gnetId: 22082
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Cert-manager monitoring - Overview dashboard
+      cert-manager:
+        gnetId: 20842
+        revision: 3
         datasource:
           - name: DS_PROMETHEUS
             value: Prometheus
@@ -223,14 +258,14 @@ grafana:
         datasource:
           - name: DS_PROMETHEUS
             value: Prometheus
-      # Cilium Agent metrics (v1.12 dashboard, compatible with v1.18)
+      # Cilium Agent metrics
       cilium-agent:
         gnetId: 16611
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
             value: Prometheus
-      # Cilium Operator metrics (v1.12 dashboard, compatible with v1.18)
+      # Cilium Operator metrics
       cilium-operator:
         gnetId: 16612
         revision: 1
@@ -258,6 +293,15 @@ grafana:
         datasource:
           - name: DS_LOKI
             value: Loki
+      loki-logs-pod:
+        gnetId: 16976
+        revision: 3
+        datasource:
+          - name: DS_LOKI
+            value: Loki
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      
 
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
   defaultDashboardsEnabled: false
