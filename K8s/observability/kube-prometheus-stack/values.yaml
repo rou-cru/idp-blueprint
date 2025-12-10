@@ -191,6 +191,8 @@ grafana:
     - grafana-piechart-panel
     - grafana-polystat-panel
     - marcusolsson-json-datasource
+    - mosaic-plot
+    - bubblechart-panel
   # -- Dashboard providers configuration for dashboards downloaded via gnetId
   dashboardProviders:
     dashboardproviders.yaml:
@@ -198,7 +200,6 @@ grafana:
       providers:
         - name: 'default'
           orgId: 1
-          folder: ''
           type: file
           disableDeletion: false
           editable: true
@@ -209,6 +210,20 @@ grafana:
   # provide their own dashboards via ConfigMaps and are not listed here.
   dashboards:
     default:
+      # cilium - Network dashboard
+      cilium:
+        gnetId: 21431
+        revision: 6
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Envoy - Network dashboard
+      envoy:
+        gnetId: 24459
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
       # K8s - Event dashboard
       k8s-event:
         gnetId: 16967
