@@ -45,7 +45,7 @@ loki:
       retention_enabled: true
       delete_request_store: filesystem
     limits_config:
-      retention_period: 6h
+      retention_period: 24h
 
 # @section -- Single Binary Mode
 singleBinary:

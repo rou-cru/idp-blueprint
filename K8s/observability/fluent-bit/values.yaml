@@ -104,9 +104,6 @@ config:
         labels job=fluentbit, namespace=$namespace, pod=$pod, container=$container
         # -- Number of retries before dropping logs
         Retry_Limit 5
-        # -- Batch configuration to reduce request frequency
-        batch_size 102400        # 100KB batches
-        batch_wait 5             # Wait 5s before sending incomplete batch
         # -- Compress logs to reduce network bandwidth and memory usage
         compress gzip
 
