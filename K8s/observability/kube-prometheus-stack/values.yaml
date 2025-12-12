@@ -202,16 +202,23 @@ grafana:
   # provide their own dashboards via ConfigMaps and are not listed here.
   dashboards:
     default:
-      # K8s - Event dashboard
-      k8s-event:
-        gnetId: 14003
-        revision: 1
-        datasource:
-          - name: DS_LOKI
-            value: Loki
       # K8s - Deployment dashboard
       k8s-deployment:
         gnetId: 17685
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - StatefulSet dashboard
+      k8s-statefulset:
+        gnetId: 7581
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - DaemonSet dashboard
+      k8s-daemonset:
+        gnetId: 14982
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
@@ -225,7 +232,7 @@ grafana:
             value: Prometheus
       # K8s - Namespace dashboard
       k8s-namespace:
-        gnetId: 15760 
+        gnetId: 15758
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
@@ -247,13 +254,6 @@ grafana:
       # ArgoCD monitoring - Official ArgoCD dashboard
       argocd:
         gnetId: 14584
-        revision: 1
-        datasource:
-          - name: DS_PROMETHEUS
-            value: Prometheus
-      # Cilium Agent metrics
-      cilium-agent:
-        gnetId: 17658
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
