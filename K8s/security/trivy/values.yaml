@@ -16,7 +16,9 @@ tolerations:
     effect: NoSchedule
 
 # -- (string) Comma-separated list of target workloads
-targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
+# Optimized: removed redundant pod scanning (scanned via controllers), deprecated replicationcontroller
+# Only scan high-level controllers: replicaset (deployments), statefulset, daemonset, cronjob
+targetWorkloads: "replicaset,statefulset,daemonset,cronjob"
 
 # -- (string) Namespaces to be excluded from scanning
 excludeNamespaces: "kube-system,argocd,cert-manager,vault-system,kyverno-system"
