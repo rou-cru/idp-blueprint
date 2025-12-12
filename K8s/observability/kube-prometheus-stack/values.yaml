@@ -3,6 +3,36 @@
 crds:
   enabled: false
 
+# @section -- Default Rules
+# -- Enable default Prometheus rules for baseline monitoring
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: false # External etcd or k3d specific
+    configReloaders: true
+    general: true
+    k8s: true
+    kubeApiserver: true
+    kubeApiserverAvailability: true
+    kubeApiserverSlos: true
+    kubelet: true
+    kubeProxy: false # Disabled in exporters section
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeScheduler: false # Disabled in exporters section
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+
 # @section -- Alertmanager
 alertmanager:
   # -- Enable Alertmanager for alert routing (required for Pyrra burn-rate alerts)
@@ -74,7 +104,7 @@ prometheus:
     # -- Global scrape timeout for all ServiceMonitors (unless overridden).
     scrapeTimeout: 40s
     # -- Metrics retention time.
-    retention: 6h
+    retention: 24h
     # -- Enable persistence for Prometheus TSDB. 1Gi supports 6h retention for ~50 pods
     # with 4x overhead margin. Data survives pod restarts but is lost on cluster destruction.
     storageSpec:
