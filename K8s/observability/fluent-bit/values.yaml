@@ -9,7 +9,8 @@ kind: DaemonSet
 replicaCount: 1
 
 # -- (int) Time to wait before flushing data (in seconds)
-flush: 1
+# Increased to 5s for better batching and reduced request frequency
+flush: 5
 
 # -- (string) Default log level
 logLevel: info
@@ -95,12 +96,19 @@ config:
         Match *
         Host loki.observability.svc.cluster.local
         Port 3100
-        # -- Automatically add all Kubernetes labels to the log record.
-        auto_kubernetes_labels true
-        # -- Add Kubernetes metadata as labels
-        label_keys $namespace,$pod,$container
-        # -- Number of retries before dropping logs.
+        # -- Use JSON line format for efficient processing
+        line_format json
+        # -- Disable auto labels to reduce cardinality and Loki memory usage
+        auto_kubernetes_labels off
+        # -- Manually specify essential labels for better control
+        labels job=fluentbit, namespace=$namespace, pod=$pod, container=$container
+        # -- Number of retries before dropping logs
         Retry_Limit 5
+        # -- Batch configuration to reduce request frequency
+        batch_size 102400        # 100KB batches
+        batch_wait 5             # Wait 5s before sending incomplete batch
+        # -- Compress logs to reduce network bandwidth and memory usage
+        compress gzip
 
 # @section -- Volumes
 # -- (list) DaemonSet volumes
