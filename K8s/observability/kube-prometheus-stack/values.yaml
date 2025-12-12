@@ -275,6 +275,13 @@ grafana:
       # Trivy Operator security scanning - Official Trivy dashboard
       trivy-operator:
         gnetId: 17813
+        revision: 2
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Trivy Image Vulnerability Overview - Alternative dashboard
+      trivy-image-vulnerability:
+        gnetId: 16742
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
