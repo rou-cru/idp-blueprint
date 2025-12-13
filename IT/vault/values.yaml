@@ -67,6 +67,26 @@ server:
   livenessProbe:
     # -- (bool) Enable liveness probe
     enabled: true
+    # -- (string) Liveness probe path
+    path: "/v1/sys/health?standbyok=true"
+    # -- (int) Failure threshold
+    failureThreshold: 3
+    # -- (int) Initial delay seconds
+    initialDelaySeconds: 60
+    # -- (int) Period seconds
+    periodSeconds: 10
+    # -- (int) Success threshold
+    successThreshold: 1
+    # -- (int) Timeout seconds
+    timeoutSeconds: 3
+    # -- (list) Exec command
+    execCommand: []
+
+  livenessProbe:
+    # -- (bool) Enable liveness probe
+    enabled: true
+    # -- (string) Liveness probe path
+    path: "/v1/sys/health?standbyok=true"
     # -- (int) Failure threshold
     failureThreshold: 3
     # -- (int) Initial delay seconds
@@ -84,41 +104,13 @@ server:
   extraContainers:
     - name: vault-unsealer
       image: roucru/idp-blueprint:ops
-      command: ["/bin/sh", "-c"]
-      args:
-        - |
-          echo "Starting Vault Unsealer Sidecar..."
-          # 1. Wait for Vault to be responsive
-          until curl -s -o /dev/null http://127.0.0.1:8200/v1/sys/health; do
-            echo "Waiting for Vault API..."
-            sleep 5
-          done
-          
-          # 2. Check for keys (Bootstrap vs Recovery)
-          if [ ! -f /vault/secrets/unseal-key ]; then
-            echo "No unseal key found. Assuming initial bootstrap. Sleeping..."
-            sleep infinity
-          fi
-          
-          echo "Unseal key found. Checking status..."
-          STATUS=$(curl -s http://127.0.0.1:8200/v1/sys/health)
-          
-          if echo "$STATUS" | grep -q '"sealed":true'; then
-            echo "Vault is sealed. Attempting to unseal..."
-            UNSEAL_KEY=$(cat /vault/secrets/unseal-key)
-            PAYLOAD="{\"key\": \"$UNSEAL_KEY\"}"
-            
-            RESPONSE=$(curl -s -X POST -d "$PAYLOAD" http://127.0.0.1:8200/v1/sys/unseal)
-            echo "Unseal response: $RESPONSE"
-          else
-            echo "Vault is already unsealed."
-          fi
-          
-          echo "Unsealer job finished. Sleeping..."
-          sleep infinity
+      command: ["/bin/sh", "/scripts/auto-unseal.sh"]
       volumeMounts:
         - name: vault-init-keys
           mountPath: /vault/secrets
+          readOnly: true
+        - name: unsealer-script
+          mountPath: /scripts
           readOnly: true
 
   # -- (list) Extra volumes to mount to the pod
@@ -127,6 +119,12 @@ server:
       secret:
         secretName: vault-init-keys
         optional: true
+    - name: unsealer-script
+      configMap:
+        name: vault-unsealer-bin
+        defaultMode: 0755
+
+  readinessProbe:
 
   readinessProbe:
     # -- (bool) Enable readiness probe

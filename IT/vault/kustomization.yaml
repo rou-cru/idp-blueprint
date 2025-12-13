@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources: []
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: vault-unsealer-bin
+    namespace: vault-system
+    files:
+      - auto-unseal.sh
