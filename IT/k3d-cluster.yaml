@@ -37,6 +37,7 @@ registries:
           - http://registry.localhost:5000
 options:
   k3d:
+    network: "idp-network"
     disableLoadbalancer: false
     wait: true
     timeout: "300s"
