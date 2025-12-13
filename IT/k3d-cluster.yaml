@@ -5,6 +5,7 @@ metadata:
 servers: 1
 agents: 2
 image: rancher/k3s:v1.33.4-k3s1
+network: "idp-network"
 ports:
   - port: 80:${NODEPORT_HTTP}
     nodeFilters:
@@ -37,7 +38,6 @@ registries:
           - http://registry.localhost:5000
 options:
   k3d:
-    network: "idp-network"
     disableLoadbalancer: false
     wait: true
     timeout: "300s"
