@@ -67,12 +67,10 @@ server:
   livenessProbe:
     # -- (bool) Enable liveness probe
     enabled: true
-    # -- (string) Liveness probe path
-    path: "/v1/sys/health?standbyok=true"
     # -- (int) Failure threshold
     failureThreshold: 3
     # -- (int) Initial delay seconds
-    initialDelaySeconds: 60
+    initialDelaySeconds: 15
     # -- (int) Period seconds
     periodSeconds: 10
     # -- (int) Success threshold
@@ -81,30 +79,6 @@ server:
     timeoutSeconds: 3
     # -- (list) Exec command
     execCommand: []
-
-  # -- (list) Extra containers to run in the same pod
-  extraContainers:
-    - name: vault-unsealer
-      image: roucru/idp-blueprint:ops
-      command: ["/bin/sh", "/scripts/auto-unseal.sh"]
-      volumeMounts:
-        - name: vault-init-keys
-          mountPath: /vault/secrets
-          readOnly: true
-        - name: unsealer-script
-          mountPath: /scripts
-          readOnly: true
-
-  # -- (list) Extra volumes to mount to the pod
-  extraVolumes:
-    - name: vault-init-keys
-      secret:
-        secretName: vault-init-keys
-        optional: true
-    - name: unsealer-script
-      configMap:
-        name: vault-unsealer-bin
-        defaultMode: 0755
   readinessProbe:
     # -- (bool) Enable readiness probe
     enabled: true

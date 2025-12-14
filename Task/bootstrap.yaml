@@ -221,7 +221,6 @@ tasks:
     desc: "Deploy HashiCorp Vault"
     dir: IT/vault
     cmds:
-      - kustomize build . | kubectl apply -f - --server-side
       - |
         helm upgrade --install vault hashicorp/vault \
           --version {{.VAULT_VERSION}} \
