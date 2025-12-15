@@ -25,3 +25,18 @@ helmCharts:
     releaseName: policy-reporter
     namespace: kyverno-system
     valuesFile: policy-reporter/values.yaml
+
+patches:
+  # Wave 5: Webhooks (Create Last, Delete First)
+  - target:
+      kind: ValidatingWebhookConfiguration
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+        value: "5"
+  - target:
+      kind: MutatingWebhookConfiguration
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+        value: "5"
