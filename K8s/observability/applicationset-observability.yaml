@@ -67,6 +67,15 @@ spec:
           jsonPointers:
             - /status
             - /metadata/generation
+            - /spec/target/deletionPolicy
+            - /spec/target/template/metadata
+            - /spec/target/template/engineVersion
+            - /spec/target/template/mergePolicy
+            - /spec/target/template/type
+          jqPathExpressions:
+            - .spec.data[]?.remoteRef.conversionStrategy
+            - .spec.data[]?.remoteRef.decodingStrategy
+            - .spec.data[]?.remoteRef.metadataPolicy
         - group: pyrra.dev
           kind: ServiceLevelObjective
           jsonPointers:
