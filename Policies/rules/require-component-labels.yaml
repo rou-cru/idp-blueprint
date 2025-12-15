@@ -33,7 +33,9 @@ spec:
                 - Deployment
                 - StatefulSet
                 - DaemonSet
+      skipBackgroundRequests: true
       validate:
+        allowExistingViolations: true
         message:
           'Resource must include the standard component labels: app.kubernetes.io/name,
           app.kubernetes.io/instance, app.kubernetes.io/version,
