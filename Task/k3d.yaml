@@ -14,6 +14,11 @@ tasks:
     desc: "Create a k3d cluster with 3 nodes if it does not exist"
     deps:
       - task: k3d:check-inotify
+    env:
+      # Ensure mount propagation for Cilium eBPF maps survives host reboots.
+      K3D_FIX_MOUNTS: '{{.K3D_FIX_MOUNTS | default "1"}}'
+      # Avoid k3d DNS rewrite (interferes with CoreDNS/external resolution).
+      K3D_FIX_DNS: '{{.K3D_FIX_DNS | default "0"}}'
     cmds:
       - |
         # Ensure dedicated Docker network exists for stability
