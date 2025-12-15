@@ -46,7 +46,9 @@ spec:
                 - kube-public
                 - kube-node-lease
                 - kyverno-system
+      skipBackgroundRequests: true
       validate:
+        allowExistingViolations: true
         message:
           'Resource must include the standard business labels: owner, business-unit,
           environment.'

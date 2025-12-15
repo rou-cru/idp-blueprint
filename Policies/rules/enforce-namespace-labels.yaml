@@ -31,7 +31,9 @@ spec:
           - resources:
               kinds:
                 - Namespace
+      skipBackgroundRequests: true
       validate:
+        allowExistingViolations: true
         message:
           'Namespace must include the standard common labels: app.kubernetes.io/part-of,
           owner, business-unit, environment.'
