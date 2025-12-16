@@ -46,6 +46,7 @@ spec:
           apiCall:
             urlPath: "/api/v1/namespaces/{{request.object.metadata.name}}/limitranges"
             jmesPath: "items[].metadata.name"
+            method: GET
       skipBackgroundRequests: true
       validate:
         allowExistingViolations: true
@@ -79,6 +80,7 @@ spec:
           apiCall:
             urlPath: "/api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas"
             jmesPath: "items[].metadata.name"
+            method: GET
       skipBackgroundRequests: true
       validate:
         allowExistingViolations: true
