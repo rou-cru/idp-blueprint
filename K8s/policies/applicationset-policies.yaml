@@ -1,0 +1,78 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: policies
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: applicationset
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+spec:
+  generators:
+    - git:
+        repoURL: ${REPO_URL}
+        revision: ${TARGET_REVISION}
+        directories:
+          - path: K8s/policies/*
+  template:
+    metadata:
+      name: 'policies-{{path.basename}}'
+    spec:
+      project: policies
+      source:
+        repoURL: ${REPO_URL}
+        targetRevision: ${TARGET_REVISION}
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: kyverno-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+          - SkipDryRunOnMissingResource=true
+          - PruneLast=true
+          - ApplyOutOfSyncOnly=true
+          - RespectIgnoreDifferences=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 5m
+      ignoreDifferences:
+        - group: admissionregistration.k8s.io
+          kind: MutatingWebhookConfiguration
+          jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          jqPathExpressions:
+            - '.webhooks[]?.clientConfig.caBundle'
+        - group: ""
+          kind: Secret
+          jsonPointers:
+            - /data
+            - /metadata/labels
+        - group: ""
+          kind: ServiceAccount
+          jsonPointers:
+            - /secrets
+        - group: kyverno.io
+          kind: ClusterPolicy
+          jsonPointers:
+            - /status
+            - /spec/admission
+            - /spec/emitWarning
+            - /metadata/annotations
+          jqPathExpressions:
+            - .spec.rules[] | select(.name|test("autogen-"))
+        - group: wgpolicyk8s.io
+          kind: PolicyReport
+          jsonPointers:
+            - /status
+            - /summary

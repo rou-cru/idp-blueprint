@@ -260,7 +260,7 @@ tasks:
       - kubectl wait --for=condition=Available deployment/argocd-server -n argocd
         --timeout={{.KUBECTL_TIMEOUT}}
       - task: it:eso:apply-resources
-      - for: [platform, observability, cicd, security, events, backstage]
+      - for: [policies, observability, cicd, security, events, backstage]
         cmd: envsubst < appproject-{{.ITEM}}.yaml | kubectl apply -f - --server-side
 
   gateway:deploy:

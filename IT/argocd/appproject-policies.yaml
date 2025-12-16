@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: platform
+  name: policies
   namespace: argocd
 spec:
   description: Platform governance (Kyverno, Policy Reporter)
