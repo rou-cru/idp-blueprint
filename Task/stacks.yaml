@@ -3,7 +3,7 @@ version: "3"
 tasks:
   policies:
     desc: "Deploy the Kyverno Policy Engine and policies via ArgoCD"
-    dir: Policies
+    dir: K8s/policies
     env:
       REPO_URL: "{{.REPO_URL}}"
       TARGET_REVISION: "{{.TARGET_REVISION}}"
@@ -11,7 +11,7 @@ tasks:
     status:
       - test "$FUSE_POLICIES" = "false"
     cmds:
-      - envsubst < app-kyverno.yaml | kubectl apply -f - --server-side
+      - envsubst < applicationset-policies.yaml | kubectl apply -f - --server-side
 
   observability:
     desc: "Deploy the Observability Stack via ArgoCD"
