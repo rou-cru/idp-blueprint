@@ -59,6 +59,18 @@ spec:
           jsonPointers:
             - /status
             - /metadata/generation
+            - /spec/target/deletionPolicy
+            - /spec/target/template/metadata
+            - /spec/target/template/engineVersion
+            - /spec/target/template/mergePolicy
+            - /spec/target/template/type
+          jqPathExpressions:
+            - .spec.data[]?.remoteRef.conversionStrategy
+            - .spec.data[]?.remoteRef.decodingStrategy
+            - .spec.data[]?.remoteRef.metadataPolicy
+            - .spec.dataFrom[]?.extract.conversionStrategy
+            - .spec.dataFrom[]?.extract.decodingStrategy
+            - .spec.dataFrom[]?.extract.metadataPolicy
         - group: apps
           kind: StatefulSet
           jsonPointers:
