@@ -128,3 +128,18 @@ test:
 # -- Disable IPv6 for the memberlist.
 memberlist:
   enable_ipv6: false
+
+# @section -- Monitoring
+monitoring:
+  serviceMonitor:
+    enabled: true
+    # -- Labels to ensure discovery by Prometheus Operator
+    labels:
+      release: kube-prometheus-stack
+  # -- Disable self-monitoring features not needed for the demo
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+  lokiCanary:
+    enabled: false
