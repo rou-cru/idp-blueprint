@@ -22,3 +22,5 @@ spec:
         metric: envoy_cluster_upstream_rq{envoy_response_code=~"5.."}
       total:
         metric: envoy_cluster_upstream_rq
+      grouping:
+        - envoy_cluster_name
