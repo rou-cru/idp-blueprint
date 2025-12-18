@@ -1,0 +1,27 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: argocd-sync-availability
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: argocd-sync
+    app.kubernetes.io/instance: argocd-sync-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+    tier: critical
+spec:
+  target: "95.0"
+  window: 6h
+  description: "ArgoCD Application Syncs should succeed eventually (tolerant to git flakiness)"
+  indicator:
+    ratio:
+      errors:
+        metric: argocd_app_sync_total{phase!="Succeeded"}
+      total:
+        metric: argocd_app_sync_total
+      grouping:
+        - name
+        - project

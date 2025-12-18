@@ -13,7 +13,7 @@ metadata:
     environment: demo
     tier: critical
 spec:
-  target: "99.9"
+  target: "97.0"
   window: 6h
   description: "Vault API should successfully handle secret requests"
   indicator:
