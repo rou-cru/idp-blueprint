@@ -148,7 +148,7 @@ spec:
           echo "🎉 Namespace {{workflow.parameters.app-name}} fully provisioned!"
       volumes:
         - name: tmp-volume
-          emptyDir: {{}}
+          emptyDir: {}
 
     # Step 2: Build and Push Container Image
     - name: build-and-push-image-template
@@ -251,7 +251,7 @@ spec:
           echo "🚀 Application will sync automatically!"
       volumes:
         - name: tmp-volume
-          emptyDir: {{}}
+          emptyDir: {}
 
     # Step 4: Wait for Deployment to be Ready
     - name: wait-for-deployment-template
@@ -319,4 +319,4 @@ spec:
           echo "======================================"
       volumes:
         - name: tmp-volume
-          emptyDir: {{}}
+          emptyDir: {}
