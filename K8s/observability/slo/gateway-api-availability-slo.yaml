@@ -13,7 +13,7 @@ metadata:
     environment: demo
     tier: critical
 spec:
-  target: "99.9"
+  target: "98.0"
   window: 6h
   description: "Gateway API should successfully route HTTP requests without 5xx errors"
   indicator:
