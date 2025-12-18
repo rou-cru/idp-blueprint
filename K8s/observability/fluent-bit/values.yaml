@@ -9,8 +9,8 @@ kind: DaemonSet
 replicaCount: 1
 
 # -- (int) Time to wait before flushing data (in seconds)
-# Increased to 5s for better batching and reduced request frequency
-flush: 5
+# Reduced to 2s to minimize log accumulation per batch and improve real-time visibility
+flush: 2
 
 # -- (string) Default log level
 logLevel: info
@@ -106,6 +106,8 @@ config:
         Retry_Limit 5
         # -- Compress logs to reduce network bandwidth and memory usage
         compress gzip
+        # -- Balanced buffer size (2s flush / 64k buffer = 32KB/s throughput)
+        Buffer_Size 64k
 
 # @section -- Volumes
 # -- (list) DaemonSet volumes
