@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backstage-eventsource-svc
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/name: backstage-eventsource
+spec:
+  type: ClusterIP
+  ports:
+    - port: 12001
+      targetPort: 12001
+      protocol: TCP
+      name: webhook
+  selector:
+    eventsource-name: backstage
