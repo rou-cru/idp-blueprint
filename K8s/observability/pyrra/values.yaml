@@ -2,6 +2,9 @@
 # -- (string) Priority class for Pyrra pods
 priorityClassName: platform-observability
 
+# -- URL to Prometheus instance queried by Pyrra UI/API
+prometheusUrl: http://prometheus-operated.observability.svc.cluster.local:9090
+
 # @section -- Resources
 resources:
   requests:
@@ -23,3 +26,25 @@ serviceMonitor:
   additionalLabels:
     # -- (string) Prometheus selector label
     prometheus: kube-prometheus
+
+# -- ServiceMonitor for Pyrra operator/controller metrics
+serviceMonitorOperator:
+  enabled: true
+  labels:
+    prometheus: kube-prometheus
+
+# -- Enable Pyrra self-monitoring alerts
+prometheusRule:
+  enabled: true
+
+# -- Generate generic recording rules for SLOs
+genericRules:
+  enabled: true
+
+# -- Enable admission webhook validation for SLOs (cert-manager required)
+validatingWebhookConfiguration:
+  enabled: true
+
+# -- Deploy Grafana dashboards via ConfigMap
+dashboards:
+  enabled: true
