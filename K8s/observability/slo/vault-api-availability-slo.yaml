@@ -19,6 +19,6 @@ spec:
   indicator:
     ratio:
       errors:
-        metric: sum(rate(vault_core_response_status_code{type="5xx"}[5m]))
+        metric: vault_core_response_status_code{type="5xx"}
       total:
-        metric: sum(rate(vault_core_response_status_code[5m]))
+        metric: vault_core_response_status_code
