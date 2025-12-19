@@ -71,6 +71,8 @@ config:
         K8S-Logging.Parser On
         # -- Allow pods to be excluded from logging.
         K8S-Logging.Exclude On
+        # -- Unlimited buffer size to handle large pod specs
+        Buffer_Size 0
 
     # The following Lua filter removes known high-cardinality labels to protect Loki's
     # performance. A 'deny-list' approach is used because it's more performant
