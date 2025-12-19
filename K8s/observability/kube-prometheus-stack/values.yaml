@@ -63,7 +63,7 @@ alertmanager:
       - name: 'null'
       - name: 'argo-events-webhook'
         webhook_configs:
-          - url: 'http://alertmanager-eventsource-svc.events.svc.cluster.local:12000/webhook'
+          - url: 'http://alertmanager-eventsource-svc.argo-events.svc.cluster.local:12000/webhook'
             send_resolved: true
 
 # @section -- Exporters

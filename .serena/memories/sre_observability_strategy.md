@@ -24,6 +24,7 @@ This document outlines the architectural decisions, trade-offs, and implementati
   - Schema v13 with 24h index rotation.
   - Read/Write replicas disabled.
   - Caching layers (memcached) disabled to save memory.
+  - **Fluent-bit Tuning:** Kubernetes Filter `Buffer_Size` set to `0` (unlimited) to handle large pod specifications (~40k-65k) without metadata loss. Output buffer set to `64k` for balanced batching.
 
 ### 3. Service Level Objectives (Pyrra)
 - **Role:** SLO management and Error Budget tracking.
@@ -45,6 +46,25 @@ A closed-loop remediation system is implemented:
 3.  **Ingest:** Argo Events `EventSource` receives the webhook.
 4.  **Trigger:** Argo Events `Sensor` (`slo-remediation`) matches the alert payload and extracts context labels.
 5.  **Act:** An Argo Workflow (e.g., `remediate-externalsecret-failure`) is triggered to attempt automatic resolution (e.g., deleting a stuck ExternalSecret to force re-sync).
+
+## Service Level Agreements (SLA)
+While this is a blueprint for internal use, we define SLAs to contractually align user expectations with the platform's capabilities (based on the "125V Standard").
+
+- **Service Hours:** 24/7 (Autonomous), Human Support Best Effort.
+- **RPO (Data Loss):** 24h (Ephemeral persistence).
+
+| Service | SLO (Internal Goal) | SLA (User Commitment) | Definition | Consequence |
+| :--- | :--- | :--- | :--- | :--- |
+| **API Gateway** | 99.9% | **99.0%** | Ingress availability. | Demo Interruption. |
+| **Pipeline (Argo)** | 99.0% | **95.0%** | Sync success <15m. | Deployment Delay. |
+| **Secret Management** | 97.0% | **95.0%** | Injection availability. | Pod Start Failure. |
+| **Developer Portal** | 95.0% | **90.0%** | UI Access. | Visibility Loss. |
+
+## Incident Post-Mortem: Log Ingestion Failure (2025-12-19)
+**Issue:** Complete log data loss for namespaces `cicd` and `argocd`.
+**Root Cause:** The Fluent-bit `kubernetes` filter failed to enrich logs because the Pod Specification JSON for complex pods (SonarQube, Argo controllers) exceeded the default 32KB buffer size. The HTTP client threw: `[warn] [http_client] cannot increase buffer: current=32000 requested=64768 max=32000`.
+**Resolution:** Explicitly set `Buffer_Size 0` in the Kubernetes filter configuration to allow dynamic buffer resizing.
+**Lesson Learned:** Equalizing buffers (e.g., 64k) is only effective if the payload + overhead is strictly below that limit. For metadata enrichment of unpredictable Pod Specs, the modern Fluent-bit recommendation is using `0` (unlimited) to prioritize data integrity over strict memory capping.
 
 ## Constraints & Limits
 - **Memory Target:** Total observability stack < 2GB RAM.

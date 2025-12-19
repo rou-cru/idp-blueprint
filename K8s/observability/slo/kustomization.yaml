@@ -10,3 +10,5 @@ resources:
   - loki-ingest-availability-slo.yaml
   - gateway-api-availability-slo.yaml
   - vault-api-availability-slo.yaml
+  - argocd-sync-availability-slo.yaml
+  - argo-workflows-controller-availability-slo.yaml
