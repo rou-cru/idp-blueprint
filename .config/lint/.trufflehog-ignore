@@ -8,3 +8,6 @@ site/
 .codex/sessions/
 node_modules/
 dist/
+UI/.yarn/
+UI/yarn.lock
+.codex/history.jsonl

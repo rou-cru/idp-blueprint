@@ -5,7 +5,8 @@
       "args": [
         "--from",
         "git+https://github.com/oraios/serena",
-        "serena-mcp-server",
+        "serena",
+        "start-mcp-server",
         "--context",
         "ide-assistant",
         "--project",
@@ -21,7 +22,9 @@
     },
     "react-guide": {
       "command": "npx",
-      "args": ["@mrnitro360/react-native-mcp-guide@1.1.0"]
+      "args": [
+        "@mrnitro360/react-native-mcp-guide@1.1.0"
+      ]
     },
     "sequential-thinking": {
       "command": "npx",
@@ -47,7 +50,7 @@
         "https://mcp.docs.astro.build/mcp"
       ]
     },
-   "grafana": {
+    "grafana": {
       "command": "mcp-grafana",
       "args": [],
       "env": {
@@ -55,6 +58,15 @@
         "GRAFANA_USERNAME": "admin",
         "GRAFANA_PASSWORD": "graf"
       }
+    },
+    "svelte": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@sveltejs/mcp"
+      ],
+      "env": {}
     }
   }
 }
