@@ -5,7 +5,9 @@ resources:
   - alertmanager-eventsource.yaml
   - alertmanager-eventsource-svc.yaml
   - argocd-notifications-eventsource.yaml
+  - argocd-notifications-eventsource-svc.yaml
   - backstage-eventsource.yaml
+  - backstage-eventsource-svc.yaml
   - argocd-notifications-sensor.yaml
   - slo-remediation-sensor.yaml
   - app-provisioning-sensor.yaml
