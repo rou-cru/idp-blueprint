@@ -1,26 +1,26 @@
 apiVersion: pyrra.dev/v1alpha1
 kind: ServiceLevelObjective
 metadata:
-  name: gateway-api-availability
+  name: gateway-api-latency-p95
   namespace: observability
   labels:
     app.kubernetes.io/part-of: idp
     app.kubernetes.io/component: slo
-    app.kubernetes.io/name: gateway-api-availability
+    app.kubernetes.io/name: gateway-api-latency
     app.kubernetes.io/instance: gateway-api-demo
     owner: platform-team
     business-unit: infrastructure
     environment: demo
     tier: critical
 spec:
-  target: "98.0"
+  target: "95.0"
   window: 6h
-  description: "Gateway API should successfully route HTTP requests without 5xx errors"
+  description: "Gateway API p95 latency should be under 200ms"
   indicator:
     ratio:
-      errors:
-        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq{envoy_response_code=~"5.."}[5m]))
+      good:
+        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq_time_bucket{le="0.2"}[5m]))
       total:
-        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq[5m]))
+        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq_time_count[5m]))
       grouping:
         - envoy_cluster_name
