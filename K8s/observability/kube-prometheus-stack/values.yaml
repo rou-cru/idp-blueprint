@@ -362,6 +362,9 @@ prometheusOperator:
   # -- Admission webhooks configuration for PrometheusRules validation
   admissionWebhooks:
     enabled: true
+    # -- Prevent transient webhook outages from blocking syncs
+    # Valid values: Fail, Ignore, IgnoreOnInstallOnly
+    failurePolicy: Ignore
     # -- Use cert-manager to manage webhook certificates instead of Helm hook Jobs
     # This avoids compatibility issues with ArgoCD+Kustomize workflow
     certManager:
