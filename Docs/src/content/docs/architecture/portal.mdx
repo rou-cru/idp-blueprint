@@ -1,0 +1,258 @@
+---
+title: Developer Portal
+description: Backstage-powered portal in the architecture
+layout: ../../../layouts/DocsLayout.astro
+sidebar:
+  label: Portal
+  order: 8
+---
+
+import { Button } from '../../../components/content/index.ts';
+
+Platforms require a unified interface for developers to discover services, trigger
+workflows, access documentation, and monitor deployments. A developer portal aggregates
+platform capabilities into a cohesive experience, reducing cognitive load and providing
+self-service operations without direct cluster access.
+
+The portal acts as the primary interaction layer between developers and platform
+infrastructure.
+
+## Portal Architecture
+
+Developer portals consolidate platform capabilities behind a unified interface. Rather
+than requiring developers to learn kubectl, navigate multiple dashboards, or read pages
+of infrastructure documentation, the portal presents a coherent view of services,
+workflows, and operational state.
+
+### Service Catalog
+
+The catalog forms the portal's foundation—a searchable inventory of everything running
+on the platform. Services appear with their ownership, dependencies, and current status
+visible at a glance. When developers join a team, they discover which services the team
+owns, where the code lives, and how services connect to each other. The catalog pulls
+metadata from multiple sources: Git repositories provide code locations and commit
+history, the GitOps controller supplies deployment status and health checks, monitoring
+systems contribute error rates and latency percentiles.
+
+This aggregation solves the discovery problem that plagues growing platforms. Without a
+catalog, developers ask teammates where to find service definitions, which repositories
+contain related code, or who maintains shared libraries. The catalog makes this
+information searchable and current. When microservice architectures grow to dozens or
+hundreds of services, the dependency graph view reveals how services interconnect,
+helping developers understand blast radius when planning changes.
+
+### Software Templates
+
+Templates transform infrastructure provisioning from a manual, error-prone process into
+guided workflows. Instead of copying example repositories, editing manifests by hand,
+and requesting namespace creation from operations teams, developers fill a form. The
+template collects requirements—application name, programming language, expected traffic,
+storage needs—then executes a multi-step workflow that generates consistent
+infrastructure.
+
+The workflow creates a Git repository with scaffolded code matching the selected
+language and framework. It commits manifests for deployment, configuring resource
+limits, health checks, and secrets references according to platform standards. CI/CD
+pipelines are configured automatically, connecting the repository to build systems and
+test suites. The workflow provisions a namespace, applies RBAC granting the owning team
+access, and creates an ArgoCD Application that will maintain the deployment from Git.
+
+This automation encodes institutional knowledge. New developers follow the same patterns
+as experienced teams because the template enforces them. Security policies,
+observability configuration, and operational best practices are built into the template
+rather than documented in wikis that fall out of date.
+
+Templates evolve with platform capabilities. When the platform adopts a new monitoring
+tool or secrets backend, templates update to provision the new integrations
+automatically. Existing services continue running unchanged, but new services gain
+modern defaults from day one.
+
+### Operational Dashboards
+
+Developers need operational visibility without becoming Kubernetes experts. The portal
+embeds dashboards that aggregate metrics, logs, and traces for each service. A developer
+viewing their application sees current CPU and memory usage, request rates, error
+percentages, and p99 latency—all without learning PromQL or navigating Grafana directly.
+
+Deployment status surfaces immediately. The GitOps controller reports whether the
+deployed version matches Git, if health checks pass, and when the last successful
+rollout occurred. Developers verify deployments succeeded without running kubectl
+commands or checking multiple systems.
+
+CI/CD integration displays pipeline status inline with service information. Recent build
+history shows which commits passed tests, which failed, and why. Quality gates surface
+static analysis results, code coverage trends, and security scan findings. Developers
+address issues without leaving the portal to check Jenkins, GitHub Actions, or separate
+quality dashboards.
+
+Security and compliance information helps teams maintain posture. Vulnerability scans
+report known CVEs in container images, suggesting remediation paths. Policy compliance
+scores indicate whether the service meets platform standards for resource limits,
+network policies, and secret handling.
+
+### Documentation Hub
+
+Documentation scattered across wikis, code comments, and shared drives becomes invisible
+over time. The portal centralizes it. API specifications live alongside the services
+they document. When a developer needs to integrate with a colleague's service, they find
+OpenAPI specs or GraphQL schemas directly in the catalog rather than asking for links or
+reading code.
+
+Architecture Decision Records (ADRs) capture the reasoning behind technical choices.
+When future developers wonder why a particular database was selected or why services
+communicate through a specific message queue, the ADR provides historical context. This
+prevents architectural drift and helps new team members understand the platform's
+evolution.
+
+Runbooks document operational procedures. When incidents occur, on-call engineers find
+troubleshooting steps, escalation contacts, and recovery procedures without searching
+Slack history or relying on tribal knowledge. This reduces mean time to recovery and
+enables more engineers to participate in on-call rotations.
+
+Platform guidelines codify development standards. Security requirements, deployment
+patterns, and observability expectations are documented once and surfaced to developers
+when relevant. When starting a new project, developers reference guidelines rather than
+asking teammates for the current approach.
+
+### Identity and Access
+
+Portals mediate access to platform capabilities. Instead of granting every developer
+cluster credentials and permissions, authentication flows through the portal. Corporate
+identity providers integrate via SAML or LDAP, allowing employees to authenticate with
+their existing credentials. External collaborators authenticate through GitHub or GitLab
+OAuth, linking their Git identities to platform access.
+
+Role-Based Access Control restricts capabilities by team. Developers can view any
+service in the catalog for discovery purposes, but they can only execute templates,
+trigger deployments, or access secrets for services their team owns. This prevents
+accidental modifications to other teams' infrastructure while maintaining visibility for
+collaboration.
+
+Audit logging tracks every action. When developers provision infrastructure, trigger
+workflows, or view sensitive information, events record in audit trails. Compliance
+teams query these logs to verify access patterns, security teams investigate suspicious
+activity, and operations teams understand who made changes during incidents.
+
+## Portal Integration Patterns
+
+### GitOps Loop
+
+Templates create Git commits that trigger GitOps reconciliation:
+
+1. Developer fills template form (new microservice)
+2. Portal workflow creates repository with scaffolded code
+3. Workflow commits ArgoCD Application manifest to GitOps repository
+4. GitOps controller detects new Application, deploys to cluster
+5. Portal displays deployment status via ArgoCD API
+
+This maintains Git as the source of truth while providing guided workflows.
+
+### Event-Driven Provisioning
+
+Templates trigger platform events for complex orchestration:
+
+1. Developer submits template (new environment)
+2. Portal posts event to event bus
+3. Event sensor executes multi-step workflow (create namespace, configure RBAC,
+   provision secrets, deploy baseline services)
+4. Workflow updates portal via API (provisioning status, resource URLs)
+
+This enables complex provisioning beyond simple Git commits.
+
+### Observability Embedding
+
+Developers need metrics and logs without managing access to Prometheus, Grafana, or Loki
+directly. The portal embeds observability tooling through two approaches. For visual
+dashboards, iFrame integration displays Grafana panels within service pages. Developers
+see their application's dashboard without leaving the portal or logging into Grafana
+separately.
+
+For programmatic access, the portal backend proxies queries. When a developer requests
+recent logs or metric trends, the portal translates their request into PromQL or LogQL,
+executes the query against Prometheus or Loki, and returns results. This prevents the
+need to grant every developer direct database access while still providing the
+operational data they need.
+
+Aggregated metrics combine data from multiple sources. A service's cost view merges
+resource usage from Kubernetes metrics with pricing data from cloud providers and
+storage consumption from persistent volumes. Developers see total service cost without
+correlating data across systems manually. This integrated view supports cost-conscious
+development without requiring developers to become infrastructure accounting experts.
+
+### Secrets Integration
+
+Templates often need credentials—tokens for creating Git repositories, API keys for
+configuring external services, or database passwords for initial schema setup. The
+portal handles these credentials securely without exposing them to developers or logging
+them in audit trails.
+
+The portal runs with a Kubernetes ServiceAccount that grants access to the secrets
+backend. When a template executes, it requests credentials programmatically. The
+workflow generates temporary Git tokens with minimal scope—create repository, configure
+webhooks—that expire after the provisioning completes. The token never appears in the
+portal UI or in logs; it exists only in workflow memory during execution.
+
+For long-lived secrets, templates create ExternalSecret resources rather than Secret
+objects directly. These definitions specify what secret to fetch (path, key) without
+containing the actual value. The secrets operator synchronizes the value from the
+centralized store into the namespace. Developers never see the credential; they only see
+that it was provisioned successfully.
+
+This approach maintains the principle of least privilege. Developers trigger
+provisioning workflows, but they don't hold the credentials those workflows use. The
+platform grants capabilities (provision infrastructure, configure integrations) without
+distributing sensitive secrets broadly.
+
+## Portal vs Direct Access
+
+| Aspect                | Developer Portal        | Direct Cluster Access       |
+| --------------------- | ----------------------- | --------------------------- |
+| **Authentication**    | SSO, OAuth, OIDC        | Kubeconfig, certificates    |
+| **Service discovery** | Catalog with metadata   | Manual (kubectl, docs)      |
+| **Provisioning**      | Guided templates        | Manual manifests, scripts   |
+| **Observability**     | Embedded dashboards     | Direct Grafana/Prometheus   |
+| **Learning curve**    | Low (forms, UI)         | High (Kubernetes expertise) |
+| **Audit trail**       | Portal logs + Git       | Git commits only            |
+| **RBAC model**        | Portal roles + K8s RBAC | Kubernetes RBAC only        |
+
+Portals reduce the Kubernetes knowledge required for common operations while maintaining
+GitOps and policy guardrails.
+
+## Implementation in Demo
+
+The reference implementation uses:
+
+- **Portal framework**: Backstage (service catalog, software templates, TechDocs)
+- **Identity provider**: Dex (OpenID Connect for SSO, supports GitHub OAuth)
+- **Database**: PostgreSQL for Backstage metadata storage
+- **Authentication flow**:
+  1. User accesses Backstage
+  2. Redirects to Dex for authentication
+  3. Dex authenticates via GitHub OAuth
+  4. Returns OIDC token to Backstage
+  5. Backstage creates session
+- **Integration points**:
+  - **Kubernetes API**: Read deployments, pods, services via ServiceAccount
+  - **ArgoCD**: Query application status, trigger syncs
+  - **Event bus**: Trigger provisioning workflows via Argo Events webhooks
+  - **External Secrets**: Retrieve credentials (GitHub tokens, ArgoCD admin password)
+- **Provisioning templates**: Application scaffolding (creates repo, ArgoCD Application,
+  namespace, RBAC)
+
+**Security considerations (demo vs production):**
+
+- Demo uses shared GitHub OAuth app and known credentials in `config.toml`
+- Production should use:
+  - Corporate SSO (SAML, LDAP)
+  - Individual user accounts (no shared credentials)
+  - Secret rotation via Vault
+  - TLS end-to-end (demo uses HTTP to Dex internally)
+
+See [Components - Backstage](/components/developer-portal/backstage/) for configuration
+details.
+
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/driven-by-events/" variant="secondary" icon="arrow-left">
+    Back: Driven by Events
+  </Button>
+</div>

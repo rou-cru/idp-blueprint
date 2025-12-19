@@ -5,21 +5,29 @@ sidebar:
   order: 3
 ---
 
-import { LinkButton } from '@astrojs/starlight/components';
+import { Button } from '../../../components/content/index.ts';
 
----
+Deploy the reference implementation to observe the architecture in a live cluster. This
+assumes you meet the prerequisites (container runtime + git; tooling via Devbox or Dev
+Container). Initial deployment requires image downloads and ArgoCD reconciliation,
+typically 5–7 minutes on most connections.
 
-Spin up the full IDP locally with one command, then validate access and credentials.
-Expect eventual consistency for a few minutes while images download.
+The deployment orchestration reads `config.toml` for component versions, NodePort
+assignments, default credentials, and stack enablement. Before deploying, you may
+customize which stacks to include.
 
-## Clone the repository
+## Optional: Configure deployment scope
 
-```bash
-git clone https://github.com/rou-cru/idp-blueprint
-cd idp-blueprint
-```
+Edit `config.toml` `[fuses]` to disable stacks you do not need (`observability`, `cicd`,
+`security`, `events`, `backstage`). The `prod` flag hardens ArgoCD defaults. These fuses
+control what the demo deploys; they do not change the underlying architecture model.
+Make changes before running `task deploy`.
 
-Optional: open in VS Code and “Reopen in Container”, or run with Devbox.
+![config.toml toggles](../assets/images/configs.png)
+
+:::danger Never keep real passwords or secrets in plain text. The demo ships simple
+values for convenience—replace them with your own secure secrets for anything beyond
+local exploration. :::
 
 ## Deploy
 
@@ -27,65 +35,50 @@ Optional: open in VS Code and “Reopen in Container”, or run with Devbox.
 task deploy
 ```
 
-- Creates k3d cluster `idp-demo`
-- Bootstraps core: Cilium, cert-manager, Vault, External Secrets, ArgoCD, Gateway
-- Deploys Kyverno/Policy Reporter, then ApplicationSets for observability, CI/CD,
-  security, events, and backstage (gated by
-  [fuses](../architecture/overview.md#feature-toggles-fuses) except events)
+Run it from the repository root. It spins up a three-node k3d cluster, sets up
+networking (Cilium, Gateway API), cert-manager, Vault + External Secrets, ArgoCD, and
+then lets ApplicationSets bring up the stacks you left enabled.
 
-Time: ~5–10 minutes depending on network and hardware.
+Typical runs take about 5–15 minutes depending on bandwidth and available resources.
 
-:::tip[Deploy behavior]
+### What to expect while it runs
 
-- ArgoCD will keep syncing after the task completes. It’s normal for Applications to
-  become Healthy/Synced gradually as images download and pods become Ready.
-- The task prints the service URLs when Gateway is ready (for example
-  `https://argocd.<ip>.nip.io`). Copy them from the output.
+Early logs cover k3d creation and Cilium; later you will see ArgoCD, Gateway NodePorts,
+and ApplicationSets per stack.
 
-:::
+![task deploy](../assets/images/task-deploy.png)
 
-## First access
+ArgoCD keeps reconciling after `task deploy` exits, so Healthy/Synced states appear
+gradually as images finish pulling. The task prints nip.io URLs (based on your LAN IP)
+when the Gateway is ready.
 
-When the Gateway is ready, open the printed URLs for exposed services. They use a nip.io
-wildcard derived from your LAN IP (for example `https://argocd.192-168-1-20.nip.io`) and
-are exposed to LAN network..
+You can open `k9s` to watch resources settle.
 
-:::caution
-Gateway NodePorts come from `config.toml`. Make sure those ports are free and allowed in
-your OS firewall so LAN browsers can reach the services.
-:::
+![k9s pods view](../assets/images/task-destroy.png)
 
-Also you could use `k9s` to inspect the cluster state visually in CLI.
+Some workloads may show transient states (Pending, ContainerCreating) during initial
+convergence. Multiple Helm charts reconcile in parallel under GitOps control; the
+cluster reaches steady state as images finish pulling. Typical convergence time is 5–7
+minutes on most setups; networks with &lt;10Mbps bandwidth or high latency may require
+10–15 minutes.
 
-### Credentials
-
-Vault is initialized, unsealed and creates secret values automatically during deploy.
-Then External Secrets propagate them to workloads than need it.
-
-Default values to the secrets created are from `config.toml` and the root token is hold in
-a secret.
-
-:::danger
-Local-only root/unseal material is managed by helper scripts. However thats just a
-workaround to demo purpouse, dont do this on production and instead replace the file for
-secure methods
-:::
-
-See [Verify Installation](verify.md) for details about expected results.
-
-## 4. Clean up
-
-Tear everything down when you’re done:
+## Clean up
 
 ```bash
 task destroy
 ```
 
-<div style="display: flex; gap: 0.75rem; justify-content: center; margin-top: var(--sl-spacing-4);">
-  <LinkButton href="/getting-started/prerequisites/" variant="secondary" icon="arrow-left">
+Running `task destroy` deletes the k3d cluster and all demo resources, returning your
+host to the state before deployment. Use it when you finish exploring or need to reclaim
+disk space.
+
+![task destroy](../assets/images/task-destroy.png)
+
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/getting-started/prerequisites/" variant="secondary" icon="arrow-left">
     Back: Prerequisites
-  </LinkButton>
-  <LinkButton href="/getting-started/deployment/" variant="primary" icon="arrow-right">
-    Next: Deployment
-  </LinkButton>
+  </Button>
+  <Button href="/getting-started/verify/" variant="primary" icon="arrow-right">
+    Next: Verify Installation
+  </Button>
 </div>

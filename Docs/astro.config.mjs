@@ -1,80 +1,74 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import starlight from '@astrojs/starlight';
-import d2 from 'astro-d2'; // Change to default import
-
+// import d2 from 'astro-d2'; // DISABLED: Causes MDX parsing errors - use pre-rendered SVGs instead
 import sitemap from '@astrojs/sitemap';
-
 import mdx from '@astrojs/mdx';
-
 import expressiveCode from 'astro-expressive-code';
-
 import icon from 'astro-icon';
-
 import robotsTxt from 'astro-robots-txt';
-
 import favicons from 'astro-favicons';
-
 import yeskunallumami from '@yeskunall/astro-umami';
-
 import mermaid from 'astro-mermaid';
+import svelte from '@astrojs/svelte';
+import tailwind from '@astrojs/tailwind';
+import remarkDirective from 'remark-directive';
+import { remarkCallouts } from './src/utils/remark-callouts.ts';
+
+import { siteConfig, isAnalyticsEnabled } from './src/lib/site-config.ts';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://idp-blueprint.roura.xyz',
-  integrations: [starlight({
-    title: 'IDP Blueprint',
-    description: 'Enterprise-grade Internal Developer Platform Blueprint - Production-ready platform engineering stacks',
-    social: [
-      {
-        icon: 'github',
-        label: 'GitHub',
-        href: 'https://github.com/rou-cru/idp-blueprint',
+  site: siteConfig.site,
+  integrations: [
+    // Code highlighting with custom theme
+    expressiveCode({
+      themes: ['github-dark-dimmed'],
+      styleOverrides: {
+        borderRadius: '0.75rem',
       },
-    ],
-    sidebar: [
-      {
-        label: 'Getting Started',
-        collapsed: true,
-        autogenerate: { directory: 'getting-started' },
-      },
-      {
-        label: 'Operate',
-        collapsed: true,
-        autogenerate: { directory: 'operate' },
-      },
-      {
-        label: 'Concepts',
-        collapsed: true,
-        autogenerate: { directory: 'concepts' },
-      },
-      {
-        label: 'Architecture',
-        collapsed: true,
-        autogenerate: { directory: 'architecture' },
-      },
-      {
-        label: 'Reference',
-        collapsed: true,
-        autogenerate: { directory: 'reference' },
-      },
-      {
-        label: 'Components',
-        collapsed: true,
-        autogenerate: { directory: 'components' },
-      },
-    ],
-    components: {
-      Head: './src/components/SeoHead.astro',
-      ThemeSelect: './src/components/ThemeSelect.astro', // Disable theme switcher
-      TwoColumnContent: './src/overrides/TwoColumnContent.astro',
+    }),
+
+    // MDX support with remark plugins
+    mdx({
+      remarkPlugins: [remarkDirective, remarkCallouts],
+    }),
+
+    // Svelte components
+    svelte(),
+
+    // Tailwind CSS
+    tailwind({
+      applyBaseStyles: false, // We'll handle base styles ourselves
+    }),
+
+    // D2 diagrams - DISABLED: Use pre-rendered SVGs via Scripts/d2-render.sh instead
+    // d2({
+    //   theme: {
+    //     dark: '200',
+    //   },
+    //   sketch: true,
+    // }),
+
+    // Other integrations
+    mermaid(),
+    icon(),
+    robotsTxt(),
+    favicons(),
+    sitemap(),
+    ...(isAnalyticsEnabled() ? [yeskunallumami({ id: siteConfig.analytics.umamiId })] : []),
+  ],
+
+  markdown: {
+    shikiConfig: {
+      theme: 'github-dark-dimmed',
     },
-    customCss: ['./src/styles/custom.css'],
-    pagination: false,
-  }), expressiveCode(), mdx(), d2({
-    theme: {
-      dark: '200',
+  },
+
+  vite: {
+    build: {
+      rollupOptions: {
+        external: ['/pagefind/pagefind.js'],
+      },
     },
-    sketch: true,
-  }), mermaid(), icon(), robotsTxt(), favicons(), sitemap(), yeskunallumami({ id: 'placeholder-id' })],
+  },
 });

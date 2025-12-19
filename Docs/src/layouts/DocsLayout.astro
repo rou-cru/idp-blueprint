@@ -1,0 +1,72 @@
+---
+import '../styles/main.css'; // New minimal CSS for Tailwind directives and fonts
+import Header from '../components/navigation/Header.svelte';
+import Sidebar from '../components/navigation/Sidebar.svelte';
+import TableOfContents from '../components/navigation/TableOfContents.svelte';
+import Breadcrumbs from '../components/navigation/Breadcrumbs.svelte';
+import { getSidebarConfig } from '../lib/navigation';
+import { siteConfig, canonicalUrl } from '../lib/site-config';
+
+interface Props {
+  title: string;
+  description?: string;
+  headings?: Array<{ depth: number; text: string; slug: string }>;
+}
+
+const { title, description, headings = [] } = Astro.props;
+
+const pageTitle = title ? `${title} | ${siteConfig.title}` : siteConfig.title;
+const pageDescription = description || siteConfig.description;
+const canonicalURL = canonicalUrl(Astro.url.pathname);
+
+// Generate sidebar config dynamically using shared logic
+const sidebarConfig = await getSidebarConfig();
+---
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-bg-base text-text-primary antialiased min-h-screen flex flex-col">
+    <Header client:load />
+
+    <div class="flex-1 flex max-w-container-max mx-auto w-full pt-header-h">
+      <Sidebar client:load sidebarConfig={sidebarConfig} currentPath={Astro.url.pathname} />
+
+      <main class="flex-1 min-w-0 py-8 px-6 lg:px-12 lg:ml-sidebar-w">
+        <div class="max-w-5xl mx-auto">
+          <Breadcrumbs currentPath={Astro.url.pathname} />
+          
+          {/* Render title automatically except on homepage which has its own hero */}
+          {Astro.url.pathname !== '/' && title && (
+            <h1 class="text-4xl font-bold tracking-tight text-text-primary mb-6">{title}</h1>
+          )}
+          
+          {Astro.url.pathname !== '/' ? (
+            <div class="prose prose-slate dark:prose-invert max-w-none">
+              <slot />
+            </div>
+          ) : (
+            <slot />
+          )}
+        </div>
+      </main>
+
+      <aside class="hidden xl:block w-toc-w py-8 px-6 sticky top-header-h h-[calc(100vh-theme(spacing.header-h))] overflow-y-auto">
+        <TableOfContents headings={headings} client:idle />
+      </aside>
+    </div>
+  </body>
+</html>
