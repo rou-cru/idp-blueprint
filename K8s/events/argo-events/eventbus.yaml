@@ -13,25 +13,36 @@ metadata:
     business-unit: infrastructure
     environment: demo
 spec:
-  nats:
-    native:
-      replicas: 3
-      auth: token
-      metadata:
-        labels:
-          app.kubernetes.io/name: eventbus
-          app.kubernetes.io/instance: default
-          app.kubernetes.io/version: 2.4.12
-          app.kubernetes.io/component: eventbus
-          app.kubernetes.io/part-of: idp
-          owner: platform-team
-          business-unit: infrastructure
-          environment: demo
-      containerTemplate:
-        resources:
-          requests:
-            cpu: "20m"
-            memory: "64Mi"
-          limits:
-            cpu: "100m"
-            memory: "128Mi"
+  jetstream:
+    version: "2.10.10"
+    replicas: 3
+    metadata:
+      labels:
+        app.kubernetes.io/name: eventbus
+        app.kubernetes.io/instance: default
+        app.kubernetes.io/component: eventbus
+        app.kubernetes.io/part-of: idp
+        owner: platform-team
+        business-unit: infrastructure
+        environment: demo
+    persistence:
+      accessMode: ReadWriteOnce
+      volumeSize: 1Gi
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: default
+                  app.kubernetes.io/component: eventbus
+              topologyKey: kubernetes.io/hostname
+    containerTemplate:
+      resources:
+        requests:
+          cpu: "20m"
+          memory: "64Mi"
+        limits:
+          cpu: "100m"
+          memory: "128Mi"

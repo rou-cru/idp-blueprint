@@ -54,12 +54,7 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
-        command: ["devbox", "run", "--", "sh", "-c"]
+        command: ["bash", "-c"]
         args:
           - |
             git clone --branch {{workflow.parameters.branch}} --single-branch {{workflow.parameters.repo-url}} /workspace

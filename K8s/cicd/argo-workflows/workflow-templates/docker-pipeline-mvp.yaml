@@ -76,18 +76,13 @@ spec:
       container:
         image: roucru/idp-blueprint:ops
         imagePullPolicy: IfNotPresent
-        command: ["devbox", "run", "--", "sh", "-c"]
+        command: ["bash", "-c"]
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
           runAsNonRoot: true
           runAsUser: 1000
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         resources:
           requests:
             cpu: 50m
@@ -124,18 +119,13 @@ spec:
       container:
         image: roucru/idp-blueprint:ops
         imagePullPolicy: IfNotPresent
-        command: ["devbox", "run", "--", "sh", "-c"]
+        command: ["bash", "-c"]
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
             drop: ["ALL"]
           runAsNonRoot: true
           runAsUser: 1000
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         resources:
           requests:
             cpu: 50m

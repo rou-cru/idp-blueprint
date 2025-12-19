@@ -16,9 +16,9 @@ spec:
         data:
           - path: "body.alerts.#.labels.slo"
             type: string
-            comparator: "!="
+            comparator: "="
             value:
-              - ""
+              - ".+"
 
   triggers:
     # Trigger 1: ArgoCD Application Unhealthy
@@ -46,11 +46,11 @@ spec:
           parameters:
             - src:
                 dependencyName: slo-alert
-                dataKey: body.alerts.0.labels.application
+                dataKey: body.alerts.0.labels.name
               dest: spec.arguments.parameters.0.value
             - src:
                 dependencyName: slo-alert
-                dataKey: body.alerts.0.labels.namespace
+                dataKey: body.alerts.0.labels.dest_namespace
               dest: spec.arguments.parameters.1.value
         conditions: "slo-alert && slo-alert.labels.slo == 'argocd-application-health'"
 
@@ -79,7 +79,7 @@ spec:
           parameters:
             - src:
                 dependencyName: slo-alert
-                dataKey: body.alerts.0.labels.externalsecret
+                dataKey: body.alerts.0.labels.name
               dest: spec.arguments.parameters.0.value
             - src:
                 dependencyName: slo-alert

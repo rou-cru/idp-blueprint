@@ -51,6 +51,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "-1"
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    checkov.io/skip1: CKV_K8S_38=Job needs SA token to run kubectl apply in-cluster
+    checkov.io/skip2: CKV_K8S_43=Dev tag moves frequently; digest not pinned during active development
+    checkov.io/skip3: CKV_K8S_15=Intentionally IfNotPresent to avoid repeated pulls of ops image
 spec:
   template:
     metadata:
@@ -64,18 +67,25 @@ spec:
       restartPolicy: OnFailure
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1001
-        fsGroup: 1001
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
       containers:
         - name: renderer
           image: roucru/idp-blueprint:ops
           imagePullPolicy: IfNotPresent
-          command: ["devbox", "run", "--", "bash", "-c"]
-          env:
-            - name: HOME
-              value: /tmp
-            - name: XDG_CACHE_HOME
-              value: /tmp/.cache
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+          command: ["bash", "-c"]
           args:
             - |
               set -e  # Exit on any error
@@ -137,15 +147,10 @@ spec:
               echo "  GITHUB_REPO=$GITHUB_REPO"
               echo "  GITHUB_BRANCH=$GITHUB_BRANCH"
 
-              # Copy template to temp
-              cp /tpl/app-config.override.yaml /tmp/config.yaml
-
-              # Render template using sed
-              sed -i "s/${DNS_SUFFIX}/$DNS_SUFFIX/g" /tmp/config.yaml
-              sed -i "s/${CLUSTER_NAME}/$CLUSTER_NAME/g" /tmp/config.yaml
-              sed -i "s/${GITHUB_ORG}/$GITHUB_ORG/g" /tmp/config.yaml
-              sed -i "s/${GITHUB_REPO}/$GITHUB_REPO/g" /tmp/config.yaml
-              sed -i "s/${GITHUB_BRANCH}/$GITHUB_BRANCH/g" /tmp/config.yaml
+              # Render template using envsubst (more robust than sed)
+              # We explicitly list variables to avoid replacing runtime secrets (like ${BACKEND_SECRET})
+              export VARS_TO_SUBST='$DNS_SUFFIX $CLUSTER_NAME $GITHUB_ORG $GITHUB_REPO $GITHUB_BRANCH'
+              envsubst "$VARS_TO_SUBST" < /tpl/app-config.override.yaml > /tmp/config.yaml
 
               echo "=== Rendered configuration preview (first 20 lines) ==="
               head -n 20 /tmp/config.yaml
@@ -154,7 +159,7 @@ spec:
               kubectl create configmap backstage-app-config-override \
                 --from-file=app-config.override.yaml=/tmp/config.yaml \
                 --dry-run=client -o yaml | \
-                kubectl apply -f - 
+                kubectl apply -f -
 
               echo "=== SUCCESS: ConfigMap patched successfully ==="
           volumeMounts:
@@ -164,16 +169,6 @@ spec:
               mountPath: /tpl
             - name: tmp-volume
               mountPath: /tmp
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            runAsNonRoot: true
-            runAsUser: 1001
-            seccompProfile:
-              type: RuntimeDefault
-            capabilities:
-              drop:
-                - ALL
           resources:
             requests:
               memory: "64Mi"

@@ -85,30 +85,3 @@ spec:
             duration: 10s
             factor: 2
             maxDuration: 10m
-      ignoreDifferences:
-        - group: ""
-          kind: ConfigMap
-          jsonPointers:
-            - /data
-        - group: admissionregistration.k8s.io
-          kind: MutatingWebhookConfiguration
-          jqPathExpressions:
-            - ".webhooks[]?.clientConfig.caBundle"
-        - group: admissionregistration.k8s.io
-          kind: ValidatingWebhookConfiguration
-          jqPathExpressions:
-            - ".webhooks[]?.clientConfig.caBundle"
-        - group: ""
-          kind: Secret
-          jsonPointers:
-            - /data
-            - /metadata/labels
-        - group: ""
-          kind: ServiceAccount
-          jsonPointers:
-            - /secrets
-        - group: external-secrets.io
-          kind: ExternalSecret
-          jsonPointers:
-            - /status
-            - /metadata/generation

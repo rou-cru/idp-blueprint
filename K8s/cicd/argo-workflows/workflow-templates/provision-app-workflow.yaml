@@ -69,15 +69,10 @@ spec:
           capabilities:
             drop:
               - ALL
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "bash"]
+        command: ["bash"]
         source: |
           #!/bin/bash
           set -e
@@ -153,7 +148,7 @@ spec:
           echo "🎉 Namespace {{workflow.parameters.app-name}} fully provisioned!"
       volumes:
         - name: tmp-volume
-          emptyDir: {{}}
+          emptyDir: {}
 
     # Step 2: Build and Push Container Image
     - name: build-and-push-image-template
@@ -201,15 +196,10 @@ spec:
           capabilities:
             drop:
               - ALL
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "bash"]
+        command: ["bash"]
         source: |
           #!/bin/bash
           set -e
@@ -261,7 +251,7 @@ spec:
           echo "🚀 Application will sync automatically!"
       volumes:
         - name: tmp-volume
-          emptyDir: {{}}
+          emptyDir: {}
 
     # Step 4: Wait for Deployment to be Ready
     - name: wait-for-deployment-template
@@ -276,15 +266,10 @@ spec:
           capabilities:
             drop:
               - ALL
-        env:
-          - name: HOME
-            value: /tmp
-          - name: XDG_CACHE_HOME
-            value: /tmp/.cache
         volumeMounts:
           - name: tmp-volume
             mountPath: /tmp
-        command: ["devbox", "run", "--", "bash"]
+        command: ["bash"]
         source: |
           #!/bin/bash
           set -e
@@ -334,4 +319,4 @@ spec:
           echo "======================================"
       volumes:
         - name: tmp-volume
-          emptyDir: {{}}
+          emptyDir: {}
