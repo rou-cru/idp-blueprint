@@ -74,7 +74,7 @@ jobs:
             )
 
             const statusesOK = combined.data.status === 'success'
-            const checksOK = checks.every(c => c.conclusion === 'success' || c.conclusion === 'skipped')
+            const checksOK = checks.every(c => c.conclusion === 'success' || c.conclusion === 'skipped' || c.conclusion === 'neutral')
 
             core.setOutput('pr-number', pr.number.toString())
             core.setOutput('mergeable_state', pr.mergeable_state || 'unknown')

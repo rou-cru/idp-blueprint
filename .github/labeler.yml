@@ -141,7 +141,6 @@ security:
       - any-glob-to-any-file:
           - "SECURITY.md"
           - ".config/lint/.trufflehog-ignore"
-          - "Policies/**/*"
           - "**/rbac*.yaml"
           - "**/networkpolicy*.yaml"
 
