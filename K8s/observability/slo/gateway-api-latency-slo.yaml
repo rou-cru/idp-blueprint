@@ -17,10 +17,10 @@ spec:
   window: 6h
   description: "Gateway API p95 latency should be under 200ms"
   indicator:
-    ratio:
-      good:
-        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq_time_bucket{le="0.2"}[5m]))
+    latency:
+      success:
+        metric: envoy_cluster_upstream_rq_time_bucket{le="0.2"}
       total:
-        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq_time_count[5m]))
+        metric: envoy_cluster_upstream_rq_time_count
       grouping:
         - envoy_cluster_name

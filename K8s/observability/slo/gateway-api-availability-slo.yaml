@@ -19,8 +19,8 @@ spec:
   indicator:
     ratio:
       errors:
-        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq{envoy_response_code=~"5.."}[5m]))
+        metric: envoy_cluster_upstream_rq{envoy_response_code=~"5.."}
       total:
-        metric: sum by (envoy_cluster_name) (rate(envoy_cluster_upstream_rq[5m]))
+        metric: envoy_cluster_upstream_rq
       grouping:
         - envoy_cluster_name

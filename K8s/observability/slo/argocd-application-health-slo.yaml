@@ -19,9 +19,9 @@ spec:
   indicator:
     ratio:
       errors:
-        metric: sum by (application, namespace) (label_replace(label_replace(argocd_app_info{health_status!="Healthy"}, "application", "$1", "name", "(.*)"), "namespace", "$1", "dest_namespace", "(.*)"))
+        metric: argocd_app_info{health_status!="Healthy"}
       total:
-        metric: sum by (application, namespace) (label_replace(label_replace(argocd_app_info, "application", "$1", "name", "(.*)"), "namespace", "$1", "dest_namespace", "(.*)"))
+        metric: argocd_app_info
       grouping:
-        - application
-        - namespace
+        - name
+        - dest_namespace

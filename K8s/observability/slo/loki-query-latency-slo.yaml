@@ -16,8 +16,8 @@ spec:
   window: 6h
   description: "Loki query_range p95 latency should be under 5s"
   indicator:
-    ratio:
-      good:
-        metric: sum(rate(loki_request_duration_seconds_bucket{route="loki_api_v1_query_range",le="5"}[5m]))
+    latency:
+      success:
+        metric: loki_request_duration_seconds_bucket{route="loki_api_v1_query_range",le="5"}
       total:
-        metric: sum(rate(loki_request_duration_seconds_count{route="loki_api_v1_query_range"}[5m]))
+        metric: loki_request_duration_seconds_count{route="loki_api_v1_query_range"}
