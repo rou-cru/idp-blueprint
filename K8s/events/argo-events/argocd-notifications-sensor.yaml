@@ -1,0 +1,111 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: argocd-notifications
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/name: argocd-notifications-sensor
+    app.kubernetes.io/instance: argocd-notifications
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+    description: "Sensor to react to ArgoCD notification events"
+    contact: platform-team
+spec:
+  dependencies:
+    - name: sync-failed
+      eventSourceName: argocd-notifications
+      eventName: notifications
+      filters:
+        data:
+          - path: "body.eventType"
+            type: string
+            comparator: "="
+            value:
+              - "argocd.app.sync.failed"
+    - name: health-degraded
+      eventSourceName: argocd-notifications
+      eventName: notifications
+      filters:
+        data:
+          - path: "body.eventType"
+            type: string
+            comparator: "="
+            value:
+              - "argocd.app.health.degraded"
+
+  triggers:
+    - template:
+        name: remediate-argocd-sync-failed
+        conditions: "sync-failed"
+        argoWorkflow:
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: remediate-argocd-sync-failed-
+                namespace: cicd
+                labels:
+                  app.kubernetes.io/part-of: idp
+                  triggered-by: argocd-notifications
+                  workflow-type: remediation
+              spec:
+                serviceAccountName: argo-workflow
+                workflowTemplateRef:
+                  name: remediate-argocd-unhealthy
+                arguments:
+                  parameters:
+                    - name: app-name
+                      value: "unknown"
+                    - name: namespace
+                      value: "argocd"
+          parameters:
+            - src:
+                dependencyName: sync-failed
+                dataKey: body.app
+              dest: spec.arguments.parameters.0.value
+            - src:
+                dependencyName: sync-failed
+                dataKey: body.namespace
+              dest: spec.arguments.parameters.1.value
+    - template:
+        name: remediate-argocd-health-degraded
+        conditions: "health-degraded"
+        argoWorkflow:
+          operation: submit
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: remediate-argocd-health-degraded-
+                namespace: cicd
+                labels:
+                  app.kubernetes.io/part-of: idp
+                  triggered-by: argocd-notifications
+                  workflow-type: remediation
+              spec:
+                serviceAccountName: argo-workflow
+                workflowTemplateRef:
+                  name: remediate-argocd-unhealthy
+                arguments:
+                  parameters:
+                    - name: app-name
+                      value: "unknown"
+                    - name: namespace
+                      value: "argocd"
+          parameters:
+            - src:
+                dependencyName: health-degraded
+                dataKey: body.app
+              dest: spec.arguments.parameters.0.value
+            - src:
+                dependencyName: health-degraded
+                dataKey: body.namespace
+              dest: spec.arguments.parameters.1.value

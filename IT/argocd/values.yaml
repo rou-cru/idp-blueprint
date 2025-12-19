@@ -508,3 +508,53 @@ configs:
       url: https://helm.cilium.io/
       # -- (string) Repository type
       type: helm
+
+# @section -- Notifications
+notifications:
+  # -- (bool) Enable notifications controller
+  enabled: true
+  # -- ArgoCD URL used in notification context
+  argocdUrl: https://argocd.${DNS_SUFFIX}
+  # -- Priority class for notifications controller
+  priorityClassName: platform-infrastructure
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  notifiers:
+    service.webhook.argoevents: |
+      url: http://argocd-notifications-eventsource-svc.argo-events.svc.cluster.local:12002/argocd/notifications
+      headers:
+        - name: Content-Type
+          value: application/json
+  subscriptions:
+    - recipients:
+        - webhook:argoevents
+      triggers:
+        - on-sync-failed
+        - on-health-degraded
+  templates:
+    template.argocd-sync-failed: |
+      webhook:
+        argoevents:
+          method: POST
+          body: |
+            {"eventType":"argocd.app.sync.failed","app":"{{.app.metadata.name}}","namespace":"{{.app.spec.destination.namespace}}","project":"{{.app.spec.project}}","syncStatus":"{{.app.status.sync.status}}","healthStatus":"{{.app.status.health.status}}"}
+    template.argocd-health-degraded: |
+      webhook:
+        argoevents:
+          method: POST
+          body: |
+            {"eventType":"argocd.app.health.degraded","app":"{{.app.metadata.name}}","namespace":"{{.app.spec.destination.namespace}}","project":"{{.app.spec.project}}","syncStatus":"{{.app.status.sync.status}}","healthStatus":"{{.app.status.health.status}}"}
+  triggers:
+    trigger.on-sync-failed: |
+      - send:
+          - argocd-sync-failed
+        when: app.status.operationState.phase in ['Error', 'Failed']
+    trigger.on-health-degraded: |
+      - send:
+          - argocd-health-degraded
+        when: app.status.health.status == 'Degraded'
