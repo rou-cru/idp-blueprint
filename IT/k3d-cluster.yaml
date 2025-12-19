@@ -5,6 +5,7 @@ metadata:
 servers: 1
 agents: 2
 image: rancher/k3s:v1.33.4-k3s1
+network: "idp-network"
 ports:
   - port: 80:${NODEPORT_HTTP}
     nodeFilters:

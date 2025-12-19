@@ -63,7 +63,7 @@ alertmanager:
       - name: 'null'
       - name: 'argo-events-webhook'
         webhook_configs:
-          - url: 'http://alertmanager-eventsource-svc.events.svc.cluster.local:12000/webhook'
+          - url: 'http://alertmanager-eventsource-svc.argo-events.svc.cluster.local:12000/webhook'
             send_resolved: true
 
 # @section -- Exporters
@@ -362,6 +362,9 @@ prometheusOperator:
   # -- Admission webhooks configuration for PrometheusRules validation
   admissionWebhooks:
     enabled: true
+    # -- Prevent transient webhook outages from blocking syncs
+    # Valid values: Fail, Ignore, IgnoreOnInstallOnly
+    failurePolicy: Ignore
     # -- Use cert-manager to manage webhook certificates instead of Helm hook Jobs
     # This avoids compatibility issues with ArgoCD+Kustomize workflow
     certManager:

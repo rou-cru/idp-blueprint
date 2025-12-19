@@ -1,22 +1,24 @@
 apiVersion: pyrra.dev/v1alpha1
 kind: ServiceLevelObjective
 metadata:
-  name: externalsecrets-sync-success
+  name: argocd-application-health
   namespace: observability
   labels:
     app.kubernetes.io/part-of: idp
     app.kubernetes.io/component: slo
-    app.kubernetes.io/name: externalsecrets-sync
-    app.kubernetes.io/instance: externalsecrets-sync-demo
+    app.kubernetes.io/name: argocd-application-health
+    app.kubernetes.io/instance: argocd-health-demo
     owner: platform-team
     business-unit: infrastructure
     environment: demo
+    tier: critical
 spec:
-  target: "97.0"
+  target: "99.0"
   window: 6h
+  description: "ArgoCD Applications should remain Healthy after sync"
   indicator:
     bool_gauge:
-      metric: externalsecret_status_condition{condition="Ready",status="True"}
+      metric: argocd_app_info{health_status="Healthy"}
       grouping:
         - name
-        - namespace
+        - dest_namespace

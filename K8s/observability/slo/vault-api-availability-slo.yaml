@@ -13,12 +13,12 @@ metadata:
     environment: demo
     tier: critical
 spec:
-  target: "99.9"
+  target: "97.0"
   window: 6h
   description: "Vault API should successfully handle secret requests"
   indicator:
     ratio:
       errors:
-        metric: vault_core_handle_request_count{status="failure"}
+        metric: vault_core_response_status_code{type="5xx"}
       total:
-        metric: vault_core_handle_request_count
+        metric: vault_core_response_status_code

@@ -110,8 +110,8 @@ alert's severity and duration, then posts a webhook to the event bus if the cond
 persists beyond the configured threshold.
 
 A sensor subscribed to remediation events filters incoming alerts by label. It checks
-for `slo="argocd-application-health"` and extracts the application name and namespace
-from the alert payload. With this context, the sensor triggers a workflow that syncs the
+for `slo="argocd-application-health"` and extracts the `name` and `dest_namespace`
+labels from the alert payload. With this context, the sensor triggers a workflow that syncs the
 ArgoCD Application, forcing reconciliation. If the application was merely out of sync
 due to a transient Git operation, the sync resolves it. If the underlying issue
 persists, subsequent alerts provide escalation paths—notification to on-call engineers,
@@ -220,8 +220,8 @@ The reference implementation uses:
 1. Prometheus fires alert: `ArgoCD Application Unhealthy`
 2. Alertmanager webhook → Argo Events EventSource
 3. Sensor filters for `slo == 'argocd-application-health'`
-4. Sensor extracts `application` and `namespace` from alert labels
-5. Argo Workflow executes: `argocd app sync <application> --namespace <namespace>`
+4. Sensor extracts `name` and `dest_namespace` from alert labels
+5. Argo Workflow executes: `argocd app sync <name> --namespace <dest_namespace>`
 
 See [Components - Argo Events](/components/eventing/argo-events/) for configuration
 details.

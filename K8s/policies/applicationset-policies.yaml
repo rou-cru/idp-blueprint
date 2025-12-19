@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: security
+  name: policies
   namespace: argocd
   labels:
     app.kubernetes.io/part-of: idp
@@ -15,26 +15,26 @@ spec:
         repoURL: ${REPO_URL}
         revision: ${TARGET_REVISION}
         directories:
-          - path: K8s/security/*
+          - path: K8s/policies/*
   template:
     metadata:
-      name: 'sec-{{path.basename}}'
+      name: 'policies-{{path.basename}}'
     spec:
-      project: security
+      project: policies
       source:
         repoURL: ${REPO_URL}
         targetRevision: ${TARGET_REVISION}
         path: '{{path}}'
-        kustomize: {}
       destination:
         server: https://kubernetes.default.svc
-        namespace: security
+        namespace: kyverno-system
       syncPolicy:
         automated:
           prune: true
           selfHeal: true
         syncOptions:
           - ServerSideApply=true
+          - SkipDryRunOnMissingResource=true
           - PruneLast=true
           - ApplyOutOfSyncOnly=true
           - RespectIgnoreDifferences=true

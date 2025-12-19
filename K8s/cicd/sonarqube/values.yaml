@@ -5,79 +5,89 @@ community:
   # -- (bool) Enable the community SonarQube edition
   enabled: true
 
-sonarqube:
-  # -- (string) Priority class for SonarQube pods
-  priorityClassName: platform-cicd
-  # -- Environment variables for reverse proxy configuration
-  # Required when SonarQube is behind a reverse proxy that terminates TLS
-  env:
-    - name: SONAR_WEB_JAVAADDITIONALOPTS
-      value: "-Dsonar.web.proxyScheme=https"
-  # -- Resource requests and limits for the SonarQube server.
-  resources:
-    requests:
-      # -- (string) CPU request for SonarQube
-      cpu: 250m
-      # -- (string) Memory request for SonarQube
-      memory: 1Gi
-    limits:
-      # -- (string) CPU limit for SonarQube
-      cpu: 1000m
-      # -- (string) Memory limit for SonarQube
-      memory: 1.5Gi
-  # -- Startup probe to handle initial SonarQube startup and DB migrations.
-  startupProbe:
-    exec:
-      command:
-        - sh
-        - -c
-        - >
-          if curl -s -f http://localhost:9000/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"';
-          then exit 0;
-          fi;
-          exit 1
-    # -- (int) Delay before starting startup checks
-    initialDelaySeconds: 30
-    # -- (int) Frequency of startup checks
-    periodSeconds: 10
-    # -- (int) Number of startup failures tolerated (30s + 180s = 210s total)
-    failureThreshold: 18
-    # -- (int) Timeout for each startup probe
-    timeoutSeconds: 3
-  # -- Liveness probe to check if the SonarQube server is running.
-  livenessProbe:
-    exec:
-      command:
-        - sh
-        - -c
-        - 'wget --no-proxy --quiet -O /dev/null --timeout=3 --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:9000/api/system/liveness"'
-    # -- (int) Delay before starting liveness checks
-    initialDelaySeconds: 0
-    # -- (int) Frequency of liveness checks
-    periodSeconds: 30
-    # -- (int) Number of failures tolerated
-    failureThreshold: 6
-    # -- (int) Timeout for each liveness probe
-    timeoutSeconds: 3
-  # -- Readiness probe to check if the SonarQube server is ready to accept traffic.
-  readinessProbe:
-    exec:
-      command:
-        - sh
-        - -c
-        - >
-          if curl -s -f http://localhost:9000/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"';
-          then exit 0;
-          fi;
-          exit 1
-    # -- (int) Delay before starting readiness checks
-    initialDelaySeconds: 0
-    # -- (int) Frequency of readiness checks
-    periodSeconds: 10
-    # -- (int) Number of readiness failures tolerated
-    failureThreshold: 6
-    # -- (int) Timeout for each readiness probe
-    timeoutSeconds: 3
+# -- (string) Priority class for SonarQube pods
+priorityClassName: platform-cicd
+# -- Environment variables for reverse proxy configuration
+# Required when SonarQube is behind a reverse proxy that terminates TLS
+env:
+  - name: SONAR_WEB_JAVAADDITIONALOPTS
+    value: "-Dsonar.web.proxyScheme=https"
+  - name: SONAR_WEB_JAVAOPTS
+    value: "-Xms256m -Xmx512m"
+  - name: SONAR_CE_JAVAOPTS
+    value: "-Xms256m -Xmx512m"
+  - name: SONAR_SEARCH_JAVAOPTS
+    value: "-Xms256m -Xmx256m"
+# -- Additional SonarQube properties (sonar.properties)
+sonarProperties:
+  sonar.telemetry.enable: false
+  sonar.ce.workerCount: 1
+  sonar.log.level: WARN
+# -- Resource requests and limits for the SonarQube server.
+resources:
+  requests:
+    # -- (string) CPU request for SonarQube
+    cpu: 250m
+    # -- (string) Memory request for SonarQube
+    memory: 1Gi
+  limits:
+    # -- (string) CPU limit for SonarQube
+    cpu: 1000m
+    # -- (string) Memory limit for SonarQube
+    memory: 1.5Gi
+# -- Startup probe to handle initial SonarQube startup and DB migrations.
+startupProbe:
+  exec:
+    command:
+      - sh
+      - -c
+      - >
+        if curl -s -f http://localhost:9000/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"';
+        then exit 0;
+        fi;
+        exit 1
+  # -- (int) Delay before starting startup checks
+  initialDelaySeconds: 30
+  # -- (int) Frequency of startup checks
+  periodSeconds: 10
+  # -- (int) Number of startup failures tolerated (30s + 180s = 210s total)
+  failureThreshold: 18
+  # -- (int) Timeout for each startup probe
+  timeoutSeconds: 3
+# -- Liveness probe to check if the SonarQube server is running.
+livenessProbe:
+  exec:
+    command:
+      - sh
+      - -c
+      - 'wget --no-proxy --quiet -O /dev/null --timeout=3 --header="X-Sonar-Passcode: $SONAR_WEB_SYSTEMPASSCODE" "http://localhost:9000/api/system/liveness"'
+  # -- (int) Delay before starting liveness checks
+  initialDelaySeconds: 0
+  # -- (int) Frequency of liveness checks
+  periodSeconds: 30
+  # -- (int) Number of failures tolerated
+  failureThreshold: 6
+  # -- (int) Timeout for each liveness probe
+  timeoutSeconds: 3
+# -- Readiness probe to check if the SonarQube server is ready to accept traffic.
+readinessProbe:
+  exec:
+    command:
+      - sh
+      - -c
+      - >
+        if curl -s -f http://localhost:9000/api/system/status | grep -q -e '"status":"UP"' -e '"status":"DB_MIGRATION_NEEDED"' -e '"status":"DB_MIGRATION_RUNNING"';
+        then exit 0;
+        fi;
+        exit 1
+  # -- (int) Delay before starting readiness checks
+  initialDelaySeconds: 0
+  # -- (int) Frequency of readiness checks
+  periodSeconds: 10
+  # -- (int) Number of readiness failures tolerated
+  failureThreshold: 6
+  # -- (int) Timeout for each readiness probe
+  timeoutSeconds: 3
 
 # -- Required initContainer to set kernel parameters for Elasticsearch.
 initSysctl:

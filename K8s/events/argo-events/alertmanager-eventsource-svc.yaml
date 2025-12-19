@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-eventsource-svc
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/name: alertmanager-eventsource
+spec:
+  type: ClusterIP
+  ports:
+    - port: 12000
+      targetPort: 12000
+      protocol: TCP
+      name: webhook
+  selector:
+    eventsource-name: alertmanager

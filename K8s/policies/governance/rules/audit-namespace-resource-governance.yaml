@@ -46,7 +46,10 @@ spec:
           apiCall:
             urlPath: "/api/v1/namespaces/{{request.object.metadata.name}}/limitranges"
             jmesPath: "items[].metadata.name"
+            method: GET
+      skipBackgroundRequests: true
       validate:
+        allowExistingViolations: true
         message: "Namespace {{request.object.metadata.name}} must have a LimitRange defined for resource governance."
         deny:
           conditions:
@@ -77,7 +80,10 @@ spec:
           apiCall:
             urlPath: "/api/v1/namespaces/{{request.object.metadata.name}}/resourcequotas"
             jmesPath: "items[].metadata.name"
+            method: GET
+      skipBackgroundRequests: true
       validate:
+        allowExistingViolations: true
         message: "Namespace {{request.object.metadata.name}} must have a ResourceQuota defined for resource governance."
         deny:
           conditions:

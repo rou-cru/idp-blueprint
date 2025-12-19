@@ -44,22 +44,3 @@ spec:
             duration: 10s
             factor: 2
             maxDuration: 10m
-      ignoreDifferences:
-        - group: ""
-          kind: Secret
-          jsonPointers:
-            - /data
-            - /metadata/labels
-        - group: ""
-          kind: ServiceAccount
-          jsonPointers:
-            - /secrets
-        - group: external-secrets.io
-          kind: ExternalSecret
-          jsonPointers:
-            - /status
-            - /metadata/generation
-        - group: apps
-          kind: StatefulSet
-          jsonPointers:
-            - /status
