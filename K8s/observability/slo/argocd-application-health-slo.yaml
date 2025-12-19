@@ -17,11 +17,8 @@ spec:
   window: 6h
   description: "ArgoCD Applications should remain Healthy after sync"
   indicator:
-    ratio:
-      errors:
-        metric: argocd_app_info{health_status!="Healthy"}
-      total:
-        metric: argocd_app_info
+    bool_gauge:
+      metric: argocd_app_info{health_status="Healthy"}
       grouping:
         - name
         - dest_namespace
