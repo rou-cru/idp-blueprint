@@ -67,7 +67,7 @@ body:
     attributes:
       label: Page URL or File Path
       description: Link to the documentation page or file path
-      placeholder: "https://rou-cru.github.io/idp-blueprint/guides/getting-started or Docs/src/content/docs/guides/example.md"
+      placeholder: "https://idp-blueprint.roura.xyz/guides/getting-started or Docs/src/content/docs/guides/example.md"
     validations:
       required: false
 

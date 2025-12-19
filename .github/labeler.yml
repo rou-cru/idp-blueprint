@@ -73,7 +73,6 @@ external-secrets:
 kyverno:
   - changed-files:
       - any-glob-to-any-file:
-          - "Policies/**/*"
           - "K8s/policies/**/*"
           - "**/kyverno-*.yaml"
           - "**/*policy*.yaml"
