@@ -19,7 +19,7 @@ body:
       options:
         - label: I have searched existing issues to ensure this is not a duplicate
           required: true
-        - label: I have checked the documentation site at https://rou-cru.github.io/idp-blueprint/
+        - label: I have checked the documentation site at https://idp-blueprint.roura.xyz/
           required: true
 
   - type: dropdown

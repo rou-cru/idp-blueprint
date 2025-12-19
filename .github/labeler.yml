@@ -19,8 +19,7 @@ github-actions:
           - ".github/dependabot.yml"
           - ".github/labeler.yml"
           - ".github/ISSUE_TEMPLATE/**/*"
-          - ".github/PULL_REQUEST_TEMPLATE.md"
-          - ".github/CODEOWNERS"
+          - ".github/pull_request_template.md"
 
 # Task Automation
 automation:
@@ -42,30 +41,31 @@ configuration:
 argocd:
   - changed-files:
       - any-glob-to-any-file:
-          - "Bootstrap/argocd/**/*"
-          - "Stacks/argocd/**/*"
+          - "IT/argocd/**/*"
+          - "K8s/**/argocd*"
           - "**/argocd-*.yaml"
 
 # Cilium / Networking
 cilium:
   - changed-files:
       - any-glob-to-any-file:
-          - "Bootstrap/cilium/**/*"
+          - "IT/cilium/**/*"
           - "**/cilium-*.yaml"
 
 # Vault / Secrets
 vault:
   - changed-files:
       - any-glob-to-any-file:
-          - "Bootstrap/vault/**/*"
-          - "Stacks/vault/**/*"
+          - "IT/vault/**/*"
+          - "K8s/**/vault/**/*"
           - "**/vault-*.yaml"
 
 # External Secrets
 external-secrets:
   - changed-files:
       - any-glob-to-any-file:
-          - "Bootstrap/external-secrets/**/*"
+          - "IT/external-secrets/**/*"
+          - "K8s/**/external-secrets/**/*"
           - "**/external-secret*.yaml"
           - "**/secret-store*.yaml"
 
@@ -74,7 +74,7 @@ kyverno:
   - changed-files:
       - any-glob-to-any-file:
           - "Policies/**/*"
-          - "Stacks/kyverno/**/*"
+          - "K8s/policies/**/*"
           - "**/kyverno-*.yaml"
           - "**/*policy*.yaml"
 
@@ -82,10 +82,7 @@ kyverno:
 observability:
   - changed-files:
       - any-glob-to-any-file:
-          - "Stacks/prometheus/**/*"
-          - "Stacks/grafana/**/*"
-          - "Stacks/loki/**/*"
-          - "Stacks/fluent-bit/**/*"
+          - "K8s/observability/**/*"
           - "**/prometheus-*.yaml"
           - "**/grafana-*.yaml"
           - "**/loki-*.yaml"
@@ -94,8 +91,7 @@ observability:
 cicd:
   - changed-files:
       - any-glob-to-any-file:
-          - "Stacks/argo-workflows/**/*"
-          - "Stacks/sonarqube/**/*"
+          - "K8s/cicd/**/*"
           - "**/argo-workflow*.yaml"
           - "**/sonarqube-*.yaml"
 
@@ -103,7 +99,7 @@ cicd:
 cert-manager:
   - changed-files:
       - any-glob-to-any-file:
-          - "Bootstrap/cert-manager/**/*"
+          - "IT/cert-manager/**/*"
           - "**/cert-manager-*.yaml"
           - "**/certificate*.yaml"
           - "**/clusterissuer*.yaml"
@@ -112,7 +108,7 @@ cert-manager:
 gateway:
   - changed-files:
       - any-glob-to-any-file:
-          - "Bootstrap/gateway/**/*"
+          - "IT/gateway/**/*"
           - "**/gateway*.yaml"
           - "**/httproute*.yaml"
 
@@ -121,6 +117,7 @@ k3d:
   - changed-files:
       - any-glob-to-any-file:
           - "Task/k3d.yaml"
+          - "IT/k3d-cluster.yaml"
           - ".devcontainer/**/*"
           - "**/k3d-*.yaml"
 
