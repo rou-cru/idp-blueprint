@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: argocd-notifications
+  namespace: argo-events
+  labels:
+    app.kubernetes.io/name: argocd-notifications-eventsource
+    app.kubernetes.io/instance: argocd-notifications
+    app.kubernetes.io/component: eventing
+    app.kubernetes.io/part-of: idp
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    description: "Webhook EventSource for ArgoCD notifications"
+    contact: platform-team
+spec:
+  webhook:
+    notifications:
+      port: "12002"
+      endpoint: /argocd/notifications
+      method: POST
