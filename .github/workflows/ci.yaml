@@ -46,7 +46,7 @@ jobs:
             case "$file" in
               Docs/*|*.md) docs=true ;;
               *values.yaml|*values*.yaml) values=true ;;
-              Dockerfile|*/Dockerfile|docker-bake.hcl|Task/image.yaml|.devcontainer/*|devbox*.json|.devcontainer/devbox*.json|UI/*/Dockerfile) docker=true ;;
+              Dockerfile|*/Dockerfile|docker-bake.hcl|Task/image.yaml|.devcontainer/*|devbox*.json|.devcontainer/devbox*.json|UI/*) docker=true ;;
               *) other=true ;;
             esac
           done
