@@ -1,0 +1,23 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: loki-query-latency-p95
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: loki-query-latency
+    app.kubernetes.io/instance: loki-query-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+spec:
+  target: "95.0"
+  window: 6h
+  description: "Loki query_range p95 latency should be under 5s"
+  indicator:
+    ratio:
+      good:
+        metric: sum(rate(loki_request_duration_seconds_bucket{route="loki_api_v1_query_range",le="5"}[5m]))
+      total:
+        metric: sum(rate(loki_request_duration_seconds_count{route="loki_api_v1_query_range"}[5m]))

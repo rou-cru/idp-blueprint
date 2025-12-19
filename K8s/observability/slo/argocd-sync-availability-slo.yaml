@@ -19,9 +19,9 @@ spec:
   indicator:
     ratio:
       errors:
-        metric: argocd_app_sync_total{phase!="Succeeded"}
+        metric: sum by (name, project) (rate(argocd_app_sync_total{phase!="Succeeded"}[5m]))
       total:
-        metric: argocd_app_sync_total
+        metric: sum by (name, project) (rate(argocd_app_sync_total[5m]))
       grouping:
         - name
         - project

@@ -1,0 +1,27 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: argocd-application-health
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: argocd-application-health
+    app.kubernetes.io/instance: argocd-health-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+    tier: critical
+spec:
+  target: "99.0"
+  window: 6h
+  description: "ArgoCD Applications should remain Healthy after sync"
+  indicator:
+    ratio:
+      errors:
+        metric: sum by (application, namespace) (label_replace(label_replace(argocd_app_info{health_status!="Healthy"}, "application", "$1", "name", "(.*)"), "namespace", "$1", "dest_namespace", "(.*)"))
+      total:
+        metric: sum by (application, namespace) (label_replace(label_replace(argocd_app_info, "application", "$1", "name", "(.*)"), "namespace", "$1", "dest_namespace", "(.*)"))
+      grouping:
+        - application
+        - namespace

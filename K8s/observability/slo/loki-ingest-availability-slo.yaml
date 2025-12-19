@@ -17,6 +17,6 @@ spec:
   indicator:
     ratio:
       errors:
-        metric: loki_request_duration_seconds_count{status_code=~"5..",route=~"(?i).*(push|ingest).*"}
+        metric: sum(rate(loki_request_duration_seconds_count{status_code=~"5..",route=~"(?i).*(push|ingest).*"}[5m]))
       total:
-        metric: loki_request_duration_seconds_count{route=~"(?i).*(push|ingest).*"}
+        metric: sum(rate(loki_request_duration_seconds_count{route=~"(?i).*(push|ingest).*"}[5m]))
