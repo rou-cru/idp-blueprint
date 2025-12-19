@@ -16,7 +16,9 @@ tolerations:
     effect: NoSchedule
 
 # -- (string) Comma-separated list of target workloads
-targetWorkloads: "pod,replicaset,replicationcontroller,statefulset,daemonset,cronjob,job"
+# Optimized: removed redundant pod scanning (scanned via controllers), deprecated replicationcontroller
+# Only scan high-level controllers: replicaset (deployments), statefulset, daemonset, cronjob
+targetWorkloads: "replicaset,statefulset,daemonset,cronjob"
 
 # -- (string) Namespaces to be excluded from scanning
 excludeNamespaces: "kube-system,argocd,cert-manager,vault-system,kyverno-system"
@@ -26,15 +28,21 @@ operator:
   # -- (bool) Enable vulnerability scanner
   vulnerabilityScannerEnabled: true
   # -- (bool) Enable configuration audit scanner
-  configAuditScannerEnabled: true
+  configAuditScannerEnabled: false
   # -- (bool) Enable RBAC assessment scanner
-  rbacAssessmentScannerEnabled: true
+  rbacAssessmentScannerEnabled: false
   # -- (bool) Enable exposed secret scanner
-  exposedSecretScannerEnabled: true
+  exposedSecretScannerEnabled: false
   # -- (bool) Disable infrastructure assessment scanner
   infraAssessmentScannerEnabled: false
   # -- (bool) Enable cluster compliance scanner
-  clusterComplianceEnabled: true
+  clusterComplianceEnabled: false
+  # -- (bool) Disable development mode logging
+  logDevMode: false
+  # -- (bool) Enable scan job log compression
+  scanJobCompressLogs: true
+  # -- (string) TTL for scanner reports
+  scannerReportTTL: "24h"
 
   # -- (bool) Enable built-in Trivy Server to support ClientServer mode
   builtInTrivyServer: true
@@ -110,6 +118,8 @@ trivy:
   # serverURL: "http://trivy-server.security.svc:4954"
   # -- (bool) Use slower scanning mode (lower CPU/memory usage)
   slow: true
+  # -- (string) Vulnerability severity levels to report (default: all)
+  severity: "HIGH,CRITICAL"
 
   # -- (string) Size of the trivy server PVC
   storageSize: 1Gi

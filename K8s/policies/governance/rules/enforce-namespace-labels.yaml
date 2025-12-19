@@ -1,0 +1,46 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-namespace-labels
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: policy
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+  annotations:
+    policies.kyverno.io/title: Enforce Standard Namespace Labels
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/subject: 'Label, Namespace'
+    policies.kyverno.io/description: >-
+      This policy enforces that all new Namespaces include a standard set of common
+      labels as defined in the project's tagging policy. This is crucial for ensuring
+      that subsequent policies which propagate these labels can function correctly. It
+      checks for the existence of app.kubernetes.io/part-of, owner, business-unit, and
+      environment.
+spec:
+  validationFailureAction: enforce
+  admission: true
+  background: true
+  emitWarning: false
+  rules:
+    - name: check-for-standard-namespace-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Namespace
+      skipBackgroundRequests: true
+      validate:
+        allowExistingViolations: true
+        message:
+          'Namespace must include the standard common labels: app.kubernetes.io/part-of,
+          owner, business-unit, environment.'
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/part-of: '?*'
+              owner: '?*'
+              business-unit: '?*'
+              environment: '?*'

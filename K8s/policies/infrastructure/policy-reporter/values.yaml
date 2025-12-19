@@ -1,0 +1,73 @@
+# @section -- Priority Class
+# -- Priority class for Policy Reporter
+priorityClassName: platform-observability
+
+# @section -- Report Processing
+# -- Amount of queue workers for Report resource processing
+worker: 3
+
+# -- Source based Report filter to reduce noise
+sourceFilters:
+  - selector:
+      sources: [kyverno]
+    # -- Filter out Reports of controlled Pods and Jobs
+    uncontrolledOnly: true
+    # -- Filter out cluster scoped Reports
+    disableClusterReports: false
+    # -- Filter out Reports based on resource kind
+    kinds:
+      exclude: [ReplicaSet, Event]
+
+# @section -- Policy Reporter Core
+policyReporter:
+  # -- Resource requests and limits for the core engine.
+  resources:
+    requests:
+      # -- (string) CPU request for Policy Reporter
+      cpu: 50m
+      # -- (string) Memory request for Policy Reporter
+      memory: 128Mi
+    limits:
+      # -- (string) CPU limit for Policy Reporter
+      cpu: 200m
+      # -- (string) Memory limit for Policy Reporter
+      memory: 256Mi
+
+# @section -- REST API
+# -- Enable REST API for Backstage integration
+rest:
+  enabled: true
+
+# @section -- Metrics
+# -- Enable Prometheus metrics
+metrics:
+  enabled: true
+  # -- Metric mode (detailed provides comprehensive labels)
+  mode: detailed
+
+# @section -- Monitoring Integration
+# -- Enable Prometheus Operator integration
+monitoring:
+  enabled: true
+  serviceMonitor:
+    # -- Labels to match Prometheus serviceMonitorSelector
+    labels:
+      prometheus: kube-prometheus
+  grafana:
+    # -- Namespace where Grafana dashboards will be created
+    namespace: kyverno-system
+    dashboards:
+      # -- Enable Grafana dashboard deployment
+      enabled: true
+      # -- Label for dashboard discovery by Grafana sidecar
+      label: grafana_dashboard
+      # -- Label value for dashboard discovery
+      value: "1"
+    folder:
+      # -- Grafana folder name for Policy Reporter dashboards
+      name: Policy Reporter
+
+# @section -- Policy Reporter UI
+ui:
+  # -- Run headless (UI disabled, API only)
+  enabled: false
