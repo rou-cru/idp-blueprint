@@ -44,13 +44,3 @@ spec:
             duration: 10s
             factor: 2
             maxDuration: 10m
-      ignoreDifferences:
-        - group: ""
-          kind: Secret
-          jsonPointers:
-            - /data
-            - /metadata/labels
-        - group: ""
-          kind: ServiceAccount
-          jsonPointers:
-            - /secrets
