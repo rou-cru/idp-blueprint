@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - eventbus.yaml
   - alertmanager-eventsource.yaml
+  - alertmanager-eventsource-svc.yaml
   - argocd-notifications-eventsource.yaml
   - backstage-eventsource.yaml
   - argocd-notifications-sensor.yaml
