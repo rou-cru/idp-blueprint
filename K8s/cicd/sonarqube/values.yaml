@@ -16,6 +16,13 @@ env:
     value: "-Xms256m -Xmx512m"
   - name: SONAR_CE_JAVAOPTS
     value: "-Xms256m -Xmx512m"
+  - name: SONAR_SEARCH_JAVAOPTS
+    value: "-Xms256m -Xmx256m"
+# -- Additional SonarQube properties (sonar.properties)
+sonarProperties:
+  sonar.telemetry.enable: false
+  sonar.ce.workerCount: 1
+  sonar.log.level: WARN
 # -- Resource requests and limits for the SonarQube server.
 resources:
   requests:
