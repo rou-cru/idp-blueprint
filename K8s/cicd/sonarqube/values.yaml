@@ -12,6 +12,10 @@ priorityClassName: platform-cicd
 env:
   - name: SONAR_WEB_JAVAADDITIONALOPTS
     value: "-Dsonar.web.proxyScheme=https"
+  - name: SONAR_WEB_JAVAOPTS
+    value: "-Xms256m -Xmx512m"
+  - name: SONAR_CE_JAVAOPTS
+    value: "-Xms256m -Xmx512m"
 # -- Resource requests and limits for the SonarQube server.
 resources:
   requests:
