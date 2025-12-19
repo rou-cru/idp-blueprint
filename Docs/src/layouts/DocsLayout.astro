@@ -18,6 +18,22 @@ const { title, description, headings = [] } = Astro.props;
 const pageTitle = title ? `${title} | ${siteConfig.title}` : siteConfig.title;
 const pageDescription = description || siteConfig.description;
 const canonicalURL = canonicalUrl(Astro.url.pathname);
+const twitterHandle = siteConfig.social.twitter;
+const ogImage = siteConfig.ogImage;
+const brandSite = siteConfig.brandSite;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  url: siteConfig.site,
+  name: siteConfig.title,
+  description: pageDescription,
+  publisher: {
+    '@type': 'Person',
+    name: 'Alberto Roura',
+    url: brandSite,
+    sameAs: [brandSite, siteConfig.social.github, siteConfig.social.linkedin],
+  },
+};
 
 // Generate sidebar config dynamically using shared logic
 const sidebarConfig = await getSidebarConfig();
@@ -32,7 +48,24 @@ const sidebarConfig = await getSidebarConfig();
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
+    <meta name="robots" content="index,follow" />
     <link rel="canonical" href={canonicalURL} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content={siteConfig.title} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content="IDP Blueprint - Internal Developer Platform reference" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {twitterHandle && <meta name="twitter:site" content={twitterHandle} />}
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json">
+      {JSON.stringify(structuredData)}
+    </script>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,6 +94,13 @@ const sidebarConfig = await getSidebarConfig();
           ) : (
             <slot />
           )}
+
+          {/* Subtle author attribution for SEO authority without user distraction */}
+          <div class="mt-12 text-center text-xs text-text-secondary opacity-70 hover:opacity-100">
+            <a href={brandSite} rel="author noopener" class="no-underline hover:underline">
+              a project by A. Roura
+            </a>
+          </div>
         </div>
       </main>
 

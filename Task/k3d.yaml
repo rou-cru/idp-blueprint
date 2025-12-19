@@ -24,7 +24,7 @@ tasks:
         # Ensure dedicated Docker network exists for stability
         docker network inspect idp-network >/dev/null 2>&1 || \
         docker network create --driver bridge --subnet 172.25.0.0/16 idp-network
-        
+
         if k3d cluster list -o json | jq -e '.[] | select(.name == "{{.CLUSTER_NAME}}")' >/dev/null 2>&1; then
           echo "Skipping k3d cluster creation (already exists)"
         else

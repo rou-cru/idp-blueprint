@@ -5,9 +5,9 @@ resources:
   - appproject-cicd.yaml
   - appproject-events.yaml
   - appproject-observability.yaml
-  - appproject-platform.yaml
-  - appproject-security.yaml
   - appproject-backstage.yaml
+  - appproject-policies.yaml
+  - appproject-security.yaml
 
 patches:
   - target:

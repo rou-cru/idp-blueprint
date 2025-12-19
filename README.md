@@ -1,6 +1,10 @@
 IDP Blueprint
 =============
 
+[![CI & Security](https://github.com/rou-cru/idp-blueprint/actions/workflows/ci.yaml/badge.svg)](https://github.com/rou-cru/idp-blueprint/actions/workflows/ci.yaml)
+[![Docs](https://github.com/rou-cru/idp-blueprint/actions/workflows/docs.yaml/badge.svg)](https://github.com/rou-cru/idp-blueprint/actions/workflows/docs.yaml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Open-source reference for a compact Internal Developer Platform that runs on a
 local or lab Kubernetes cluster (k3d by default). It ships GitOps, policy,
 observability, CI/CD, and secrets management as code, deployable with one
@@ -46,8 +50,8 @@ Requirements (local demo)
 - Docker engine capable of running k3d.
 - Recommended: VS Code Dev Container or Devbox (toolchain auto-provisioned
   from `devbox.json`).
-- Warning (solo si no usas el entorno autocontenido): instala Task, k3d,
-  kubectl, helm, kustomize, envsubst (gettext) y dasel en tu host.
+- Warning (only if you skip the provided dev container/devbox): install Task,
+  k3d, kubectl, helm, kustomize, envsubst (gettext), and dasel on your host.
 - Baseline resources: 4 vCPU / 8 GiB RAM minimum; 6 vCPU / 12 GiB RAM is
   comfortable. ~20 GiB disk free.
 

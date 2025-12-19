@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: 📖 Documentation
-    url: https://rou-cru.github.io/idp-blueprint/
+    url: https://idp-blueprint.roura.xyz/
     about: Read the comprehensive documentation for the IDP Blueprint
   - name: 💬 Discussions
     url: https://github.com/rou-cru/idp-blueprint/discussions

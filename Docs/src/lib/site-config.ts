@@ -5,7 +5,11 @@ export const siteConfig = {
     'Enterprise-grade Internal Developer Platform Blueprint - Production-ready platform engineering stacks',
   social: {
     github: import.meta.env.GITHUB_URL || 'https://github.com/rou-cru/idp-blueprint',
+    twitter: import.meta.env.TWITTER_HANDLE || '@rou_cru',
+    linkedin: import.meta.env.LINKEDIN_URL || 'https://www.linkedin.com/in/alberto-roura/',
   },
+  brandSite: import.meta.env.BRAND_SITE || 'https://roura.xyz',
+  ogImage: import.meta.env.OG_IMAGE || 'https://roura.xyz/api/og',
   analytics: {
     umamiId: import.meta.env.UMAMI_ID || '',
   },

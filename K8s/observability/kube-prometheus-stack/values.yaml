@@ -255,7 +255,7 @@ grafana:
             value: Prometheus
       # K8s - Resource dashboard
       k8s-resource:
-        gnetId: 21839 
+        gnetId: 21839
         revision: 1
         datasource:
           - name: DS_PROMETHEUS
@@ -331,7 +331,7 @@ grafana:
             value: Loki
           - name: DS_PROMETHEUS
             value: Prometheus
-      
+
 
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
   defaultDashboardsEnabled: false
