@@ -5,6 +5,7 @@ metadata:
 servers: 1
 agents: 2
 image: rancher/k3s:v1.33.4-k3s1
+network: "idp-network"
 ports:
   - port: 80:${NODEPORT_HTTP}
     nodeFilters:
@@ -57,6 +58,20 @@ options:
       - arg: --node-taint=node-role.kubernetes.io/control-plane:NoSchedule
         nodeFilters:
           - server:*
+      # --- START Added arguments for Disk Pressure adjustment ---
+      - arg: --kubelet-arg=image-gc-high-threshold=90
+        nodeFilters:
+          - server:*
+          - agent:*
+      - arg: --kubelet-arg=image-gc-low-threshold=85
+        nodeFilters:
+          - server:*
+          - agent:*
+      - arg: --kubelet-arg=eviction-hard=nodefs.available<5%,imagefs.available<5%
+        nodeFilters:
+          - server:*
+          - agent:*
+      # --- END Added arguments for Disk Pressure adjustment ---
       # --- START Added arguments for Prometheus monitoring ---
       - arg: --kube-scheduler-arg=bind-address=0.0.0.0
         nodeFilters:
