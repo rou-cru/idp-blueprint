@@ -392,10 +392,6 @@ configs:
         - /metadata/annotations
       jqPathExpressions:
         - .spec.rules[] | select(.name|test("autogen-"))
-    resource.customizations.ignoreDifferences.wgpolicyk8s.io_PolicyReport: |
-      jsonPointers:
-        - /status
-        - /summary
     resource.customizations.ignoreDifferences.pyrra.dev_ServiceLevelObjective: |
       jsonPointers:
         - /status
