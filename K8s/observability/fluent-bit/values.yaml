@@ -9,7 +9,8 @@ kind: DaemonSet
 replicaCount: 1
 
 # -- (int) Time to wait before flushing data (in seconds)
-flush: 1
+# Reduced to 2s to minimize log accumulation per batch and improve real-time visibility
+flush: 2
 
 # -- (string) Default log level
 logLevel: info
@@ -70,6 +71,8 @@ config:
         K8S-Logging.Parser On
         # -- Allow pods to be excluded from logging.
         K8S-Logging.Exclude On
+        # -- Unlimited buffer size to handle large pod specs
+        Buffer_Size 0
 
     # The following Lua filter removes known high-cardinality labels to protect Loki's
     # performance. A 'deny-list' approach is used because it's more performant
@@ -80,16 +83,33 @@ config:
         Match       kube.*
         script      /fluent-bit/scripts/remove_labels.lua
         call        remove_labels
+
+    [FILTER]
+        Name modify
+        Match *
+        Condition Key_Exists kubernetes
+        Rename kubernetes.namespace_name namespace
+        Rename kubernetes.pod_name pod
+        Rename kubernetes.container_name container
+
   outputs: |
     [OUTPUT]
         Name loki
         Match *
         Host loki.observability.svc.cluster.local
         Port 3100
-        # -- Automatically add all Kubernetes labels to the log record.
-        auto_kubernetes_labels true
-        # -- Number of retries before dropping logs.
+        # -- Use JSON line format for efficient processing
+        line_format json
+        # -- Disable auto labels to reduce cardinality and Loki memory usage
+        auto_kubernetes_labels off
+        # -- Manually specify essential labels for better control
+        labels job=fluentbit, namespace=$namespace, pod=$pod, container=$container
+        # -- Number of retries before dropping logs
         Retry_Limit 5
+        # -- Compress logs to reduce network bandwidth and memory usage
+        compress gzip
+        # -- Balanced buffer size (2s flush / 64k buffer = 32KB/s throughput)
+        Buffer_Size 64k
 
 # @section -- Volumes
 # -- (list) DaemonSet volumes
@@ -253,4 +273,4 @@ dashboards:
 # @section -- Observability
 serviceMonitor:
   # -- (bool) Enable ServiceMonitor
-  enabled: false
+  enabled: true

@@ -3,6 +3,36 @@
 crds:
   enabled: false
 
+# @section -- Default Rules
+# -- Enable default Prometheus rules for baseline monitoring
+defaultRules:
+  create: true
+  rules:
+    alertmanager: true
+    etcd: false # External etcd or k3d specific
+    configReloaders: true
+    general: true
+    k8s: true
+    kubeApiserver: true
+    kubeApiserverAvailability: true
+    kubeApiserverSlos: true
+    kubelet: true
+    kubeProxy: false # Disabled in exporters section
+    kubePrometheusGeneral: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    kubeScheduler: false # Disabled in exporters section
+    kubeStateMetrics: true
+    network: true
+    node: true
+    nodeExporterAlerting: true
+    nodeExporterRecording: true
+    prometheus: true
+    prometheusOperator: true
+
 # @section -- Alertmanager
 alertmanager:
   # -- Enable Alertmanager for alert routing (required for Pyrra burn-rate alerts)
@@ -33,9 +63,11 @@ alertmanager:
       - name: 'null'
       - name: 'argo-events-webhook'
         webhook_configs:
-          - url: 'http://alertmanager-eventsource-svc.events.svc.cluster.local:12000/webhook'
+          - url: 'http://alertmanager-eventsource-svc.argo-events.svc.cluster.local:12000/webhook'
             send_resolved: true
 
+# @section -- Exporters
+# -- Disables because it doesnt exist in k3s.
 kubeEtcd:
   enabled: false
 kubeControllerManager:
@@ -44,11 +76,20 @@ kubeScheduler:
   enabled: false
 kubeProxy:
   enabled: false
+# -- Disables unnecessary components (Windows nodes not present in k3d demo)
+windowsMonitoring:
+  enabled: false
+
 
 # @section -- Prometheus
 prometheus:
   prometheusSpec:
     priorityClassName: platform-observability
+    # -- Disable default behavior of adding release label when selector is empty
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
     # -- Select all ServiceMonitors across all namespaces
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
@@ -63,7 +104,7 @@ prometheus:
     # -- Global scrape timeout for all ServiceMonitors (unless overridden).
     scrapeTimeout: 40s
     # -- Metrics retention time.
-    retention: 6h
+    retention: 24h
     # -- Enable persistence for Prometheus TSDB. 1Gi supports 6h retention for ~50 pods
     # with 4x overhead margin. Data survives pod restarts but is lost on cluster destruction.
     storageSpec:
@@ -84,7 +125,6 @@ prometheus:
         cpu: 500m
         # -- (string) Memory limit
         memory: 1536Mi
-
     additionalScrapeConfigs:
       - job_name: 'kube-scheduler'
         kubernetes_sd_configs:
@@ -102,7 +142,6 @@ prometheus:
             target_label: __address__
           - source_labels: [__meta_kubernetes_node_name]
             target_label: instance
-
       - job_name: 'kube-controller-manager'
         kubernetes_sd_configs:
           - role: node
@@ -119,7 +158,6 @@ prometheus:
             target_label: __address__
           - source_labels: [__meta_kubernetes_node_name]
             target_label: instance
-
       - job_name: 'kube-proxy'
         kubernetes_sd_configs:
           - role: node
@@ -159,18 +197,142 @@ grafana:
       cpu: 250m
       # -- (string) Memory limit
       memory: 256Mi
-  # -- Additional datasources for Grafana.
-  additionalDataSources:
-    - name: Loki
-      type: loki
-      url: http://loki.observability.svc.cluster.local:3100
-      access: proxy
-      isDefault: false
+  # Datasource file expected by Grafana chart (single file with both DS)
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Loki
+          uid: Loki
+          type: loki
+          access: proxy
+          url: http://loki.observability.svc.cluster.local:3100
+          isDefault: false
   # -- Automatically install useful plugins on startup.
   plugins:
     - grafana-piechart-panel
     - grafana-polystat-panel
     - marcusolsson-json-datasource
+    # - mosaic-plot
+    # - bubblechart-panel
+  # -- Dashboard providers configuration for dashboards downloaded via gnetId
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+  # -- Declare dashboards to be downloaded and provisioned by the chart
+  # Note: Components like external-secrets, policy-reporter, pyrra, and fluent-bit
+  # provide their own dashboards via ConfigMaps and are not listed here.
+  dashboards:
+    default:
+      # K8s - Deployment dashboard
+      k8s-deployment:
+        gnetId: 17685
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - StatefulSet dashboard
+      k8s-statefulset:
+        gnetId: 7581
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - DaemonSet dashboard
+      k8s-daemonset:
+        gnetId: 14982
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - Resource dashboard
+      k8s-resource:
+        gnetId: 21839 
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s - Namespace dashboard
+      k8s-namespace:
+        gnetId: 15758
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # K8s monitoring - Overview dashboard
+      k8s:
+        gnetId: 22082
+        revision: 1
+        datasource:
+          - name: DS__VICTORIAMETRICS-PROD-ALL
+            value: Prometheus
+      # Cert-manager monitoring - Overview dashboard
+      cert-manager:
+        gnetId: 20842
+        revision: 3
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # ArgoCD monitoring - Official ArgoCD dashboard
+      argocd:
+        gnetId: 14584
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Cilium Operator metrics
+      cilium-operator:
+        gnetId: 17660
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Kyverno policy monitoring - Official Kyverno dashboard
+      kyverno:
+        gnetId: 15804
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Trivy Operator security scanning - Official Trivy dashboard
+      trivy-operator:
+        gnetId: 17813
+        revision: 2
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Trivy Image Vulnerability Overview - Alternative dashboard
+      trivy-image-vulnerability:
+        gnetId: 16742
+        revision: 1
+        datasource:
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      # Loki log viewer - Official Loki Kubernetes Logs dashboard
+      loki-logs:
+        gnetId: 15141
+        revision: 1
+        datasource:
+          - name: DS_LOKI
+            value: Loki
+      loki-logs-pod:
+        gnetId: 16976
+        revision: 3
+        datasource:
+          - name: DS_LOKI
+            value: Loki
+          - name: DS_PROMETHEUS
+            value: Prometheus
+      
+
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
   defaultDashboardsEnabled: false
   sidecar:
@@ -188,16 +350,21 @@ grafana:
       allow_sign_up: false
       # -- Set the default UI theme to dark.
       default_theme: dark
+    feature_toggles:
+      provisioning: true
+      kubernetesDashboards: true
 
 # @section -- Prometheus Operator
 # -- Resource limits and requests for the Prometheus Operator.
 prometheusOperator:
   # -- (string) Priority class
   priorityClassName: platform-observability
-
   # -- Admission webhooks configuration for PrometheusRules validation
   admissionWebhooks:
     enabled: true
+    # -- Prevent transient webhook outages from blocking syncs
+    # Valid values: Fail, Ignore, IgnoreOnInstallOnly
+    failurePolicy: Ignore
     # -- Use cert-manager to manage webhook certificates instead of Helm hook Jobs
     # This avoids compatibility issues with ArgoCD+Kustomize workflow
     certManager:
@@ -209,7 +376,6 @@ prometheusOperator:
     # -- Disable Helm hook-based certificate management (incompatible with ArgoCD+Kustomize)
     patch:
       enabled: false
-
   resources:
     requests:
       # -- (string) CPU request
@@ -288,8 +454,3 @@ prometheus-node-exporter:
       cpu: 30m
       # -- (string) Memory limit
       memory: 48Mi
-
-# @section -- Windows Exporter
-# -- Disables unnecessary components.
-windows-exporter:
-  enabled: false

@@ -45,7 +45,9 @@ loki:
       retention_enabled: true
       delete_request_store: filesystem
     limits_config:
-      retention_period: 6h
+      retention_period: 24h
+      ingestion_rate_mb: 20
+      ingestion_burst_size_mb: 40
 
 # @section -- Single Binary Mode
 singleBinary:
@@ -126,3 +128,18 @@ test:
 # -- Disable IPv6 for the memberlist.
 memberlist:
   enable_ipv6: false
+
+# @section -- Monitoring
+monitoring:
+  serviceMonitor:
+    enabled: true
+    # -- Labels to ensure discovery by Prometheus Operator
+    labels:
+      release: kube-prometheus-stack
+  # -- Disable self-monitoring features not needed for the demo
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+  lokiCanary:
+    enabled: false
