@@ -234,6 +234,11 @@ argo_workflows_queue_unfinished_work
 - Traffic: `loki_request_duration_seconds_count{route=~"push|ingest"}`
 - Saturation: CPU/mem + disk usage
 
+## Loki Query Latency
+- Latency: `loki_request_duration_seconds_bucket{route=~"(loki_api_v1_query_range|/logproto.Querier/Query|/logproto.Querier/QuerySample)",le="5"}`
+- Total: `loki_request_duration_seconds_count{route=~"(loki_api_v1_query_range|/logproto.Querier/Query|/logproto.Querier/QuerySample)"}`
+- Nota: en despliegue single-binary/no-microservices, las queries pueden ir por rutas gRPC (`/logproto.Querier/*`) y no por `loki_api_v1_query_range`; por eso el SLO agrega ambas para evitar series vacías.
+
 ## ArgoCD Sync + Health
 - Errors: `argocd_app_sync_total{phase=~"Failed|Error|Unknown"}`
 - Latency: `argocd_app_reconcile_bucket` (p95)

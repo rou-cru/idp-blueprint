@@ -18,6 +18,6 @@ spec:
   indicator:
     latency:
       success:
-        metric: loki_request_duration_seconds_bucket{route="loki_api_v1_query_range",le="5"}
+        metric: loki_request_duration_seconds_bucket{route=~"(loki_api_v1_query_range|/logproto\\.Querier/Query|/logproto\\.Querier/QuerySample)",le="5"}
       total:
-        metric: loki_request_duration_seconds_count{route="loki_api_v1_query_range"}
+        metric: loki_request_duration_seconds_count{route=~"(loki_api_v1_query_range|/logproto\\.Querier/Query|/logproto\\.Querier/QuerySample)"}
