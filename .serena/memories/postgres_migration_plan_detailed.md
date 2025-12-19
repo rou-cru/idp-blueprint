@@ -411,7 +411,7 @@ postgresql:
 
 jdbcOverwrite:
   enable: true
-  jdbcUrl: jdbc:postgresql://shared-postgresql.database.svc.cluster.local:5432/sonarqube
+  jdbcUrl: jdbc:postgresql://<shared-postgresql-host>:5432/sonarqube
   jdbcUsername: sonarqube
   jdbcSecretName: sonarqube-postgresql
   jdbcSecretPasswordKey: password
