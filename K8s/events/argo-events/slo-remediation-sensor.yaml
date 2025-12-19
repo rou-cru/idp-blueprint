@@ -16,9 +16,9 @@ spec:
         data:
           - path: "body.alerts.#.labels.slo"
             type: string
-            comparator: "!="
+            comparator: "="
             value:
-              - ""
+              - ".+"
 
   triggers:
     # Trigger 1: ArgoCD Application Unhealthy
