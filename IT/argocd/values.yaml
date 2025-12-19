@@ -348,6 +348,57 @@ configs:
         - BackgroundScanReport
         - ClusterBackgroundScanReport
         - UpdateRequest
+    # -- Global ignoreDifferences customizations
+    resource.customizations.ignoreDifferences.ConfigMap: |
+      jsonPointers:
+        - /data
+    resource.customizations.ignoreDifferences.Secret: |
+      jsonPointers:
+        - /data
+        - /metadata/labels
+    resource.customizations.ignoreDifferences.ServiceAccount: |
+      jsonPointers:
+        - /secrets
+    resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration: |
+      jqPathExpressions:
+        - ".webhooks[]?.clientConfig.caBundle"
+    resource.customizations.ignoreDifferences.admissionregistration.k8s.io_ValidatingWebhookConfiguration: |
+      jqPathExpressions:
+        - ".webhooks[]?.clientConfig.caBundle"
+    resource.customizations.ignoreDifferences.external-secrets.io_ExternalSecret: |
+      jsonPointers:
+        - /status
+        - /metadata/generation
+        - /spec/target/deletionPolicy
+        - /spec/target/template/metadata
+        - /spec/target/template/engineVersion
+        - /spec/target/template/mergePolicy
+        - /spec/target/template/type
+      jqPathExpressions:
+        - .spec.data[]?.remoteRef.conversionStrategy
+        - .spec.data[]?.remoteRef.decodingStrategy
+        - .spec.data[]?.remoteRef.metadataPolicy
+        - .spec.dataFrom[]?.extract.conversionStrategy
+        - .spec.dataFrom[]?.extract.decodingStrategy
+        - .spec.dataFrom[]?.extract.metadataPolicy
+    resource.customizations.ignoreDifferences.apps_StatefulSet: |
+      jsonPointers:
+        - /status
+    resource.customizations.ignoreDifferences.kyverno.io_ClusterPolicy: |
+      jsonPointers:
+        - /status
+        - /spec/admission
+        - /spec/emitWarning
+        - /metadata/annotations
+      jqPathExpressions:
+        - .spec.rules[] | select(.name|test("autogen-"))
+    resource.customizations.ignoreDifferences.wgpolicyk8s.io_PolicyReport: |
+      jsonPointers:
+        - /status
+        - /summary
+    resource.customizations.ignoreDifferences.pyrra.dev_ServiceLevelObjective: |
+      jsonPointers:
+        - /status
     # -- (bool) Enable exec feature in Argo UI
     exec.enabled: true
     # -- (bool) Enable local admin user
