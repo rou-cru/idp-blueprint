@@ -2,6 +2,9 @@
 crds:
   # -- (bool) Install Kyverno CRDs
   install: true
+  # -- (bool) Disable CRD migration hook; plan upgrades explicitly
+  migration:
+    enabled: false
 
 # @section -- Features
 features:
