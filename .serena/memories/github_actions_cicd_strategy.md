@@ -114,3 +114,35 @@ graph TD
     OQ_6 -.- Badge_Ops
     Docs_5 -.- Badge_Docs
 ```
+
+
+## Blueprint GA - Continuacion
+
+### Mermaid (actualizado)
+
+```mermaid
+graph LR
+  E((Event)) --> SG{{Secrets gate job}} --> CH{{Changes job}}
+  SG -- fail --> STOP((Stop))
+
+  CH -- main --> ALL[All run flags true] --> OUT[Decision outputs]
+  CH -- PR --> PATHS[Run flags by paths] --> OUT
+
+  OUT --> JDOCS([Job docs]) --> RD[(Runner A)] --> D1[Checkout] --> D2[Cache audit] --> D3[Lint] --> D4[Build] --> D5{is main}
+  D5 -- yes --> D6[Deploy]
+  D5 -- no --> D7[Skip]
+
+  OUT --> JPORTAL([Job portal]) --> RP[(Runner B)] --> P1[Checkout] --> P2[Cache install] --> P3[Lint test] --> P4[Build] --> P5[Docker build] --> P6[Scan] --> P7[SBOM] --> P8[Sign] --> P9{is main}
+  P9 -- yes --> P10[Push]
+  P9 -- no --> P11[Skip]
+
+  OUT --> JINFRA([Job infra]) --> RI[(Runner C)] --> I1[Checkout] --> I2[Lint yaml] --> I3[Validate k8s] --> I4[Scan IaC] --> I5[Consistency]
+
+  OUT --> JOPS([Job ops]) --> RO[(Runner D)] --> O1[Checkout] --> O2[Docker build] --> O3[Scan] --> O4[SBOM] --> O5[Sign] --> O6{is main}
+  O6 -- yes --> O7[Push]
+  O6 -- no --> O8[Skip]
+
+  OUT --> JDEVBOX([Job devbox]) --> RV[(Runner E)] --> V1[Checkout] --> V2[Docker build] --> V3[Scan] --> V4[SBOM] --> V5[Sign] --> V6{is main}
+  V6 -- yes --> V7[Push]
+  V6 -- no --> V8[Skip]
+```
