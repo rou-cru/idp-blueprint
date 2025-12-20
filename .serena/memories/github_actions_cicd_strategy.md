@@ -116,9 +116,9 @@ graph TD
 ```
 
 
-## Blueprint GA - Continuacion
+## Blueprint de Arquitectura a detalle para implementacion en GA
 
-### Mermaid (actualizado)
+
 
 ```mermaid
 graph LR
