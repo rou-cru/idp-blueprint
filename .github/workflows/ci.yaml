@@ -145,3 +145,33 @@ jobs:
           docker buildx bake dev minimal ops dev-portal \
             --progress=plain \
             --set *.output=type=cacheonly
+
+  ci-green:
+    name: CI green
+    needs: [changes, docs-pr, core-ci, docker-build]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate job results
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          DOCS_RESULT: ${{ needs.docs-pr.result }}
+          CORE_RESULT: ${{ needs.core-ci.result }}
+          DOCKER_RESULT: ${{ needs.docker-build.result }}
+        run: |
+          failed=false
+          for item in \
+            "changes=$CHANGES_RESULT" \
+            "docs-pr=$DOCS_RESULT" \
+            "core-ci=$CORE_RESULT" \
+            "docker-build=$DOCKER_RESULT"
+          do
+            result="${item#*=}"
+            if [ "$result" = "failure" ] || [ "$result" = "cancelled" ]; then
+              echo "::error::Job ${item%=*} finished with ${result}"
+              failed=true
+            fi
+          done
+          if $failed; then
+            exit 1
+          fi

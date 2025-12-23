@@ -25,16 +25,17 @@ jobs:
           script: |
             const pr = context.payload.pull_request
               ? context.payload.pull_request
-              : (() => {
+              : await (async () => {
                   // workflow_run path
                   const run = context.payload.workflow_run
                   const prData = run.pull_requests && run.pull_requests[0]
                   if (!prData) return null
-                  return await github.rest.pulls.get({
+                  const { data } = await github.rest.pulls.get({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     pull_number: prData.number,
-                  }).then(r => r.data)
+                  })
+                  return data
                 })()
 
             if (!pr) {
@@ -43,51 +44,25 @@ jobs:
             }
 
             // basic guards
-            if (pr.draft) core.setOutput('status', 'skip-draft')
-            if (pr.state !== 'open') core.setOutput('status', 'skip-closed')
-            if (pr.mergeable_state === 'behind') core.setOutput('status', 'skip-behind')
-
-            // approvals
-            const reviews = await github.paginate(
-              github.rest.pulls.listReviews,
-              { owner: context.repo.owner, repo: context.repo.repo, pull_number: pr.number }
-            )
-            const approvers = new Set(
-              reviews
-                .filter(r => r.state === 'APPROVED')
-                .map(r => r.user && r.user.login)
-            )
-            const approvedByBot =
-              approvers.has('coderabbitai') ||
-              approvers.has('coderabbitai[bot]')
-
-            // checks & statuses
-            const sha = pr.head.sha
-            const combined = await github.rest.repos.getCombinedStatusForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: sha,
-            })
-            const checks = await github.paginate(
-              github.rest.checks.listForRef,
-              { owner: context.repo.owner, repo: context.repo.repo, ref: sha }
-            )
-
-            const statusesOK = combined.data.status === 'success'
-            const checksOK = checks.every(c => c.conclusion === 'success' || c.conclusion === 'skipped' || c.conclusion === 'neutral')
+            if (pr.draft) {
+              core.setOutput('status', 'skip-draft')
+              return
+            }
+            if (pr.state !== 'open') {
+              core.setOutput('status', 'skip-closed')
+              return
+            }
+            if (pr.mergeable_state === 'behind') {
+              core.setOutput('status', 'skip-behind')
+              return
+            }
 
             core.setOutput('pr-number', pr.number.toString())
             core.setOutput('mergeable_state', pr.mergeable_state || 'unknown')
-            core.setOutput('approved', approvedByBot ? 'true' : 'false')
-            core.setOutput('statuses_ok', statusesOK ? 'true' : 'false')
-            core.setOutput('checks_ok', checksOK ? 'true' : 'false')
             core.setOutput('status', 'ready')
 
       - name: Enable auto-merge
         if: steps.ctx.outputs.status == 'ready' &&
-            steps.ctx.outputs.approved == 'true' &&
-            steps.ctx.outputs.statuses_ok == 'true' &&
-            steps.ctx.outputs.checks_ok == 'true' &&
             steps.ctx.outputs.mergeable_state != 'behind'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
