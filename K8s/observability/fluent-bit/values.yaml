@@ -84,17 +84,6 @@ config:
         script      /fluent-bit/scripts/remove_labels.lua
         call        remove_labels
 
-    [FILTER]
-        Name modify
-        Match *
-        Condition Key_Exists kubernetes
-        # Promote nested kubernetes metadata to top-level fields for indexing
-        Copy kubernetes.namespace_name namespace
-        Copy kubernetes.pod_name pod
-        Copy kubernetes.container_name container
-        # Add stream field (stdout/stderr) - extract from log or default to stdout
-        Add stream stdout
-
   outputs: |
     [OUTPUT]
         Name loki
@@ -103,8 +92,8 @@ config:
         Port 3100
         # -- Use JSON line format for efficient processing
         line_format json
-        # -- Map specific record keys to Loki labels (explicit syntax for Fluent Bit v4)
-        labels job=fluentbit,namespace=$namespace,container=$container,stream=stdout
+        # -- Map kubernetes metadata to Loki labels using nested field access (Fluent Bit v4)
+        labels job=fluentbit,namespace=$kubernetes['namespace_name'],container=$kubernetes['container_name'],stream=$stream
         # -- Number of retries before dropping logs
         Retry_Limit 5
         # -- Compress logs to reduce network bandwidth and memory usage
