@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+
+reviews:
+  # Allow CodeRabbit to approve once its comments are resolved.
+  request_changes_workflow: true
+
+  # Keep auto-review on for all PRs, including dependabot.
+  auto_review:
+    enabled: true
+    auto_incremental_review: true
+    ignore_usernames: []
