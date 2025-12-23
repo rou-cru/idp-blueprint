@@ -97,7 +97,7 @@ config:
         drop_single_key true
         remove_keys kubernetes,stream,filename,time,_p
         # -- Map kubernetes metadata to Loki labels using nested field access (Fluent Bit v4)
-        labels job=fluentbit,namespace=$kubernetes['namespace_name'],container=$kubernetes['container_name'],stream=$stream
+        labels job=fluentbit,namespace=$kubernetes['namespace_name'],container=$kubernetes['container_name'],stream=$stream,pod=$kubernetes['pod_name']
         # -- Number of retries before dropping logs
         Retry_Limit 5
         # -- Compress logs to reduce network bandwidth and memory usage
@@ -184,12 +184,24 @@ livenessProbe:
 
 # @section -- Advanced
 luaScripts:
-  # -- (string) Lua script to remove high-cardinality labels
+  # -- (string) Lua script to remove high-cardinality labels and unnecessary metadata
   remove_labels.lua: |
     function remove_labels(tag, timestamp, record)
-      if record.kubernetes and record.kubernetes.labels then
-        record.kubernetes.labels['pod-template-hash'] = nil
-        record.kubernetes.labels['controller-revision-hash'] = nil
+      if record.kubernetes then
+        -- Remove high-cardinality labels
+        if record.kubernetes.labels then
+          record.kubernetes.labels['pod-template-hash'] = nil
+          record.kubernetes.labels['controller-revision-hash'] = nil
+        end
+        -- Remove unnecessary metadata to reduce payload size
+        record.kubernetes.annotations = nil
+        record.kubernetes.docker_id = nil
+        record.kubernetes.pod_ip = nil
+        record.kubernetes.container_image = nil
+      end
+      -- Exclude default namespace entirely (not part of architecture)
+      if record.kubernetes and record.kubernetes.namespace_name == 'default' then
+        return -1, timestamp, record  -- Drop the record
       end
       return 2, timestamp, record
     end
