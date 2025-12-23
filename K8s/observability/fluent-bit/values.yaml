@@ -88,9 +88,16 @@ config:
         Name modify
         Match *
         Condition Key_Exists kubernetes
-        Rename kubernetes.namespace_name namespace
-        Rename kubernetes.pod_name pod
-        Rename kubernetes.container_name container
+        # Promote nested kubernetes metadata to top-level fields for indexing
+        Copy kubernetes.namespace_name namespace
+        Copy kubernetes.pod_name pod
+        Copy kubernetes.container_name container
+        # Try to extract app label from various common sources
+        Copy kubernetes.labels.app app
+        Condition Key_Does_Not_Exist app
+        Copy kubernetes.labels.app.kubernetes.io/name app
+        Condition Key_Does_Not_Exist app
+        Copy kubernetes.container_name app
 
   outputs: |
     [OUTPUT]
@@ -100,10 +107,9 @@ config:
         Port 3100
         # -- Use JSON line format for efficient processing
         line_format json
-        # -- Disable auto labels to reduce cardinality and Loki memory usage
-        auto_kubernetes_labels off
-        # -- Manually specify essential labels for better control
-        labels job=fluentbit, namespace=$namespace, pod=$pod, container=$container
+        # -- Map specific record keys to Loki labels
+        labels job=fluentbit
+        label_keys namespace, pod, container, app
         # -- Number of retries before dropping logs
         Retry_Limit 5
         # -- Compress logs to reduce network bandwidth and memory usage
