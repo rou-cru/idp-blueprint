@@ -90,8 +90,12 @@ config:
         Match *
         Host loki.observability.svc.cluster.local
         Port 3100
-        # -- Use JSON line format for efficient processing
-        line_format json
+        # -- Send clean log messages, not JSON payloads
+        # After kubernetes enrichment and label extraction, remove all metadata fields
+        # except 'log' (the actual message), then drop the key wrapper to send raw message
+        line_format key_value
+        drop_single_key true
+        remove_keys kubernetes,stream,filename,time,_p
         # -- Map kubernetes metadata to Loki labels using nested field access (Fluent Bit v4)
         labels job=fluentbit,namespace=$kubernetes['namespace_name'],container=$kubernetes['container_name'],stream=$stream
         # -- Number of retries before dropping logs

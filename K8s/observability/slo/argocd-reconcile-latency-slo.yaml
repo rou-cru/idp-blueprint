@@ -1,0 +1,24 @@
+apiVersion: pyrra.dev/v1alpha1
+kind: ServiceLevelObjective
+metadata:
+  name: argocd-reconcile-latency-p95
+  namespace: observability
+  labels:
+    app.kubernetes.io/part-of: idp
+    app.kubernetes.io/component: slo
+    app.kubernetes.io/name: argocd-reconcile-latency
+    app.kubernetes.io/instance: argocd-reconcile-demo
+    owner: platform-team
+    business-unit: infrastructure
+    environment: demo
+    tier: critical
+spec:
+  target: "95.0"
+  window: 6h
+  description: "ArgoCD app reconcile p95 latency should be under 16s"
+  indicator:
+    latency:
+      success:
+        metric: argocd_app_reconcile_bucket{le="16"}
+      total:
+        metric: argocd_app_reconcile_count

@@ -39,7 +39,10 @@
     "python312@latest",
     "nodejs@22",
     "pnpm@latest",
-    "yarn-berry@4.4.1"
+    "yarn-berry@4.4.1",
+    "k6@latest",
+    "playwright@latest",
+    "playwright-test@latest"
   ],
   "shell": {
     "init_hook": [
