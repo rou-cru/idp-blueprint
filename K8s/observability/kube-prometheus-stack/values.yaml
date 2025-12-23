@@ -99,6 +99,9 @@ prometheus:
     # -- Select PrometheusRules from any namespace (needed for Pyrra rules)
     ruleSelector: {}
     ruleNamespaceSelector: {}
+    # -- External labels to identify the cluster (Required for some imported dashboards like StarsL_en_K8S)
+    externalLabels:
+      origin_prometheus: "idp-demo-cluster"
     # -- Global scrape interval for all ServiceMonitors (unless overridden).
     scrapeInterval: 60s
     # -- Global scrape timeout for all ServiceMonitors (unless overridden).
