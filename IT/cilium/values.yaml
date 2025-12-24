@@ -94,8 +94,11 @@ envoy:
       enabled: true
   log:
     # -- JSON log format for Envoy application logs
-    format_json: |
-      { "date":"%Y-%m-%dT%T.%e", "level":"%l", "logger":"%n", "message":"%j" }
+    format_json:
+      date: "%Y-%m-%dT%T.%e"
+      level: "%l"
+      logger: "%n"
+      message: "%j"
 
 # @section -- Ingress Controller
 # Disabled - project uses Gateway API exclusively
