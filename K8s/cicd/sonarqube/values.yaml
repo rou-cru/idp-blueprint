@@ -22,7 +22,11 @@ env:
 sonarProperties:
   sonar.telemetry.enable: false
   sonar.ce.workerCount: 1
-  sonar.log.level: WARN
+  # -- SonarQube only supports [INFO, DEBUG, TRACE]. WARN/ERROR are invalid and cause startup failure.
+  # Ref: https://docs.sonarsource.com/sonarqube/latest/instance-administration/monitoring/#log-level
+  sonar.log.level: INFO
+  # -- Enable JSON logging for better integration with log aggregators (Loki/FluentBit)
+  sonar.log.jsonOutput: true
 # -- Resource requests and limits for the SonarQube server.
 resources:
   requests:
