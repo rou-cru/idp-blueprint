@@ -367,6 +367,8 @@ grafana:
       searchNamespace: ALL
   # -- Advanced Grafana configuration via grafana.ini
   grafana.ini:
+    security:
+      allow_embedding: true
     log:
       mode: console
     "log.console":

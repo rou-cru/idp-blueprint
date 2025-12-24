@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@backstage-community/plugin-github-actions": "^0.18.0",
+    "@backstage-community/plugin-grafana": "^0.12.0",
     "@backstage-community/plugin-sonarqube": "^0.20.1",
     "@backstage-community/plugin-sonarqube-react": "^0.12.0",
     "@backstage-community/plugin-topology": "^2.8.0",

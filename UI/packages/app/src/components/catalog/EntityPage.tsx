@@ -65,6 +65,7 @@ import {
 } from '@roadiehq/backstage-plugin-argo-cd';
 import { TopologyPage } from '@backstage-community/plugin-topology';
 import { EntityKyvernoPoliciesContent } from '@kyverno/backstage-plugin-policy-reporter';
+import { EntityGrafanaDashboardsCard } from '@backstage-community/plugin-grafana';
 
 
 const techdocsContent = (
@@ -164,10 +165,22 @@ const overviewContent = (
   </Grid>
 );
 
+const logsContent = (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <EntityGrafanaDashboardsCard />
+    </Grid>
+  </Grid>
+);
+
 const serviceEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/logs" title="Logs">
+      {logsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">

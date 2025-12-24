@@ -10,3 +10,9 @@ backend:
     origin: https://backstage.${DNS_SUFFIX}
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
+
+proxy:
+  '/grafana/api':
+    target: http://grafana.observability.svc.cluster.local:80/
+    headers:
+      Authorization: Bearer ${GRAFANA_TOKEN}
