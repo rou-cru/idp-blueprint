@@ -40,6 +40,8 @@ alertmanager:
   alertmanagerSpec:
     # -- (string) Priority class for Alertmanager pod
     priorityClassName: platform-observability
+    # -- (string) Alertmanager log format
+    logFormat: json
     resources:
       requests:
         # -- (string) CPU request
@@ -108,6 +110,8 @@ prometheus:
     scrapeTimeout: 40s
     # -- Metrics retention time.
     retention: 24h
+    # -- Log format for Prometheus (logfmt or json)
+    logFormat: json
     # -- Enable persistence for Prometheus TSDB. 1Gi supports 6h retention for ~50 pods
     # with 4x overhead margin. Data survives pod restarts but is lost on cluster destruction.
     storageSpec:
@@ -363,6 +367,10 @@ grafana:
       searchNamespace: ALL
   # -- Advanced Grafana configuration via grafana.ini
   grafana.ini:
+    log:
+      mode: console
+    "log.console":
+      format: json
     users:
       # -- Disables the user sign-up page.
       allow_sign_up: false
@@ -377,6 +385,8 @@ grafana:
 prometheusOperator:
   # -- (string) Priority class
   priorityClassName: platform-observability
+  # -- Log format for Prometheus Operator (logfmt or json)
+  logFormat: json
   # -- Admission webhooks configuration for PrometheusRules validation
   admissionWebhooks:
     enabled: true

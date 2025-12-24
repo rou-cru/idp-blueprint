@@ -44,6 +44,10 @@ controller:
   metricsConfig:
     # -- (bool) Enable controller metrics endpoint
     enabled: true
+  # -- Controller logging configuration
+  logging:
+    # -- Set the logging format (one of: text, json)
+    format: "json"
   # -- Create a ServiceMonitor for Prometheus.
   serviceMonitor:
     # -- (bool) Create ServiceMonitor for controller metrics
@@ -107,6 +111,10 @@ server:
   # The Gateway handles TLS, so the server receives plain HTTP
   # -- (bool) Require TLS on the server pod
   secure: false
+  # -- Server logging configuration
+  logging:
+    # -- Set the logging format (one of: text, json)
+    format: "json"
   # -- Resource requests and limits for the server.
   resources:
     requests:

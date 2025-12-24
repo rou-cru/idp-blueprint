@@ -33,6 +33,11 @@ policyReporter:
       # -- (string) Memory limit for Policy Reporter
       memory: 256Mi
 
+# @section -- Logging
+logging:
+  # -- Log encoding (console or json)
+  encoding: "json"
+
 # @section -- REST API
 # -- Enable REST API for Backstage integration
 rest:

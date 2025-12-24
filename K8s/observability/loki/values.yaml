@@ -13,6 +13,7 @@ loki:
     server:
       http_listen_port: 3100
       grpc_listen_port: 9095
+      log_format: json
     common:
       path_prefix: /var/loki
       storage:
