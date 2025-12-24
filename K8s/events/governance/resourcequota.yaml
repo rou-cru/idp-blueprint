@@ -15,7 +15,7 @@ spec:
   hard:
     # Sized to accommodate Argo Events controller, webhook, EventBus,
     # and multiple EventSources/Sensors as the event mesh grows
-    requests.cpu: "500m"
-    requests.memory: "1Gi"
-    limits.cpu: "2000m"
-    limits.memory: "3Gi"
+    requests.cpu: "1500m"
+    requests.memory: "2Gi"
+    limits.cpu: "4000m"
+    limits.memory: "4Gi"

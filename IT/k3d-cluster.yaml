@@ -59,11 +59,11 @@ options:
         nodeFilters:
           - server:*
       # --- START Added arguments for Disk Pressure adjustment ---
-      - arg: --kubelet-arg=image-gc-high-threshold=90
+      - arg: --kubelet-arg=image-gc-high-threshold=60
         nodeFilters:
           - server:*
           - agent:*
-      - arg: --kubelet-arg=image-gc-low-threshold=85
+      - arg: --kubelet-arg=image-gc-low-threshold=50
         nodeFilters:
           - server:*
           - agent:*
