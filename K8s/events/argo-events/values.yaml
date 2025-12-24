@@ -15,6 +15,9 @@ crds:
 controller:
   # -- (string) Priority class for controller pods
   priorityClassName: platform-events
+  # -- Extra arguments for the controller
+  extraArgs:
+    log-format: json
   # -- Number of controller replicas
   replicas: 1
   # -- Rolling update strategy for zero-downtime updates
@@ -70,6 +73,9 @@ controller:
 webhook:
   # -- (bool) Enable the validating admission webhook
   enabled: true
+  # -- Extra arguments for the webhook
+  extraArgs:
+    log-format: json
   # -- (string) Priority class for webhook pods
   priorityClassName: platform-events
   # -- Resource requests and limits for the webhook

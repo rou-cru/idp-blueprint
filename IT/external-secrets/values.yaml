@@ -2,6 +2,11 @@
 # @section -- General Configuration
 priorityClassName: platform-infrastructure
 
+# -- Extra arguments for the binary to enable JSON logging
+extraArgs:
+  zap-encoder: json
+  zap-time-encoding: iso8601
+
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
