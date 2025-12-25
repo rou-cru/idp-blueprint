@@ -74,35 +74,6 @@ tasks:
     cmds:
       - docker bake release release-minimal release-ops dev-portal-release --progress=tty
 
-  registry:clean:
-    desc: 'Remove registry cache data'
-    silent: true
-    internal: true
-    requires:
-      vars:
-        - REGISTRY_CACHE_PATH
-    cmds:
-      - rm -rf {{.REGISTRY_CACHE_PATH}}
-      - echo "✅ Registry cache cleaned"
-
-  registry:info:
-    desc: 'Show registry status and cache size'
-    cmds:
-      - |
-        if docker ps --filter "name=k3d-registry.localhost" --format "{{'{{'}}.Names{{'}}'}}" | grep -q registry;
-        then
-          echo "✅ Registry container running"
-          if [ -d "{{.REGISTRY_CACHE_PATH}}" ]; then
-            echo "📦 Cache size: $(du -sh {{.REGISTRY_CACHE_PATH}} 2>/dev/null | cut -f1)"
-          else
-            echo "📦 Cache size: empty"
-          fi
-          echo "📂 Location: {{.REGISTRY_CACHE_PATH}}"
-          echo "🔗 Endpoint: localhost:5000"
-        else
-          echo "⚠️  Registry not running (using config: {{.K3D_CONFIG}})"
-        fi
-
   # Dev Portal (Backstage) tasks
   dev-portal:build:
     desc: 'Build Backstage dev-portal Docker image (host build approach)'

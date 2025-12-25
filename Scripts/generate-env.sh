@@ -83,7 +83,6 @@ BACKSTAGE_VERSION=$(get_conf versions.backstage)
 # --- Operational ---
 KUBECTL_TIMEOUT=$(get_conf operational.kubectl_timeout)
 K3D_CONFIG=$(get_conf operational.k3d_config)
-REGISTRY_CACHE_PATH=$(get_conf operational.registry_cache_path)
 
 # --- Cluster ---
 CLUSTER_NAME=$(get_conf cluster.name)
@@ -152,7 +151,6 @@ if [ "$OUTPUT_FORMAT" = "json" ]; then
       --arg BACKSTAGE_VERSION "$BACKSTAGE_VERSION" \
       --arg KUBECTL_TIMEOUT "$KUBECTL_TIMEOUT" \
       --arg K3D_CONFIG "$K3D_CONFIG" \
-      --arg REGISTRY_CACHE_PATH "$REGISTRY_CACHE_PATH" \
       --arg CLUSTER_NAME "$CLUSTER_NAME" \
       --arg ARGOCD_SYNC_TIMEOUT "$ARGOCD_SYNC_TIMEOUT" \
       --arg ARGOCD_BACKOFF_DURATION "$ARGOCD_BACKOFF_DURATION" \
@@ -202,7 +200,6 @@ else
     echo "BACKSTAGE_VERSION=$BACKSTAGE_VERSION"
     echo "KUBECTL_TIMEOUT=$KUBECTL_TIMEOUT"
     echo "K3D_CONFIG=$K3D_CONFIG"
-    echo "REGISTRY_CACHE_PATH=$REGISTRY_CACHE_PATH"
     echo "CLUSTER_NAME=$CLUSTER_NAME"
     echo "ARGOCD_SYNC_TIMEOUT=$ARGOCD_SYNC_TIMEOUT"
     echo "ARGOCD_BACKOFF_DURATION=$ARGOCD_BACKOFF_DURATION"

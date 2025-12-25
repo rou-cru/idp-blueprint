@@ -13,29 +13,6 @@ ports:
   - port: 443:${NODEPORT_HTTPS}
     nodeFilters:
       - server:0
-registries:
-  create:
-    name: registry.localhost
-    host: "0.0.0.0"
-    hostPort: "5000"
-    proxy:
-      remoteURL: https://registry-1.docker.io
-      username: ""
-      password: ""
-    volumes:
-      - /tmp/k3d-registry:/var/lib/registry
-  config: |
-    mirrors:
-      "docker.io":
-        endpoint:
-          - http://registry.localhost:5000
-          - https://mirror.gcr.io
-      "quay.io":
-        endpoint:
-          - http://registry.localhost:5000
-      "ghcr.io":
-        endpoint:
-          - http://registry.localhost:5000
 options:
   k3d:
     disableLoadbalancer: false
@@ -58,20 +35,31 @@ options:
       - arg: --node-taint=node-role.kubernetes.io/control-plane:NoSchedule
         nodeFilters:
           - server:*
-      # --- START Added arguments for Disk Pressure adjustment ---
-      - arg: --kubelet-arg=image-gc-high-threshold=60
+      # --- START Garbage Collection and Eviction Configuration ---
+      # Pod GC: Clean up terminated/evicted pods very aggressively (default: 12500)
+      - arg: --kube-controller-manager-arg=terminated-pod-gc-threshold=5
+        nodeFilters:
+          - server:*
+      # Image GC: Higher thresholds for shared host filesystem environment
+      - arg: --kubelet-arg=image-gc-high-threshold=85
         nodeFilters:
           - server:*
           - agent:*
-      - arg: --kubelet-arg=image-gc-low-threshold=50
+      - arg: --kubelet-arg=image-gc-low-threshold=80
         nodeFilters:
           - server:*
           - agent:*
-      - arg: --kubelet-arg=eviction-hard=nodefs.available<5%,imagefs.available<5%
+      # Eviction: Relaxed thresholds for k3d shared filesystem (host shows 92% usage)
+      - arg: --kubelet-arg=eviction-hard=nodefs.available<3%,imagefs.available<3%
         nodeFilters:
           - server:*
           - agent:*
-      # --- END Added arguments for Disk Pressure adjustment ---
+      # Pressure transition: Remove DiskPressure condition faster after recovery (default: 5m)
+      - arg: --kubelet-arg=eviction-pressure-transition-period=30s
+        nodeFilters:
+          - server:*
+          - agent:*
+      # --- END Garbage Collection and Eviction Configuration ---
       # --- START Added arguments for Prometheus monitoring ---
       - arg: --kube-scheduler-arg=bind-address=0.0.0.0
         nodeFilters:
