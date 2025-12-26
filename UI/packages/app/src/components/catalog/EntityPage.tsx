@@ -48,6 +48,7 @@ import {
   RELATION_HAS_PART,
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
+  Entity,
 } from '@backstage/catalog-model';
 
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
@@ -67,6 +68,18 @@ import { TopologyPage } from '@backstage-community/plugin-topology';
 import { EntityKyvernoPoliciesContent } from '@kyverno/backstage-plugin-policy-reporter';
 import { EntityGrafanaDashboardsCard } from '@backstage-community/plugin-grafana';
 
+// Helper functions to check for relations
+const hasSubcomponents = (entity: Entity) => {
+  return entity?.relations?.some(
+    (r) => r.type === RELATION_HAS_PART
+  ) ?? false;
+};
+
+const hasApis = (entity: Entity) => {
+  return entity?.relations?.some(
+    (r) => r.type === RELATION_PROVIDES_API || r.type === RELATION_CONSUMES_API
+  ) ?? false;
+};
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -151,9 +164,14 @@ const overviewContent = (
     <Grid item md={6} xs={12}>
       <EntityCatalogGraphCard variant="gridItem" height={400} />
     </Grid>
-    <Grid item md={8} xs={12}>
-      <EntityHasSubcomponentsCard variant="gridItem" />
-    </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasSubcomponents}>
+        <Grid item md={8} xs={12}>
+          <EntityHasSubcomponentsCard variant="gridItem" />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
 
     <EntitySwitch>
       <EntitySwitch.Case if={isArgocdAvailable}>
@@ -196,7 +214,11 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
 
-    <EntityLayout.Route path="/api" title="API">
+    <EntityLayout.Route
+      path="/api"
+      title="API"
+      if={hasApis}
+    >
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
           <EntityProvidedApisCard />
@@ -219,7 +241,9 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/topology" title="Topology">
-      <TopologyPage />
+      <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+        <TopologyPage />
+      </div>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/policies" title="Policies">
@@ -236,6 +260,10 @@ const websiteEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/logs" title="Logs">
+      {logsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
@@ -263,7 +291,9 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/topology" title="Topology">
-      <TopologyPage />
+      <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+        <TopologyPage />
+      </div>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/policies" title="Policies">
@@ -289,8 +319,14 @@ const defaultEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/logs" title="Logs">
+      {logsContent}
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/topology" title="Topology">
-      <TopologyPage />
+      <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+        <TopologyPage />
+      </div>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/policies" title="Policies">
