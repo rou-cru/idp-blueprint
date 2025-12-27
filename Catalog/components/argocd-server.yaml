@@ -9,6 +9,8 @@ metadata:
     backstage.io/kubernetes-id: argocd-server
     backstage.io/kubernetes-namespace: argocd
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=argocd-server"
+    # Grafana Logs Integration
+    grafana/container-name: server
     # Kyverno Policy Reporter
     kyverno.io/namespace: argocd
     kyverno.io/kind: Deployment

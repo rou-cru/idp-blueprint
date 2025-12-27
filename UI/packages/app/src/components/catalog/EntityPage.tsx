@@ -34,7 +34,7 @@ import {
   EntityOwnershipCard,
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { EmptyState } from '@backstage/core-components';
+import { EmptyState, WarningPanel } from '@backstage/core-components';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -66,7 +66,9 @@ import {
 } from '@roadiehq/backstage-plugin-argo-cd';
 import { TopologyPage } from '@backstage-community/plugin-topology';
 import { EntityKyvernoPoliciesContent } from '@kyverno/backstage-plugin-policy-reporter';
-import { EntityGrafanaDashboardsCard } from '@backstage-community/plugin-grafana';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { makeStyles } from '@material-ui/core/styles';
 
 // Helper functions to check for relations
 const hasSubcomponents = (entity: Entity) => {
@@ -79,6 +81,55 @@ const hasApis = (entity: Entity) => {
   return entity?.relations?.some(
     (r) => r.type === RELATION_PROVIDES_API || r.type === RELATION_CONSUMES_API
   ) ?? false;
+};
+
+const useStyles = makeStyles({
+  iframe: {
+    width: '100%',
+    height: '800px',
+    border: 'none',
+  },
+});
+
+const EntityLokiLogs = () => {
+  const classes = useStyles();
+  const { entity } = useEntity();
+  const config = useApi(configApiRef);
+  
+  const grafanaUrl = config.getOptionalString('grafana.domain');
+  
+  if (!grafanaUrl) {
+    return (
+      <WarningPanel
+        title="Integration Disabled"
+        message='The "grafana.domain" configuration is missing in app-config. Please check your K8s/backstage/backstage/templates/cm-tpl.yaml and ensure DNS_SUFFIX is set.'
+      />
+    );
+  }
+  
+  const annotations = entity.metadata.annotations || {};
+  const namespace = annotations['backstage.io/kubernetes-namespace'] || entity.metadata.namespace || 'default';
+  
+  // Resolve container name:
+  // 1. Explicit Grafana log container name (matches Loki label exactly)
+  // 2. Kubernetes ID (often matches, but not always e.g. backstage vs backstage-backend)
+  // 3. Entity name (fallback)
+  const container = annotations['grafana/container-name'] || 
+                    annotations['backstage.io/kubernetes-id'] || 
+                    entity.metadata.name;
+  
+  // Dashboard UID: o6-BGgnnk (Loki Kubernetes Logs)
+  const dashboardPath = '/d/o6-BGgnnk/loki-kubernetes-logs';
+  const queryParams = `?var-namespace=${namespace}&var-container=${container}&kiosk`;
+  const src = `${grafanaUrl}${dashboardPath}${queryParams}`;
+
+  return (
+    <iframe
+      title="Loki Logs"
+      src={src}
+      className={classes.iframe}
+    />
+  );
 };
 
 const techdocsContent = (
@@ -186,7 +237,7 @@ const overviewContent = (
 const logsContent = (
   <Grid container spacing={3}>
     <Grid item xs={12}>
-      <EntityGrafanaDashboardsCard />
+      <EntityLokiLogs />
     </Grid>
   </Grid>
 );

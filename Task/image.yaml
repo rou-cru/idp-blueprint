@@ -75,12 +75,9 @@ tasks:
       - docker bake release release-minimal release-ops dev-portal-release --progress=tty
 
   # Dev Portal (Backstage) tasks
-  dev-portal:build:
-    desc: 'Build Backstage dev-portal Docker image (host build approach)'
+  dev-portal:validate:
+    desc: 'Run Backstage code validation (dependencies, lint, types)'
     dir: UI
-    env:
-      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
-      IMAGE_TAG: 'latest'
     cmds:
       - echo "Installing dependencies..."
       - yarn install --immutable
@@ -90,6 +87,15 @@ tasks:
       - yarn lint:all
       - echo "Generating type definitions..."
       - yarn tsc
+
+  dev-portal:build:
+    desc: 'Build Backstage dev-portal Docker image (host build approach)'
+    dir: UI
+    env:
+      IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
+      IMAGE_TAG: 'latest'
+    cmds:
+      - task: dev-portal:validate
       - echo "Building backend bundle..."
       - yarn build:backend
       - echo "Building Docker image..."

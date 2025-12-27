@@ -18,6 +18,7 @@ metadata:
     # Grafana Logs Integration
     grafana/dashboard-selector: uid=NClZGd6nA
     grafana/tag: logs
+    grafana/container-name: backstage-backend
     deployment.method: "helm"
     helm.chart: "backstage/backstage"
     # Kyverno Policy Reporter
