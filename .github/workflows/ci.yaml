@@ -142,7 +142,7 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space-action@v1.3.1
+        uses: jlumbroso/free-disk-space@main
         with:
           tool-cache: false
           android: true
