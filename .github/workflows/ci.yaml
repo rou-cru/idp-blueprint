@@ -145,11 +145,11 @@ jobs:
         uses: jlumbroso/free-disk-space@main
         with:
           tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true
+          android: true # ~12Gib Free
+          dotnet: true # ~4Gib Free
+          haskell: true # ~6Gib Free
+          large-packages: true # ~4.7Gib Free
+          swap-storage: true # ~4GiB Saved
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -172,7 +172,7 @@ jobs:
 
       - name: Build Portal
         if: matrix.target == 'portal'
-        run: devbox run -- task dev-portal:build
+        run: devbox run -- task image:dev-portal:build
 
       # Dev/Minimal/Ops use docker/bake-action directly with GHA cache
       - name: Build Image
