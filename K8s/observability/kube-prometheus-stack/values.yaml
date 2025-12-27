@@ -330,6 +330,20 @@ grafana:
         datasource:
           - name: DS_LOKI
             value: Loki
+      # Kubernetes Logs from Loki (ID: 18494)
+      kubernetes-logs-from-loki:
+        gnetId: 18494
+        revision: 1
+        datasource:
+          - name: DS_LOKI
+            value: Loki
+      # Container Log Dashboard (ID: 16966)
+      container-log-dashboard:
+        gnetId: 16966
+        revision: 1
+        datasource:
+          - name: DS_LOKI
+            value: Loki
       # Loki Logging Volume Analysis
       loki-logging-volume:
         gnetId: 23789

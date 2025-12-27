@@ -97,7 +97,7 @@ config:
         drop_single_key true
         remove_keys kubernetes,stream,filename,time,_p
         # -- Map kubernetes metadata to Loki labels using nested field access (Fluent Bit v4)
-        labels job=fluentbit,namespace=$kubernetes['namespace_name'],container=$kubernetes['container_name'],stream=$stream,pod=$kubernetes['pod_name']
+        labels namespace=$kubernetes['namespace_name'],container=$kubernetes['container_name'],stream=$stream,pod=$kubernetes['pod_name'],app=$kubernetes['labels']['app.kubernetes.io/name']
         # -- Number of retries before dropping logs
         Retry_Limit 5
         # -- Compress logs to reduce network bandwidth and memory usage
