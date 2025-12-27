@@ -81,6 +81,12 @@ export const primerTheme = createUnifiedTheme({
     MuiCssBaseline: {
       styleOverrides: {
         '@global': {
+          ':root': {
+            '--bui-bg': '#0d1117',
+          },
+          '[data-theme-mode="dark"]': {
+            '--bui-bg': '#0d1117',
+          },
           html: {
             WebkitFontSmoothing: 'auto',
             height: '100%',
