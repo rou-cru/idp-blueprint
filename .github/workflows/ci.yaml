@@ -59,7 +59,7 @@ jobs:
         run: |
           # Retrieve the list of modified filters (e.g., ["docs", "minimal"])
           changes='${{ steps.filter.outputs.changes }}'
-          
+
           # If 'base' changed, force all build targets
           if echo "$changes" | grep -q "base"; then
             targets='["dev", "minimal", "ops", "portal"]'
@@ -68,13 +68,13 @@ jobs:
             # jq select filters out 'docs', 'values', 'base' from the list
             targets=$(echo "$changes" | jq -c 'map(select(. == "dev" or . == "minimal" or . == "ops" or . == "portal"))')
           fi
-          
+
           echo "targets=$targets" >> "$GITHUB_OUTPUT"
-          
+
           # Maintain compatibility flags
           echo "docs=${{ steps.filter.outputs.docs }}" >> "$GITHUB_OUTPUT"
           echo "values=${{ steps.filter.outputs.values }}" >> "$GITHUB_OUTPUT"
-          
+
           # Determine 'full' run (any build target or values changed)
           if [ "$targets" != "[]" ] || [ "${{ steps.filter.outputs.values }}" == "true" ]; then
              echo "full=true" >> "$GITHUB_OUTPUT"
@@ -106,25 +106,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
       - name: Install Devbox
         uses: jetpack-io/devbox-install-action@v0.14.0
         with:
           project-path: .devcontainer
           enable-cache: true
-
       - name: Run Linting Tasks
         run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:lint
         timeout-minutes: 10
-
       - name: Run Security Scans
         run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:security
         timeout-minutes: 15
-
       - name: Run Validations
         run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:validate
         timeout-minutes: 12
-
       - name: Generate Helm docs (values.yaml changed)
         if: needs.changes.outputs.values == 'true'
         run: devbox run --config .devcontainer/devbox-minimal.json -- task utils:docs:helm
@@ -140,7 +135,6 @@ jobs:
         target: ${{ fromJson(needs.changes.outputs.targets) }}
     steps:
       - uses: actions/checkout@v6
-
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
@@ -150,18 +144,13 @@ jobs:
           haskell: true # ~6Gib Free
           large-packages: true # ~4.7Gib Free
           swap-storage: true # ~4GiB Saved
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      # Portal requires yarn pre-build, use Task
-      - name: Install Devbox (Portal only)
-        if: matrix.target == 'portal'
+      - name: Install Devbox
         uses: jetpack-io/devbox-install-action@v0.14.0
         with:
           project-path: .
           enable-cache: true
-
       - name: Setup Node.js (Portal only)
         if: matrix.target == 'portal'
         uses: actions/setup-node@v4
@@ -169,21 +158,14 @@ jobs:
           node-version: 22
           cache: yarn
           cache-dependency-path: UI/yarn.lock
-
-      - name: Build Portal
-        if: matrix.target == 'portal'
-        run: devbox run -- task image:dev-portal:build
-
-      # Dev/Minimal/Ops use docker/bake-action directly with GHA cache
-      - name: Build Image
-        if: matrix.target != 'portal'
-        uses: docker/bake-action@v6
-        with:
-          source: .
-          targets: ${{ matrix.target }}
-          set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
+      - name: Build Target
+        run: |
+          case "${{ matrix.target }}" in
+            "dev") devbox run -- task image:image:build ;;
+            "minimal") devbox run -- task image:image:build:minimal ;;
+            "ops") devbox run -- task image:image:build:ops ;;
+            "portal") devbox run -- task image:dev-portal:build ;;
+          esac
 
   ci-green:
     name: CI green
