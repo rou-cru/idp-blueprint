@@ -133,6 +133,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: UI/yarn.lock
+      - name: Install UI dependencies
+        working-directory: UI
+        run: |
+          corepack enable
+          yarn install --immutable
+      - name: Build Backstage backend bundle
+        working-directory: UI
+        run: |
+          yarn tsc
+          yarn build:backend
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Build images (cache-only)
