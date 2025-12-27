@@ -80,7 +80,22 @@ export const primerTheme = createUnifiedTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        '@global': {
+          html: {
+            WebkitFontSmoothing: 'auto',
+            height: '100%',
+            width: '100%',
+            backgroundColor: '#0d1117',
+          },
+          '#root': {
+            height: '100%',
+            width: '100%',
+            backgroundColor: '#0d1117',
+          },
+        },
         body: {
+          height: '100%',
+          width: '100%',
           backgroundColor: '#0d1117',
           color: '#c9d1d9',
         },

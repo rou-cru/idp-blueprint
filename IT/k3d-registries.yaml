@@ -1,0 +1,5 @@
+configs:
+  "${DOCKER_REGISTRY_URL}":
+    auth:
+      username: "${DOCKER_REGISTRY_USERNAME}"
+      password: "${DOCKER_REGISTRY_PASSWORD}"

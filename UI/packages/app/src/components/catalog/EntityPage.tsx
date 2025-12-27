@@ -145,7 +145,7 @@ const EntityKubernetesMetrics = () => {
 
   // Dashboard UID: GlXkUBGiz (Kubernetes - Pod Overview)
   const dashboardPath = '/d/GlXkUBGiz/kubernetes-pod-overview';
-  const queryParams = `?var-namespace=${namespace}&var-pod=All&var-container=All&kiosk`;
+  const queryParams = `?var-namespace=${namespace}&var-pod=All&var-container=All&refresh=1m`;
   const src = `${grafanaUrl}${dashboardPath}${queryParams}`;
 
   return (
