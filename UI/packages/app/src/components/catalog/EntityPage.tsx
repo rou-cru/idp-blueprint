@@ -329,7 +329,7 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/topology" title="Topology">
-      <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+      <div style={{ height: '100%', width: '100%', minHeight: '700px' }}>
         <TopologyPage />
       </div>
     </EntityLayout.Route>
@@ -383,7 +383,7 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/topology" title="Topology">
-      <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+      <div style={{ height: '100%', width: '100%', minHeight: '700px' }}>
         <TopologyPage />
       </div>
     </EntityLayout.Route>
@@ -416,7 +416,7 @@ const defaultEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/topology" title="Topology">
-      <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+      <div style={{ height: '100%', width: '100%', minHeight: '700px' }}>
         <TopologyPage />
       </div>
     </EntityLayout.Route>
