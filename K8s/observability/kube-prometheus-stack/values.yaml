@@ -279,7 +279,7 @@ grafana:
         gnetId: 22082
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: DS__VICTORIAMETRICS-PROD-ALL
             value: Prometheus
       # Cert-manager monitoring - Overview dashboard
       cert-manager:
