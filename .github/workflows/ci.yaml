@@ -76,7 +76,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
           cache: pnpm
           cache-dependency-path: Docs/pnpm-lock.yaml
       - name: Install dependencies
@@ -91,7 +91,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.full == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 50
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
