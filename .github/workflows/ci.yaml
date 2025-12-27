@@ -20,8 +20,6 @@ jobs:
     outputs:
       docs: ${{ steps.set.outputs.docs }}
       values: ${{ steps.set.outputs.values }}
-      docker: ${{ steps.set.outputs.docker }}
-      other: ${{ steps.set.outputs.other }}
       full: ${{ steps.set.outputs.full }}
       targets: ${{ steps.set.outputs.targets }}
     steps:
@@ -87,6 +85,8 @@ jobs:
     needs: changes
     if: needs.changes.outputs.docs == 'true' && needs.changes.outputs.full == 'false'
     runs-on: ubuntu-latest
+    env:
+      DEVBOX_CONFIG: .devcontainer/devbox-minimal.json
     steps:
       - uses: actions/checkout@v6
       - name: Install Devbox
@@ -95,7 +95,7 @@ jobs:
           project-path: .devcontainer
           enable-cache: true
       - name: Build docs
-        run: devbox run --config .devcontainer/devbox-minimal.json -- task utils:docs:astro:build
+        run: devbox run --config $DEVBOX_CONFIG -- task utils:docs:astro:build
 
   core-ci:
     name: Core CI
@@ -103,6 +103,8 @@ jobs:
     if: needs.changes.outputs.full == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 50
+    env:
+      DEVBOX_CONFIG: .devcontainer/devbox-minimal.json
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -112,17 +114,17 @@ jobs:
           project-path: .devcontainer
           enable-cache: true
       - name: Run Linting Tasks
-        run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:lint
+        run: devbox run --config $DEVBOX_CONFIG -- task quality:lint
         timeout-minutes: 10
       - name: Run Security Scans
-        run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:security
+        run: devbox run --config $DEVBOX_CONFIG -- task quality:security
         timeout-minutes: 15
       - name: Run Validations
-        run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:validate
+        run: devbox run --config $DEVBOX_CONFIG -- task quality:validate
         timeout-minutes: 12
       - name: Generate Helm docs (values.yaml changed)
         if: needs.changes.outputs.values == 'true'
-        run: devbox run --config .devcontainer/devbox-minimal.json -- task utils:docs:helm
+        run: devbox run --config $DEVBOX_CONFIG -- task utils:docs:helm
 
   docker-build:
     name: Build ${{ matrix.target }}
