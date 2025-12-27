@@ -367,6 +367,8 @@ grafana:
   grafana.ini:
     security:
       allow_embedding: true
+      cookie_samesite: none
+      cookie_secure: true
     log:
       mode: console
     "log.console":
