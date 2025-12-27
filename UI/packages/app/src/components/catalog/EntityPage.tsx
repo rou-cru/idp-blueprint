@@ -95,9 +95,9 @@ const EntityLokiLogs = () => {
   const classes = useStyles();
   const { entity } = useEntity();
   const config = useApi(configApiRef);
-  
+
   const grafanaUrl = config.getOptionalString('grafana.domain');
-  
+
   if (!grafanaUrl) {
     return (
       <WarningPanel
@@ -106,26 +106,51 @@ const EntityLokiLogs = () => {
       />
     );
   }
-  
+
   const annotations = entity.metadata.annotations || {};
   const namespace = annotations['backstage.io/kubernetes-namespace'] || entity.metadata.namespace || 'default';
-  
-  // Resolve container name:
-  // 1. Explicit Grafana log container name (matches Loki label exactly)
-  // 2. Kubernetes ID (often matches, but not always e.g. backstage vs backstage-backend)
-  // 3. Entity name (fallback)
-  const container = annotations['grafana/container-name'] || 
-                    annotations['backstage.io/kubernetes-id'] || 
-                    entity.metadata.name;
-  
-  // Dashboard UID: o6-BGgnnk (Loki Kubernetes Logs)
-  const dashboardPath = '/d/o6-BGgnnk/loki-kubernetes-logs';
-  const queryParams = `?var-namespace=${namespace}&var-container=${container}&kiosk`;
+
+  // Dashboard UID: fRIvzUZMz (Container Log Dashboard)
+  const dashboardPath = '/d/fRIvzUZMz/container-log-dashboard';
+  const queryParams = `?var-namespace=${namespace}&var-pod=All&var-stream=All&var-searchable_pattern=&kiosk`;
   const src = `${grafanaUrl}${dashboardPath}${queryParams}`;
 
   return (
     <iframe
-      title="Loki Logs"
+      title="Container Logs"
+      src={src}
+      className={classes.iframe}
+    />
+  );
+};
+
+const EntityKubernetesMetrics = () => {
+  const classes = useStyles();
+  const { entity } = useEntity();
+  const config = useApi(configApiRef);
+
+  const grafanaUrl = config.getOptionalString('grafana.domain');
+
+  if (!grafanaUrl) {
+    return (
+      <WarningPanel
+        title="Integration Disabled"
+        message='The "grafana.domain" configuration is missing in app-config. Please check your K8s/backstage/backstage/templates/cm-tpl.yaml and ensure DNS_SUFFIX is set.'
+      />
+    );
+  }
+
+  const annotations = entity.metadata.annotations || {};
+  const namespace = annotations['backstage.io/kubernetes-namespace'] || entity.metadata.namespace || 'default';
+
+  // Dashboard UID: GlXkUBGiz (Kubernetes - Pod Overview)
+  const dashboardPath = '/d/GlXkUBGiz/kubernetes-pod-overview';
+  const queryParams = `?var-namespace=${namespace}&var-pod=All&var-container=All&kiosk`;
+  const src = `${grafanaUrl}${dashboardPath}${queryParams}`;
+
+  return (
+    <iframe
+      title="Pod Metrics"
       src={src}
       className={classes.iframe}
     />
@@ -242,6 +267,14 @@ const logsContent = (
   </Grid>
 );
 
+const metricsContent = (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <EntityKubernetesMetrics />
+    </Grid>
+  </Grid>
+);
+
 const serviceEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
@@ -250,6 +283,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/logs" title="Logs">
       {logsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/metrics" title="Metrics">
+      {metricsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
@@ -315,6 +352,10 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/logs" title="Logs">
       {logsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/metrics" title="Metrics">
+      {metricsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">

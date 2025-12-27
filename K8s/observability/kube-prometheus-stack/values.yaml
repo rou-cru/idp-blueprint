@@ -323,13 +323,6 @@ grafana:
         datasource:
           - name: DS_PROMETHEUS
             value: Prometheus
-      # Loki Kubernetes Logs (ID: 15141)
-      loki-kubernetes-logs:
-        gnetId: 15141
-        revision: 1
-        datasource:
-          - name: DS_LOKI
-            value: Loki
       # Kubernetes Logs from Loki (ID: 18494)
       kubernetes-logs-from-loki:
         gnetId: 18494
@@ -354,13 +347,6 @@ grafana:
       # Logs by Namespace
       logs-by-namespace:
         gnetId: 19566
-        revision: 1
-        datasource:
-          - name: DS_LOKI
-            value: Loki
-      # Logging Dashboard via Loki v2
-      logging-dashboard-v2:
-        gnetId: 18042
         revision: 1
         datasource:
           - name: DS_LOKI
