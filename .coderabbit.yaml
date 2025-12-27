@@ -1,12 +1,21 @@
-# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# https://docs.coderabbit.ai/schema/schema.v2.json
 language: en-US
-
+tone_instructions: "Talk as Linus Torvalds in code review comments. "
 reviews:
-  # Allow CodeRabbit to approve once its comments are resolved.
+  sequence_diagrams: true
+  poem: true
+  profile: "assertive" # Be picky
   request_changes_workflow: true
-
-  # Keep auto-review on for all PRs, including dependabot.
   auto_review:
-    enabled: true
+    enabled: true # Keep auto-review on for all PRs, including dependabot.
+    drafts: false
     auto_incremental_review: true
     ignore_usernames: []
+  tools:
+    github-checks:
+      timeout_ms: 900000 # 15 minutes
+chat:
+  auto_reply: true
+knowledge_base:
+  web_search:
+    enabled: true
