@@ -23,45 +23,64 @@ jobs:
       docker: ${{ steps.set.outputs.docker }}
       other: ${{ steps.set.outputs.other }}
       full: ${{ steps.set.outputs.full }}
+      targets: ${{ steps.set.outputs.targets }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Get changed files
-        id: changed
-        uses: tj-actions/changed-files@v45
+      - uses: dorny/paths-filter@v3
+        id: filter
         with:
-          files: |
-            **/*
+          filters: |
+            docs:
+              - 'Docs/**'
+              - '**/*.md'
+            values:
+              - '**/values.yaml'
+              - '**/values*.yaml'
+            base:
+              - 'Dockerfile'
+              - '.devcontainer/Dockerfile'
+              - 'docker-bake.hcl'
+              - 'Task/image.yaml'
+            dev:
+              - 'devbox.json'
+              - 'devbox.lock'
+            minimal:
+              - '.devcontainer/devbox-minimal.json'
+            ops:
+              - '.devcontainer/devbox-ops.json'
+            portal:
+              - 'UI/**'
 
-      - name: Classify changes
+      - name: Calculate Matrix Targets
         id: set
         run: |
-          docs=false
-          values=false
-          docker=false
-          other=false
-          for file in ${{ steps.changed.outputs.all_changed_files }}; do
-            case "$file" in
-              Docs/*|*.md) docs=true ;;
-              *values.yaml|*values*.yaml) values=true ;;
-              Dockerfile|*/Dockerfile|docker-bake.hcl|Task/image.yaml|.devcontainer/*|devbox*.json|.devcontainer/devbox*.json|UI/*) docker=true ;;
-              *) other=true ;;
-            esac
-          done
-          if $values || $docker || $other; then
-            full=true
+          # Retrieve the list of modified filters (e.g., ["docs", "minimal"])
+          changes='${{ steps.filter.outputs.changes }}'
+          
+          # If 'base' changed, force all build targets
+          if echo "$changes" | grep -q "base"; then
+            targets='["dev", "minimal", "ops", "portal"]'
           else
-            full=false
+            # Otherwise, filter the changes list to only include build targets
+            # jq select filters out 'docs', 'values', 'base' from the list
+            targets=$(echo "$changes" | jq -c 'map(select(. == "dev" or . == "minimal" or . == "ops" or . == "portal"))')
           fi
-          {
-            echo "docs=$docs"
-            echo "values=$values"
-            echo "docker=$docker"
-            echo "other=$other"
-            echo "full=$full"
-          } >> "$GITHUB_OUTPUT"
+          
+          echo "targets=$targets" >> "$GITHUB_OUTPUT"
+          
+          # Maintain compatibility flags
+          echo "docs=${{ steps.filter.outputs.docs }}" >> "$GITHUB_OUTPUT"
+          echo "values=${{ steps.filter.outputs.values }}" >> "$GITHUB_OUTPUT"
+          
+          # Determine 'full' run (any build target or values changed)
+          if [ "$targets" != "[]" ] || [ "${{ steps.filter.outputs.values }}" == "true" ]; then
+             echo "full=true" >> "$GITHUB_OUTPUT"
+          else
+             echo "full=false" >> "$GITHUB_OUTPUT"
+          fi
 
   docs-pr:
     name: Docs only
@@ -70,21 +89,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
+      - name: Install Devbox
+        uses: jetpack-io/devbox-install-action@v0.14.0
         with:
-          version: 10
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: Docs/pnpm-lock.yaml
-      - name: Install dependencies
-        working-directory: Docs
-        run: pnpm install --frozen-lockfile
+          project-path: .devcontainer
+          enable-cache: true
       - name: Build docs
-        working-directory: Docs
-        run: pnpm build
+        run: devbox run --config .devcontainer/devbox-minimal.json -- task utils:docs:astro:build
 
   core-ci:
     name: Core CI
@@ -96,10 +107,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Prepare Devbox configuration
-        run: ln -sf devbox-minimal.json devbox.json
-        working-directory: .devcontainer
-
       - name: Install Devbox
         uses: jetpack-io/devbox-install-action@v0.14.0
         with:
@@ -107,67 +114,76 @@ jobs:
           enable-cache: true
 
       - name: Run Linting Tasks
-        run: devbox run -- task quality:lint
-        working-directory: .devcontainer
+        run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:lint
         timeout-minutes: 10
 
       - name: Run Security Scans
-        run: devbox run -- task quality:security
-        working-directory: .devcontainer
+        run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:security
         timeout-minutes: 15
 
       - name: Run Validations
-        run: devbox run -- task quality:validate
-        working-directory: .devcontainer
+        run: devbox run --config .devcontainer/devbox-minimal.json -- task quality:validate
         timeout-minutes: 12
 
       - name: Generate Helm docs (values.yaml changed)
         if: needs.changes.outputs.values == 'true'
-        run: devbox run -- task utils:docs:helm
-        working-directory: .devcontainer
+        run: devbox run --config .devcontainer/devbox-minimal.json -- task utils:docs:helm
 
   docker-build:
-    name: Docker bake smoke
+    name: Build ${{ matrix.target }}
     needs: changes
-    if: needs.changes.outputs.docker == 'true'
+    if: needs.changes.outputs.full == 'true' && needs.changes.outputs.targets != '[]'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJson(needs.changes.outputs.targets) }}
     steps:
       - uses: actions/checkout@v6
-      - name: Install Devbox
+
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space-action@v1.3.1
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Portal requires yarn pre-build, use Task
+      - name: Install Devbox (Portal only)
+        if: matrix.target == 'portal'
         uses: jetpack-io/devbox-install-action@v0.14.0
         with:
           project-path: .
           enable-cache: true
-      - name: Generate devbox.lock
-        run: devbox install
-      - name: Setup Node.js
+
+      - name: Setup Node.js (Portal only)
+        if: matrix.target == 'portal'
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
           cache-dependency-path: UI/yarn.lock
-      - name: Install UI dependencies
-        working-directory: UI
-        run: |
-          corepack enable
-          yarn install --immutable
-      - name: Build Backstage backend bundle
-        working-directory: UI
-        run: |
-          yarn tsc
-          yarn build:backend
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build images (cache-only)
-        env:
-          IMAGE_NAME: roucru/idp-blueprint
-          IMAGE_TAG: latest
-          IMAGE_TAG_MINIMAL: minimal
-          IMAGE_TAG_OPS: ops
-        run: |
-          docker buildx bake dev minimal ops dev-portal \
-            --progress=plain \
-            --set *.output=type=cacheonly
+
+      - name: Build Portal
+        if: matrix.target == 'portal'
+        run: devbox run -- task dev-portal:build
+
+      # Dev/Minimal/Ops use docker/bake-action directly with GHA cache
+      - name: Build Image
+        if: matrix.target != 'portal'
+        uses: docker/bake-action@v6
+        with:
+          source: .
+          targets: ${{ matrix.target }}
+          set: |
+            *.cache-from=type=gha
+            *.cache-to=type=gha,mode=max
 
   ci-green:
     name: CI green
@@ -175,26 +191,10 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Evaluate job results
-        env:
-          CHANGES_RESULT: ${{ needs.changes.result }}
-          DOCS_RESULT: ${{ needs.docs-pr.result }}
-          CORE_RESULT: ${{ needs.core-ci.result }}
-          DOCKER_RESULT: ${{ needs.docker-build.result }}
+      - name: Check for failures
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: |
-          failed=false
-          for item in \
-            "changes=$CHANGES_RESULT" \
-            "docs-pr=$DOCS_RESULT" \
-            "core-ci=$CORE_RESULT" \
-            "docker-build=$DOCKER_RESULT"
-          do
-            result="${item#*=}"
-            if [ "$result" = "failure" ] || [ "$result" = "cancelled" ]; then
-              echo "::error::Job ${item%=*} finished with ${result}"
-              failed=true
-            fi
-          done
-          if $failed; then
-            exit 1
-          fi
+          echo "::error::One or more required jobs failed or were cancelled"
+          exit 1
+      - name: Success
+        run: echo "✅ All CI checks passed"

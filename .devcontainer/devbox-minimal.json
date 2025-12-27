@@ -21,6 +21,8 @@
     "dasel@2.8.1",
     "python312",
     "uv@0.5.11",
-    "d2@latest"
+    "d2@latest",
+    "nodejs@22",
+    "pnpm@latest"
   ]
 }
