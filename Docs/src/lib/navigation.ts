@@ -31,7 +31,7 @@ interface SortableNavSection extends NavSection {
 export const CATEGORY_LABELS: Record<string, string> = {
   'getting-started': 'Getting Started',
   'architecture': 'Architecture',
-  'concepts': 'Concepts',
+  'implementation': 'Implementation',
   'operate': 'Operate',
   'components': 'Components',
   'reference': 'Reference',
@@ -80,10 +80,14 @@ export async function getSidebarConfig(): Promise<NavSection[]> {
     const order = doc.data.sidebar?.order || 999;
     const href = `/${doc.slug}`;
 
-    if (topLevel === 'components' && parts.length > 2) {
-      // Handle nested components structure: components/infrastructure/argocd
-      const subCategory = parts[1];
-      const componentsSection = getOrCreateSection('components', CATEGORY_LABELS['components'], true);
+    if (topLevel === 'implementation' && parts[1] === 'components' && parts.length > 3) {
+      // Handle nested components structure: implementation/components/infrastructure/argocd
+      const subCategory = parts[2];
+      const implementationSection = getOrCreateSection(
+        'implementation',
+        CATEGORY_LABELS['implementation'],
+        true
+      );
 
       // Map sub-categories to contexts
       const contextMap: Record<string, ('infrastructure' | 'gitops' | 'observability' | 'security')[]> = {
@@ -99,18 +103,32 @@ export async function getSidebarConfig(): Promise<NavSection[]> {
       const contexts = contextMap[subCategory] || ['all'];
 
       // Find or create sub-section item
-      let subSectionItem = componentsSection.items.find(item => item.label === CATEGORY_LABELS[subCategory]);
+      let subSectionItem = implementationSection.items.find(
+        item => item.label === CATEGORY_LABELS['components']
+      );
       if (!subSectionItem) {
         subSectionItem = {
-          label: CATEGORY_LABELS[subCategory] || subCategory,
-          contexts: contexts,
+          label: CATEGORY_LABELS['components'],
           items: []
         };
-        componentsSection.items.push(subSectionItem);
+        implementationSection.items.push(subSectionItem);
       }
 
       if (subSectionItem.items) {
-        subSectionItem.items.push({ label, href, order, contexts });
+        let categoryGroup = subSectionItem.items.find(
+          item => item.label === (CATEGORY_LABELS[subCategory] || subCategory)
+        );
+        if (!categoryGroup) {
+          categoryGroup = {
+            label: CATEGORY_LABELS[subCategory] || subCategory,
+            contexts: contexts,
+            items: []
+          };
+          subSectionItem.items.push(categoryGroup);
+        }
+        if (categoryGroup.items) {
+          categoryGroup.items.push({ label, href, order, contexts });
+        }
       }
     } else {
       // Standard sections (getting-started, architecture, etc. are 'all' contexts)

@@ -150,7 +150,7 @@ generate_chart_yaml() {
   local version
   version=$(get_version "$version_var" "$helm_chart_name" "$source_path")
 
-  local output_dir="Docs/components/${category}/${component}"
+  local output_dir="Docs/src/content/docs/implementation/components/${category}/${component}"
   local output_file="${output_dir}/Chart.yaml"
 
   mkdir -p "$output_dir"
