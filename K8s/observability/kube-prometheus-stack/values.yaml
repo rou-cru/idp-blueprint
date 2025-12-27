@@ -251,14 +251,14 @@ grafana:
         gnetId: 7581
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: DS_KUBERNETES
             value: Prometheus
       # K8s - DaemonSet dashboard
       k8s-daemonset:
         gnetId: 14982
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: datasource
             value: Prometheus
       # K8s - Resource dashboard
       k8s-resource:
@@ -279,21 +279,21 @@ grafana:
         gnetId: 22082
         revision: 1
         datasource:
-          - name: DS__VICTORIAMETRICS-PROD-ALL
+          - name: DS_PROMETHEUS
             value: Prometheus
       # Cert-manager monitoring - Overview dashboard
       cert-manager:
         gnetId: 20842
         revision: 3
         datasource:
-          - name: DS_PROMETHEUS
+          - name: datasource
             value: Prometheus
       # ArgoCD monitoring - Official ArgoCD dashboard
       argocd:
         gnetId: 14584
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: datasource
             value: Prometheus
       # Cilium Operator metrics
       cilium-operator:
@@ -335,7 +335,7 @@ grafana:
         gnetId: 18494
         revision: 1
         datasource:
-          - name: DS_LOKI
+          - name: DS_GRAFANACLOUD-SS3RG3-LOGS
             value: Loki
       # Container Log Dashboard (ID: 16966)
       container-log-dashboard:
