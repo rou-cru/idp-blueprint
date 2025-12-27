@@ -133,6 +133,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Install Devbox
+        uses: jetpack-io/devbox-install-action@v0.14.0
+        with:
+          project-path: .
+          enable-cache: true
+      - name: Generate devbox.lock
+        run: devbox install
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
