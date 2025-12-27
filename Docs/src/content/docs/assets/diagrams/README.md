@@ -7,7 +7,7 @@ This directory contains all D2 diagram source files for the IDP Blueprint docume
 ```text
 diagrams/
 ├── architecture/     # Architecture diagrams (observability, secrets, policies, etc.)
-├── concepts/         # Conceptual diagrams (design philosophy, etc.)
+├── implementation/         # Conceptual diagrams (design philosophy, etc.)
 └── reference/        # Reference diagrams (FinOps tags, etc.)
 ```
 

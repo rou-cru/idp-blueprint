@@ -1,0 +1,167 @@
+---
+title: Observability Architecture
+description: Architecture for signals, feedback loops, and operational visibility
+layout: ../../../layouts/DocsLayout.astro
+sidebar:
+  label: Observability
+  order: 7
+---
+
+import { Button } from '../../../components/content/index.ts';
+
+## Context and goals
+
+Observability provides the feedback loop that turns platform behavior into actionable
+signals. The architecture prioritizes three outcomes: fast detection of degradation,
+clear ownership for investigation, and durable visibility into system behavior over
+time. It is intentionally technology-agnostic so the model can hold across clusters of
+different sizes and operating constraints.
+
+The platform treats observability as a product for operators and application teams.
+Signals must be trustworthy, correlate across layers, and remain available during
+partial outages. If the platform cannot see itself, it cannot repair itself.
+
+## Signal domains
+
+The architecture separates signals into distinct domains that answer different
+questions. **Metrics** describe behavior over time, capturing rates, latency, error
+budgets, saturation, and capacity trends. **Logs** provide high-fidelity context,
+explaining why a metric changed by recording system decisions and failure details.
+**Events** capture discrete state changes such as deployments, policy decisions, and
+automation triggers.
+
+Request traces can be added for deep application debugging, but the platform does not
+depend on traces as a baseline requirement. The core feedback loop remains metrics,
+logs, and events.
+
+## Data flow
+
+Observability data follows a consistent flow regardless of signal type. Collection
+happens at the edge where workloads emit signals, and agents or sidecars gather them
+without requiring application teams to operate their own pipelines. The data is then
+normalized and enriched with consistent metadata (owner, environment, application,
+stack) so it can be correlated across layers. Storage and indexing are optimized for
+each access pattern—time-series queries for metrics, indexed search for logs, and event
+streams for state changes. Finally, dashboards and query interfaces expose the data to
+humans and automation, letting operators move from high-level health to granular root
+cause without changing tools.
+
+This flow ensures that detection, diagnosis, and remediation share a common context
+model.
+
+Metrics collection must account for multiple sources of truth. Node-level signals
+reflect resource pressure and scheduling limits, kubelet-derived signals expose pod
+health and lifecycle transitions, and custom endpoints from platform components provide
+domain-specific indicators. The architecture assumes these sources will coexist and
+converge on a single query model, which requires strict control of label sets and
+aggregation dimensions to keep the data usable. Without that control, metrics explode
+in cardinality and the system becomes expensive, noisy, and slow to query. By defining
+which dimensions are allowed for correlation, the platform keeps metrics focused on
+operational decisions rather than raw exhaust.
+
+### Metrics extraction flow
+
+![Metrics extraction flow](../assets/diagrams/architecture/observability-metrics-flow.svg)
+
+> **Source:** \
+> [observability-metrics-flow.d2](../assets/diagrams/architecture/observability-metrics-flow.d2)
+
+Logs follow a parallel but distinct path. Workloads emit logs locally; the platform
+collects them out-of-process so application health is never coupled to log delivery.
+These streams are buffered, enriched with ownership metadata, and routed to durable
+storage that supports fast search and short time-to-context during incidents. The main
+architectural constraint is volume: log data grows faster than metrics and requires
+explicit retention boundaries and filtering rules to avoid overwhelming storage and
+query systems. The architecture therefore treats logs as high-fidelity context rather
+than an exhaustive history, prioritizing accessibility and relevance over indefinite
+retention.
+
+### Logs extraction flow
+
+![Logs extraction flow](../assets/diagrams/architecture/observability-logs-flow.svg)
+
+> **Source:** \
+> [observability-logs-flow.d2](../assets/diagrams/architecture/observability-logs-flow.d2)
+
+Although metrics and logs are both signals, they behave very differently in operation.
+Metrics are structured, low-bandwidth, and designed for aggregation; they remain
+predictable under scale and can be queried continuously for trends and budgets. Logs
+are unstructured, high-volume, and spiky; they behave like diagnostic exhaust that is
+indispensable during incidents but expensive to store and hard to normalize. This
+asymmetry shapes the observability design: metrics carry the primary health narrative,
+while logs provide depth on demand. The platform therefore optimizes metrics for
+stability and long-range analysis, and optimizes logs for rapid access, constrained
+retention, and strong ownership metadata.
+
+## Reliability objectives and alerting
+
+Reliability is defined through service-level objectives (SLOs) rather than arbitrary
+thresholds. The architecture distinguishes between **observability data** and **SLIs**.
+Observability data is broad and exploratory, optimized for investigation. SLIs are a
+curated subset of signals that represent user-visible reliability, chosen to be stable,
+low-noise, and strongly tied to service outcomes. SLOs bind those SLIs to explicit
+targets, and error budgets quantify how much unreliability is acceptable over a given
+window.
+
+Alerting is driven by error budget burn rather than raw signal changes. This keeps
+alerts focused on user impact and avoids fatigue caused by noisy or transient metrics.
+Alerts therefore attach to SLOs, not to arbitrary log messages or single metrics. The
+relationship is deliberate: SLIs define what matters, SLOs set the expectation, and
+alerts enforce the budget when it is being consumed too quickly. Logs inform why an
+alert fired, but they do not define when it should fire. This separation keeps the
+alerting model stable even as log patterns and implementation details evolve.
+
+Alerts serve two audiences: humans and automation. Human alerts route to on-call
+channels with clear ownership metadata. Automation alerts trigger workflows that can
+attempt remediation or gather diagnostics. This creates a closed loop between
+observability and platform automation. See [Driven by Events](driven-by-events) for
+event-driven remediation patterns.
+
+## Retention and cost boundaries
+
+Observability data grows without bound unless constrained. The architecture uses
+explicit retention tiers, keeping high-resolution data for real-time debugging and
+incident response while preserving aggregated, longer-term data for trend analysis and
+capacity planning.
+
+Retention is a product decision that balances storage cost with investigation needs.
+On constrained clusters, short retention is acceptable as long as alerts and summary
+metrics preserve essential history.
+
+## Multi-tenant ownership and access
+
+Signals must be attributable to teams and applications. Standard labels and metadata
+ensure ownership is clear across metrics, logs, and events. Access control aligns with
+these labels so teams can see their own data without exposing unrelated workloads.
+
+This ownership model enables cost visibility, targeted alerting, and safe self-service
+debugging. It also reduces operational noise by allowing platform teams to aggregate
+signals by stack or domain.
+
+## Design principles
+
+The monitoring layer is prioritized so the platform can observe itself even during
+degraded conditions. Shared labels and metadata across signals enable correlation
+without manual joins, keeping a single context model. Alerts are designed to be
+actionable by people and by workflows, preserving the human + automation loop.
+
+Cardinality is managed intentionally at the architecture level, not left to tooling
+defaults. The platform defines which dimensions are allowed for correlation and
+ownership, and excludes ad‑hoc labels that fragment the signal space. High-cardinality
+fields are treated as investigative context rather than indexable dimensions: they can
+be surfaced in logs or traces, but they do not become primary aggregation keys for
+metrics or alerts. This keeps queries predictable, budgets stable, and SLI calculations
+trustworthy across environments. Finally, retention and cardinality are constrained by
+design to keep the platform deployable on small clusters.
+
+Observability is not a single tool or UI. It is the architecture that connects system
+behavior to decisions.
+
+<div class="flex justify-center gap-3 mt-8">
+  <Button href="/architecture/policies/" variant="secondary" icon="arrow-left">
+    Back: Policies
+  </Button>
+  <Button href="/architecture/driven-by-events/" variant="primary" icon="arrow-right">
+    Next: Driven by Events
+  </Button>
+</div>

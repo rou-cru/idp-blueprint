@@ -1,0 +1,40 @@
+---
+title: Implementation Overview
+description: Implementation overview
+layout: ../../../layouts/DocsLayout.astro
+sidebar:
+  label: Overview
+  order: 1
+---
+
+This section documents the **demo implementation** of IDP Blueprint. It explains how
+the reference architecture is realized in a runnable environment, which concrete
+decisions make the demo deployable on constrained hardware, and where those decisions
+live in the repository.
+
+You will not find step‑by‑step setup here; that lives under Getting Started. These
+pages show the real wiring behind the demo: how GitOps is layered, how traffic enters
+and reaches services, how workloads are prioritized, how security boundaries are
+applied, and how signals are captured and routed. Each page answers three questions:
+what the implementation does, why it is designed that way, and which tradeoffs are
+specific to the demo.
+
+## Scope of the demo implementation
+
+The demo is intentionally opinionated. It prioritizes reproducibility and a small
+operational footprint over production hardening, so you can run it end‑to‑end and
+inspect the moving parts without external dependencies.
+
+## How to read the Implementation section
+
+Start here for the systems view, then drill into the individual areas:
+
+- [GitOps model](gitops-model) — how bootstrap and continuous reconciliation are wired.
+- [Networking & gateway](networking-gateway) — how traffic reaches services.
+- [Scheduling & node pools](scheduling-nodepools) — capacity, priorities, and pools.
+- [Security & policy model](security-policy-model) — security boundaries in practice.
+- [Observability](../architecture/observability) — signal flows and alerting design.
+
+Read this section after you have deployed the platform once and skimmed
+[Architecture overview](../architecture/overview). From there, Implementation provides
+the practical context to extend or modify the demo safely.

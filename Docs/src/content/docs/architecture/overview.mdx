@@ -91,7 +91,7 @@ The control plane operates through Git-driven automation across three layers:
 
 The reconciliation controller applies all changes from Git to the cluster. Manual
 cluster modifications are treated as drift and automatically reverted. For
-implementation details, see [GitOps model](../concepts/gitops-model) and
+implementation details, see [GitOps model](../implementation/gitops-model) and
 [Application architecture](applications).
 
 ## Resilience on constrained clusters
@@ -111,7 +111,7 @@ Scheduling mechanisms enforce this prioritization:
 
 When a node fails, the platform preserves visibility (metrics, logs) and maintains
 repair capability (GitOps reconciliation), even if some stacks run in degraded mode. See
-[Scheduling, priority, and node pools](../concepts/scheduling-nodepools) for operational
+[Scheduling, priority, and node pools](../implementation/scheduling-nodepools) for operational
 details.
 
 ## Technology Selection Criteria

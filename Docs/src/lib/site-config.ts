@@ -18,10 +18,9 @@ export const siteConfig = {
 export const SECTION_ORDER = [
   'getting-started',
   'architecture',
-  'concepts',
+  'implementation',
   'operate',
   'operations',
-  'components',
   'reference',
 ];
 
