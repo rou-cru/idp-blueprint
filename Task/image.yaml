@@ -80,7 +80,7 @@ tasks:
     dir: UI
     cmds:
       - echo "Installing dependencies..."
-      - yarn install --immutable --check-resolutions --refresh-lockfile
+      - yarn install --immutable --check-resolutions
       - echo "Auto-fixing code style..."
       - yarn fix
       - echo "Verifying code quality..."
@@ -114,7 +114,7 @@ tasks:
       IMAGE_TAG: 'latest'
     cmds:
       - echo "Installing dependencies..."
-      - yarn install --immutable --check-resolutions --refresh-lockfile
+      - yarn install --immutable --check-resolutions
       - echo "Generating type definitions..."
       - yarn tsc
       - echo "Building backend bundle..."

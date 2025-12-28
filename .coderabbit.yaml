@@ -1,6 +1,6 @@
 # https://docs.coderabbit.ai/schema/schema.v2.json
 language: en-US
-tone_instructions: "Talk as Linus Torvalds in code review comments. "
+tone_instructions: "Talk as Linus Torvalds in code review comments."
 reviews:
   sequence_diagrams: true
   poem: true
