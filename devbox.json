@@ -42,7 +42,8 @@
     "yarn-berry@4.4.1",
     "k6@1.4.2",
     "playwright@1.56.1",
-    "playwright-test@1.56.1"
+    "playwright-test@1.56.1",
+    "gh@2.83.2"
   ],
   "shell": {
     "init_hook": [
