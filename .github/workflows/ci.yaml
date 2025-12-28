@@ -131,6 +131,11 @@ jobs:
     needs: changes
     if: needs.changes.outputs.full == 'true' && needs.changes.outputs.targets != '[]'
     runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
+      DOCKER_IMAGE_TAG: ${{ vars.DOCKER_IMAGE_TAG }}
+      DOCKER_IMAGE_TAG_MINIMAL: ${{ vars.DOCKER_IMAGE_TAG_MINIMAL }}
+      DOCKER_IMAGE_TAG_OPS: ${{ vars.DOCKER_IMAGE_TAG_OPS }}
     strategy:
       fail-fast: false
       matrix:
