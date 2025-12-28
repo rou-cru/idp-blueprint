@@ -7,7 +7,7 @@ tasks:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
       IMAGE_TAG: '{{.DOCKER_IMAGE_TAG}}'
     cmds:
-      - docker buildx bake dev --progress=tty
+      - docker buildx bake dev --progress=auto
 
   image:build:minimal:
     desc: 'Build minimal image for CI/Jobs'
@@ -15,7 +15,7 @@ tasks:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
       IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
     cmds:
-      - docker buildx bake minimal --progress=tty
+      - docker buildx bake minimal --progress=auto
 
   image:build:ops:
     desc: 'Build ops image for cluster utility jobs'
@@ -23,7 +23,7 @@ tasks:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
       IMAGE_TAG_OPS: '{{.DOCKER_IMAGE_TAG_OPS}}'
     cmds:
-      - docker buildx bake ops --progress=tty
+      - docker buildx bake ops --progress=auto
 
   image:release:
     desc: 'Build and push full image to Registry'
@@ -36,7 +36,7 @@ tasks:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
       IMAGE_TAG: '{{.DOCKER_IMAGE_TAG}}'
     cmds:
-      - docker buildx bake release --progress=tty
+      - docker buildx bake release --progress=auto
 
   image:release:minimal:
     desc: 'Build and push minimal image to Registry'
@@ -49,7 +49,7 @@ tasks:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
       IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
     cmds:
-      - docker buildx bake release-minimal --progress=tty
+      - docker buildx bake release-minimal --progress=auto
 
   image:release:ops:
     desc: 'Build and push ops image to Registry'
@@ -62,7 +62,7 @@ tasks:
       IMAGE_NAME: '{{.DOCKER_IMAGE_NAME}}'
       IMAGE_TAG_OPS: '{{.DOCKER_IMAGE_TAG_OPS}}'
     cmds:
-      - docker buildx bake release-ops --progress=tty
+      - docker buildx bake release-ops --progress=auto
 
   image:release:all:
     desc: 'Build and push all bake targets (full, minimal, ops, dev-portal)'
@@ -72,7 +72,7 @@ tasks:
       IMAGE_TAG_MINIMAL: '{{.DOCKER_IMAGE_TAG_MINIMAL}}'
       IMAGE_TAG_OPS: '{{.DOCKER_IMAGE_TAG_OPS}}'
     cmds:
-      - docker buildx bake release release-minimal release-ops dev-portal-release --progress=tty
+      - docker buildx bake release release-minimal release-ops dev-portal-release --progress=auto
 
   # Dev Portal (Backstage) tasks
   dev-portal:validate:
@@ -99,7 +99,7 @@ tasks:
       - echo "Building backend bundle..."
       - yarn build:backend
       - echo "Building Docker image..."
-      - cd .. && docker buildx bake dev-portal --progress=tty
+      - cd .. && docker buildx bake dev-portal --progress=auto
 
   dev-portal:release:
     desc: 'Build and push dev-portal image to registry'
@@ -120,7 +120,7 @@ tasks:
       - echo "Building backend bundle..."
       - yarn build:backend
       - echo "Building and pushing Docker Image..."
-      - cd .. && docker buildx bake dev-portal-release --progress=tty
+      - cd .. && docker buildx bake dev-portal-release --progress=auto
 
   dev-portal:clean:
     desc: 'Clean dev-portal build artifacts'

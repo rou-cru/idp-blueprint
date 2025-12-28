@@ -33,16 +33,16 @@
     "vault-bin@1.20.4",
     "gettext@0.22.5",
     "dasel@2.7.0",
-    "apacheHttpd@latest",
+    "apacheHttpd@2.4.66",
     "uv@0.8.23",
     "d2@0.7.1",
-    "python312@latest",
+    "python312@3.12.12",
     "nodejs@22",
-    "pnpm@latest",
+    "pnpm@10.25.0",
     "yarn-berry@4.4.1",
-    "k6@latest",
-    "playwright@latest",
-    "playwright-test@latest"
+    "k6@1.4.2",
+    "playwright@1.56.1",
+    "playwright-test@1.56.1"
   ],
   "shell": {
     "init_hook": [
