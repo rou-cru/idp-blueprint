@@ -13,13 +13,13 @@
     "d2:render": "../../Scripts/d2-render.sh"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.12",
+    "@astrojs/mdx": "^4.3.13",
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/ts-plugin": "^1.10.6",
     "@yeskunall/astro-umami": "^0.0.7",
-    "astro": "^5.16.4",
+    "astro": "^5.16.6",
     "astro-d2": "^0.8.1",
-    "astro-expressive-code": "^0.41.3",
+    "astro-expressive-code": "^0.41.5",
     "astro-favicons": "^3.1.5",
     "astro-icon": "^1.1.5",
     "astro-mermaid": "^1.2.0",
