@@ -30,7 +30,7 @@ jobs:
 
       - name: Get changed files
         id: changed
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@v47
         with:
           files: |
             **/*
@@ -74,7 +74,7 @@ jobs:
         with:
           version: 10
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: pnpm
