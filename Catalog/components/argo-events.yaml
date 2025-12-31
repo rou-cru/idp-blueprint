@@ -17,6 +17,8 @@ metadata:
     kyverno.io/namespace: argo-events
     kyverno.io/kind: Deployment
     kyverno.io/resource-name: argo-events-controller-manager
+    # Grafana Dashboard
+    grafana/dashboard-selector: "namespace=argo-events"
 spec:
   type: service
   lifecycle: production

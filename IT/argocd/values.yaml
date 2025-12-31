@@ -276,6 +276,9 @@ configs:
     # -- (bool) Run server without TLS (required when behind TLS-terminating proxy)
     # The Gateway handles TLS termination, so ArgoCD receives plain HTTP
     server.insecure: true
+    # -- (string) JSON logging for server and controller
+    server.log.format: "json"
+    controller.log.format: "json"
   secret:
     # -- (bool) Create secret for admin credentials
     createSecret: true

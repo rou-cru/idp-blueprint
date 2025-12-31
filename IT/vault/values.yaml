@@ -2,6 +2,8 @@
 server:
   # -- (string) Priority class for Vault pods
   priorityClassName: platform-infrastructure
+  # -- (string) Log format for Vault server (standard or json)
+  logFormat: "json"
   # -- Update strategy for zero-downtime updates (StatefulSet)
   updateStrategyType: RollingUpdate
   affinity: |
@@ -95,6 +97,11 @@ server:
   serviceMonitor:
     # -- (bool) Enable ServiceMonitor
     enabled: true
+
+# @section -- Injector
+injector:
+  # -- (string) Log format for Vault Agent Injector (standard or json)
+  logFormat: "json"
 
 # @section -- UI
 ui:

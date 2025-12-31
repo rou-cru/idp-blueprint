@@ -11,6 +11,10 @@ metadata:
     backstage.io/kubernetes-namespace: backstage
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/instance=backstage"
     argocd/app-name: portal-backstage
+    # Grafana Logs Integration
+    grafana/dashboard-selector: uid=NClZGd6nA
+    grafana/tag: logs
+    grafana/container-name: backstage-backend
     deployment.method: "helm"
     helm.chart: "backstage/backstage"
     # Kyverno Policy Reporter

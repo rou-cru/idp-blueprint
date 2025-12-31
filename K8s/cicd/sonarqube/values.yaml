@@ -22,7 +22,11 @@ env:
 sonarProperties:
   sonar.telemetry.enable: false
   sonar.ce.workerCount: 1
-  sonar.log.level: WARN
+  # -- SonarQube only supports [INFO, DEBUG, TRACE]. WARN/ERROR are invalid and cause startup failure.
+  # Ref: https://docs.sonarsource.com/sonarqube/latest/instance-administration/monitoring/#log-level
+  sonar.log.level: INFO
+  # -- Enable JSON logging for better integration with log aggregators (Loki/FluentBit)
+  sonar.log.jsonOutput: true
 # -- Resource requests and limits for the SonarQube server.
 resources:
   requests:
@@ -30,11 +34,17 @@ resources:
     cpu: 250m
     # -- (string) Memory request for SonarQube
     memory: 1Gi
+    # -- (string) Ephemeral storage request - explicit override to fix Chart v2025.5.0 mapping bug
+    # The chart incorrectly inherits memory values for ephemeral-storage, causing 512G limit from -Xmx512m
+    ephemeral-storage: "1Gi"
   limits:
     # -- (string) CPU limit for SonarQube
     cpu: 1000m
     # -- (string) Memory limit for SonarQube
     memory: 1.5Gi
+    # -- (string) Ephemeral storage limit - explicit override to fix Chart v2025.5.0 mapping bug
+    # Prevents massive overcommit (512GB) that triggers kubelet eviction
+    ephemeral-storage: "2Gi"
 # -- Startup probe to handle initial SonarQube startup and DB migrations.
 startupProbe:
   exec:

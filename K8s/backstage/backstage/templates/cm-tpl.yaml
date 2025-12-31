@@ -14,7 +14,11 @@ data:
         methods: [GET, POST, PUT, DELETE]
         credentials: true
       csp:
-        connect-src: ["'self'", 'https://dex.${DNS_SUFFIX}', 'https://kubernetes.default.svc', 'https://official-joke-api.appspot.com']
+        # 'unsafe-eval' is required for AJV JSON schema validation in the frontend.
+        # See backstage/backend-defaults readHelmetOptions.ts for reference.
+        script-src: ["'self'", "'unsafe-eval'"]
+        connect-src: ["'self'", 'https://dex.${DNS_SUFFIX}', 'wss://backstage.${DNS_SUFFIX}', 'https://kubernetes.default.svc', 'https://official-joke-api.appspot.com']
+        frame-src: ["'self'", 'https://grafana.${DNS_SUFFIX}']
       cache:
         store: memory
         memory:

@@ -40,6 +40,8 @@ alertmanager:
   alertmanagerSpec:
     # -- (string) Priority class for Alertmanager pod
     priorityClassName: platform-observability
+    # -- (string) Alertmanager log format
+    logFormat: json
     resources:
       requests:
         # -- (string) CPU request
@@ -99,12 +101,17 @@ prometheus:
     # -- Select PrometheusRules from any namespace (needed for Pyrra rules)
     ruleSelector: {}
     ruleNamespaceSelector: {}
+    # -- External labels to identify the cluster (Required for some imported dashboards like StarsL_en_K8S)
+    externalLabels:
+      origin_prometheus: "idp-demo-cluster"
     # -- Global scrape interval for all ServiceMonitors (unless overridden).
     scrapeInterval: 60s
     # -- Global scrape timeout for all ServiceMonitors (unless overridden).
     scrapeTimeout: 40s
     # -- Metrics retention time.
     retention: 24h
+    # -- Log format for Prometheus (logfmt or json)
+    logFormat: json
     # -- Enable persistence for Prometheus TSDB. 1Gi supports 6h retention for ~50 pods
     # with 4x overhead margin. Data survives pod restarts but is lost on cluster destruction.
     storageSpec:
@@ -244,14 +251,14 @@ grafana:
         gnetId: 7581
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: DS_KUBERNETES
             value: Prometheus
       # K8s - DaemonSet dashboard
       k8s-daemonset:
         gnetId: 14982
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: datasource
             value: Prometheus
       # K8s - Resource dashboard
       k8s-resource:
@@ -279,14 +286,14 @@ grafana:
         gnetId: 20842
         revision: 3
         datasource:
-          - name: DS_PROMETHEUS
+          - name: datasource
             value: Prometheus
       # ArgoCD monitoring - Official ArgoCD dashboard
       argocd:
         gnetId: 14584
         revision: 1
         datasource:
-          - name: DS_PROMETHEUS
+          - name: datasource
             value: Prometheus
       # Cilium Operator metrics
       cilium-operator:
@@ -316,21 +323,34 @@ grafana:
         datasource:
           - name: DS_PROMETHEUS
             value: Prometheus
-      # Loki log viewer - Official Loki Kubernetes Logs dashboard
-      loki-logs:
-        gnetId: 15141
+      # Kubernetes Logs from Loki (ID: 18494)
+      kubernetes-logs-from-loki:
+        gnetId: 18494
+        revision: 1
+        datasource:
+          - name: DS_GRAFANACLOUD-SS3RG3-LOGS
+            value: Loki
+      # Container Log Dashboard (ID: 16966)
+      container-log-dashboard:
+        gnetId: 16966
         revision: 1
         datasource:
           - name: DS_LOKI
             value: Loki
-      loki-logs-pod:
-        gnetId: 16976
-        revision: 3
+      # Loki Logging Volume Analysis
+      loki-logging-volume:
+        gnetId: 23789
+        revision: 1
         datasource:
           - name: DS_LOKI
             value: Loki
-          - name: DS_PROMETHEUS
-            value: Prometheus
+      # Logs by Namespace
+      logs-by-namespace:
+        gnetId: 19566
+        revision: 1
+        datasource:
+          - name: DS_LOKI
+            value: Loki
 
 
   # -- Sidecar to automatically discover and load dashboards from ConfigMaps.
@@ -345,6 +365,14 @@ grafana:
       searchNamespace: ALL
   # -- Advanced Grafana configuration via grafana.ini
   grafana.ini:
+    security:
+      allow_embedding: true
+      cookie_samesite: none
+      cookie_secure: true
+    log:
+      mode: console
+    "log.console":
+      format: json
     users:
       # -- Disables the user sign-up page.
       allow_sign_up: false
@@ -359,6 +387,8 @@ grafana:
 prometheusOperator:
   # -- (string) Priority class
   priorityClassName: platform-observability
+  # -- Log format for Prometheus Operator (logfmt or json)
+  logFormat: json
   # -- Admission webhooks configuration for PrometheusRules validation
   admissionWebhooks:
     enabled: true

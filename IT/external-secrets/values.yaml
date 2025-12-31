@@ -2,6 +2,11 @@
 # @section -- General Configuration
 priorityClassName: platform-infrastructure
 
+# -- Extra arguments for the binary
+# Note: external-secrets v0.20.2 does not support --zap-encoder flag
+extraArgs:
+  zap-time-encoding: iso8601
+
 affinity:
   nodeAffinity:
     requiredDuringSchedulingIgnoredDuringExecution:
