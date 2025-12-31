@@ -14,7 +14,7 @@ metadata:
     kyverno.io/kind: Deployment
     kyverno.io/resource-name: hubble-ui
 spec:
-  type: website
+  type: service
   lifecycle: production
   owner: platform-team
   system: idp-networking

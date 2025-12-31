@@ -9,6 +9,7 @@ metadata:
     backstage.io/kubernetes-id: alertmanager
     backstage.io/kubernetes-namespace: observability
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=alertmanager"
+    argocd/app-name: obs-kube-prometheus-stack
     deployment.method: "helm"
     helm.chart: "prometheus-community/kube-prometheus-stack"
 spec:
@@ -16,5 +17,6 @@ spec:
   lifecycle: production
   owner: platform-team
   system: idp-observability
+  subComponentOf: kube-prometheus-stack
   dependsOn:
     - component:kube-prometheus-stack

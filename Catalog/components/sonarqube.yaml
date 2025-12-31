@@ -4,10 +4,6 @@ metadata:
   name: sonarqube
   description: SonarQube - Code quality and security analysis platform.
   tags: [quality, security, analysis, cicd, tier-high, environment-demo, platform-cicd]
-  links:
-    - url: https://sonarqube.192-168-65-16.nip.io
-      title: SonarQube Dashboard
-      icon: analytics
   annotations:
     backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/sonarqube.yaml
     backstage.io/kubernetes-id: sonarqube
