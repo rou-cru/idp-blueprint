@@ -34,3 +34,31 @@
 ## 5. UI & Plugins
 - **Core**: Catalog, Scaffolder, TechDocs, Search, API Docs.
 - **Extensions**: Catalog Graph, Policy Reporter UI, Topology, Notifications, Signals.
+
+## 6. Additional Implementation Details
+
+### Configuration Loading Fallback
+The configuration renderer includes a fallback mechanism for development and manual testing:
+- **Primary Loading**: Variables are loaded from individual files in `/vars/` (DNS_SUFFIX, CLUSTER_NAME, GITHUB_ORG, GITHUB_REPO, GITHUB_BRANCH)
+- **Fallback Mechanism**: If `/vars/env` file exists, the job executes `source /vars/env` to load additional variables (see job-renderer.yaml lines 118-121)
+- **Purpose**: Enables manual testing scenarios and local development overrides
+
+### Security Annotations (Checkov)
+The configuration renderer job includes explicit security policy exceptions with justifications:
+```yaml
+annotations:
+  checkov.io/skip1: CKV_K8S_38=Job needs SA token to run kubectl apply in-cluster
+  checkov.io/skip2: CKV_K8S_43=Dev tag moves frequently; digest not pinned during active development
+  checkov.io/skip3: CKV_K8S_15=Intentionally IfNotPresent to avoid repeated pulls of ops image
+```
+- **CKV_K8S_38**: Job requires ServiceAccount token for in-cluster kubectl operations
+- **CKV_K8S_43**: Using mutable tags during active development (not for production)
+- **CKV_K8S_15**: IfNotPresent pull policy to optimize development workflow
+
+### Vault Authentication Details
+The SecretStore configuration includes specific Vault authentication parameters:
+- **Vault Server**: `http://vault.vault-system.svc.cluster.local:8200`
+- **Auth Method**: Kubernetes authentication with service account `external-secrets`
+- **Role**: `eso-backstage-role` for Vault access
+- **Audiences**: Explicitly configured as `vault` for OIDC authentication (see backstage-secretstore.yaml lines 33-34)
+- **Purpose**: Ensures proper authentication flow between ESO and Vault in kubernetes environments

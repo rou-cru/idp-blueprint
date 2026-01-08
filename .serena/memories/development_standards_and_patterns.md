@@ -18,14 +18,23 @@
 
 ## 3. Resource Management
 - **PriorityClasses** (`IT/priorityclasses/`):
-  - `platform-critical`: Core components (Cilium, Vault).
-  - `platform-infrastructure`: Supporting infra (ArgoCD, Cert-Manager).
-  - `platform-observability`: Monitoring stack.
-  - `platform-dashboards`: UI components (Backstage).
-  - `platform-workloads`: Default for user workloads.
+  | Class | Value | Use Case | Examples |
+  | :--- | :--- | :--- | :--- |
+  | `platform-infrastructure` | 1000000 | Core control plane | Vault, ArgoCD, Cert-Manager, External Secrets |
+  | `platform-events` | 200000 | Event mesh | Argo Events controller, EventBus, webhooks |
+  | `platform-policy` | 100000 | Policy enforcement | Kyverno admission & background controllers |
+  | `platform-security` | 12000 | Security scanning | Trivy vulnerability scanners |
+  | `platform-observability` | 10000 | Monitoring | Prometheus, Loki, Fluent Bit, Policy Reporter |
+  | `platform-cicd` | 7500 | CI/CD services | Argo Workflows controller/server, SonarQube, databases |
+  | `platform-dashboards` | 5000 | Visualization | Grafana, Alertmanager, Backstage UI |
+  | `user-workloads` | 3000 | User applications | Apps deployed via GitOps |
+  | `cicd-execution` | 2500 | Ephemeral builds | Workflow pods, Kaniko builds, short-lived jobs |
+  | `unclassified-workload` | 0 (globalDefault) | Experimental/test | Default for unspecified workloads |
+
 - **Requests & Limits**:
   - Must be explicitly set.
   - CPU in `m`, Memory in `Mi` or `Gi`.
+  - Example: `requests.cpu: 300m`, `limits.memory: 1Gi`
 
 ## 4. Secrets Management Pattern
 - **Access**: Workloads do **not** mount Vault directly.
@@ -36,11 +45,40 @@
   4. Workload mounts the native `Secret`.
 - **Policy**: Default `creationPolicy: Owner` (Secret deleted with ExternalSecret).
 
+## 4.5. Secrets RefreshInterval Strategy (Actual Implementation)
+The refreshInterval determines how frequently ExternalSecrets poll Vault for updates. The actual implementation varies by secret type:
+
+| Interval | Use Case | Examples in Code |
+| :--- | :--- | :--- |
+| **1h** | Stable bootstrap secrets | `dex-externalsecret.yaml` (Dex client secret) |
+| **1h** | Backstage app secrets | `backstage-app-externalsecret.yaml` (Backend, GitHub token) |
+| **3m** | Application credentials | `grafana-admin-externalsecret.yaml`, `sonarqube-admin-externalsecret.yaml` |
+| **3m** | ArgoCD admin password | `argocd-admin-externalsecret.yaml` (Critical for emergency access) |
+| **30s-1m** | (Not used) | **Avoid** to prevent overwhelming Vault API |
+
+**Guidelines from Implementation:**
+- Use `1h` for secrets that change rarely (bootstrap, infrastructure)
+- Use `3m` for application-level credentials (Grafana, SonarQube, ArgoCD)
+- Balance freshness vs. API load on Vault
+- Never use intervals `< 1m` in production
+
+## 4.6. Special CreationPolicy Cases
+While `creationPolicy: Owner` is the default, some scenarios require different policies:
+
+- **`creationPolicy: Merge`**: Preserves existing secret data while updating specific keys
+  - **Use Case**: ArgoCD admin password (preserves `server.secretkey`)
+  - **File**: `IT/external-secrets/argocd-admin-externalsecret.yaml`
+- **`creationPolicy: Orphan`**: Creates secret but doesn't manage its lifecycle
+- **`deletionPolicy: Retain`**: Keeps secret even if ExternalSecret is deleted
+
 ## 5. Verification & Tooling
 - **Validation**:
-  - `task utils:config:print`: View resolved configuration.
+  - `task config:print`: View resolved configuration from config.toml.
   - `helm template .`: Verify chart rendering locally.
-- **Documentation**:
-  - `task docs`: Regenerates documentation site.
-  - `task docs:helm`: Updates Helm chart READMEs.
+  - `Scripts/validate-consistency.sh`: Run full consistency validation.
+- **Documentation Tasks**:
+  - `task docs`: Regenerates all documentation (metadata + helm docs).
+  - `task docs:helm`: Updates Helm chart READMEs using helm-docs.
   - `task docs:metadata`: Updates `Catalog/components/*.yaml` metadata.
+  - `task docs:linkcheck`: Checks for broken documentation links.
+  - `task docs:astro:build`: Builds Astro documentation site.

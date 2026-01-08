@@ -31,11 +31,12 @@ tasks:
     interactive: true
     cmds:
       - task: internal:generate-env
-      # Source .env to override inherited vars with new values, then run deploy-core
-      - cmd: set -a && . ./.env && set +a && task deploy-core
+      - task: deploy-core
 
   deploy-core:
     desc: "Core deployment logic (do not run directly)"
+    internal: true
+    dotenv: [".env"]
     deps:
       - internal:validate-tools
     preconditions:
@@ -47,6 +48,7 @@ tasks:
           and retry.{{else}}Success 😌{{end}}'
       # 1. Bootstrap Cluster
       - task: k3d:k3d:create
+      - task: bootstrap:it:clean-cluster-state
       - task: bootstrap:it:apply-namespaces
       - task: bootstrap:it:bootstrap
       - task: bootstrap:cilium:deploy

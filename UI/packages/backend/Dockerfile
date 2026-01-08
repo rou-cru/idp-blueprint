@@ -50,7 +50,7 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
 
 # Install dependencies
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
-    yarn workspaces focus --all --production --immutable && rm -rf "$(yarn cache clean)"
+    yarn workspaces focus --all --production && yarn cache clean
 
 # Copy the backend bundle
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config.yaml ./

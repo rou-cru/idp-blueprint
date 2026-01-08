@@ -65,6 +65,7 @@ tasks:
   cilium:deploy:
     desc: "Install Cilium as CNI"
     dir: IT/cilium
+    internal: true
     silent: false
     cmds:
       - |
@@ -77,8 +78,28 @@ tasks:
       - kubectl wait --for=condition=Ready pods -l k8s-app=cilium -n kube-system
         --timeout={{.KUBECTL_TIMEOUT}}
 
+  it:clean-cluster-state:
+    desc: "Simple cluster cleanup (Webhooks, Evicted Pods, Internal Runtime) to unblock API and Scheduler"
+    internal: true
+    silent: true
+    cmds:
+      # 1. Unblock API: Remove blocking webhooks
+      - cmd: kubectl delete validatingwebhookconfigurations,mutatingwebhookconfigurations -l webhook.kyverno.io/managed-by=kyverno --ignore-not-found=true
+        ignore_error: true
+      # 2. Clear Noise: Delete Failed/Evicted pods to help scheduler visibility
+      - cmd: kubectl delete pods --field-selector status.phase=Failed -A --ignore-not-found=true
+        ignore_error: true
+      - cmd: kubectl delete pods --field-selector status.phase=Succeeded -A --ignore-not-found=true
+        ignore_error: true
+      # 3. Free Disk: Prune internal runtime to resolve DiskPressure (Critical)
+      - echo "🧹 Pruning internal images to fix DiskPressure..."
+      - cmd: docker exec k3d-{{.CLUSTER_NAME}}-server-0 sh -c "crictl rm -fa; crictl rmi -a"
+        ignore_error: true
+      - echo "✅ Cluster State Cleaned"
+
   it:bootstrap:
     desc: "Bootstrap cluster prerequisites and preload images"
+    internal: true
     silent: true
     deps:
       - cilium:preload
@@ -89,6 +110,7 @@ tasks:
   cert-manager:deploy:
     desc: "Deploy Cert-Manager to handle CA"
     dir: IT/cert-manager
+    internal: true
     silent: true
     cmds:
       - |
@@ -104,6 +126,7 @@ tasks:
   external-secrets:deploy:
     desc: "Install External Secrets Operator"
     dir: IT/external-secrets
+    internal: true
     silent: false
     cmds:
       - |
@@ -120,6 +143,7 @@ tasks:
   it:eso:apply-resources:
     desc: "Apply ESO SecretStores and ExternalSecrets"
     dir: IT/external-secrets
+    internal: true
     cmds:
       - kustomize build . | kubectl apply -f - --server-side
       - kubectl wait --for=condition=Ready externalsecret/argocd-admin-password -n argocd --timeout={{.KUBECTL_TIMEOUT}}
@@ -140,6 +164,7 @@ tasks:
 
   vault:generate-secrets:
     desc: "Generate initial secrets for all services using Vault"
+    internal: true
     vars:
       ARGOCD_USERNAME: "admin"
       SECRETS:
@@ -220,6 +245,7 @@ tasks:
   vault:deploy:
     desc: "Deploy HashiCorp Vault"
     dir: IT/vault
+    internal: true
     cmds:
       - |
         helm upgrade --install vault hashicorp/vault \
@@ -232,6 +258,7 @@ tasks:
 
   it:deploy-secret-and-certs:
     desc: "Deploy cert-manager and vault"
+    internal: true
     silent: true
     deps:
       - cert-manager:deploy
@@ -240,6 +267,7 @@ tasks:
   argocd:deploy:
     desc: "Deploy ArgoCD GitOps Engine"
     dir: IT/argocd
+    internal: true
     silent: true
     env:
       REPO_URL: "{{.REPO_URL}}"
@@ -266,6 +294,7 @@ tasks:
   gateway:deploy:
     desc: "Deploy Gateway API Gateway resource"
     dir: IT/gateway
+    internal: true
     silent: true
     cmds:
       - kustomize build . | envsubst | kubectl apply -f - --server-side
