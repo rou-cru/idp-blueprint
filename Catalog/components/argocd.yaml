@@ -11,10 +11,6 @@ metadata:
       environment-demo,
       platform-infrastructure,
     ]
-  links:
-    - url: https://argocd.192-168-65-16.nip.io
-      title: ArgoCD Dashboard
-      icon: dashboard
   annotations:
     backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/argocd.yaml
     backstage.io/kubernetes-id: argocd

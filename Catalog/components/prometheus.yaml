@@ -1,0 +1,39 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: prometheus
+  description: Prometheus Server - Time-series database and monitoring system for metrics collection and alerting.
+  tags:
+    [
+      prometheus,
+      metrics,
+      monitoring,
+      timeseries,
+      database,
+      tier-critical,
+      environment-demo,
+      platform-observability,
+      data-pipeline-metrics,
+      aggregation,
+    ]
+  annotations:
+    backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/prometheus.yaml
+    backstage.io/kubernetes-id: prometheus
+    backstage.io/kubernetes-namespace: observability
+    backstage.io/kubernetes-label-selector: "app.kubernetes.io/name=prometheus"
+    argocd/app-name: obs-kube-prometheus-stack
+    deployment.method: "helm"
+    helm.chart: "prometheus-community/kube-prometheus-stack"
+    # Kyverno Policy Reporter
+    kyverno.io/namespace: observability
+    kyverno.io/kind: StatefulSet
+    kyverno.io/resource-name: prometheus-kube-prometheus-prometheus
+spec:
+  type: service
+  lifecycle: production
+  owner: platform-team
+  system: idp-observability
+  subComponentOf: kube-prometheus-stack
+  dependsOn:
+    - resource:default/local-k8s-cluster
+    - component:kube-prometheus-stack

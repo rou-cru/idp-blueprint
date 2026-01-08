@@ -10,7 +10,7 @@ metadata:
     backstage.io/kubernetes-id: kyverno
     backstage.io/kubernetes-namespace: kyverno-system
     backstage.io/kubernetes-label-selector: "app.kubernetes.io/part-of=kyverno"
-    argocd/app-name: platform-policies
+    argocd/app-name: policies-infrastructure
     deployment.method: "helm"
     helm.chart: "kyverno/kyverno"
     # Kyverno Policy Reporter

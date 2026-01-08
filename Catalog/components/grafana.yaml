@@ -15,10 +15,6 @@ metadata:
       data-pipeline-logs,
       data-pipeline-metrics,
     ]
-  links:
-    - url: https://grafana.192-168-65-16.nip.io
-      title: Grafana Dashboards
-      icon: dashboard
   annotations:
     backstage.io/source-location: url:https://github.com/rou-cru/idp-blueprint/tree/main/Catalog/components/grafana.yaml
     backstage.io/kubernetes-id: grafana
@@ -30,7 +26,7 @@ metadata:
     kyverno.io/kind: Deployment
     kyverno.io/resource-name: prometheus-grafana
 spec:
-  type: website
+  type: service
   lifecycle: production
   owner: platform-team
   system: idp-observability
