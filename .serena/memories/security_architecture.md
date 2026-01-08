@@ -1,33 +1,38 @@
 # Security & Policy Architecture (validated 2025-12-27)
 
 ## Overview
-- **Secrets**: Vault (Central Store) + External Secrets Operator (ESO) (K8s Integration).
-- **Policy**: Kyverno (Admission Control) + Policy Reporter (Observability).
-- **Vulnerability**: Trivy Operator (Cluster Scanning).
+- **Secrets**: Vault + External Secrets Operator (ESO)
+- **Policy**: Kyverno + Policy Reporter
+- **Vulnerability**: Trivy Operator
 
-## 1. Secrets Management
-- **Vault**:
-  - **Mode**: Standalone, TLS disabled (`tls_disable="true"`), unseal key in `vault-system/vault-init-keys` Secret (Demo config).
-  - **Storage**: Raft (1Gi PVC).
-  - **Seeding**: `Task/bootstrap.yaml` invokes `scripts/vault-init.sh` and `vault:generate-secrets` to seed demo credentials (from `.env`/`config.toml`) into `kv-v2` path `secret/`.
-- **External Secrets Operator (ESO)**:
-  - **SecretStores**: Configured per namespace, pointing to `http://vault.vault-system.svc.cluster.local:8200`.
-  - **Authentication**: Kubernetes Auth (Vault roles `eso-<namespace>-role` bound to `external-secrets` SA).
-  - **Pattern**: `ExternalSecret` -> (fetches from Vault) -> K8s `Secret`.
-  - **ArgoCD**: Uses `creationPolicy: Merge` to inject admin secrets into the existing ArgoCD secret.
+## Secrets Management
+Sources: `IT/vault/values.yaml`, `Scripts/vault-init.sh`, `IT/external-secrets/*`, `K8s/*/*secretstore*.yaml`.
 
-## 2. Policy Enforcement (Kyverno)
-- **Engine**: Kyverno controllers in `kyverno-system`.
-- **Policies**: Managed via `K8s/policies` AppSet.
-- **Reporting**:
-  - **Policy Reporter**: Deployed in `kyverno-system` (Headless, REST API enabled).
-  - **Metrics**: Prometheus integration enabled (`detailed` mode).
-  - **Dashboards**: ConfigMaps generated in `kyverno-system` (Label: `grafana_dashboard=1`).
-  - **Issue**: Dashboards might not be visible if Grafana sidecar isn't configured to scan `kyverno-system`.
+### Vault
+- **Mode**: Standalone with Raft storage (`/vault/data`)
+- **TLS**: `tls_disable="true"` in listener
+- **Storage**: PVC size `1Gi`
+- **Init/Unseal**: `Scripts/vault-init.sh` stores unseal key and root token in `vault-system/vault-init-keys`
 
-## 3. Vulnerability Scanning (Trivy)
-- **Component**: `trivy-operator` + `trivy-server` in `security` namespace.
-- **Scope**: Scans `replicaset,statefulset,daemonset,cronjob` (Pods excluded to reduce noise).
-- **Exclusions**: `kube-system`, `argocd`, `cert-manager`, `vault-system`, `kyverno-system`.
-- **Compliance**: `k8s-pss-baseline-0.1` profile enabled.
-- **Reporting**: Generates `VulnerabilityReports` (CRDs); accessible via Grafana dashboards (UIDs `ycwPj724k`, `4SECJjm4z`).
+### External Secrets Operator (ESO)
+- **SecretStores**: Per-namespace SecretStores point to `http://vault.vault-system.svc.cluster.local:8200` and `path: secret` (v2)
+- **Auth**: Kubernetes auth with roles `eso-<namespace>-role` via `external-secrets` ServiceAccount
+- **ArgoCD**: `argocd-admin-password` ExternalSecret uses `creationPolicy: Merge` and `deletionPolicy: Retain`
+
+## Policy Enforcement
+Sources: `K8s/policies/applicationset-policies.yaml`, `K8s/policies/infrastructure/kyverno/*`, `K8s/policies/infrastructure/policy-reporter/values.yaml`.
+
+- **Kyverno**: Deployed in `kyverno-system` via ApplicationSet
+- **Policy Reporter**:
+  - REST API enabled (`rest.enabled: true`)
+  - UI disabled (`ui.enabled: false`)
+  - Metrics enabled with `mode: detailed`
+  - Grafana dashboards labeled `grafana_dashboard: "1"` in `kyverno-system`
+
+## Vulnerability Scanning (Trivy)
+Source: `K8s/security/trivy/values.yaml`.
+
+- **Target workloads**: `replicaset,statefulset,daemonset,cronjob`
+- **Excluded namespaces**: `kube-system,argocd,cert-manager,vault-system,kyverno-system`
+- **Compliance**: `k8s-pss-baseline-0.1`
+- **Built-in Trivy Server**: enabled (`builtInTrivyServer: true`)

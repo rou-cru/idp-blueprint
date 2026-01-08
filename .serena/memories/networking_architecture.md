@@ -1,46 +1,41 @@
 # Networking & Connectivity Architecture (validated 2025-12-27)
 
 ## Overview
-- **CNI**: Cilium (Exclusive mode, kube-proxy replacement).
-- **Ingress**: Gateway API (v1) managed by Cilium.
-- **Exposure**: NodePort strategy (mapped to host ports 30080/30443) + `nip.io` Wildcard DNS.
-- **Certificates**: cert-manager + Self-Signed Root CA for local HTTPS.
+- **CNI**: Cilium (exclusive mode, kube-proxy replacement)
+- **Ingress**: Gateway API (Cilium Gateway Controller)
+- **Exposure**: NodePort on 30080/30443 with `*.${DNS_SUFFIX}` hostnames
+- **Certificates**: cert-manager with a self-signed Root CA and wildcard cert
 
-## 1. Core Networking (Cilium)
-- **Configuration**: `IT/cilium/values.yaml`.
-- **Features**:
-  - `kubeProxyReplacement: true`: Cilium handles Service load balancing via eBPF.
-  - `l7Proxy: true` & `envoy: enabled`: Required for Gateway API support.
-  - `gatewayAPI: enabled`: Functions as the Gateway Controller.
-  - **Hubble**: Enabled with Relay + UI + Metrics (ServiceMonitor).
-  - **Disabled**: L2 Announcements, BGP, Encryption (WireGuard) — kept off for k3d demo compatibility.
+## Core Networking (Cilium)
+Source: `IT/cilium/values.yaml`.
 
-## 2. Connectivity & Exposure (Gateway API)
-- **GatewayClass**: `cilium-nodeport` (`IT/gateway/gatewayclass.yaml`).
-  - Config: `CiliumGatewayClassConfig` sets `service.type: NodePort`.
-- **Gateway**: `idp-gateway` (namespace `kube-system`) listens on hostname `*.${DNS_SUFFIX}`.
-- **Service**: `cilium-gateway-idp-gateway` is patched (`IT/gateway/patch/gateway-service-patch.yaml`) to enforce stable NodePorts:
-  - **HTTP**: 30080
-  - **HTTPS**: 30443
-- **DNS**: `DNS_SUFFIX` is computed as `<LAN_IP>.nip.io` in `.env` (via `generate-env.sh`) and injected into manifests.
+Key settings:
+- `cni.exclusive: true` and `kubeProxyReplacement: true`
+- `l7Proxy: true` and `envoy.enabled: true`
+- `gatewayAPI.enabled: true`
+- `ipam.mode: cluster-pool` with `clusterPoolIPv4PodCIDRList: ["10.42.0.0/16"]`
+- `ipv6.enabled: false`
+- `hubble.enabled: true` (Relay + UI enabled, ServiceMonitor enabled)
+- Disabled for demo: `l2announcements`, `bgpControlPlane`, `encryption` (WireGuard)
 
-## 3. Certificates (cert-manager)
-- **Deployment**: `cert-manager` namespace (Controller, CAInjector, Webhook).
-- **Configuration**: `IT/cert-manager/values.yaml` (Prometheus metrics enabled).
-- **Issuers**:
-  - `self-signed-issuer`: Bootstraps the Root CA.
-  - `ca-issuer`: Uses the Root CA to issue downstream certs.
-- **Certificates**:
-  - `idp-wildcard-cert`: Wildcard certificate for `*.${DNS_SUFFIX}` in `kube-system`.
-  - **TLS Delegation**: `ReferenceGrant` (`IT/gateway/gateway-tls-permission.yaml`) allows Gateway to use this certificate across namespaces.
+## Gateway API Exposure
+Sources: `IT/gateway/gatewayclass.yaml`, `IT/gateway/idp-gateway.yaml`, `IT/gateway/patch/gateway-service-patch.yaml`.
 
-## 4. Application Integration
-- **Routes**: `HTTPRoutes` defined in `IT/gateway/httproutes/` (and stacks) for `argocd`, `backstage`, `grafana`, `sonarqube`, etc.
-- **Config Injection**: Applications like Backstage use config templates (`K8s/backstage/backstage/templates/cm-tpl.yaml`) to inject the dynamic `${DNS_SUFFIX}` at deployment time via `envsubst`.
+- **GatewayClass**: `cilium-nodeport` using `CiliumGatewayClassConfig` with `service.type: NodePort`.
+- **Gateway**: `idp-gateway` in `kube-system` with listeners on 80/443 and hostname `*.${DNS_SUFFIX}`.
+- **NodePorts**: patched service `cilium-gateway-idp-gateway` uses 30080 (HTTP) and 30443 (HTTPS).
 
-## Production vs. Demo
-- **Demo**: NodePort + `nip.io` (No external dependency).
-- **Production**:
-  - Change GatewayClass to LoadBalancer.
-  - Enable Cilium L2 Announcements (MetalLB replacement) or BGP.
-  - Use real DNS and Let's Encrypt (ACME) for certificates.
+## DNS Suffix
+`Scripts/generate-env.sh` computes:
+- `DNS_SUFFIX=<LAN_IP with dashes>.nip.io`
+
+## Certificates
+Sources: `IT/cert-manager/*`, `IT/gateway/idp-wildcard-cert.yaml`, `IT/gateway/gateway-tls-permission.yaml`.
+
+- **Root CA**: `idp-demo-ca` (self-signed) in `cert-manager` namespace.
+- **Issuers**: `self-signed-issuer` and `ca-issuer` (ClusterIssuers).
+- **Wildcard cert**: `idp-wildcard-cert` for `*.${DNS_SUFFIX}` in `kube-system`.
+- **TLS delegation**: `ReferenceGrant` allows Gateway to use the certificate across namespaces.
+
+## HTTPRoutes
+Routes are defined under `IT/gateway/httproutes/` for services like ArgoCD, Backstage, Grafana, Dex, Vault, SonarQube, Argo Events, and Argo Workflows.
