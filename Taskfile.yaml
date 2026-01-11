@@ -36,6 +36,7 @@ tasks:
 
   deploy-core:
     desc: "Core deployment logic (do not run directly)"
+    internal: true
     deps:
       - internal:validate-tools
     preconditions:

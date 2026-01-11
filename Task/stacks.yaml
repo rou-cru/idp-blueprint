@@ -79,6 +79,7 @@ tasks:
 
   deploy:
     desc: "Deploy all application stacks via ArgoCD ApplicationSets (feature-gated)"
+    internal: true
     cmds:
       - task: policies
       - task: observability

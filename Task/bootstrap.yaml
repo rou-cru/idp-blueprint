@@ -64,6 +64,7 @@ tasks:
 
   cilium:deploy:
     desc: "Install Cilium as CNI"
+    internal: true
     dir: IT/cilium
     silent: false
     cmds:
@@ -79,6 +80,7 @@ tasks:
 
   it:bootstrap:
     desc: "Bootstrap cluster prerequisites and preload images"
+    internal: true
     silent: true
     deps:
       - cilium:preload
@@ -88,6 +90,7 @@ tasks:
 
   cert-manager:deploy:
     desc: "Deploy Cert-Manager to handle CA"
+    internal: true
     dir: IT/cert-manager
     silent: true
     cmds:
@@ -103,6 +106,7 @@ tasks:
 
   external-secrets:deploy:
     desc: "Install External Secrets Operator"
+    internal: true
     dir: IT/external-secrets
     silent: false
     cmds:
@@ -119,6 +123,7 @@ tasks:
 
   it:eso:apply-resources:
     desc: "Apply ESO SecretStores and ExternalSecrets"
+    internal: true
     dir: IT/external-secrets
     cmds:
       - kustomize build . | kubectl apply -f - --server-side
@@ -140,6 +145,7 @@ tasks:
 
   vault:generate-secrets:
     desc: "Generate initial secrets for all services using Vault"
+    internal: true
     vars:
       ARGOCD_USERNAME: "admin"
       SECRETS:
@@ -219,6 +225,7 @@ tasks:
 
   vault:deploy:
     desc: "Deploy HashiCorp Vault"
+    internal: true
     dir: IT/vault
     cmds:
       - |
@@ -232,6 +239,7 @@ tasks:
 
   it:deploy-secret-and-certs:
     desc: "Deploy cert-manager and vault"
+    internal: true
     silent: true
     deps:
       - cert-manager:deploy
@@ -239,6 +247,7 @@ tasks:
 
   argocd:deploy:
     desc: "Deploy ArgoCD GitOps Engine"
+    internal: true
     dir: IT/argocd
     silent: true
     env:
@@ -265,6 +274,7 @@ tasks:
 
   gateway:deploy:
     desc: "Deploy Gateway API Gateway resource"
+    internal: true
     dir: IT/gateway
     silent: true
     cmds:
