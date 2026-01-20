@@ -56,6 +56,17 @@ jobs:
               core.setOutput('status', 'skip-behind')
               return
             }
+            if (!pr.mergeable_state || pr.mergeable_state === 'unknown') {
+              core.setOutput('status', 'skip-unknown')
+              core.info('Mergeable state is unknown, waiting for GitHub to compute it')
+              return
+            }
+            const acceptableStates = ['clean', 'unstable', 'has_hooks']
+            if (!acceptableStates.includes(pr.mergeable_state)) {
+              core.setOutput('status', `skip-${pr.mergeable_state}`)
+              core.info(`Mergeable state '${pr.mergeable_state}' not acceptable for auto-merge`)
+              return
+            }
 
             core.setOutput('pr-number', pr.number.toString())
             core.setOutput('mergeable_state', pr.mergeable_state || 'unknown')
@@ -63,7 +74,8 @@ jobs:
 
       - name: Enable auto-merge
         if: steps.ctx.outputs.status == 'ready' &&
-            steps.ctx.outputs.mergeable_state != 'behind'
+            steps.ctx.outputs.mergeable_state != 'behind' &&
+            steps.ctx.outputs.mergeable_state != 'unknown'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
