@@ -19,7 +19,7 @@ body:
       options:
         - label: I have searched existing issues to ensure this is not a duplicate
           required: true
-        - label: I have read the documentation at https://rou-cru.github.io/idp-blueprint/
+        - label: I have read the documentation at https://idp-blueprint.roura.xyz/
           required: true
         - label: I am using the latest version from the main branch
           required: false

@@ -34,7 +34,7 @@ import {
   EntityOwnershipCard,
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { EmptyState } from '@backstage/core-components';
+import { EmptyState, WarningPanel } from '@backstage/core-components';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -48,6 +48,7 @@ import {
   RELATION_HAS_PART,
   RELATION_PART_OF,
   RELATION_PROVIDES_API,
+  Entity,
 } from '@backstage/catalog-model';
 
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
@@ -65,7 +66,96 @@ import {
 } from '@roadiehq/backstage-plugin-argo-cd';
 import { TopologyPage } from '@backstage-community/plugin-topology';
 import { EntityKyvernoPoliciesContent } from '@kyverno/backstage-plugin-policy-reporter';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { makeStyles } from '@material-ui/core/styles';
 
+// Helper functions to check for relations
+const hasSubcomponents = (entity: Entity) => {
+  return entity?.relations?.some(
+    (r) => r.type === RELATION_HAS_PART
+  ) ?? false;
+};
+
+const hasApis = (entity: Entity) => {
+  return entity?.relations?.some(
+    (r) => r.type === RELATION_PROVIDES_API || r.type === RELATION_CONSUMES_API
+  ) ?? false;
+};
+
+const useStyles = makeStyles({
+  iframe: {
+    width: '100%',
+    height: '800px',
+    border: 'none',
+  },
+});
+
+const EntityLokiLogs = () => {
+  const classes = useStyles();
+  const { entity } = useEntity();
+  const config = useApi(configApiRef);
+
+  const grafanaUrl = config.getOptionalString('grafana.domain');
+
+  if (!grafanaUrl) {
+    return (
+      <WarningPanel
+        title="Integration Disabled"
+        message='The "grafana.domain" configuration is missing in app-config. Please check your K8s/backstage/backstage/templates/cm-tpl.yaml and ensure DNS_SUFFIX is set.'
+      />
+    );
+  }
+
+  const annotations = entity.metadata.annotations || {};
+  const namespace = annotations['backstage.io/kubernetes-namespace'] || entity.metadata.namespace || 'default';
+
+  // Dashboard UID: fRIvzUZMz (Container Log Dashboard)
+  const dashboardPath = '/d/fRIvzUZMz/container-log-dashboard';
+  const queryParams = `?var-namespace=${namespace}&var-pod=All&var-stream=All&var-searchable_pattern=&kiosk`;
+  const src = `${grafanaUrl}${dashboardPath}${queryParams}`;
+
+  return (
+    <iframe
+      title="Container Logs"
+      src={src}
+      className={classes.iframe}
+    />
+  );
+};
+
+const EntityKubernetesMetrics = () => {
+  const classes = useStyles();
+  const { entity } = useEntity();
+  const config = useApi(configApiRef);
+
+  const grafanaUrl = config.getOptionalString('grafana.domain');
+
+  if (!grafanaUrl) {
+    return (
+      <WarningPanel
+        title="Integration Disabled"
+        message='The "grafana.domain" configuration is missing in app-config. Please check your K8s/backstage/backstage/templates/cm-tpl.yaml and ensure DNS_SUFFIX is set.'
+      />
+    );
+  }
+
+  const annotations = entity.metadata.annotations || {};
+  const namespace = annotations['backstage.io/kubernetes-namespace'] || entity.metadata.namespace || 'default';
+
+  // Dashboard UID: GlXkUBGiz (Kubernetes - Pod Overview)
+  const dashboardPath = '/d/GlXkUBGiz/kubernetes-pod-overview';
+  const queryParams = `?var-namespace=${namespace}&var-pod=All&var-container=All&refresh=1m`;
+  const src = `${grafanaUrl}${dashboardPath}${queryParams}`;
+
+  return (
+    <iframe
+      title="Pod Metrics"
+      src={src}
+      className={classes.iframe}
+    />
+  );
+};
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -150,9 +240,14 @@ const overviewContent = (
     <Grid item md={6} xs={12}>
       <EntityCatalogGraphCard variant="gridItem" height={400} />
     </Grid>
-    <Grid item md={8} xs={12}>
-      <EntityHasSubcomponentsCard variant="gridItem" />
-    </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasSubcomponents}>
+        <Grid item md={8} xs={12}>
+          <EntityHasSubcomponentsCard variant="gridItem" />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
 
     <EntitySwitch>
       <EntitySwitch.Case if={isArgocdAvailable}>
@@ -164,10 +259,34 @@ const overviewContent = (
   </Grid>
 );
 
+const logsContent = (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <EntityLokiLogs />
+    </Grid>
+  </Grid>
+);
+
+const metricsContent = (
+  <Grid container spacing={3}>
+    <Grid item xs={12}>
+      <EntityKubernetesMetrics />
+    </Grid>
+  </Grid>
+);
+
 const serviceEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/logs" title="Logs">
+      {logsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/metrics" title="Metrics">
+      {metricsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
@@ -183,7 +302,11 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
 
-    <EntityLayout.Route path="/api" title="API">
+    <EntityLayout.Route
+      path="/api"
+      title="API"
+      if={hasApis}
+    >
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>
           <EntityProvidedApisCard />
@@ -206,7 +329,9 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/topology" title="Topology">
-      <TopologyPage />
+      <div style={{ height: '100%', width: '100%', minHeight: '700px' }}>
+        <TopologyPage />
+      </div>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/policies" title="Policies">
@@ -223,6 +348,14 @@ const websiteEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/logs" title="Logs">
+      {logsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/metrics" title="Metrics">
+      {metricsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
@@ -250,7 +383,9 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/topology" title="Topology">
-      <TopologyPage />
+      <div style={{ height: '100%', width: '100%', minHeight: '700px' }}>
+        <TopologyPage />
+      </div>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/policies" title="Policies">
@@ -276,8 +411,14 @@ const defaultEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/logs" title="Logs">
+      {logsContent}
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/topology" title="Topology">
-      <TopologyPage />
+      <div style={{ height: '100%', width: '100%', minHeight: '700px' }}>
+        <TopologyPage />
+      </div>
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/policies" title="Policies">
