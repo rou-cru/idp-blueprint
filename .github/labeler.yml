@@ -42,7 +42,7 @@ argocd:
   - changed-files:
       - any-glob-to-any-file:
           - "IT/argocd/**/*"
-          - "K8s/**/argocd*"
+          - "K8s/**/argocd*/**/*"
           - "**/argocd-*.yaml"
 
 # Cilium / Networking
