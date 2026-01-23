@@ -1,6 +1,8 @@
 IDP Blueprint
 =============
 
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=rou-cru_idp-blueprint)](https://sonarcloud.io/summary/new_code?id=rou-cru_idp-blueprint)
+
 Open-source reference for a compact Internal Developer Platform that runs on a
 local or lab Kubernetes cluster (k3d by default). It ships GitOps, policy,
 observability, CI/CD, and secrets management as code, deployable with one
