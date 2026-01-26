@@ -17,7 +17,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/ts-plugin": "^1.10.6",
     "@yeskunall/astro-umami": "^0.0.7",
-    "astro": "^5.16.11",
+    "astro": "^5.16.15",
     "astro-d2": "^0.8.1",
     "astro-expressive-code": "^0.41.6",
     "astro-favicons": "^3.1.5",
