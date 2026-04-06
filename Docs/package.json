@@ -13,7 +13,7 @@
     "d2:render": "../../Scripts/d2-render.sh"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.13",
+    "@astrojs/mdx": "^4.3.14",
     "@astrojs/sitemap": "^3.7.0",
     "@astrojs/ts-plugin": "^1.10.6",
     "@yeskunall/astro-umami": "^0.0.7",
