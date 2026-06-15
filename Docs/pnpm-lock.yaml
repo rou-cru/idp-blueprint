@@ -18,8 +18,8 @@ importers:
         specifier: ^1.10.6
         version: 1.10.6
       '@yeskunall/astro-umami':
-        specifier: ^0.0.7
-        version: 0.0.7(astro@5.16.11(@types/node@25.0.9)(jiti@1.21.7)(rollup@4.55.2)(typescript@5.9.3)(yaml@2.8.2))
+        specifier: ^0.0.9
+        version: 0.0.9(astro@5.16.11(@types/node@25.0.9)(jiti@1.21.7)(rollup@4.55.2)(typescript@5.9.3)(yaml@2.8.2))
       astro:
         specifier: ^5.16.11
         version: 5.16.11(@types/node@25.0.9)(jiti@1.21.7)(rollup@4.55.2)(typescript@5.9.3)(yaml@2.8.2)
@@ -1141,6 +1141,7 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@volar/kit@2.4.23':
     resolution: {integrity: sha512-YuUIzo9zwC2IkN7FStIcVl1YS9w5vkSFEZfPvnu0IbIMaR9WHhc9ZxvlT+91vrcSoRY469H2jwbrGqpG7m1KaQ==}
@@ -1177,10 +1178,10 @@ packages:
   '@vscode/l10n@0.0.18':
     resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
 
-  '@yeskunall/astro-umami@0.0.7':
-    resolution: {integrity: sha512-8W/At28qKyPGepwvVumgJX0VZ0F9KK4M4zNDQfUZ3iBJpAKUTAkdIXM7i7I+PFsP7rXOo/AVgcDXDOv9L03QhQ==}
+  '@yeskunall/astro-umami@0.0.9':
+    resolution: {integrity: sha512-qjjVxEjOxade46Cj0mZ8r1agBMJP2e6NgCVlbyMEfbREc3Jruptq6No7G8Q+81rATaS3WnrQ/KmH9PpVvnzIpQ==}
     peerDependencies:
-      astro: ^3.0.0 || ^4.0.0 || ^5.0.0
+      astro: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -3017,6 +3018,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
@@ -4504,7 +4506,7 @@ snapshots:
 
   '@vscode/l10n@0.0.18': {}
 
-  '@yeskunall/astro-umami@0.0.7(astro@5.16.11(@types/node@25.0.9)(jiti@1.21.7)(rollup@4.55.2)(typescript@5.9.3)(yaml@2.8.2))':
+  '@yeskunall/astro-umami@0.0.9(astro@5.16.11(@types/node@25.0.9)(jiti@1.21.7)(rollup@4.55.2)(typescript@5.9.3)(yaml@2.8.2))':
     dependencies:
       astro: 5.16.11(@types/node@25.0.9)(jiti@1.21.7)(rollup@4.55.2)(typescript@5.9.3)(yaml@2.8.2)
 
