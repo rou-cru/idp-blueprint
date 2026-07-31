@@ -54,8 +54,8 @@ importers:
         specifier: ^11.12.2
         version: 11.12.2
       nanostores:
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.4.1
+        version: 1.4.1
       sharp:
         specifier: ^0.35.3
         version: 0.35.3(@types/node@25.0.9)
@@ -2653,8 +2653,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nanostores@1.1.0:
-    resolution: {integrity: sha512-yJBmDJr18xy47dbNVlHcgdPrulSn1nhSE6Ns9vTG+Nx9VPT6iV1MD6aQFp/t52zpf82FhLLTXAXr30NuCnxvwA==}
+  nanostores@1.4.1:
+    resolution: {integrity: sha512-PGd3uPojJB9Z07d5NX3Db/SOSBbyy3wLMUGq0GpnEEJfVzY9mq7daPMAZ3jObV5D3Jn+YKND636eI5ULg7F80Q==}
     engines: {node: ^20.0.0 || >=22.0.0}
 
   neotraverse@0.6.18:
@@ -6636,7 +6636,7 @@ snapshots:
 
   nanoid@3.3.12: {}
 
-  nanostores@1.1.0: {}
+  nanostores@1.4.1: {}
 
   neotraverse@0.6.18: {}
 
