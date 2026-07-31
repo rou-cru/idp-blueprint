@@ -29,7 +29,7 @@
     "marked": "^18.0.7",
     "mermaid": "^11.12.2",
     "nanostores": "^1.1.0",
-    "sharp": "^0.34.2"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@astrojs/svelte": "^7.2.2",
