@@ -48,8 +48,8 @@ importers:
         specifier: ^0.8.4
         version: 0.8.4(prettier-plugin-astro@0.14.1)(prettier@3.8.4)(typescript@5.9.3)
       marked:
-        specifier: ^18.0.7
-        version: 18.0.7
+        specifier: ^18.0.14
+        version: 18.0.14
       mermaid:
         specifier: ^11.12.2
         version: 11.12.2
@@ -2473,8 +2473,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marked@18.0.7:
-    resolution: {integrity: sha512-iDVQ5ldaiKXn6b2JroX5kgRfmwgqolW7NpaEzTl1k/2Zh1njIEN9yniyLV/mOvWwtsE8OGgkjsCYvijuPk1dtA==}
+  marked@18.0.14:
+    resolution: {integrity: sha512-mBHK6FBHuBAlhgRe88w9F0O1AbwwXJUcQibUbC/QcdTbVGAD7aWza+xt3N6oT/jCZx3/OMeS+8rnuiHZcQ9s7A==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -6158,7 +6158,7 @@ snapshots:
 
   marked@16.4.2: {}
 
-  marked@18.0.7: {}
+  marked@18.0.14: {}
 
   math-intrinsics@1.1.0: {}
 
